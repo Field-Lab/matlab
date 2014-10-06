@@ -1,0 +1,149 @@
+%break;
+clear;
+NumberOfSamples=40000;
+AllElectrodes=[1:64];
+Array=eye(64,64); 
+
+Electrodes=[6 16 18 3 27 28 37 45 54 51 60 61] % 10 34 43 20 30 52 53 ];
+MovieNumbers=[25 10 23 26 15 21 14 6 10 14 18 24] % 15 18 25 12 12 22 13];
+Amplitudes=Electrodes;
+for i=1:length(Electrodes)
+    Amplitudes(i)=NS_PulseAmplitude('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data003',Electrodes(i),Electrodes(i),MovieNumbers(i));
+end
+
+Neurons=[76 227 256 271 391 406 541 616 691 736 856 901];
+
+if (length(Electrodes)~=length(Neurons) | length(Electrodes)~=length(Amplitudes))
+    error('Lengths of Electrodes, Amplitudes and Neurons are not identical!');
+end
+
+% 1. Apply the amplitudes
+for i=1:length(Electrodes)
+    Array(Electrodes(i),Electrodes(i))=Amplitudes(i);    
+end
+
+% 2. Natural activity under moving bar. Chunk 1 - real spike times, Chunk2
+% - spike times rounded with resolution of 4 ms
+figure(1);
+clf;
+subplot(4,1,1);
+
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data002_old\data002000\data002000.params');
+%neuronFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data002_old\data002000\data002000.neurons');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data005-mapped-data002\data005-mapped-data002.neurons');
+break
+idList = neuronFile.getIDList();
+
+startTime=24e4;
+%startTime=3.81e5;
+TimeRange=[startTime startTime+20000];
+%TimeRange=[1e7 4e7];
+Times=[];
+Patterns=[];
+for i=1:length(Electrodes)
+    Pattern=Electrodes(i);
+    spikeTimes = neuronFile.getSpikeTimes(Neurons(i))';
+    spikeTimesWithinRangeIndexes=find(spikeTimes>TimeRange(1) & spikeTimes<TimeRange(2));
+    SpikeTimesToApply=spikeTimes(spikeTimesWithinRangeIndexes)-TimeRange(1);
+    Times=[Times SpikeTimesToApply]; 
+    Patterns=[Patterns ones(1,length(SpikeTimesToApply))*Pattern];        
+    plot(SpikeTimesToApply,ones(1,length(SpikeTimesToApply))*i,'bd');
+    hold on;
+end
+
+Chunk1=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,Patterns);
+Chunk2=NS_MovieChunkGenerationForExperiment(40*round(Times/40),NumberOfSamples,Patterns);
+%break;
+% 3. Artificial pattern 1
+Times=[];
+PatternsForMovie=[];
+N=length(Electrodes);
+
+figure(1);
+subplot(4,1,2);
+
+for i=1:N    
+    Times0=[];
+    t=-10;
+    for j=1:50
+        t=t+12+4*round(15*rand); %was: t=t+10+4*round(20*rand) for the 2010-08-20 experiment
+        Times0=[Times0 t];       
+    end
+    Times1=Times0(find(Times0<999));
+    length(Times1);
+    Times=[Times Times1];
+    PatternsForMovie=[PatternsForMovie ones(1,length(Times1))*Electrodes(i)];
+end
+
+plot(Times,PatternsForMovie,'bd');
+Chunk3=NS_MovieChunkGenerationForExperiment(Times*20,NumberOfSamples,PatternsForMovie);  
+
+% 3. Artificial pattern 2
+Electrodes=[6 16 18 3 27 28 37 45 54 51 60 61 10 34 43 20 30 52 53 11 17 22 23 24 32 41 49 64];
+MovieNumbers=[25 10 23 26 15 21 14 6 10 14 18 24 15 18 25 12 12 22 13 15 11 25 15 15 13 16 22 16];
+Amplitudes=Electrodes;
+for i=1:length(Electrodes)
+    Amplitudes(i)=NS_PulseAmplitude('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data003',Electrodes(i),Electrodes(i),MovieNumbers(i));
+end
+
+figure(1);
+subplot(4,1,3);
+
+Times=[];
+PatternsForMovie=[];
+N=length(Electrodes);
+for i=1:N    
+    Times0=[];
+    t=-10;
+    for j=1:50
+        t=t+12+4*round(15*rand); %was: t=t+10+4*round(20*rand) for the 2010-08-20 experiment
+        Times0=[Times0 t];       
+    end
+    Times1=Times0(find(Times0<999));
+    length(Times1);
+    Times=[Times Times1];
+    PatternsForMovie=[PatternsForMovie ones(1,length(Times1))*Electrodes(i)];
+end
+
+plot(Times,PatternsForMovie,'bd');
+Chunk4=NS_MovieChunkGenerationForExperiment(Times*20,NumberOfSamples,PatternsForMovie);  
+
+% 4. Artificial pattern 3
+figure(1);
+subplot(4,1,4);
+
+Times=[];
+PatternsForMovie=[];
+N=length(Electrodes);
+for i=1:N    
+    Times0=[];
+    t=-10;
+    for j=1:50
+        t=t+10+4*round(10*rand); %was: t=t+10+4*round(20*rand) for the 2010-08-20 experiment
+        Times0=[Times0 t];       
+    end
+    Times1=Times0(find(Times0<999));
+    length(Times1);
+    Times=[Times Times1];
+    PatternsForMovie=[PatternsForMovie ones(1,length(Times1))*Electrodes(i)];
+end
+
+plot(Times,PatternsForMovie,'bd');
+Chunk5=NS_MovieChunkGenerationForExperiment(Times*20,NumberOfSamples,PatternsForMovie);  
+
+% 4. Create files
+MovieChunksFile=[5 Chunk1 Chunk2 Chunk3 Chunk4 Chunk5];
+%MovieChunksFile=[2 Chunk3 Chunk4];
+break
+cd F:\StimFiles;
+fid = fopen('61_Mosaic3_el','wb');
+fwrite(fid,AllElectrodes,'int32');
+fclose(fid);
+
+fid = fopen('61_Mosaic3_pt','wb','ieee-le.l64');
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('61_Mosaic3_mv','wb','ieee-le.l64');
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid);

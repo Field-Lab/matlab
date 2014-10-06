@@ -1,0 +1,74 @@
+0.4.0
+    Correct bug with cancelTask and jobs with multiple tasks
+    Better handle alternate remote data directories
+    updated sendDirToCAC thanks to Lee Samuel Finn @ Penn State
+    Rename of software from "littlejohn" to "cacscheduler"
+    Improved MATLAB job file downloads
+    Removed cacNonBlockingGetJobStates.m (use waitForState or [job].state instead)
+    Removed cacextraDirsubmit.m
+    Add experimental support for terminal connections (matlab -nodisplay)
+0.3.2
+    Fix problem with 2010a under Linux
+0.3.1
+    Added ClusterInfo.setWallTime
+    Fixed (Job).cancel()    
+    preserve userData after job retrieved
+0.2.3
+	Modified cacsched to handle 2009a or 2009b automatically
+	CAC CA retrieval automated in cacRegisterCertificate
+	Added zipper transfer proxy
+	Added doc strings to all functions for help
+	Updated examples and tests
+	Fixed FileMover logic that caused an NPE when a nonexistant path is requested
+	Added mget, mput, deleteeverything to gridFTP
+	Improved async capability to get job status
+	Added status check of multiple jobs simulataneously to speed up status check
+	Modified cacsched to figure out matlab version and setup datalocation	
+
+0.2.2
+	Added gridFTP object to allow direct access to TUC storage.
+	Improved sendDirToCAC to use extended mode transfer and be safer
+	Modified exception handling in MyProxy code to safely handle FailedLoginExceptions so users don't get locked out on bad password
+	Upgraded Marian to increase data transfered.
+	Added createMatlabPoolJob example
+	
+	
+0.2.1
+	BugFix
+
+0.2.0
+	Removed username-password authentication on HPC web services and instead use 2-way SSL
+	External certificates can be provided (see examples/cacsubmit_extCert.m for help).
+	Added sendDirToCAC function which does a recursive copy of  directory to CAC  **BETA** (unlikely to eat your data, but....)
+	Updated Marian to restart DB connection and be safer
+	Job status is now checked via web service call instead of file transfer.
+	HPC Jobid is now retrievable by user from normal functions via job UserData
+	Moved example submission scripts to examples directory and provided script to execute two simple functions.
+	Numerous bugfixes and logging cleanups
+
+0.1.4
+	BugFix
+
+0.1.3
+	Added Version testing Marian call.
+	Fixed Parallel Jobs to work more than occasionally
+	Added Qstat tool to get job status outside of matlab
+	Cleaned up matlab output so that it's more transparent what is happening
+	Added MLtransfer to easily load files onto TUC from matlab
+	CruiseControl has been setup and holds JavaDocs
+
+0.1.2
+	FileMover now uses a Connection pool of 5 FTP connections to transfer files.  Transfer is performed asynchronously
+	Fixed issue with mlst/mlsd failing sometimes
+	Added decorator around FTP Connection to perform connection testing and reload as needed.  This is done proactively instead of retroactively
+	Initial Marian support to help capture usage
+	Fixed HPCBasicProfile WSDL on TUC so wsdl and xsd's don't need to be packaged locally anymore
+
+0.1.1
+	Username/password authentication on webservices
+	GridFTP client rewritten to support seperate transfer and query connections to reduce put latency
+	Fixed parallel job support for matlab
+	Full PCT integration now possible
+
+0.1.0
+	Initial release

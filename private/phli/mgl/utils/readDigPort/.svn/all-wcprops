@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/987/trunk/utils/readDigPort
+END
+writeDigPort.m
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/669/trunk/utils/readDigPort/writeDigPort.m
+END
+readDigPort.m
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/574/trunk/utils/readDigPort/readDigPort.m
+END
+mglPrivateDigIO.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/583/trunk/utils/readDigPort/mglPrivateDigIO.m
+END
+testDigPort.m
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/888/trunk/utils/readDigPort/testDigPort.m
+END
+writeDigPort.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/574/trunk/utils/readDigPort/writeDigPort.c
+END
+readDigPort.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/574/trunk/utils/readDigPort/readDigPort.c
+END
+mglDigIO.m
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/987/trunk/utils/readDigPort/mglDigIO.m
+END
+mglPrivateDigIO.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/901/trunk/utils/readDigPort/mglPrivateDigIO.c
+END
+mexopts.sh
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/717/trunk/utils/readDigPort/mexopts.sh
+END

@@ -1,0 +1,151 @@
+function result = array_info(source)
+% array_info     get information about an array
+% 
+%
+%   MODE 1: datarun = electrode_positions(datarun)
+%
+% arguments:    datarun - datarun struct with field datarun.piece.array_id
+% 
+% outputs:    datarun - datarun struct with fields
+%               datarun.ei.position - Nx2 matrix of electrode positions, each row an electrode
+%
+%
+%
+%
+%   MODE 2: array = electrode_positions(array_id)
+%
+% arguments:   array_id - !
+%
+% outputs:     array - struct with fields
+%                         positions - electrode positions
+%                         image     - image of the array (screen capture)
+%                         shape     - shape of array ('rectangle' or 'hexagon')
+%                                   - notes orientation of the array in monitor coordinates for each rig-optical_path combination
+%
+%
+% 2010-01  gauthier
+%
+
+
+% GET ARRAY ID
+
+% if struct...
+if isstruct(source)
+    % check for appropriate field...
+    if isfield(datarun,'piece') && isfield(datarun.piece,'array_id')
+        % and use it
+        array_id = datarun.piece.array_id;
+    else
+        % otherwise give error
+        error('datarun does not have field ''datarun.piece.array_id''.')
+    end
+    
+elseif isnumeric(source)  % if numerical...
+    array_id = source; % use it
+    
+else
+    % if neither, give error
+    disp(source)
+    error('array specification not recognized (printed above)')
+end
+
+
+
+
+% USE ARRAY ID TO IDENTIFY ARRAY PARAMETERS
+
+
+% if(arrayID < 500), give 64 map
+% if(array >= 500 && arrayID < 1500) give 512 map
+% if(array >= 1500 && < 2500) give 519 map
+
+
+if array_id < 500  % 64 electrode array
+    num_positions = 64;
+    array_outline = 'hexagon';
+    elec_spacing = 60;
+    array_image = '';
+    
+elseif (array >= 500) && (array < 1500) % 512 array
+    num_positions = 512;
+    array_outline = 'rectangle';
+    elec_spacing = 60;
+    array_image = '';
+    
+elseif array == 1530 % 519, 30 µm array
+    num_positions = 519;
+    array_outline = 'hexagon';
+    elec_spacing = 30;
+    array_image = '';
+    
+elseif array == 1512  % 519, 120 µm array
+    num_positions = 519;
+    array_outline = 'hexagon';
+    elec_spacing = 120;
+    array_image = '';
+    
+elseif (array >= 1500) && (array < 2500) % 519 array
+    
+    sprintf('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+    sprintf('!!!!!!!!   WARNING: array IDs have not been set yet for values > 150    !!!!!!!!!!!!\n')
+    sprintf('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+    
+    num_positions = 519;
+    elec_spacing = 60;
+    array_image = '';
+        
+else
+    error('array id  %d not recognized.',array_id)
+end
+
+
+
+
+% GET ELECTRODE POSITIONS
+
+
+% get electrodeMap object
+electrodeMap = edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(array_id);
+
+% get location of each electrode
+positions = zeros(num_positions,2);
+for pp = 1:num_positions
+    positions(pp,1) = electrodeMap.getXPosition(pp);
+    positions(pp,2) = electrodeMap.getYPosition(pp);
+end
+
+
+
+
+% SCALE IF NEEDED
+
+
+
+
+
+
+
+
+
+
+
+% return appropriately
+switch which_mode
+    case 1
+        datarun.ei.position = positions;
+        result = datarun;
+    case 2
+        result = positions;
+end
+
+
+
+
+
+% plot for fun
+if 1
+    figure
+    plot(positions(:,1),positions(:,2),'.')
+    axis equal
+end
+

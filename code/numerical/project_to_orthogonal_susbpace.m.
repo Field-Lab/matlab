@@ -1,0 +1,24 @@
+function new_points = project_to_orthogonal_susbpace(points, vector)
+% project_to_orthogonal_susbpace     project points to a subspace orthogonal to a given vector
+%
+% usage:  new_points = project_to_orthogonal_susbpace(points, vector)
+%
+% arguments:     points - MxN matrix, each row a point in N-d space
+%                vector - N vector
+%
+% outputs:     new_points - MxN matrix, each row a point in N-d space
+%
+%
+% 2009-10 gauthier
+%
+
+
+% ensure column
+vector = reshape(vector,[],1);
+
+% compute projection
+new_points = points - (points * vector) 
+
+
+
+these_cone_inputs = these_cone_inputs_ - (these_cone_inputs_ * cone_sta' / norm(cone_sta)^2) * cone_sta;

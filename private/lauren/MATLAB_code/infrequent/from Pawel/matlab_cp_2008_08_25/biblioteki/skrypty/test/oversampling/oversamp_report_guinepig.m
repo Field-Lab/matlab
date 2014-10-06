@@ -1,0 +1,105 @@
+spikes=zeros(2,4);
+thresholds=zeros(2,4);
+
+N=2;
+filtr_dl=20;
+freq_gr=0.98;
+filter_param=struct('N',N','order',filtr_dl,'freq',freq_gr);
+
+margins=[25 30];
+
+figura1=155;
+figura2=156;
+figura3=157;
+figura4=158;
+
+cd I:\dane\2004\26maja\2003-12-08-0-001;
+s1=importdata('electrode45.txt')';
+s1=s1-mean(s1);
+
+prog=80;
+histereza=30;
+znak=1;
+detect_param=struct('prog',prog,'histereza',histereza,'znak',znak);
+figure(figura1);
+
+y1=blad_vs_energy2(s1,detect_param,filter_param,margins);
+figure(figura1);
+plot(y1(2,:),y1(3,:),'bd');
+
+a=find(y1(3,:)>10); %nie zmieniac progu!! "wieksze niz 8"
+la=length(a)
+wskazniki=y1;%(1,a);
+
+figure(105);
+clf;
+for i=1:min(length(y1),300)
+    subplot(15,20,i);
+    plot(s1(wskazniki(1,i)-margins(1,1):wskazniki(1,i)+margins(1,2)));
+    axis([0 sum(margins) -200 200]);
+    %hold on;
+end
+
+spikes(1,1)=11;
+thresholds(1,1)=5;
+spikes(2,1)=49; 
+thresholds(2,1)=5;
+
+N=2;
+filtr_dl=16;
+f_gr=0.98;
+
+
+break;
+
+s2=importdata('electrode221.txt');
+s2=s2-mean(s2);
+spikes(1,2)=11;
+thresholds(1,2)=5;
+spikes(2,2)=69;
+thresholds(2,2)=5;
+
+s3=importdata('electrode362.txt');
+s3=s3-mean(s3);
+spikes(1,3)=71;
+thresholds(1,3)=5;
+spikes(2,3)=35; 
+thresholds(2,3)=5;
+
+cd I:\dane\2004\26maja\2004-01-13-0-001;
+s4=importdata('electrode130.txt');
+s4=s4-mean(s4);
+spikes(1,4)=71;
+thresholds(1,4)=2;
+spikes(2,4)=19;
+thresholds(2,4)=2;
+
+signals=[s1 s2 s3 s4]';
+dl=length(s1);
+clear s1 s2 s3 s4;
+ts=[1:dl]/20; %czas w milisekundach
+marg_left=15;
+marg_right=40;
+ts=[0:marg_right+marg_left-1]/20; %czas w milisekundach
+
+
+y=blad_vs_energy(s,28);
+a=find(y(3,:)>4); %nie zmieniac progu!! "wieksze niz 8"
+la=length(a)
+wskazniki=y(1,a);
+
+figure(35);
+hold off;
+clf;
+
+for i=1:100
+    subplot(10,10,i);
+    plot(s(wskazniki(1,i)-marg_left:wskazniki(1,i)+marg_right));
+    %hold on;
+end
+
+
+
+y=oversamp_report(signals,spikes(1,:),thresholds(1,:),filtr_dl,15,0,marg_left,marg_right);
+
+y=oversamp_report(signals,spikes(2,:),thresholds(2,:),filtr_dl,16,0,marg_left,marg_right);

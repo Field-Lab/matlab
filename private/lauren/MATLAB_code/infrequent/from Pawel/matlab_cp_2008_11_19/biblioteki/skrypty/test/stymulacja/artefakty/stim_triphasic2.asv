@@ -1,0 +1,51 @@
+clear;
+c=36e+7;
+f=[5:1:200000];
+
+Rs=130000;
+Re=2e9;
+
+beta=0.86;
+zcpe=c*(i*2*pi*f).^(-beta);
+a=zcpe+Re;
+
+t0=0.1e-3;
+t1=1e-4; %czas trwania pierwszej czesci impulsu
+t2=1e-4; %t2 - czas trwanai drugiej czesci
+t3=1e-4;
+
+Ampl=4e-6;
+t_delay=1e-5;
+t_disch=1e-4;
+
+T=1e-3; %T - czas symulacji
+dt=1e-6; %dt - krok czasowy
+t=[dt:dt:T]*1000;
+
+for i=1:1
+    beta=0.86;
+    model2=struct('Y',1/c,'beta',beta,'Rs',Rs,'I0',5e-9,'alfa',0.5,'N',1);
+    for j=1:5
+        A1=(0.45+j*0.05)*Ampl
+        A2=-Ampl;
+        A3=-A1-A2;
+        t_disch=j*5e-5;
+        [Vcourse,Icpe,Ire,Irs]=art_cpe_nielin_triph_disch(model2,0,t1,A2,t2,-A2,t3,1e-4,t_disch,T,dt,0);
+        w1(j,:)=Vcourse;
+        size(w1)
+        [Vcourse,Icpe,Ire,Irs]=art_cpe_nielin_triph_disch(model2,A1,t1,A2,t2,A3,t3,1e-4,2e-4,T,dt,0);
+        %[Vcourse,Icpe,Ire]=art_cpe_nielin_triph_no_disch(model2,A1,t1,A2,t2,A3,t3,1e-4,T,dt,0);
+        w3(j,:)=Vcourse;
+        size(w3)
+    end
+    %w1=w1/(max(w1(1,:))-min(w1(1,:)))*1000;
+    %w2=w2/(max(w2(1,:))-min(w2(1,:)))*2500;
+    figure(11);
+    %subplot(2,2,i);    
+    plot(t,w1(1,:),t,w1(2,:),t,w1(3,:),t,w1(4,:),t,w1(5,:));
+    %axis([0 T*1000 -50 50]);
+    grid on;      
+    figure(15)
+    plot(t,w3(1,:),t,w3(2,:),t,w3(3,:),t,w3(4,:),t,w3(5,:));
+    grid on
+end

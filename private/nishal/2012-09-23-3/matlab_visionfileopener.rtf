@@ -1,0 +1,109 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww17960\viewh13620\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 \
+% should give you 1.5 or better, otherwise upgrade Matlab\
+% version -java\
+\
+% run once.  Include Vision.jar.\
+% edit classpath.txt\
+% restart matlab for changes to classpath to take effect.\
+\
+%-------------------------------------------------------------------------\
+% open raw file\
+rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile('c:\\data\\data002\\data002000.bin');\
+\
+%gets data from sample 0 to 20000 (first second)\
+data = rawFile.getData(0, 20000);\
+\
+%plot TTLs (electrode 0)  Recall that matlab starts counting from 1, while\
+%java starts from 0\
+plot(1:1:20000, data(:,1));\
+\
+%plot electrode 1\
+plot(1:1:20000, data(:,2));\
+\
+%-------------------------------------------------------------------------\
+%Open spike file\
+spikeFile = edu.ucsc.neurobiology.vision.io.SpikeFile('c:\\data\\data000-3.spikes');\
+%get spikeTimes for electrode 1\
+spikeTimes = spikeFile.getSpikeTimes(1);\
+\
+%histogram of spike times\
+hist(spikeTimes, 0:10000:double(max(spikeTimes)));\
+\
+\
+%-------------------------------------------------------------------------\
+%open neuron file\
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('c:\\data\\data002\\data002.neurons');\
+\
+%get list of neuron numbers\
+idList = neuronFile.getIDList();\
+\
+%get spike times for first neuron\
+spikeTimes = neuronFile.getSpikeTimes(idList(1));\
+\
+%histogram of spike times\
+hist(spikeTimes, 0:10000:double(max(spikeTimes)));\
+\
+\
+%-------------------------------------------------------------------------\
+\
+\
+% Open params file\
+paramsFile = edu.ucsc.neurobiology.vision.io.ParametersFile('c:\\data\\data002\\data002.params');\
+\
+% gets list of neuron ids\
+ids = paramsFile.getIDList();\
+\
+% To get the class name for a particular neuron.  You can loop through all the neurons to get all the class names.\
+% It would be nicer to get an array of strings directly.  I do not know if matlab could handle this.\
+name = paramsFile.getStringCell(ids(1), 'classID');\
+\
+% gets neurons from a particular class\
+neurons = paramsFile.getNeuronsInClass('All/On/X/T1/OMS');\
+\
+\
+%To see what parameters are possible, look in vision.analysis package\
+%for classes that implement ParametersCalculator.  The parameters will be in\
+%the getParameterTypes() function.\
+\
+%Get gaussian fit parameters for a given neuron.\
+%Other Double parameters are gotten the same way.\
+paramsFile.getDoubleCell(ids(1), 'x0');\
+paramsFile.getDoubleCell(ids(1), 'y0');\
+paramsFile.getDoubleCell(ids(1), 'SigmaX');\
+paramsFile.getDoubleCell(ids(1), 'SigmaY');\
+paramsFile.getDoubleCell(ids(1), 'Theta');\
+\
+%Get red timecoure.  Other DoubleArray Parameters are gotten the same way.\
+paramsFile.geArrayCell(ids(1), 'RedTimeCourse');\
+\
+%-------------------------------------------------------------------------\
+%EI File\
+eiFile = edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile('/data/2000-12-14-1/data051/data051.ei');\
+ids = eiFile.getIDList();\
+\
+ei = eiFile.getImage(46,0)  % (id, errorType (Standard Deviation of the Mean: 0, Variance of the Mean: 1))\
+% for standard version of matlab, no second argument (standard deviation vs. variance not an option)\
+\
+% returns ei(average:1 error:2, electrode + 1, time index)\
+% 3 dimensional array with first dimension referring to whether value is the average voltage (1) or the error (2), second dimension referring to electrode number, and % third dimension referring to point in time\
+\
+maxElectrode = eiFile.getMaxElectrode(ei);\
+\
+%-------------------------------------------------------------------------\
+\
+% to get electrode maps\
+electrodeMap = edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(rawArrayID);\
+\
+% if(arrayID < 500), give 64 map\
+% if(array >= 500 && arrayID < 1500) give 512 map\
+% if(array >= 1500 && < 2500) give 519 map\
+xPoint = electrodeMap.getXPosition(electrode);\
+yPoint = electrodeMap.getYPosition(elecrode);\
+\
+neighbors = electrodeMap.getAdjacentsTo(electrode, radius);  %radius is in nearest neighbor number (integer) }

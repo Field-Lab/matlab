@@ -1,0 +1,47 @@
+function y=NS_ShowChannelDataExtended(ChannelsInfo,MoviesInfo,FileName,Channel,AdditionalChannels,TimeStart,TimeLength,Unit,FigureNumber,NS_GlobalConstants)
+%A simple function that shows the raw data and the stimulation current
+%waveforms on the saeme figure.
+%FileName - format like: '003';
+Fs=NS_GlobalConstants.SamplingFrequency;
+time=[TimeStart+1 TimeStart+TimeLength];
+t=[TimeStart+1:TimeStart+TimeLength]/Fs;
+%Find the movies that include the data of interest
+movies=[];
+for i=1:length(MoviesInfo)
+    start=MoviesInfo(i).StartTime;
+    movie_length=MoviesInfo(i).PeriodOfRep*MoviesInfo(i).NumberOfRep;
+    if (start+1<time(2) & start+movie_length>time(1))
+        movies=[movies i];
+    end
+end
+
+channels=[];
+ChannelsInfo_size=size(ChannelsInfo);
+for i=1:ChannelsInfo_size(1)
+    if (length(find(ChannelsInfo(i,movies)>0))>0)
+        channels=[channels i]
+    end
+end
+
+channels=[channels AdditionalChannels];
+
+filename_movie=['movie' FileName];
+
+figure(FigureNumber);
+for i=1:length(channels)
+    output1=ReadMovieDataChunk4(filename_movie,Channel,time,Unit,NS_GlobalConstants);
+    subplot(2,length(channels),i);
+    plotPH(t,output1(1,:).*output1(3,:),100);
+    clear output1;
+    y=gca;
+    xlabel('t')
+    ylabel('I')
+end
+
+full_path=[pwd '\' 'data' FileName];
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path);
+data = rawFile.getData(TimeStart+1,TimeLength);
+
+subplot(2,1,2);
+plot(t,data(:,Channel+1));
+clear data;

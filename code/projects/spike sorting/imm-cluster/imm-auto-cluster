@@ -1,0 +1,232 @@
+#!/bin/csh -f
+# IMM-AUTO-CLUSTER: Run Infinite Mixture Model clustering in n instances of MATLAB
+#
+# Usage:   imm-auto-cluster <input-dir-path> <output-dir-path> <instances> [electrodes]
+# Example: imm-auto-cluster /Analysis/2005-03-25-0/ /Analysis/2005-03-25-0-matlab/ 4 519
+#
+# The input folder should contain a model file and a projections file. A config.mat file is optional.
+# If no model file is present, only neurons files will be created. If a model file is provided, only
+# an output model file will be created.
+#
+# Based on vision-auto-sta (shlens)
+#
+# tamachado@salk.edu 2008-02-12
+
+########################################################
+##### defaults #########################################
+unsetenv DISPLAY
+set nonomatch
+
+# Initialize optional parameters to default values
+set N_INSTANCES = 2
+set N_ELECTRODES = 512
+
+# Set MATLAB path to use the correct version, depending on the architecture of the system
+if ($MACHTYPE == "i386") then
+   # Path to Intel MATLAB executable on the server
+   set MATLAB_PATH = "/snle/lab/Applications/MATLAB7.4.app/Contents/MATLAB74/bin/matlab -nodesktop -nosplash"
+else
+   # Path to PPC MATLAB executable on the server
+   set MATLAB_PATH = "/snle/lab/Applications/MATLAB7.3.app/Contents/MATLAB73/bin/matlab -nodesktop -nosplash"
+endif
+
+# Temporary file to store input to MATLAB (note that the PID of the script is appended to the file name)
+set TEMP_PATH = /tmp/temp$$
+
+# Path to IMM MATLAB code (stable):
+set CODE_PATH = '/snle/lab/Development/RRS/imm-cluster/matlab-source/'
+# Path to IMM MATLAB code (volatile):
+#set CODE_PATH = '/snle/home/tamachado/Desktop/spike-sorting/'
+
+#########################################################
+### arguments ###########################################
+
+echo "imm-auto-cluster: codebase version 0.36"
+
+# check arguments
+if $#argv == 0 then
+    echo ""
+    echo "imm-auto-cluster <input-path> <output-path> [instances] [electrodes]"
+    echo ""
+    echo "This script will run infinite mixture model clustering in n MATLAB processes."
+    echo "If only a .prj file is provided, neurons files and plots will be created."
+    echo "If a .model and a .prj are  provided, only a new model file will be created."
+    echo "Model generation mode is faster than neurons file generation mode."
+    echo ""
+    echo "Input folder:"
+    echo "The input directory can contain the following:"
+    echo "a .prj file, a .model file, and a config.mat file."
+    echo "A .prj file is required."
+    echo "A .model file is necessary to generate a new model file."
+    echo "A config.mat file can be created by running the config.m script in matlab,"
+    echo "but if it doesn't exist default parameters will be used."
+    echo ""
+    echo "Optional parameters:"
+    echo "How many MATLAB processes to run? [instances] = [  1,2,4,8  ], default=1"
+    echo "How many electrodes are there?    [electrodes]= [  64, 512, 519  ], default=512"
+    echo ""
+    exit
+endif
+
+# check if directory exists
+if (! -d $1 ) then
+   echo "imm-auto-cluster: input directory does not exist!"
+   exit
+endif
+
+# check if projections file exists
+if (! -f $1/*.prj) then
+   echo "imm-auto-cluster: projections file not found!"
+   exit
+else
+   set list = $1/*.prj
+   set PRJ_PATH = $list[1]
+endif
+
+# check if model file exists
+if (! -f $1/*.model) then
+   echo "imm-auto-cluster: model file not found! computing neurons files only!"
+   set INPUT_MODEL = "false"
+else
+   set list = $1/*.model
+   set MODEL_PATH = $list[1]
+   set INPUT_MODEL = "true"
+endif
+
+# check if a config file is being passed in
+if (-f $1/*.mat) then
+   echo "imm-auto-cluster: using supplied parameters!"
+   set list = $1/*.mat
+   set CONFIG_PATH = $list[1]
+   set INPUT_CONFIG = "true"
+else
+   set INPUT_CONFIG = "false"
+endif
+
+# check optional parameters
+if ($#argv > 2) then
+    switch ( $3 )
+        case "1":
+            @ N_INSTANCES = 1
+            breaksw
+        case "2":
+            @ N_INSTANCES = 2
+            breaksw
+        case "4":
+            @ N_INSTANCES = 4
+            breaksw
+        case "8":
+            @ N_INSTANCES = 8
+            breaksw
+        default:
+            echo "imm-auto-cluster: [instances] = [  1,2,4,8  ], default=2"
+            exit
+    endsw
+endif
+
+if ($#argv > 3) then
+    switch ( $4 )
+        case "64":
+            @ N_ELECTRODES = 64
+            breaksw
+        case "512":
+            @ N_ELECTRODES = 512
+            breaksw
+        case "519":
+            @ N_ELECTRODES = 519
+            breaksw
+        default:
+            echo "imm-auto-cluster: [electrodes] = [ 64, 512, 519 ], default=512"
+            exit
+    endsw
+endif
+
+#########################################################
+### figure out directories  #############################
+# create output directory
+set OUTPUT_PATH = $2
+
+# create output directory
+if (! -d $OUTPUT_PATH ) then
+    echo "Creating output directory: $OUTPUT_PATH"
+    mkdir -p $OUTPUT_PATH
+endif
+
+#########################################################
+### run MATLAB ftw ######################################
+set i = 1
+set lower = 1
+set upper = 1
+
+while ($i <= $N_INSTANCES + 1)
+   
+   # bail out if we're on the extra iteration and we aren't creating a model file
+   if ($INPUT_MODEL == "false" && $i > $N_INSTANCES) then
+      break
+   endif
+
+
+   # figure out upper and lower bounds for the nth matlab process
+   if ($i <= $N_INSTANCES) then
+      @ lower =  ( ( $i - 1 ) * ( $N_ELECTRODES / $N_INSTANCES ) ) + 1
+      @ upper = ( $i * ( $N_ELECTRODES / $N_INSTANCES ) )
+   else
+      @ lower = 1
+      @ upper = $N_ELECTRODES
+   endif
+
+   # write a temporary file containing the commands we are going to issue to each matlab process
+   # if a config.mat file exists in the input folder, use it instead of the default parameters 
+   printf 'cd(%s);\n' \'$CODE_PATH\'  > $TEMP_PATH$i.m
+
+   if ($INPUT_CONFIG == "true") then
+      printf 'cfg = load(%s);\n' \'$CONFIG_PATH\' >> $TEMP_PATH$i.m
+      printf 'cfg = cfg.params;\n' >> $TEMP_PATH$i.m
+   else
+      printf 'cfg = false;\n' >> $TEMP_PATH$i.m
+   endif
+
+   if ($INPUT_MODEL == "true") then
+      printf 'modelPath = %s;\n' \'$MODEL_PATH\' >> $TEMP_PATH$i.m
+   else
+      printf 'modelPath = false;\n' >> $TEMP_PATH$i.m
+   endif
+
+   printf 'range = %d:%d;\n' $lower $upper  >> $TEMP_PATH$i.m
+   printf 'itName  = %s;\n' \'part$i\'  >> $TEMP_PATH$i.m
+   printf 'prjPath = %s;\n' \'$PRJ_PATH\'  >> $TEMP_PATH$i.m
+   printf 'oPath   = %s;\n' \'$2\' >> $TEMP_PATH$i.m
+   printf 'noOutput = true;\n' >> $TEMP_PATH$i.m
+   printf 'nProcess = %d;\n' $N_INSTANCES >> $TEMP_PATH$i.m
+   printf 'nElectrodes = %d;\n' $N_ELECTRODES >> $TEMP_PATH$i.m
+   
+   printf 'params = config(range, itName, prjPath, oPath, modelPath, nProcess, cfg, nElectrodes, noOutput);\n' >> $TEMP_PATH$i.m
+   
+  if ($i <= $N_INSTANCES) then
+      printf 'ImmCluster(params);\n' >> $TEMP_PATH$i.m
+   else
+      printf 'ImmModel(params);\n' >> $TEMP_PATH$i.m
+   endif
+
+   printf 'exit;\n' >> $TEMP_PATH$i.m   
+
+   # start nth matlab process -- we can't generate the model file until everything is done though!
+   if ($i <= $N_INSTANCES) then
+      $MATLAB_PATH < $TEMP_PATH$i.m >&  $OUTPUT_PATH/output$i.txt &
+      sleep 10
+   endif
+
+   @ i++
+end
+
+# when everything is done, write a model file (if we've got an input model file--we need the eigenvectors from there)
+@ i --
+if($INPUT_MODEL == "true") then
+   # wait until processes are done...      
+   echo "imm-auto-cluster: waiting for processes to finish..." 
+   wait
+   $MATLAB_PATH < $TEMP_PATH$i.m >&  $OUTPUT_PATH/output$i.txt &
+endif
+
+# kill all temp files
+rm $TEMP_PATH*.m

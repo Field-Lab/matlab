@@ -1,0 +1,78 @@
+function [ Events ,SpikeBeyondTimeWindow ] = FindSpikes_PR(DataTraces,Channels,ThresholdNegative, ThresholdPositive, MinLatency, MaxLatency)
+%FindSpikes_PR Function returns 2-D m times n logical matrix. 
+%A single cell contains logical 1 if spike was detected on electrode m
+%during trace n
+%   Detailed explanation goes here
+%   DataTraces - 3-D matrix - number of trace x number of electrode x sample
+%   number, diamensions always 100 x 512 x 70(80?).
+%   NegThresh - Negative Treshold
+%   PosTresh - Positive Treshold
+%   MinLatency - minimum latency between indexes of the most negative
+%   sample and the first positive post-spike sample
+%
+%   Events - 1 if spike occured, 0 if artifact only
+%   size of Events 100 x 512
+%   SpikesBeyondTimeWindow - spikes, which should be excluded due to
+%   timing constrains
+%   size of SpikesBeyondTimeWindow 100 x 512
+
+DataTraces = DataTraces(
+TracesSize = size(DataTraces);
+    %First dimension 100 traces
+    %Second dim.  -number of electrodes
+    %Third dim. -number of samples
+ 
+%maxs=max(DataTraces,[],3);
+
+%Negative threshold and left-hand derivation
+EventsUnder = DataTraces <= ThresholdNegative;
+EventsOver = DataTraces>ThresholdNegative;
+NegativeThresholdEvents = EventsOver(:,:,1:(TracesSize(3)-1)).*EventsUnder(:,:,2:TracesSize(3));
+NegativeThresholdEvents = sum(NegativeThresholdEvents,3);
+NegativeThresholdEvents = NegativeThresholdEvents > 0; %which trace/channel combinations have samples below minus ThresholdNegative (0 or 1)
+
+%Find minimum 2D Matrix of coordinates
+%display('rozmiar macierzy wynikowej');
+%mins=min(DataTraces,[],3);
+
+minIndex = zeros(TracesSize(1),TracesSize(2));
+zeroCrossIndex = zeros(TracesSize(1),TracesSize(2));
+for i=1:TracesSize(1)
+    for j=1:TracesSize(2)
+        [~, minIndex(i,j)] = min(DataTraces(i,j,:));  % minIndex - index of the most negative sample (100x512)
+        for k=minIndex(i,j):TracesSize(3)
+            %Find coordinates of "0" exceeding
+            if DataTraces(i,j,k)>0
+                zeroCrossIndex(i,j) = k;   % index of the first positive post-spike sample (100x512)
+                break
+            else k = k+1;
+            end
+        end
+    end
+end
+
+Latency = zeroCrossIndex - minIndex > MinLatency & zeroCrossIndex - minIndex < MaxLatency; % array of 0 or 1, 1 - means the criterias ar met
+
+%Positive threshold crossing
+EventsOverPos = DataTraces >= ThresholdPositive;
+PositiveThresholdEvents = sum(EventsOverPos,3); % how many samples above ThresholdPositive for each traces channel (100x512)
+PositiveThresholdEvents = PositiveThresholdEvents > 0; %which trace/channel combinations have samples above ThresholdPositive (0 or 1)
+
+%Conditions Product
+
+Events = NegativeThresholdEvents.*PositiveThresholdEvents.*Latency;
+
+%Znajdywanie spikow bardzo wczesnych i bardzo opoznionych
+SpikeBeyondTimeWindow = zeros(TracesSize(1),TracesSize(2));
+
+%Parametry progowe
+FirstGoodSample = 3;    %threshold crossing
+LastGoodSample = 40;    %Numer probki uznawanej za zbyt pozna
+
+for i=1:TracesSize(1)
+    for j=1:TracesSize(2)
+        if (find(DataTraces(i,j,:)<ThresholdNegative,1))<FirstGoodSample | (find(DataTraces(i,j,:)<ThresholdNegative,1))>LastGoodSample
+            SpikeBeyondTimeWindow(i,j) = 1;
+        end
+    end
+end

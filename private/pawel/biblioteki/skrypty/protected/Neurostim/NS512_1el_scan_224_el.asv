@@ -1,0 +1,104 @@
+%This scripts generates two sequenecs of electrodes: 
+%1) 128 electrodes - every second row and pattern
+%20 128 electrodes - all the electrodes in the center quarter of the array
+%(8x16)
+%Then, the script generates three sets of stimulus files: with the first
+%sequence, the second one, and with combined sequence (224 electrodes).
+
+TimeShiftInMs=30;
+DelayInMs=30;
+
+TimeShift=TimeShiftInMs*20;
+Delay=DelayInMs*20;
+
+NumberOfSamples=10000;
+electrodes=[1:512];
+Array=eye(512,512); 
+
+StartRow=1;
+StartColumn=1;
+ElectrodesSparse=NS512_PatternsForRectangularAreaStimulation([StartRow:2:16],[StartColumn:2:32]);
+ElectrodesCenter=NS512_PatternsForRectangularAreaStimulation([5:12],[9:24]);
+
+ElectrodeOrder=NS512_OptimalElectrodeSequence();
+ElectrodesSparseOrder=[];
+ElectrodesCenterOrder=[];
+ElectrodesCombinedOrder=[];
+
+for i=ElectrodeOrder
+    if find(ElectrodesSparse==i)
+        ElectrodesSparseOrder=[ElectrodesSparseOrder i];
+    end
+    if find(ElectrodesCenter==i)
+        ElectrodesCenterOrder=[ElectrodesCenterOrder i];
+    end
+    if (find(ElectrodesSparse==i |ElectrodesCenter==i))
+        ElectrodesCombinedOrder=[ElectrodesCombinedOrder i];
+    end
+end
+
+ChunksSparse=[];
+ChunksCenter=[];
+for i=1:8
+    Times=[TimeShift:Delay:TimeShift+15*Delay];
+    
+    ElectrodesSparseForMovie=ElectrodesSparseOrder((i-1)*16+1:i*16);
+    ChunkSparse=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,ElectrodesSparseForMovie);
+    ChunksSparse=[ChunksSparse ChunkSparse];
+    
+    ElectrodesCenterForMovie=ElectrodesCenterOrder((i-1)*16+1:i*16);
+    ChunkCenter=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,ElectrodesCenterForMovie);
+    ChunksCenter=[ChunksCenter ChunkCenter];
+end
+
+ChunksCombined=[];
+for i=1:14
+    Times=[TimeShift:Delay:TimeShift+15*Delay];
+    
+    ElectrodesCombinedForMovie=ElectrodesCombinedOrder((i-1)*16+1:i*16);
+    ChunkCombined=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,ElectrodesSparseForMovie);
+    ChunksSparse=[ChunksSparse ChunkSparse];
+
+
+break
+
+
+
+PatternsToUse=[];
+for i=1:length(Patterns)
+    Electrode=Patterns(i);
+    Column=Indexes(Electrode,1);
+    Row=Indexes(Electrode,2);
+    a1=find(Columns==Column)
+    a2=find(Rows==Row)
+    if (a1 & a2)
+        PatternsToUse=[PatternsToUse Electrode];
+    end
+end
+
+Electrodes=NS512_PatternsForRectangularAreaStimulation(RowsIndexes,ColumnsIndexes);
+
+Chunks=[];
+for i=1:8
+    PatternsForMovie=Patterns((i-1)*16+1:i*16);
+    Times=[TimeShift:Delay:TimeShift+15*Delay];
+    Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,PatternsForMovie);
+    Chunks=[Chunks Chunk];
+end
+
+MovieChunksFile=[8 Chunks];
+
+break;
+
+cd F:\StimFiles; 
+fid = fopen('128el_30ms_el','wb')
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('128el_30ms_pt','wb','ieee-le.l64')
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('128el_30ms_mv','wb','ieee-le.l64')
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid); 

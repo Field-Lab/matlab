@@ -1,0 +1,20 @@
+/*Base Styles*/
+body { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; background-color:#F0F0F0; margin:0px; }
+
+h1 { font-size: 16px; margin-top:0px; }
+h2 { font-size: 13px; margin-bottom:0px; margin-top:0px; }
+h3 { font-size: 12px; margin-bottom:0px; margin-top:0px;}
+h4 { font-size: 11px; margin-bottom:0px; margin-top:0px;}
+
+/*Misc Globals*/
+th {font-size:11px;}
+
+/*GlobalTop*/
+#globaltop { font-size: 0.95em;}
+#globaltop2 { font-size: 0.95em;}
+
+/*RightCol*/
+#rightcol { line-height: 1.2em}
+
+/*GlobalFooter*/
+#globalfooter {font-size: 11px;}

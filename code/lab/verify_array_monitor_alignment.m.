@@ -1,0 +1,88 @@
+function verify_array_monitor_alignment(datarun,varargin)
+% verify_array_monitor_alignment     Verify alignment points are well chosen
+%
+% usage:  verify_array_monitor_alignment(datarun, <params>)
+%
+% arguments:     datarun - datarun struct, assumed that 
+%            varargin - struct or list of optional parameters (see below)
+%
+% outputs:     result - result of computation
+%
+%
+% optional params, their default values, and what they specify:
+%
+% verbose           false               show output
+% fig_or_axes       []                  figure or axes to plot in. if 0, make new figure.
+%                                           if empty, don't plot.  if -1, plot in current.
+% foo               'bar'               how to activate the rings
+%                                           'bar' - activate on site
+%                                           'bore' - activate remotely
+%
+%
+% 2010-02  gauthier
+%
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% note valid names for alignment images
+valid_image_names = load_alignment_image;
+
+% specify list of optional parameters
+p.addParamValue('which_pm','pm32',@(x)any(strcmpi(x,valid_image_names)));
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+
+
+% get photographic mapping image
+pm_image = datarun.piece.photographic_mapping.images.(params.which_pm);
+% get alignment image
+ai = load_alignment_image('pm',params.which_pm);
+% get electrode positions
+array_info = load_array_info(datarun,2);
+
+
+
+% plot pm image
+
+% get pm in array_coordinates
+[ai_array.im,ai_array.xdata,ai_array.ydata] = ...
+    imtransform(ai.im,fliptform(datarun.piece.photographic_mapping.T_base_to_monitor),...
+    'udata',ai.xdata,'vdata',ai.ydata,'xyscale',1,...
+    'xdata',[1 size(pm_image,2)],'ydata',[1 size(pm_image,1)] );
+
+% plot it
+figure(60);clf;subplot(121)
+imagesc(ai_array.im,'xdata',ai_array.xdata,'ydata',ai_array.ydata)
+axis image; colormap gray;hold on
+
+
+% plot electrodes on top
+
+% transform electrodes to base coordinates
+epb=tforminv(datarun.piece.photographic_mapping.T_base_to_array,array_info.positions);
+% plot them
+plot(epb(:,1),epb(:,2),'.')
+
+
+
+% plot photograph
+subplot(122)
+imagesc(pm_image)
+axis image; hold on
+
+% plot electrodes
+plot(epb(:,1),epb(:,2),'.')
+
+
+
+linkaxes(get(60,'child'))
+
+

@@ -1,0 +1,27 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+DataPath='F:\analiza\retina\2012-09-27-4\files\scan_new';
+Movies=[1:2:63];
+FigurePath='C:\pawel\nauka\analiza\retina\2012-09-27-4\proby\rys1';
+
+Pattern=121;
+RecElectrode=123;
+
+figure(10);
+clf
+for i=1:length(Movies)
+    [DataTraces0,ArtifactDataTraces,DataChannels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Pattern,Movies(i),0,0);
+    DataTraces=DataTraces0(1:50,[1:512],SamplesToAnalyze);
+    d=reshape(mean(DataTraces),512,130);   
+    plot(d(RecElectrode,:));   
+    axis([0 100 -500 500]);
+    
+    frame = getframe(h);
+    im = frame2im(frame);
+    [imind,map] = rgb2ind(im,256);
+    if f == 1
+        imwrite(imind,map,OutputFileName2,'gif', 'Loopcount',1);
+    else
+        imwrite(imind,map,OutputFileName2,'gif','WriteMode','append','DelayTime',0.1);
+    end
+    %pause(1);
+end

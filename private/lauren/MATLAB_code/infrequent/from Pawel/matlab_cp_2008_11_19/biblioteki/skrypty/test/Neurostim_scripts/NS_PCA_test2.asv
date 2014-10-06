@@ -1,0 +1,112 @@
+% 1. Global constants
+ChipAddresses=[30 31];
+NumberOfChannelsPerChip=32;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=1;
+
+% 2. File, channel, movie
+cd C:\praca\data\2008-02-19\2008-02-19-1;
+cd D:\2008-03-21-0;
+FileName='003';
+%[CI,MI]=NS_Report(FileName,1,NS_GlobalConstants);
+Channel=3;
+MovieNumber=26;
+BadChannels=[1 9 25 28 31 33 41 57 64];
+
+% 3. Analysis parameters (for PCA)
+TimeStart=-10;
+NumberOfSamples=51;
+SamplesForPCA=[21:51];
+PCA_channels=3; %1 - only stimulating channels; 2 - only neighbors; 3 - both stimulating one and neighbors
+Dimensions=3;
+NumberOfClusters=2;
+
+% 4. 
+Fn=2;
+[Pulse,Status]=NS_FindPulseShapeForMovie(FileName,Channel,MovieNumber,NS_GlobalConstants);
+figure(Fn);
+clf;
+subplot(2,3,1);
+[Amplitude,PlotPointer]=NS_PlotStimulationPulse(Pulse,Status,Channel,0,1,'b-',NS_GlobalConstants);
+
+% 5. Build data for PCA
+[Timings,PDChunkIndex]=NS_FindPulsesTimingsForMovie(FileName,Channel,MovieNumber,NS_GlobalConstants);
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(1);
+neighbors0 = electrodeMap.getAdjacentsTo(Channel,1);
+neighbors=[];
+for i=1:length(neighbors0)
+    active=1;
+    for j=1:length(BadChannels)
+        if neighbors0(i)==BadChannels(j)
+            active=0;
+        end
+    end
+    if active==1
+        neighbors=[neighbors neighbors0(i)];
+    end
+end
+
+Offsets=ones(length(neighbors))*(-370);
+Traces=NS_ReadManyTracesFromRaw(FileName,neighbors,Timings,TimeStart,NumberOfSamples,Offsets,NS_GlobalConstants);
+switch PCA_channels
+    case 1,
+        dane=Traces(:,1,SamplesForPCA);
+    case 2,
+        dane=Traces(:,2:length(neighbors),SamplesForPCA);      
+    case 3,
+        dane=Traces(:,:,SamplesForPCA);
+end
+Sdane=size(dane);
+dane1=NS_ConcacenateWaveforms(dane);
+
+[Types,PCA_Coeffs,Inc]=NS_ClusterSignatures(dane1,Dimensions,NumberOfClusters);
+
+FigureProperties=struct('FigureNumber',Fn,'Subplot',[2 3 2],'TimeRange',[0 30],'AmplitudeRange',[-200 200],'FontSize',10,'Colors',['g' 'r' 'b' 'm' 'c']);
+y=NS_PlotPCA_Coeffs(NumberOfClusters,Types,PCA_Coeffs,FigureProperties);
+Waveforms=reshape(Traces(:,1,SamplesForPCA),Sdane(1),Sdane(3));
+FigureNumber=1;
+AmplitudeRange=[-400 0];
+FigureProperties=struct('FigureNumber',Fn,'Subplot',[2 3 3],'TimeRange',[0 30],'AmplitudeRange',AmplitudeRange,'FontSize',10,'Colors',['g' 'r' 'b' 'm' 'k']);
+h=NS_PlotManyWaveformsOnFigure(Waveforms,Types,ArrayID,FigureProperties,NS_GlobalConstants);
+h=gca;
+FigureNumber=15;
+FigureProperties=struct('FigureNumber',15,'Subplot',[2 3 3],'TimeRange',[20 50],'AmplitudeRange',[-400 400],'FontSize',10,'Colors',['g' 'r' 'b' 'm' 'k']);
+y15=NS_PlotManySignaturesOnArrayLayout(Traces,neighbors,Types,ArrayID,FigureProperties,NS_GlobalConstants);
+
+FigureProperties=struct('FigureNumber',Fn,'Subplot',[2 3 3],'TimeRange',[0 30],'AmplitudeRange',AmplitudeRange,'FontSize',10,'Colors',['g' 'r' 'b' 'm' 'k']);
+[PCA_CoeffsNew,TypesNew]=NS_CleanClusters(PCA_Coeffs,Types,1);
+
+FigureProperties.Subplot=[2 3 5];
+y=NS_PlotPCA_Coeffs(NumberOfClusters,TypesNew,PCA_Coeffs,FigureProperties);
+
+
+FigureProperties.Subplot=[2 3 6];
+a=find(TypesNew~=0);
+TypesNew2=TypesNew(a);
+Waveforms=Waveforms(a,:);
+h=NS_PlotManyWaveformsOnFigure(Waveforms,TypesNew2,ArrayID,FigureProperties,NS_GlobalConstants);
+
+%break;
+subplot(2,3,4);
+axis([0 100 0 100]);
+h=gca;
+set(h,'XTick',[]);
+set(h,'YTick',[]);
+set(h,'Color',[1 1 1]);
+set(h,'XColor',[1 1 1]);
+set(h,'YColor',[1 1 1]);
+%set(h,'Visible','off');
+xstart=10;
+ystart=84;
+ystep=9;
+text(xstart,ystart+ystep,['Traces: ' num2str(length(TypesNew2)) '/' num2str(length(Types)) ' - ' num2str(length(TypesNew)/length(Types)*100,3) '%']);
+text(xstart,ystart-0.5*ystep,['Cluster 1: ' num2str(length(find(TypesNew==1))) '/' num2str(length(find(Types==1))) ' - ' num2str(length(find(TypesNew==1))/length(find(Types==1))*100,3) '%']);
+text(xstart,ystart-1.5*ystep,['Cluster 1: ' num2str(length(find(TypesNew==2))) '/' num2str(length(find(Types==2))) ' - ' num2str(length(find(TypesNew==2))/length(find(Types==2))*100,3) '%']);
+text(xstart,ystart-3*ystep,'Sigmas before cleaning:');
+text(xstart,ystart-4*ystep,['cluster 1: ' num2str(std(PCA_Coeffs(find(Types==1),1)),2) '  ' num2str(std(PCA_Coeffs(find(Types==1),2)),2)]);
+text(xstart,ystart-5*ystep,['cluster 2: ' num2str(std(PCA_Coeffs(find(Types==2),1)),2) '  ' num2str(std(PCA_Coeffs(find(Types==2),2)),2)]);
+text(xstart,ystart-6.5*ystep,'Sigmas after cleaning:');
+text(xstart,ystart-7.5*ystep,['cluster 1: ' num2str(std(PCA_CoeffsNew(find(TypesNew==1),1)),2) '  ' num2str(std(PCA_CoeffsNew(find(TypesNew==1),2)),2)]);
+text(xstart,ystart-8.5*ystep,['cluster 2: ' num2str(std(PCA_CoeffsNew(find(TypesNew==2),1)),2) '  ' num2str(std(PCA_CoeffsNew(find(TypesNew==2),2)),2)]);

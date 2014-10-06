@@ -1,0 +1,13 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(61);
+  Filename='D:\analysis\2008-08-26-0\data008_proba4\clusters008';
+PrimaryEl=44;
+P1Start=293;
+Patterns1=[P1Start:P1Start+5];
+
+Movies=[69:5:104];
+Curves=zeros(6,length(Movies);
+
+for i=1:6
+    PatternNumber=Patterns1(i);
+
+    WaveformTypes=NS_ReadClusterFile(FileName,MovieNumber,PatternNumber);

@@ -1,0 +1,5 @@
+cd /home2/pawel/oko/santa_cruz_2003/2003_10_24;
+
+filename='ch08_11uA_01ms_water_Vpol-14V';
+stim_channels=[8];
+stim_analyz_test2;

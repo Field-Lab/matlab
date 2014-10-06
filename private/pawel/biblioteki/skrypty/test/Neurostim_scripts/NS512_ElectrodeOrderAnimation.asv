@@ -1,0 +1,15 @@
+X=NS512_OptimalElectrodeOrder();
+X=NS512_OptimalElectrodeSequence();
+
+a=X(:,1);
+b=X(:,2);
+
+figure(3);
+axis([0 33 0 17]);
+clf;
+for i=1:512
+    plot(a(1:i,1),b(1:i,1),'bd');
+    hold on;
+    pause(1);
+    axis([0 33 0 17]);
+end

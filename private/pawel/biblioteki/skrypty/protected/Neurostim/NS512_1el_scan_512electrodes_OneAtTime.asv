@@ -1,0 +1,36 @@
+TimeShiftInMs=7.5;
+InterPulseLatencyInMs=7.5;
+
+TimeShift=TimeShiftInMs*20;
+InterPulseLatency=InterPulseLatencyInMs*20;
+
+NumberOfSamples=10000;
+electrodes=[1:512];
+Array=zeros(512,512); 
+Times=[];
+
+Patterns=NS512_OptimalElectrodeSequence();
+
+Times=[TimeShift:InterPulseLatency:TimeShift+63*InterPulseLatency];
+
+Chunks=[];
+for i=1:8
+    PatternsForMovie=Patterns((i-1)*64+1:i*64);
+    Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,PatternsForMovie);
+    Chunks=[Chunks Chunk];
+end
+
+MovieChunksFile=[1 Chunks]; %only one movie
+
+cd C:\home\pawel\praca\stim_files; 
+fid = fopen('512_el','wb')
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('TwoChips_pt','wb','ieee-le.l64')
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('TwoChips_mv','wb','ieee-le.l64')
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid); 

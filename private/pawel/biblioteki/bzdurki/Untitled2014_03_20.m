@@ -1,0 +1,2 @@
+[NumberOfMovies,NumberOfPatternsPerMovie,AllPatternsUsed,Patterns]=NS512_MoviePatterns('I:\analysis\slices\2013-12-12-3-PH\movie001',NS_GlobalConstants);
+[X]=NS512_MovieNumberAndTimingForPattern('I:\analysis\slices\2013-12-12-3-PH\movie001',50);

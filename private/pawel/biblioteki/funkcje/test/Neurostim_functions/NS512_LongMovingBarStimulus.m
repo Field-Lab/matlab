@@ -1,0 +1,30 @@
+function [electrodes,Array,Times]=NS512_LongMovingBarStimulus(DelayInMs,TimeShiftInMs);
+ArrayClockwiseRotation=270;
+
+TimeShift=TimeShiftInMs*20;
+Delay=DelayInMs*20;
+
+electrodes=[1:512];
+Array=zeros(512,16); %16 different patterns, each of the 512 electrodes is included in one pattern
+
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500);
+x=zeros(1,512);
+y=zeros(1,512);
+for i=1:512
+    x(i)=electrodeMap.getXPosition(i);
+    y(i)=electrodeMap.getYPosition(i);
+end
+
+[a,b]=hist(x,20000);
+c=find(a);
+XDiff=round(b(c)); %all different x coordinates that exist in the electrode map - 64 values
+
+[a,b]=hist(y,20000);
+c=find(a);
+YDiff=round(b(c));
+
+for i=1:length(YDiff)
+    el=find(y==YDiff(i)) %all the electrodes that have this specific value of y coordinate
+    Array(el,i)=1;
+    Times(i)=Delay+TimeShift*(i-1);
+end

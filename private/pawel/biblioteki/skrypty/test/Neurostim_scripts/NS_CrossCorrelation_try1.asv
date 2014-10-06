@@ -1,0 +1,17 @@
+FileName='000000.bin';
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('D:\analysis\2008-08-26-0\data000\data000.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\analysis\2008-08-26-0\data000\data000.neurons');
+idList = neuronFile.getIDList();
+NeuronID=541;
+spikeTimes = neuronFile.getSpikeTimes(NeuronID)';
+Timings1=spikeTimes(1,1:min(1000,length(spikeTimes)))-7;
+Channels=37;
+cd D:\2008-08-26-0\data000;
+[RAWtraces,signal]=NS_AverageTraces(FileName,Timings1-1,Channels,[-2 57],NS_GlobalConstants);
+figure(1)
+plot(signal)
+
+SC=zeros(1000,119);
+
+for i=1:1000
+    SC(i,:)=scorr(

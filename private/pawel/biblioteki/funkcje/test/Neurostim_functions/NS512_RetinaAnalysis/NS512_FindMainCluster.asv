@@ -1,0 +1,26 @@
+Pattern=504;
+Movie=63;
+Electrode=278;
+
+StimulationDataPath='F:\analiza\retina\2012-09-27-4\files\scan_new';
+[DataTraces0,ArtifactDataTraces,DataChannels]=NS_ReadPreprocessedData(StimulationDataPath,StimulationDataPath,0,Pattern,Movie,0,0);   %read data                 
+Data=reshape(DataTraces0(1:50,Electrode,:),50,140);
+
+prog=20;
+SDT=size(Data);
+
+figure(1);
+UnMatched=zeros(SDT(1),1);
+for i=1:10%SDT(1)    
+    for j=1:SDT(1)
+        difference=Data(j,:)-Data(i,:);
+        %DataPrim(j,:)=Data(j,:)-Data(i,:);
+        ThresholdCross=find((abs(difference)>prog));
+        if ThresholdCross
+            UnMatched(i,1)=UnMatched(i,1)+1;
+        end
+            
+        
+        
+    end
+end

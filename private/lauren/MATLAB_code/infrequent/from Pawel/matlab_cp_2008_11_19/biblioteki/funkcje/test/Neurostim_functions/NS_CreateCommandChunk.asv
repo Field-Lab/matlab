@@ -1,0 +1,12 @@
+function Commands=NS_CreateCommandChunkForRanges(Status);
+%Input status includes the status of each channel!!
+NS_GlobalConstants=NS_GenerateGlobalConstants(61);
+
+ChannelsStatus=Status.ChannelsStatus;
+
+NumberOfCommands=length(ChannelsStatus);
+for i=1:NumberOfCommands
+    range=ChannelsStatus(i).range;
+    ChipNumber=floor(i/NS_GlobalConstants.NumberOfChannelsPerChip);
+    Channel=
+    Command=NS_RangeCommand(0,ChipAddress,0,Channel,range);

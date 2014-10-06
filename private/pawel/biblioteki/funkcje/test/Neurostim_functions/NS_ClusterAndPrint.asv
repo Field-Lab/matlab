@@ -1,0 +1,8 @@
+function y=NS_ClusterAndPrint(Electrodes,BadElectrodes,ReadPath,FileName,WritePath);
+
+for i=Electrodes
+    for j=Movies
+        [Types,TypesNew,EIs,Traces]=NS_PCA_test_function(i,j,BadElectrodes,ReadPath,FileName,WritePath);
+        %clear;
+    end
+end

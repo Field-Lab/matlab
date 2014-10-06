@@ -1,0 +1,53 @@
+function plot_sta(datarun,cell_id,varargin)
+% plot_sta     plot an STA in an interactive slider window
+%
+% usage:  plot_sta(datarun, cell_id, varargin)
+%
+% arguments:  datarun - datarun struct with field datarun.stas.stas
+%             cell_id - which cell id to plot
+%            varargin - struct or list of optional parameters (see below)
+%
+%
+% optional params, their default values, and what they specify:
+%
+% figure          	0            	figure where to plot it.
+%                                       0 for new figure, -1 in current figure
+% array             false           plot array outline?  taken from datarukn
+%
+%
+% 2009-06  gauthier
+%
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% specify list of optional parameters
+p.addParamValue('figure', 0, @(x)~isempty(x)&&round(x)==x);
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+
+
+
+% get array corners, if desired
+if params.array
+    if isfield(datarun,'piece') && isfield(datarun.piece,'corners')
+        corners = datarun.piece.corners([1:end 1],:);
+    else
+        corners = [];
+        warning('could not plot array outline because datarun.piece.corners does not exist.  see compute_monitor_to_array_transformation.')
+    end
+else
+    corners = [];
+end
+        
+plot_sta_(get_sta(datarun,cell_id),'figure',params.figure,'array',corners,...
+    'prefix',sprintf('cell id %d (%d spikes), ',cell_id,length(datarun.spikes{get_cell_indices(datarun,cell_id)})))
+
+

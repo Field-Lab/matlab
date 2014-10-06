@@ -1,0 +1,20 @@
+function Shift=NS_FindShiftBetweenEIs(EI1,EI2);
+%The function finds the shift between EIs in time. The procedure is based 
+SEI1=size(EI1);
+SEI2=size(EI2);
+
+if SEI1(1)~=SEI2(1)
+    error('Different number of channels for EIs');
+end
+c=zeros(1,2*max(SEI1(2),SEI2(2))-1);
+
+for i=1:SEI1(1);
+    a=xcorr(EI1(i,:),EI2(i,:));
+    c=c+a;
+end
+b=find(c==max(c));
+if length(b)>1
+    b=mean(b);
+end
+
+Shift=b-SEI2(2);

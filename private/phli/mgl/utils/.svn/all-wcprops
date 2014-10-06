@@ -1,0 +1,149 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/mgl/!svn/ver/1016/trunk/utils
+END
+isfile.m
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/mgl/!svn/ver/822/trunk/utils/isfile.m
+END
+mglRetinotopy.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/1009/trunk/utils/mglRetinotopy.m
+END
+mglDispVisualAngleDiscrepancy.m
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/789/trunk/utils/mglDispVisualAngleDiscrepancy.m
+END
+disppercent.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/348/trunk/utils/disppercent.m
+END
+comm.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/761/trunk/utils/comm.mexmaci
+END
+moncalib.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/950/trunk/utils/moncalib.m
+END
+dotMotionFrame.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/382/trunk/utils/dotMotionFrame.m
+END
+mglMakeGrating.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/762/trunk/utils/mglMakeGrating.m
+END
+makeGrating.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/771/trunk/utils/makeGrating.m
+END
+comm.m
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/mgl/!svn/ver/676/trunk/utils/comm.m
+END
+MGLProgrammingConventions.txt
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/2/trunk/utils/MGLProgrammingConventions.txt
+END
+mydisp.c
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/mgl/!svn/ver/11/trunk/utils/mydisp.c
+END
+mydisp.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/748/trunk/utils/mydisp.mexmaci
+END
+ieNotDefined.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/228/trunk/utils/ieNotDefined.m
+END
+mglDoRetinotopy.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/945/trunk/utils/mglDoRetinotopy.m
+END
+mglDispText.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/996/trunk/utils/mglDispText.m
+END
+mglMonitorDims.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/1016/trunk/utils/mglMonitorDims.m
+END
+mydisp.m
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/mgl/!svn/ver/343/trunk/utils/mydisp.m
+END
+drawSlidingWedges.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/382/trunk/utils/drawSlidingWedges.m
+END
+mydisp.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/749/trunk/utils/mydisp.mexmaci64
+END
+mglMakeGaussian.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/413/trunk/utils/mglMakeGaussian.m
+END
+makeGaussian.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/771/trunk/utils/makeGaussian.m
+END
+comm.mexmac
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/761/trunk/utils/comm.mexmac
+END
+mglRetinotopyCreateStimulusImage.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/997/trunk/utils/mglRetinotopyCreateStimulusImage.m
+END

@@ -1,0 +1,20 @@
+function [NumberOfMovies,NumberOfPatternsPerMovie,AllPatternsUsed,Patterns]=NS512_MoviePatterns(filename_movie,NS_GlobalConstants);
+
+
+fid0=fopen(filename_movie,'r','b');
+%ID=fread(fid0,8,'int8')'
+header=readMHchunk(fid0);
+NumberOfMovies=header.number_of_movies;
+fclose(fid0);
+Patterns=zeros(NumberOfMovies,512);
+for i=1:NumberOfMovies
+    MovieData1=NS512_MovieData2(filename_movie,i,NS_GlobalConstants);
+    [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,MovieData]=NS_DecodeMovieDataChunk(MovieData1);
+    Pt=MovieData(2:3:length(MovieData)); %all patterns in given movie
+    for j=Pt
+        Patterns(i,j)=Patterns(i,j)+1;
+    end
+end
+NumberOfPatternsPerMovie=sum(Patterns');
+AllPatternsUsed=find(sum(Patterns));
+%Patterns=2;

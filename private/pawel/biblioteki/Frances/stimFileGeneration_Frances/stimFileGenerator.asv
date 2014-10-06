@@ -1,0 +1,61 @@
+% Stimulation file generator
+% Variable Generation.
+ArrayID = 500;
+nUniquePattern = 192; % 12 (sets) * 2^3 (states) * 2 (currents)
+nEachPattern = 10; % 10 of patterns * 100 repetitions per movie pattern = 1000 repetitions in total
+nTotalPattern = nUniquePattern * nEachPattern; % Total # of patterns to be made into movie file
+nPatternPerMovie = 16;
+nMovieChunk = 120;
+Array = zeros(512,nUniquePattern);
+TimeShift = 30 * 20; % ms * samples in ms
+Delay = 30 * 20; % ms * samples in ms
+NumberOfSamples = 10000; % number of samples per repetition. (usually 0.5s)
+electrodes = 1:512;
+
+% Pre-generated information of all stimulation patterns.
+load('C:\home\Pawel\nauka\matlab_cp_2012_12_17\biblioteki\Frances\stimFileGeneration_Frances\pattern.mat')
+
+% Generate pattern indices (192 kinds of stimulating patterns),
+% each pattern is repeated 10 times, and with each at 100 repetitions.
+% This will give a total of 1000 repetitions.
+patternidx = zeros(nTotalPattern,1);
+for i = 1:nUniquePattern
+    startidx = (i-1)*nEachPattern+1;
+    patternidx(startidx:startidx+nEachPattern-1) = i*ones(nEachPattern,1);
+end
+patternidx_rand = randomize_sequence(patternidx);
+
+% Calculate Array for creating pt file.
+for i = 1:nUniquePattern
+    elidx = pattern(i).el .* pattern(i).state;
+    if find(elidx)
+       elidx(elidx == 0)  = [];
+       Array(elidx,i) = pattern(i).current; 
+    end
+end
+
+% Calculate movie chunks for creating mv file.
+Chunks = [];
+for i = 1%:nMovieChunk
+    idx = (i-1) * nPatternPerMovie + [1:nPatternPerMovie];
+    PatternsForMovie = patternidx_rand(idx);
+    Times = [TimeShift:Delay:TimeShift+15*Delay];
+    Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,PatternsForMovie);
+    Chunks = [Chunks Chunk];
+end
+MovieChunksFile = [nMovieChunk Chunks];
+break
+%%
+% Writing to files.
+cd('c:\documents and settings\yafi\my documents\matlab\stimulationII'); 
+fid = fopen('18el_3el_random_pattern_30ms_el','wb');
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('18el_3el_random_pattern_30ms_pt','wb','ieee-le.l64');
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('18el_3el_random_pattern_30ms_mv','wb','ieee-le.l64');
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid); 

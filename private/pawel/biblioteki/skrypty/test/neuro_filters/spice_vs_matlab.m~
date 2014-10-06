@@ -1,0 +1,136 @@
+%1. Czytanie danych wyjsciowych ze SPICE:
+cd /mnt/data1/pliki/nauka/spike_shape/jeden_kanal;
+%cd C:\pliki\nauka\spike_shape\jeden_kanal;
+
+
+ampl_filename='ampl.txt';
+phase_filename='phase.txt';
+[x,y]=read_spice(ampl_filename,phase_filename);
+figure(1);
+subplot(1,2,1);
+loglog(x(:,1),x(:,2));
+grid on;
+subplot(1,2,2);
+semilogx(y(:,1),y(:,2));
+grid on;
+
+%break
+
+%2. Obliczanie charakterystyk w Matlabie:
+dl=400;
+[y1,y2]=inveyefilter_hayes(dl,58,40,3300,20000); %oszacowanie efektu filtrowanai w neurochipie
+
+%Przesuniecie na potrzeby analizy fourierowskiej - odwrotna koretka fazy w stosunku do tej wtkonywanej w funkcji "inveyefilter_hayes"
+y1bis=[y1(1,dl+2:length(y1)) y1(1,1:dl+1)]; 
+
+f_y1=fft(y1bis);
+freq_y1=[0:length(y1)-1]/length(y1)*20000;
+
+figure(1);		% * * * rysunek 1
+subplot(1,2,1);
+loglog(x(:,1),x(:,2),'b-',freq_y1(1:dl),abs(f_y1(1:dl))*1265,'rd');
+grid on;
+legend('SPICE','Matlab');
+xlabel('frequency [Hz]');
+ylabel('gain');
+subplot(1,2,2);
+faza=unwrap(angle(f_y1(1:dl)))*180/pi-180;
+if min(min(faza))<360
+	faza=faza+360;
+end
+semilogx(y(:,1),y(:,2),'b-',freq_y1(1:dl),faza,'rd');
+grid on;
+legend('SPICE','Matlab');
+xlabel('frequency [Hz]');
+ylabel('phase [degrees]');
+
+time=[-dl:dl]/20;
+figure(2);		% * * * rysunek 2
+subplot(3,3,1);
+plot(time,y1);
+grid on;
+xlabel('time [ms]');
+title('Neurochip pulse response');
+h=gca;
+set(h,'XLim',[-2 8]);
+set(h,'YLim',[-0.1 0.4]);
+subplot(3,3,2);
+plot(time,y2);
+grid on;
+xlabel('time [ms]');
+title('pulse response of inverse filter');
+h=gca;
+set(h,'XLim',[-6 6]);
+subplot(3,3,3);
+y3=conv(y1,y2);
+t3=[-2*dl:2*dl]/20;
+plot(t3,y3);
+grid on;
+title('convolution of the filters');
+h=gca;
+set(h,'XLim',[-6 6]);
+
+
+y1bis=[y1(1,dl+2:length(y1)) y1(1,1:dl+1)]; 
+f_y1=fft(y1bis);
+freq_y1=[0:length(y1)-1]/length(y1)*20000;
+subplot(3,3,4);
+semilogx(freq_y1,abs(f_y1));
+h=gca;
+set(h,'XLim',[50 10000]);
+grid on;
+subplot(3,3,7);
+semilogx(freq_y1,angle(f_y1));
+h=gca;
+set(h,'XLim',[50 10000]);
+grid on;
+
+
+y2bis=[y2(1,dl:length(y2)) y2(1,1:dl-1)]; 
+f_y2=fft(y2bis);
+freq_y2=[0:length(y2)-1]/length(y2)*20000;
+subplot(3,3,5);
+semilogx(freq_y2,abs(f_y2));
+h=gca;
+set(h,'XLim',[50 10000]);
+grid on;
+subplot(3,3,8);
+semilogx(freq_y2,angle(f_y2));
+h=gca;
+set(h,'XLim',[50 10000]);
+grid on;
+
+y3bis=[y3(1,2*dl+1:length(y3)) y3(1,1:2*dl)];
+f_y3=fft(y3bis);
+freq_y3=[0:length(y3)-1]/length(y3)*20000;
+subplot(3,3,6);
+semilogx(freq_y3,abs(f_y3));
+h=gca;
+set(h,'XLim',[50 10000]);
+grid on;
+subplot(3,3,9);
+semilogx(freq_y3,angle(f_y3));
+h=gca;
+set(h,'XLim',[50 10000]);
+set(h,'YLim',[-4 4]);
+grid on;
+
+
+resp_sp=importdata('200uconv.txt');
+resp_mt=conv(y1,[1 1 1 1]/4);
+t0=[0:length(resp_mt)-1]/20;
+figure(3);		% * * * rysunek 3
+subplot(1,2,1);
+plot(resp_sp(:,1)*1000,resp_sp(:,2)-resp_sp(1,2));
+h=gca;
+set(h,'XLim',[1 8]);
+legend('Spice');
+xlabel('time [ms]');
+grid on;
+subplot(1,2,2);
+plot(t0,resp_mt);
+h=gca;
+set(h,'XLim',[19.5 26.5]);
+grid on;
+legend('Matlab');
+xlabel('time [ms]');

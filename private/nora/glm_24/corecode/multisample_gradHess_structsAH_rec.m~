@@ -1,0 +1,340 @@
+% Constructs gradient and hessian, accounting for different temporal
+% resolutions
+
+% lGrad- each col is gradient wrt linear filter at each time t
+% psGrad - "" "" postspike filter ""
+% cpGrad - replaced,  jut use the Trainbasis.. that's too expensive
+% kernel_grad - 1st kernel (uses spike data)
+% kernel_hess - 2nd kernel (uses spike data)
+
+function [gradient H] = multisample_gradHess_structsAH_rec(Basepars,Stimpars,Trainpars,kernel_grad,kernel_hess,frozen_idx)
+%%% called by trainll_grad5
+%[ll_grad(idx) ll_hess(idx,idx)] = multisample_gradHess_structsAH(Basepars,1,kernel_grad,kernel_hess,Trainpars,cpGrad);
+
+
+nNeighbors = length(Basepars.cp_Neighbors);
+cpFlag = false;
+
+if  Basepars.Coupling && nNeighbors > 0
+    cpFlag = true;
+end
+
+totalframes = size(Trainpars.lGrad,2);
+microbins = size(Trainpars.psbasisGrad{1},2);
+
+
+% NO MORE CPGRAD  .. JUST CALL Trainpars.cpbasisGrad
+if (cpFlag && size(Trainpars.cpbasisGrad{1},2) ~= microbins)
+    error('ERROR: dimension mismatch between coupling and postspike gradients!\n');
+end
+
+if (mod(microbins,totalframes) > 0)
+    error('ERROR: stim resolution is not integer multiple of spike resolution!totalframes=%d,microbins=%d\n',totalframes,microbins);
+end
+if (size(kernel_grad,1) ~= microbins || (nargout > 1 && size(kernel_hess,1) ~= microbins))
+    error('ERROR: kernels are not at the spike resolution!\n');
+end
+extflag = (isfield(Basepars,'ext_timepts') && ~isempty(Basepars.ext_timepts));
+if (extflag)
+    nExtpars = length(Basepars.ext_timepts);
+else
+    nExtpars = 0;
+end
+nLpars = length(Basepars.paramind.L);
+if (isfield(Basepars,'XsqK') && Basepars.XsqK)
+    nLsqpars = nLpars;
+else
+    nLsqpars = 0;
+end
+PS_idx = Basepars.paramind.PS;
+nPSpars = length(PS_idx);
+if (cpFlag)
+    nCPpars = nNeighbors * size(Trainpars.cpbasisGrad{1},1);
+else
+    nCPpars = 0;
+end
+npars = length(Basepars.p0);
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculate "block-summed" kernel to use for coarser time resolution
+% SUM  NOT AVERAGE .. THIS MAKES SENSE!!! 
+
+kernel_grad_blocked = sum(reshape(kernel_grad,Basepars.spikebins_perstimframe,totalframes),1)'; % totalframes x 1
+
+npars = length(Basepars.p0);
+gradient = zeros(npars,1);
+
+
+b_idx  = Basepars.paramind.MU;
+L_idx  = Basepars.paramind.L;
+PS_idx = Basepars.paramind.PS;
+if cpFlag
+    CP_idx = Basepars.paramind.CP;
+else
+    CP_idx = [];
+end
+if isfield(Basepars, 'rect_conv_spSTA')
+    SR_idx = Basepars.paramind.SR;
+end
+if isfield(Basepars, 'rect_full')
+    FR_idx = Basepars.paramind.FR;
+end
+
+
+% STIM FRAMES AND SPIKE FRAMES   TOTALS
+
+% Copy relevant matrices
+if (nExtpars > 0)
+    egradn = Trainpars.extgrad(:,:);
+end
+lgradn = Trainpars.lGrad(:,:);
+
+ 
+if isfield(Basepars, 'rect_conv_spSTA')
+    recgradn = Trainpars.recGrad;
+end
+
+if isfield(Basepars, 'rect_full')
+    recgradn = Trainpars.recGrad;
+end
+
+if (nLsqpars > 0)
+    lsqgradn = Trainpars.lsqgrad(:,:);
+end
+
+
+if Basepars.ps_FIX
+    psgradn = Basepars.ps_FIXconvolved(:,:);
+else
+    psgradn = Trainpars.psbasisGrad{1}(:,:);
+end
+%if (cpFlag)
+%    cpgradn = cpGrad(:,relidx_f);
+%end
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% CALCULATE GRADIENT OF LOG-LIKELHOOD          %%%%%%
+%%%%% kernel_grad_blocked INCORORPOATE THE PARAM DEPENDENT CIF %%%%%%%
+
+if (nExtpars > 0)
+    gradient(ext_idx) = egradn*kernel_grad_blocked;
+end
+% Base rate
+gradient(b_idx) = sum(kernel_grad);    %%% JUST LOOKS CLEANER!
+% Linear filters
+gradient(L_idx) = lgradn*kernel_grad_blocked;
+if (nLsqpars > 0)    
+    gradient(Lsq_idx) = lsqgradn*kernel_grad_blocked;
+end
+% Postspike filters
+gradient(PS_idx) = psgradn*kernel_grad;
+% Coupling filters
+CPfilters = Basepars.cp_filternumber ;
+if (cpFlag)
+    for iNeighbor = 1 : (nNeighbors )
+        index_CP = CP_idx(1 +(iNeighbor-1)*CPfilters : iNeighbor *CPfilters);
+        gradient(index_CP) = Trainpars.cpbasisGrad{iNeighbor}*kernel_grad;
+    end
+end
+gradient(SR_idx) = recgradn * kernel_grad_blocked;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%  COMPUTE THE HESSIAN !!! %%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if (nargout > 1)    
+    H = zeros(npars,npars);
+    kernel_hess_blocked      = sum(reshape(kernel_hess,Basepars.spikebins_perstimframe,totalframes),1)'; %% totalframes x 1    
+    
+
+    pskernel_hessweighted    = mult_col(psgradn,kernel_hess);  %lamda(t)Y(t)
+    pskernel_hw_blocked      = reshape(sum(reshape(pskernel_hessweighted,nPSpars,Basepars.spikebins_perstimframe,totalframes),2),nPSpars,totalframes); % nPSpars x totalframes   
+    pskernel                 = psgradn; 
+    
+    %%% By deault. these are stim blocked 
+    linkernel_hessweighted   = mult_col(lgradn,kernel_hess_blocked);
+    linkernel                = lgradn;
+    
+    if exist('recgradn', 'var')
+        reckernel_hessweighted   = mult_col(recgradn,kernel_hess_blocked);
+        reckernel                = recgradn;
+    end
+    %%%Roughly 10 minutes for 7 Neighbors 12 basis
+    cpkernel_hessweighted    = cell(nNeighbors , 1);
+    cpkernel_hw_blocked      = cell(nNeighbors , 1); 
+    if (cpFlag)
+        for iNeighbor = 1 : nNeighbors
+            cpkernel_hessweighted{iNeighbor} = mult_col(Trainpars.cpbasisGrad{iNeighbor},kernel_hess);
+        %cpkernel_hessweighted = (cpGrad.*repmat(kernel_hess',nCPpars,1));
+            cpkernel_hw_blocked{iNeighbor} = reshape(sum(reshape(cpkernel_hessweighted{iNeighbor},Basepars.cp_filternumber,Basepars.spikebins_perstimframe,totalframes),2),...
+                Basepars.cp_filternumber,totalframes); % nCPpars x totalframes    
+        end
+    end
+    %%% unweighted cpkernel = Trainpars.cpbasisGrad
+
+
+    % Base rate - Base rate
+    H(b_idx,b_idx) = sum(kernel_hess_blocked); % 1 x 1
+    
+    % Base rate - Linear filters
+    H(b_idx,L_idx)  = ( sum(linkernel_hessweighted,2) )'; % 1 x nLpars
+    
+    if exist('recgradn', 'var')
+         H(b_idx,SR_idx)  = ( sum(reckernel_hessweighted,2) )'; % 1 x nLpars
+    end
+    % Base rate - PS filters
+    H(b_idx,PS_idx) = ( sum(pskernel_hessweighted,2)  )'; % 1 x nPSpars
+
+    % Base rate - CP filters
+    if(cpFlag)
+       % H(b_idx,CP_idx) = (cpgradn*kernel_hess)'; % 1 x nCPpars
+        for iNeighbor = 1 : (nNeighbors )
+            index_CP = CP_idx(1 +(iNeighbor-1)*CPfilters : iNeighbor *CPfilters);
+            H(b_idx,index_CP) = (sum ( cpkernel_hessweighted{iNeighbor} , 2 ))'; % 1 x nCPpars
+        end
+    end
+    
+    
+    %  Linear Filters - Linear Filters  
+    H(L_idx,L_idx)  = (linkernel * linkernel_hessweighted'); 
+    if exist('recgradn', 'var')
+         H(SR_idx,SR_idx)  = (reckernel * reckernel_hessweighted'); % 1 x nLpars
+    end
+  %  HLold = H(L_idx,L_idx);
+ %   Hold = H;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  %% Correction terms   %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    correctionterm = true;
+    if isfield(Basepars,'old_Hessian')
+        if Basepars.old_Hessian 
+            correctionterm = false;
+        end
+    end
+    
+    if strcmp(Basepars.k_filtermode,'rk2') && correctionterm
+        sp1 = Basepars.paramind.SPACE1; t1 = Basepars.paramind.TIME1;
+        sp2 = Basepars.paramind.SPACE2; t2 = Basepars.paramind.TIME2;
+        CrossTerm_rk2_Correction = zeros(length(sp1), length(t1) );
+        
+        tau = length(t1);
+      %  kernel = kernel_grad_blocked(tau+1:end);
+        movie = Stimpars.movie_ROI; 
+        frames = size(movie,2);
+        
+        skernel_grad_blocked = kernel_grad_blocked(tau:end,1);
+
+        % duration of the linear filter
+        for iColumn = 0: tau-1
+            movie_hessweighted      = mult_col( movie(: , tau-iColumn: end -iColumn) ,skernel_grad_blocked);
+            CrossTerm_rk2_Correction(: ,iColumn+1) = sum ( movie_hessweighted , 2);
+        end
+      %  CrossTerm_rk2_Correction = fliplr(CrossTerm_rk2_Correction);
+        
+        
+        %%% NEED TO MAKE THE WIERD MOVIE THAT GETS CONVOLVED
+        H(sp1,t1) =  H(sp1,t1) + CrossTerm_rk2_Correction ;
+        H(sp2,t2) =  H(sp2,t2) + CrossTerm_rk2_Correction ;
+        H(t1,sp1) =  H(t1,sp1) + CrossTerm_rk2_Correction';
+        H(t2,sp2) =  H(t2,sp2) + CrossTerm_rk2_Correction';
+        HLnew     = H(L_idx,L_idx);
+    end
+    %%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%% THAT IS IT %%%%%%%%%%%
+    
+    
+     %%%%%%%%%%%%%%%%   
+     %%%%%%%%%%%%%%%%
+    % Linear filter - PS filter
+    H(L_idx,PS_idx) = (linkernel * pskernel_hw_blocked' );% nLpars x nPSpars    
+    if exist('recgradn', 'var')
+        H(SR_idx,PS_idx) = (reckernel * pskernel_hw_blocked' );% 1 x nLpars
+    end
+    
+    % Linear filter - CP filter
+    if (cpFlag)
+       % H(L_idx,CP_idx) = lgradn*cpkernel_hw_blocked';% nLpars x nCPpars
+        for iNeighbor = 1 : (nNeighbors )
+            index_CP = CP_idx(1 +(iNeighbor-1)*CPfilters : iNeighbor *CPfilters);
+            H(L_idx,index_CP) = ( linkernel * cpkernel_hw_blocked{iNeighbor}' ); %nLpars by cpfilternumber, nNeighbors times
+            if exist('recgradn', 'var')
+                H(SR_idx,index_CP) = ( reckernel * cpkernel_hw_blocked{iNeighbor}' );% 1 x nLpars
+            end
+        end
+    end
+    
+    % PS filter - PS filter (heavy)
+    H(PS_idx,PS_idx) = ( pskernel * pskernel_hessweighted' ); % nPSpars x nPSpars;
+    
+    % PS filter - CP filter (heavy heavy heavy)  
+    if (cpFlag)
+        %H(PS_idx,CP_idx) = pskernel_hessweighted*cpgradn'; % nPSpars x nCPpars
+        for iNeighbor = 1 : (nNeighbors )
+            index_CP = CP_idx(1 +(iNeighbor-1)*CPfilters : iNeighbor *CPfilters);            
+            H(PS_idx,index_CP) = ( pskernel * cpkernel_hessweighted{iNeighbor}'); %nLpars by cpfilternumber, nNeighbors times
+        end
+    end
+
+    % CP filter - CP filter (heavy heavy heavy)  ~ 8 minutes
+    if (cpFlag)
+       % H(CP_idx,CP_idx) = cpkernel_hessweighted*cpgradn'; % nCPpars x nCPpars
+       for iNeighbor = 1 : (nNeighbors )
+            %iNeighbor
+            index_CP = CP_idx(1 +(iNeighbor-1)*CPfilters : iNeighbor *CPfilters);            
+            H(index_CP,index_CP) = (Trainpars.cpbasisGrad{iNeighbor} * cpkernel_hessweighted{iNeighbor}'); %nLpars by cpfilternumber, nNeighbors times
+        end
+    end
+
+        %{
+            % Base rate - Linear square filters    if (nLsqpars > 0)
+    if (nLsqpars > 0)  
+        H(b_idx,Lsq_idx) = (lsqgradn  * kernel_hess_blocked)'; % 1 x nLsqpars
+    end
+        % Linear filter - Square filter
+    if (nLsqpars>0)
+        H(L_idx,Lsq_idx) = linkernel_hessweighted*(lsqgradn)'; % nLpars x nLsqpars
+    end
+    
+
+    if (nExtpars > 0)   
+        % Extrinsic rate - Extrinsic rate
+        ext2weighted = mult_col(egradn,kernel_hess_blocked);
+        H(ext_idx,ext_idx) = ext2weighted*egradn';
+        % Extrinsic rate - Base rate
+        H(ext_idx,b_idx) = sum(ext2weighted,2);
+        % Extrinsic rate - linear filter
+        H(ext_idx,L_idx) = ext2weighted*lgradn';
+        % Extrinsic rate - square filter
+        if (nLsqpars > 0)
+            H(ext_idx,Lsq_idx) = ext2weighted*lsqgradn';
+        end
+        % Extrinsic rate - PS filters
+        H(ext_idx,PS_idx) = egradn*pskernel_hw_blocked';
+        % Extrinsic rate - CP filters
+        if (cpFlag)
+            H(ext_idx,CP_idx) = egradn*cpkernel_hw_blocked';
+        end
+        
+    end
+    if (nLsqpars>0)    
+        linkernel_hessweighted = mult_col(lsqgradn,kernel_hess_blocked); 
+        % Square filter - Square filter
+        H(Lsq_idx,Lsq_idx) = linkernel_hessweighted*(lsqgradn)'; % nLsqpars x nLsqpars
+        % Square filter - PS filters
+        H(Lsq_idx,PS_idx) = (lsqgradn)*pskernel_hw_blocked'; % nLsqpars x nPSpars
+        % Square filter - CP filters
+        if (cpFlag)
+            H(Lsq_idx,CP_idx) = (lsqgradn) * cpkernel_hw_blocked'; % nLsqpars x nCPpars
+        end
+    end
+    %}
+    % Symmetrize H
+    H = triu(H) + triu(H)' - diag(diag(H));
+    
+end
+
+end

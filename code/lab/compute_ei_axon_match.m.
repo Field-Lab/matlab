@@ -1,0 +1,125 @@
+function results = compute_ei_axon_match(axon,ei,positions, varargin)
+% compute_ei_axon_match     summarize how well an EI and an axon match
+%
+% usage:  result = compute_ei_axon_match(axon,ei,positions, varargin)
+%
+% arguments:     axon - Nx2 matrix of axon path, starting at soma
+%                  ei - ExT matrix of EI intensity on each electorde at each time point
+%           positions - positions of electrodes
+%            varargin - struct or list of optional parameters (see below)
+%
+% outputs:     result - result of computation
+%
+%
+% optional params, their default values, and what they specify:
+%
+% method          	'basic'       	how to compare
+%                                       'basic' - ???
+%
+%
+% 2010-01  gauthier
+%
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% specify list of optional parameters
+p.addParamValue('method', 'basic');
+p.addParamValue('plot', false);
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+
+if isempty(ei)
+    error('ei is empty')
+end
+
+
+% initialize output struct
+results = struct;
+
+switch params.method
+    case 'basic'
+        
+        % convert EI to just amplitudes
+        eia = max(abs(ei),[],2);
+        
+        % compute predicted ei
+        [predicted_axon,predicted_soma,axon_dists,soma_dists] = generate_predicted_ei(axon(1:end,:),positions);
+        
+        % initialize variable noting the relevant electrodes
+        relevant = true(1,length(eia));
+        
+        switch 2
+            case 1 % fit axon and soma
+                fit_weights = fminsearch(@(x)sum((  eia - (abs(x(1))*predicted_axon + abs(x(2))*predicted_soma)   ).^2),[1 1]);
+                
+                predicted_ei = abs(fit_weights(1))*predicted_axon + abs(fit_weights(2))*predicted_soma;
+                
+                
+            case 2 % ignore some electrodes
+                predicted_ei = predicted_axon;
+
+
+                % exclude axons near soma
+                relevant = relevant & (soma_dists' > 100);
+                
+                % exclude electrodes with largest amplitude (probably somatic spikes)
+                %[junk,largest_amplitude] = sort(eia,'descend');
+                %relevant(largest_amplitude(1:3))=false;
+
+                % exclude distant electrodes
+                %relevant=relevant & (axon_dists<300);
+
+                % exclude electodes with small signal
+                %relevant = relevant & (eia > 5)';
+                %thresh = 5*robust_std(eia) + median(eia);
+                %relevant = relevant & (eia > thresh)';
+
+                %relevant = relevant & (positions(:,1) > -500)';
+                
+        end
+        
+        
+        fprintf('using %d of %d electrodes\n',sum(relevant),length(relevant))
+        
+        
+        % compute correlation
+        if any(relevant)
+            results.corr = corr(predicted_ei(relevant),eia(relevant));
+        else
+            results.corr = NaN;
+        end
+
+        if params.plot % plot
+            figure(params.plot);clf;
+            %axis image;axis xy;colormap gray;hold on;
+
+            subplot(211)
+            plot(axon(:,1),axon(:,2),'Color','r');hold on
+            % ei in blue
+            plot_ei_(eia(relevant), positions(relevant,:), 0,'alpha',0,'pretty_axes',0,'max_scale',45,'pos_color','b','scale',1,'cutoff',-1)
+            % unused electrodes in black
+            plot_ei_(~eia(relevant), positions(~relevant,:), 0,'alpha',0,'pretty_axes',0,'max_scale',45,'pos_color','k','scale',1,'cutoff',-1)
+            
+            %plot_ei_(predicted_ei(relevant), positions, 0,'alpha',0,'pretty_axes',0,'max_scale',45,'pos_color','g','scale',1,'cutoff',-1)
+            plot_ei_(predicted_axon(relevant), positions, 0,'alpha',0,'pretty_axes',0,'max_scale',45,'pos_color','r','scale',1,'cutoff',-1)
+            plot_ei_(predicted_soma(relevant), positions, 0,'alpha',0,'pretty_axes',0,'max_scale',45,'pos_color','m','scale',1,'cutoff',-1)
+
+            set(gca,'ydir','reverse','xdir','reverse')
+            
+            %figure(31);clf;
+            subplot(223)
+            plot(axon_dists(relevant),eia(relevant),'.');xlabel('distance from axon');ylabel('ei amplitude')
+            subplot(224)
+            plot(eia(relevant),predicted_ei(relevant),'.');xlabel('ei');ylabel('fake ei')
+            title(num2str(results.corr))
+        end
+end
+

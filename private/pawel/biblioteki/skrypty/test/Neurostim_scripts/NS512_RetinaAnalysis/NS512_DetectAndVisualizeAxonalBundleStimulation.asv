@@ -1,0 +1,143 @@
+%this script makes a plot with three subplots:
+%a) static stim-triggered EI on all electrodes (most negative values shown)
+%for largest current amplitude
+%b) dependence of EI amplitude (most negative sample) on the sitmulation
+%current for a few predefined recording electrodes
+%c) full waveorms of EI for the same set of electrodes as in b)
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+DataPath='F:\analiza\retina\2012-09-27-4\files\scan_new';
+Movies=[1:2:63];
+MoviesToShow=[11:2:63];
+FirstMovieIndex=find(Movies==MoviesToShow(1));
+FigurePath='C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4';
+
+figure(3)
+clf
+
+Patterns=[6 22 29 32 39 64 74 84 121];
+
+ElectrodesToAnalyzeAll=zeros(9,5);
+ElectrodesToAnalyzeAll(1,:)=[1 363 401 410 441];
+ElectrodesToAnalyzeAll(2,:)=[24 28 371 373 375];
+ElectrodesToAnalyzeAll(3,:)=[40 361 362 365 366];
+ElectrodesToAnalyzeAll(4,:)=[25 26 365 366 367];
+ElectrodesToAnalyzeAll(5,:)=[349 357 365 373 381];
+ElectrodesToAnalyzeAll(6,:)=[53 58 59 331 332];
+ElectrodesToAnalyzeAll(7,:)=[79 80 316 317 319];
+ElectrodesToAnalyzeAll(8,:)=[82 309 310 311 312];
+ElectrodesToAnalyzeAll(9,:)=[115 116 123 144 160];
+
+
+%ElectrodesToAnalyzeAll=[16 386 433 457 412 0 0 0 0 0];
+
+Colors={'r' 'k' 'b' 'g' 'm'};
+
+AmplitudesLabels={};
+for i=1:length(Movies)    
+    StimAmplitudes(i)=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],Patterns(1),Movies(i),NS_GlobalConstants);
+    if i/2==round(i/2)
+        AmplitudesLabels{i}=num2str(StimAmplitudes(i),'%4.2f');
+    else
+        AmplitudesLabels{i}='';
+    end
+end
+
+AmplitudeMin=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],Patterns(1),Movies(1),NS_GlobalConstants)
+AmplitudeMax=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],Patterns(1),max(Movies),NS_GlobalConstants)
+SamplesToAnalyze=[7:136];
+t=([1:130]+SamplesToAnalyze(1))/20;
+A1=zeros(5,length(Movies));
+for i=1:length(Patterns)
+    clf
+    Pattern=Patterns(i);
+    ElectrodesToAnalyze=ElectrodesToAnalyzeAll(i,find(ElectrodesToAnalyzeAll(i,:)>0))
+    FigureName=['C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4\animations2\stim' num2str(Pattern)];
+
+    %ElectrodesToExclude=electrodeMap.getAdjacentsTo(Pattern,1)';
+    %step 1: which electrodes to consider - 
+    [DataTraces0,ArtifactDataTraces,DataChannels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Patterns(i),max(Movies),0,0);
+    DataTraces=DataTraces0(1:50,[1:512],SamplesToAnalyze);
+    d=reshape(mean(DataTraces),512,130);   
+    means=mean(d(:,111:130),2);
+    for k=1:512
+        d(k,:)=d(k,:)-means(k);
+    end
+    maxvalues=(max(d'));
+    PP=min(d');
+    subplot(2,2,2);
+    h=NS512_ShowEIFrameAsCircles2(PP'/15,500,[1:512],Pattern,Colors,ElectrodesToAnalyze,Colors,[-1005 1005],[-505 505]);
+    bleble=PP(1,ElectrodesToAnalyze)
+    bleble2=maxvalues(1,ElectrodesToAnalyze)
+    
+    subplot(2,2,4);
+    plot(t,d(ElectrodesToAnalyze,:)');  
+    axis([0.4 2.4 -600 600]);
+    grid on
+   
+    for j=1:length(Movies)
+        [DataTraces0,ArtifactDataTraces,DataChannels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Patterns(i),Movies(j),0,0);
+        DataTraces=DataTraces0(1:50,[1:512],SamplesToAnalyze);
+        d=reshape(mean(DataTraces),512,130);    
+        for k=1:512
+            d(k,:)=d(k,:)-means(k);
+        end
+        PP=min(d'); 
+        A1(:,j)=abs(PP(ElectrodesToAnalyze));
+    end
+        
+        for j=1:length(MoviesToShow)
+            Amplitude=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],Patterns(i),MoviesToShow(j),NS_GlobalConstants);
+            [DataTraces0,ArtifactDataTraces,DataChannels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Patterns(i),MoviesToShow(j),0,0);
+            DataTraces=DataTraces0(1:50,[1:512],SamplesToAnalyze);
+            d=reshape(mean(DataTraces),512,130);    
+            for k=1:512
+                d(k,:)=d(k,:)-means(k);
+            end
+            PP=min(d'); 
+            
+            %globalny EI:
+            subplot(2,2,1);
+            h=NS512_ShowEIFrameAsCircles2(PP'/15,500,[1:512],Pattern,Colors,ElectrodesToAnalyze,Colors,[-1005 1005],[-505 505]);
+    
+            %wykres amplitudy od pr¹du:
+            subplot(2,2,3);
+            h1=loglog(StimAmplitudes,A1,[StimAmplitudes(j+FirstMovieIndex-1) StimAmplitudes(j+FirstMovieIndex-1)],[1 10000]);
+            for el=1:length(ElectrodesToAnalyze)
+                set(h1(el),'Color',Colors{el});
+            end
+            set(h1(length(h1)),'Color','r');
+            set(h1(length(h1)),'LineWidth',2);
+            h1=gca;
+            set(h1,'XLim',[AmplitudeMin AmplitudeMax]);
+            set(h1,'YLim',[2 2000]);
+            set(h1,'XTick',StimAmplitudes);
+            set(h1,'XTickLabels',AmplitudesLabels);
+            xlabel('Stimulation amplitude [\muA]');
+            ylabel('Negative EI amplitude [mV]');
+            legend(num2str(ElectrodesToAnalyze(1)),num2str(ElectrodesToAnalyze(2)),num2str(ElectrodesToAnalyze(3)),num2str(ElectrodesToAnalyze(4)),num2str(ElectrodesToAnalyze(5)),'Location','NorthWest');
+            grid on;
+            
+            %waveforms:
+            subplot(2,2,4);
+            h2=plot(t,d(ElectrodesToAnalyze,:)');  
+            for el=1:length(ElectrodesToAnalyze)
+                set(h2(el),'Color',Colors{el});
+            end
+            Ymax=max(abs(bleble))
+            axis([0.4 2.4 -600 600]);
+            xlabel('Time after stimulation onset [ms]');
+            ylabel('EI [mV]');
+            grid on
+            
+            %drukowanie obrazka:
+            h=gcf;
+            frame = getframe(h);
+            im = frame2im(frame);
+            [imind,map] = rgb2ind(im,256);
+            if j == 1
+                imwrite(imind,map,FigureName,'gif', 'Loopcount',1);
+            else
+                imwrite(imind,map,FigureName,'gif','WriteMode','append','DelayTime',0.3);
+            end
+        end        
+end

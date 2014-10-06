@@ -1,0 +1,44 @@
+function [path,filenames,spikes,detect_param]=spiki_gnpg(type);
+%Funkcja zwraca namiary na dobre spiki. Podaje sie typ
+%spikow, funkcja zwraca: sciezke do odpowiednich plikoe (wszystkie pliki z
+%maja 2004), nazwy plikow, strukture zawierajaca - dla kazdego spika -
+%nazwe pliku i wspolrzedne spika, oraz parametry detekcji uzywane przy
+%wyszukiwaniu spikow.
+
+%1 spiki typu "cell body"
+g_cb_spikes=zeros(19,2);
+g_cb_spikes(:,1)=[1 2 2 3 4 4 5 5 6 6 7 7 8 8 9 9 9 10 10]';
+%cb_spikes(:,2)=[85 30 240 227 2 63 158 181 10 147 1 20 4 5 61 68 167 14 17]';
+g_cb_spikes(:,2)=[1132 30 240 227 2 63 158 181 10 147 1 20 4 5 61 68 167 14 17]';
+
+
+g_ax_spikes(:,1)=[1 1 2 2 3 3 4 5 5 7 7 8 8 8 8 9 9 9]';
+g_ax_spikes(:,2)=[185 300 231 234 106 254 285 5 285 227 228 3 225 227 281 80 161 180]';
+
+
+%1. Spiki typu "cell body":
+%I:\dane\2004\26maja\2003-12-08-0-001 - kolejne pliki:
+%electrode45: cell body: 85, axonal: 185,300
+%electrode137: cell body: 30, 240 axonal:231, 234
+%electrode148: cell body 227, axonal: 106, 254
+%electrode155: 2,63 axonal: 285
+%electrode169: cb: 158, 181 axonal: 5,285
+%el221: cb - 10,147 axonal:none
+%el298: cb - 1,20; axonal:227, 228
+%el362: cb - 4,5; axonal: 3, 225, 227, 281 (mnooostwo!)
+%el416: cb - 61,68,167; axonal: 80, 161, 180 (duzo)
+%el499: cb - 14, 17; axonal:none
+cb_spikes=zeros(19,2);
+cb_spikes(:,1)=[1 2 2 3 4 4 5 5 6 6 7 7 8 8 9 9 9 10 10]';
+%cb_spikes(:,2)=[85 30 240 227 2 63 158 181 10 147 1 20 4 5 61 68 167 14 17]';
+cb_spikes(:,2)=[1132 30 240 227 2 63 158 181 10 147 1 20 4 5 61 68 167 14 17]';
+
+spikes=cb_spikes(1:6,:);
+figura=4;
+%y=few_spikes_stat(filenames,spikes,detect_param,filter_param,figura,margins);
+%break;
+
+%y=oversamp_rep_multichns(filenames,spikes,detect_param,filter_param,margins,RC_filter,figures);
+ax_spikes(:,1)=[1 1 2 2 3 3 4 5 5 7 7 8 8 8 8 9 9 9]';
+ax_spikes(:,2)=[185 300 231 234 106 254 285 5 285 227 228 3 225 227 281 80 161 180]';
+figura=5;

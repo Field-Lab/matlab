@@ -1,0 +1,8 @@
+function model=fit_el_mod1(pomiar,model_pocz);
+
+r=pomiar(:,2).*cos(pomiar(:,3)/90*pi/2);
+ur=pomiar(:,2).*sin(pomiar(:,3)/90*pi/2);
+
+imp=r+i*ur;
+
+function 

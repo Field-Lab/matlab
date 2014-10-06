@@ -1,0 +1,25 @@
+function datarun = load_globals(datarun)
+% load_globals     load globals file java object
+%
+% usage:  datarun = load_globals(datarun)
+%
+% arguments:     datarun - datarun struct
+%
+% outputs:     datarun - datarun struct with datarun.globals
+%
+%
+%
+% 2010-01  gauthier
+%
+
+
+% get file name
+gf_path = datarun.names.rrs_globals_path;
+
+% if it exists...
+if 2 == exist(gf_path)
+
+
+% load globals
+datarun.globals = edu.ucsc.neurobiology.vision.io.chunk.GlobalsFile(globals_file,int32(0));
+

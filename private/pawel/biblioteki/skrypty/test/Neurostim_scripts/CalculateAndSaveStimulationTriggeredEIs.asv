@@ -1,0 +1,24 @@
+clear
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+
+Patterns=[1:512];
+Movies=[1:2:63];
+
+DataPath='G:\analysis\2012-09-27-4\scan_new';
+EIsDataPath='D:\Home\Pawel\analysis\retina\2012-09-27-4\analysis_2013_08_06\';
+Indexes=[1:50]; % in the future, this should be changed and for each pattern-movie combination, only repetitions that belong to the main cluster should be taken
+EI=zeros(length(Movies),512,140);
+
+for i=1:1%length(Patterns)    
+    Pattern=Patterns(i);
+    EIfilename=['EI_p' num2str(Pattern)];
+    fid0=fopen([EIsDataPath EIfilename],'w+')
+    for j=1:length(Movies)
+        [DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Pattern,Movies(j),1500,Indexes);
+        SDT=size(DataTraces);
+        EI_m=round(reshape(mean(DataTraces),SDT(2),SDT(3)));
+        EI(j,:,:)=EI_m;        
+    end
+    fwrite(fid0,EI,'integer*2');
+    fclose(fid0);
+end

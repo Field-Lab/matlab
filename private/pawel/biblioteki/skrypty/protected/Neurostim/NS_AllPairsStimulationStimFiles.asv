@@ -1,0 +1,37 @@
+NumberOfSamples=60000;
+TimeShiftInMs=100;
+TimeShift=TimeShiftInMs
+
+StimElectrodes = [29 28 19 6 43 59 52 61 46 12];
+StimAmps = [1 1 2.5 1.81 1.20 1 1.30 1.81 2.0 1]; % in uA, peak cathodic
+
+%StimElectrodes = [29 28 19 6];
+%StimAmps = [1 1 2.5 1.81];
+
+NumberOfElectrodes=length(StimElectrodes);
+
+electrodes=1:64;
+Array=zeros(64);
+for i = 1:NumberOfElectrodes
+    Array(StimElectrodes(i),StimElectrodes(i)) = StimAmps(i);
+end
+
+DelayBetweenPairsInMs=35;
+DelayBetweenPairs=DelayBetweenPairsInMs*20;
+
+DelaysInPairInMs=[-2:0.25:2];
+DelaysInPair=DelaysInPairInMs*20;
+MovieChunksFile=NS_MovieChunkForPairStimulation(StimElectrodes,TimeShift,DelayBetweenPairs,DelaysInPair,NumberOfSamples);
+
+cd C:\pawel\pliki\nauka\matlab\; 
+fid = fopen('AllPairs_electrodes','wb')
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('AllPairs_patterns','wb','ieee-le.l64')
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('AllPairs_movie','wb','ieee-le.l64')
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid); 

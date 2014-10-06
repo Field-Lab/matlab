@@ -1,0 +1,12 @@
+function Position=NS512_SubplotPosition(NumberOfPlots,PlotIndex,PositionOfWholePlot);
+%this function allows you to define soem specific area of the figure
+%(PositionOfWholePlot) and plot a number of subplots within this area. The
+%function returns the position of specific suplot, calculating this for specific plot based
+%on number of plots.
+
+NumberOfColumns=ceil(sqrt(length(NumberOfPlots)));
+NumberOfRows=ceil(length(InterestingElectrodesFinal)/NumberOfColumns);
+
+ColumnIndex=
+
+%subplot(NumberOfRows,NumberOfColumns*2,(i-1)*2+2);

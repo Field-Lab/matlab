@@ -1,0 +1,28 @@
+function y=NS512_PlotGraph(Channels,Pairs,ArrayID);
+
+Xstep=60; 
+Ystep=60;
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
+
+figure(2);
+clf;
+axis([400 1000 -500 500]);
+SP=size(Pairs);
+for i=1:SP(1)
+    x(1)=electrodeMap.getXPosition(Pairs(i,1));
+    y(1)=electrodeMap.getYPosition(Pairs(i,1));
+    x(2)=electrodeMap.getXPosition(Pairs(i,2));
+    y(2)=electrodeMap.getYPosition(Pairs(i,2));
+ 
+    h0=plot(x,y);
+    h1=plot(x(1),y(1),'bo');
+    plot(x(2),y(2),'rd');
+    
+    
+    %h=plot(x,y,'bd-');
+    
+    %set(h,'MarkerSize',8);       
+    %set(h,'LineWidth',2);
+    
+    hold on;    
+end 

@@ -1,0 +1,1835 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/mgl/!svn/ver/1029/trunk/mgllib
+END
+mglPrivateMoveWindow.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/884/trunk/mgllib/mglPrivateMoveWindow.c
+END
+mglWaitSecs.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/51/trunk/mgllib/mglWaitSecs.m
+END
+mglStencilCreateBegin.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglStencilCreateBegin.mexw32
+END
+mglPrivateSwitchDisplay.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateSwitchDisplay.mexmaci64
+END
+mglText.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglText.mexmaci64
+END
+mglPrivateGetMouseEvent.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateGetMouseEvent.mexmaci64
+END
+mglGluAnnulus.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGluAnnulus.mexw32
+END
+mglStencilSelect.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglStencilSelect.c
+END
+mglFrameGrab.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglFrameGrab.mexmaci64
+END
+mglPrivateMoveWindow.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateMoveWindow.mexw64
+END
+mglPrivateClose.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateClose.mexmaci
+END
+mglResolution.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglResolution.c
+END
+mglPrivateMoveWindow.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateMoveWindow.mexmaci64
+END
+mglGetSecs.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGetSecs.mexw64
+END
+mglGetGammaTable.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglGetGammaTable.mexmaci64
+END
+mglSetGammaTable.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglSetGammaTable.c
+END
+mglDisplayCursor.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglDisplayCursor.mexw64
+END
+mglStencilSelect.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/22/trunk/mgllib/mglStencilSelect.m
+END
+mglStencilSelect.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglStencilSelect.mexmaci64
+END
+mglResolution.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/336/trunk/mgllib/mglResolution.m
+END
+mglGluDisk.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglGluDisk.mexmaci64
+END
+mglTransform.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglTransform.mexw32
+END
+mglResolution.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglResolution.mexmaci64
+END
+mglFillRect.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglFillRect.mexmaci64
+END
+mglSetGammaTable.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/148/trunk/mgllib/mglSetGammaTable.m
+END
+mglGetKeys.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGetKeys.mexw64
+END
+mglDrawImage.mexmac
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/913/trunk/mgllib/mglDrawImage.mexmac
+END
+mglFillRect3D.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/989/trunk/mgllib/mglFillRect3D.c
+END
+mglPrivateClose.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateClose.c
+END
+mglPrivateClose.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateClose.mexw32
+END
+mglResolution.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglResolution.mexmaci
+END
+mglFillRect3D.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/969/trunk/mgllib/mglFillRect3D.m
+END
+mglFillRect3D.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglFillRect3D.mexmaci64
+END
+mglPoints2.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPoints2.mexmaci64
+END
+mexopts.10.5.sh
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/968/trunk/mgllib/mexopts.10.5.sh
+END
+mglPrivateInstallSound.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateInstallSound.c
+END
+mglSetGammaTable.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglSetGammaTable.mexw64
+END
+mglPrivateDeleteTexture.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateDeleteTexture.mexmaci
+END
+mglBindFrameBufferObject.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglBindFrameBufferObject.mexmaci64
+END
+mglPrivateSwitchDisplay.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateSwitchDisplay.mexw32
+END
+mexopts.sh
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/968/trunk/mgllib/mexopts.sh
+END
+mglGluPartialDisk.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGluPartialDisk.mexw64
+END
+mglGetMouse.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGetMouse.mexmaci
+END
+mglFillRect3D.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/923/trunk/mgllib/mglFillRect3D.mexmaci
+END
+mglPrivateGetKeyEvent.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/957/trunk/mgllib/mglPrivateGetKeyEvent.mexw64
+END
+mglPolygon.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPolygon.mexw64
+END
+mglShowKey.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/87/trunk/mgllib/mglShowKey.m
+END
+mglGluDisk.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGluDisk.mexw32
+END
+mglPoints2.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPoints2.mexw64
+END
+mglTextSet.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/380/trunk/mgllib/mglTextSet.m
+END
+mglResolution.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglResolution.mexw64
+END
+mglVisualAngleCoordinates.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/1016/trunk/mgllib/mglVisualAngleCoordinates.m
+END
+mglFillOval.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglFillOval.mexw64
+END
+mglPrivateCreateTexture.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/935/trunk/mgllib/mglPrivateCreateTexture.mexmaci
+END
+mglPrivateListener.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/926/trunk/mgllib/mglPrivateListener.mexmaci
+END
+mglPrivateSwitchDisplay.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateSwitchDisplay.mexmaci
+END
+mglPrivateDescribeDisplays.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateDescribeDisplays.c
+END
+mglPrivateMovie.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateMovie.mexmaci64
+END
+mglPrivateGetKeyEvent.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateGetKeyEvent.mexmaci
+END
+mglGetMouse.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/970/trunk/mgllib/mglGetMouse.c
+END
+mglQuad.c
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/334/trunk/mgllib/mglQuad.c
+END
+mglGetGammaTable.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGetGammaTable.mexmaci
+END
+mglPrivateOpen.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateOpen.mexw32
+END
+mglClearScreen.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglClearScreen.mexmaci64
+END
+mglSwitchDisplay.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/613/trunk/mgllib/mglSwitchDisplay.m
+END
+mglDrawImage.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglDrawImage.mexmaci
+END
+mglGetMouse.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/970/trunk/mgllib/mglGetMouse.m
+END
+mglStencilCreateBegin.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglStencilCreateBegin.mexw64
+END
+mglGluDisk.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGluDisk.mexmaci
+END
+mglQuad.m
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglQuad.m
+END
+mglGluAnnulus.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGluAnnulus.mexw64
+END
+mglSetGammaTable.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglSetGammaTable.mexmaci
+END
+mglCreateFrameBufferObject.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglCreateFrameBufferObject.mexw64
+END
+mglGluPartialDisk.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/205/trunk/mgllib/mglGluPartialDisk.c
+END
+mglStrokeText.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglStrokeText.mexw32
+END
+mglPrivateListener.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/925/trunk/mgllib/mglPrivateListener.c
+END
+mglTransform.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglTransform.mexw64
+END
+mglCharToKeycode.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglCharToKeycode.mexmaci
+END
+mglGluPartialDisk.m
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/206/trunk/mgllib/mglGluPartialDisk.m
+END
+mglVFlip.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/380/trunk/mgllib/mglVFlip.m
+END
+mglPrivateListener.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/538/trunk/mgllib/mglPrivateListener.m
+END
+mglGluPartialDisk.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglGluPartialDisk.mexmaci64
+END
+mglCharToKeycode.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglCharToKeycode.mexw64
+END
+mglPoints3.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPoints3.mexmaci
+END
+mglDrawImage.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/913/trunk/mgllib/mglDrawImage.c
+END
+mglPrivateClose.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateClose.mexw64
+END
+mglDrawImage.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/913/trunk/mgllib/mglDrawImage.m
+END
+mglUnbindFrameBufferObject.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/981/trunk/mgllib/mglUnbindFrameBufferObject.c
+END
+mglClose.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/687/trunk/mgllib/mglClose.m
+END
+mglBindFrameBufferObject.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglBindFrameBufferObject.mexw64
+END
+mglShader.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglShader.mexmaci64
+END
+mglFlush.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglFlush.c
+END
+mglPrivateDeleteTexture.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateDeleteTexture.mexw32
+END
+mglPrivateCreateTexture.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateCreateTexture.mexw32
+END
+mglUnbindFrameBufferObject.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/982/trunk/mgllib/mglUnbindFrameBufferObject.m
+END
+mglKeycodeToChar.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglKeycodeToChar.mexmaci
+END
+mglUnbindFrameBufferObject.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglUnbindFrameBufferObject.mexmaci64
+END
+mglPolygon.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPolygon.mexmaci
+END
+mglPrivateMoveWindow.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateMoveWindow.mexmaci
+END
+mglPrivateSwitchDisplay.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateSwitchDisplay.mexw64
+END
+mglFlush.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglFlush.m
+END
+mglKeycodeToChar.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglKeycodeToChar.mexw64
+END
+mglFlush.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglFlush.mexmaci64
+END
+mglQuad.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglQuad.mexw32
+END
+mglCreateTexture.m
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/1027/trunk/mgllib/mglCreateTexture.m
+END
+mglCharToKeycode.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglCharToKeycode.mexmaci64
+END
+mglCreateFrameBufferObject.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/981/trunk/mgllib/mglCreateFrameBufferObject.c
+END
+mglStencilSelect.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglStencilSelect.mexmaci
+END
+mglStencilSelect.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglStencilSelect.mexw32
+END
+mglCreateFrameBufferObject.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/872/trunk/mgllib/mglCreateFrameBufferObject.m
+END
+mglCreateFrameBufferObject.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglCreateFrameBufferObject.mexmaci64
+END
+mglGluDisk.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGluDisk.mexw64
+END
+mglPrivateMovie.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateMovie.mexmaci
+END
+mglOpen.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/958/trunk/mgllib/mglOpen.m
+END
+mglPrivateGetKeyEvent.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/535/trunk/mgllib/mglPrivateGetKeyEvent.c
+END
+mglFrameGrab.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglFrameGrab.mexw32
+END
+mglLines2.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglLines2.mexmaci
+END
+mglListener.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/438/trunk/mgllib/mglListener.m
+END
+mglKeycodeToChar.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglKeycodeToChar.mexmaci64
+END
+mglPrivateGetKeyEvent.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateGetKeyEvent.mexmaci64
+END
+mglPostEvent.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/861/trunk/mgllib/mglPostEvent.m
+END
+mglPoints3.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPoints3.mexw32
+END
+mglPrivateOpen.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateOpen.mexw64
+END
+mglStencilCreateBegin.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglStencilCreateBegin.mexmaci64
+END
+mglFillOval.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglFillOval.mexmaci
+END
+mglGetKeys.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/334/trunk/mgllib/mglGetKeys.c
+END
+mglBltTexture.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglBltTexture.mexmaci64
+END
+mglStencilCreateEnd.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglStencilCreateEnd.mexmaci
+END
+mglStrokeText.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglStrokeText.mexw64
+END
+mglGetKeys.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglGetKeys.m
+END
+mglGetKeys.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglGetKeys.mexmaci64
+END
+mglIsCursorVisible.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglIsCursorVisible.c
+END
+mglPrivateDescribeDisplays.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateDescribeDisplays.mexw32
+END
+mglPrivateDeleteTexture.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateDeleteTexture.mexmaci64
+END
+mglPrivateOpen.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/990/trunk/mgllib/mglPrivateOpen.c
+END
+mglPrivatePostEvent.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivatePostEvent.mexmaci64
+END
+mglIsCursorVisible.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/905/trunk/mgllib/mglIsCursorVisible.m
+END
+mglIsCursorVisible.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglIsCursorVisible.mexmaci64
+END
+mglFlushAndWait.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/974/trunk/mgllib/mglFlushAndWait.m
+END
+mglGetKeyEvent.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/900/trunk/mgllib/mglGetKeyEvent.m
+END
+mglLines2.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglLines2.mexmaci64
+END
+mglDrawImage.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglDrawImage.mexw64
+END
+mglFillOval.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/884/trunk/mgllib/mglFillOval.c
+END
+mglPrivatePlaySound.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/340/trunk/mgllib/mglPrivatePlaySound.c
+END
+mexopts.10.7.sh
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/1029/trunk/mgllib/mexopts.10.7.sh
+END
+mglStrokeText.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/71/trunk/mgllib/mglStrokeText.c
+END
+mglGetKeys.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGetKeys.mexmaci
+END
+mglPrivateSwitchDisplay.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateSwitchDisplay.c
+END
+mglFillOval.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglFillOval.m
+END
+developer.txt
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/769/trunk/mgllib/developer.txt
+END
+mglText.c
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/739/trunk/mgllib/mglText.c
+END
+mglPrivatePlaySound.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivatePlaySound.mexmaci64
+END
+mglPrivateDeleteTexture.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateDeleteTexture.mexw64
+END
+mglFrameGrab.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/287/trunk/mgllib/mglFrameGrab.c
+END
+mglStrokeText.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/380/trunk/mgllib/mglStrokeText.m
+END
+mglPrivateCreateTexture.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateCreateTexture.mexw64
+END
+mglStencilCreateEnd.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglStencilCreateEnd.mexmaci64
+END
+mglInstallSound.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/822/trunk/mgllib/mglInstallSound.m
+END
+mglGetGammaTable.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGetGammaTable.c
+END
+mglText.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/138/trunk/mgllib/mglText.m
+END
+mglFrameGrab.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/988/trunk/mgllib/mglFrameGrab.m
+END
+mglQuad.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglQuad.mexw64
+END
+mglGluDisk.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/330/trunk/mgllib/mglGluDisk.c
+END
+mglGetGammaTable.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglGetGammaTable.m
+END
+mglFillRect.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/334/trunk/mgllib/mglFillRect.c
+END
+mglBltTexture.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglBltTexture.mexw32
+END
+mglFixationCross.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglFixationCross.m
+END
+mglStencilSelect.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglStencilSelect.mexw64
+END
+mglGluDisk.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/205/trunk/mgllib/mglGluDisk.m
+END
+mglFillRect.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglFillRect.m
+END
+mglSetGammaTable.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglSetGammaTable.mexmaci64
+END
+mglScreenCoordinates.m
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/384/trunk/mgllib/mglScreenCoordinates.m
+END
+mglSetParam.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/822/trunk/mgllib/mglSetParam.m
+END
+mglPrivateGetMouseEvent.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateGetMouseEvent.mexw32
+END
+mglClearScreen.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglClearScreen.mexw32
+END
+mglStencilCreateBegin.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglStencilCreateBegin.mexmaci
+END
+mglFrameGrab.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglFrameGrab.mexw64
+END
+mglPoints2.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglPoints2.c
+END
+mglGetSecs.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGetSecs.mexmaci
+END
+mglBltTexture.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglBltTexture.mexmaci
+END
+mglPoints3.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPoints3.mexw64
+END
+mglPoints2.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglPoints2.m
+END
+mglBindFrameBufferObject.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/981/trunk/mgllib/mglBindFrameBufferObject.c
+END
+mglTransform.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/25/trunk/mgllib/mglTransform.c
+END
+mglPrivateClose.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateClose.mexmaci64
+END
+mglTextDraw.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/830/trunk/mgllib/mglTextDraw.m
+END
+mglPrivateCreateTexture.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/1027/trunk/mgllib/mglPrivateCreateTexture.c
+END
+mglTestLiveTexture.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/746/trunk/mgllib/mglTestLiveTexture.mexmaci
+END
+mglFlush.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglFlush.mexmaci
+END
+mglBindFrameBufferObject.m
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/872/trunk/mgllib/mglBindFrameBufferObject.m
+END
+mglPrivatePostEvent.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivatePostEvent.mexmaci
+END
+mglFlush.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglFlush.mexw32
+END
+mglTransform.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglTransform.m
+END
+mglPrivateDescribeDisplays.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateDescribeDisplays.mexmaci
+END
+mglPrivateInstallSound.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateInstallSound.mexmaci64
+END
+mglTransform.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglTransform.mexmaci64
+END
+mglPrivateCreateTexture.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/1027/trunk/mgllib/mglPrivateCreateTexture.mexmaci64
+END
+mglPrivateDescribeDisplays.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglPrivateDescribeDisplays.mexw64
+END
+mglDeleteTexture.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/739/trunk/mgllib/mglDeleteTexture.m
+END
+mglGetGammaTable.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGetGammaTable.mexw32
+END
+mglPrivateMovie.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/955/trunk/mgllib/mglPrivateMovie.c
+END
+mglTransform.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglTransform.mexmaci
+END
+mglPolygon3D.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/972/trunk/mgllib/mglPolygon3D.c
+END
+mexopts.10.7.xcode.4.3.sh
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/1029/trunk/mgllib/mexopts.10.7.xcode.4.3.sh
+END
+mglSimulateRun.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/861/trunk/mgllib/mglSimulateRun.m
+END
+mglClearScreen.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/921/trunk/mgllib/mglClearScreen.c
+END
+mglFrameGrab.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglFrameGrab.mexmaci
+END
+mglGetMouse.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGetMouse.mexw32
+END
+mglLines2.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglLines2.mexw32
+END
+mglPoints3.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglPoints3.c
+END
+mglPrivateDescribeDisplays.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateDescribeDisplays.mexmaci64
+END
+mglClearScreen.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/921/trunk/mgllib/mglClearScreen.m
+END
+mglGetMouse.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglGetMouse.mexmaci64
+END
+mglFillRect3D.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglFillRect3D.mexw64
+END
+mglGetMouseEvent.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/334/trunk/mgllib/mglGetMouseEvent.m
+END
+mglQuad.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglQuad.mexmaci64
+END
+mglPoints3.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglPoints3.m
+END
+mglPoints3.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPoints3.mexmaci64
+END
+mglBltTexture.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglBltTexture.mexw64
+END
+mglStencilCreateEnd.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglStencilCreateEnd.mexw32
+END
+mglPolygon.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglPolygon.c
+END
+mglPrivateListener.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPrivateListener.mexmaci64
+END
+mglPrivateGetMouseEvent.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/957/trunk/mgllib/mglPrivateGetMouseEvent.mexw64
+END
+mglGetSecs.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/973/trunk/mgllib/mglGetSecs.c
+END
+mglClearScreen.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglClearScreen.mexw64
+END
+mglGluAnnulus.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGluAnnulus.mexmaci
+END
+mglPoints2.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPoints2.mexmaci
+END
+mglPolygon.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglPolygon.m
+END
+mglPolygon.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglPolygon.mexmaci64
+END
+mglShader.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglShader.c
+END
+mglFillRect.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglFillRect.mexw32
+END
+mglGetSecs.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/44/trunk/mgllib/mglGetSecs.m
+END
+mglMoveWindow.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/927/trunk/mgllib/mglMoveWindow.m
+END
+mglGetSecs.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/973/trunk/mgllib/mglGetSecs.mexmaci64
+END
+mglPrivatePlaySound.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivatePlaySound.mexmaci
+END
+mglGetParam.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/935/trunk/mgllib/mglGetParam.m
+END
+mglDrawImage.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglDrawImage.mexmaci64
+END
+mglPrivateInstallSound.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateInstallSound.mexmaci
+END
+mglShader.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/928/trunk/mgllib/mglShader.m
+END
+mglGluPartialDisk.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglGluPartialDisk.mexmaci
+END
+mglCharToKeycode.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglCharToKeycode.c
+END
+mglPrivateGetMouseEvent.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateGetMouseEvent.mexmaci
+END
+mglFlush.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglFlush.mexw64
+END
+mglPrivateMoveWindow.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateMoveWindow.mexw32
+END
+mglCharToKeycode.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/394/trunk/mgllib/mglCharToKeycode.m
+END
+mglGetSecs.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGetSecs.mexw32
+END
+mglGetGammaTable.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGetGammaTable.mexw64
+END
+mglDescribeDisplays.m
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/975/trunk/mgllib/mglDescribeDisplays.m
+END
+mglDisplayCursor.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglDisplayCursor.mexw32
+END
+mglGetKeys.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGetKeys.mexw32
+END
+mglShader.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglShader.mexw64
+END
+mglKeycodeToChar.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglKeycodeToChar.c
+END
+mglClearScreen.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/921/trunk/mgllib/mglClearScreen.mexmaci
+END
+mglSetMousePosition.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/970/trunk/mgllib/mglSetMousePosition.c
+END
+mglMovie.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/955/trunk/mgllib/mglMovie.m
+END
+mglStencilCreateBegin.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglStencilCreateBegin.c
+END
+mglQuad.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglQuad.mexmaci
+END
+mglPrivateOpen.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglPrivateOpen.mexmaci
+END
+mglKeycodeToChar.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/88/trunk/mgllib/mglKeycodeToChar.m
+END
+mglCreateFrameBufferObject.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/931/trunk/mgllib/mglCreateFrameBufferObject.mexmaci
+END
+mglGetMouse.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglGetMouse.mexw64
+END
+mglSetMousePosition.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglSetMousePosition.mexw64
+END
+mglBltTexture.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglBltTexture.c
+END
+mglSetMousePosition.m
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/970/trunk/mgllib/mglSetMousePosition.m
+END
+mglDisplayCursor.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglDisplayCursor.c
+END
+mglStencilCreateBegin.m
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/380/trunk/mgllib/mglStencilCreateBegin.m
+END
+mglSetMousePosition.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglSetMousePosition.mexmaci64
+END
+mglLines2.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglLines2.mexw64
+END
+mglSetGammaTable.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglSetGammaTable.mexw32
+END
+mglBltTexture.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/694/trunk/mgllib/mglBltTexture.m
+END
+mglStrokeText.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglStrokeText.mexmaci
+END
+mglDisplayCursor.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/176/trunk/mgllib/mglDisplayCursor.m
+END
+mglPrivateDeleteTexture.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/739/trunk/mgllib/mglPrivateDeleteTexture.c
+END
+mglDisplayCursor.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglDisplayCursor.mexmaci64
+END
+mglPrivatePostEvent.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/861/trunk/mgllib/mglPrivatePostEvent.c
+END
+mglGluPartialDisk.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglGluPartialDisk.mexw32
+END
+mglUnbindFrameBufferObject.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglUnbindFrameBufferObject.mexw64
+END
+mgl.h
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/mgl/!svn/ver/991/trunk/mgllib/mgl.h
+END
+mglStencilCreateEnd.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglStencilCreateEnd.mexw64
+END
+mglText.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglText.mexmaci
+END
+mglMake.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/1029/trunk/mgllib/mglMake.m
+END
+mglPrivateGetKeyEvent.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPrivateGetKeyEvent.mexw32
+END
+mglPlaySound.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/654/trunk/mgllib/mglPlaySound.m
+END
+mglPolygon.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPolygon.mexw32
+END
+mglLines2.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/796/trunk/mgllib/mglLines2.c
+END
+mglGluAnnulus.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/205/trunk/mgllib/mglGluAnnulus.c
+END
+mglBindTexture.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/1011/trunk/mgllib/mglBindTexture.c
+END
+mglPoints2.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglPoints2.mexw32
+END
+mglDisplayCursor.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglDisplayCursor.mexmaci
+END
+mglFillRect.mexmaci
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/915/trunk/mgllib/mglFillRect.mexmaci
+END
+mglResolution.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglResolution.mexw32
+END
+mglLines2.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/800/trunk/mgllib/mglLines2.m
+END
+mglGluAnnulus.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/205/trunk/mgllib/mglGluAnnulus.m
+END
+mglBindTexture.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/1018/trunk/mgllib/mglBindTexture.m
+END
+mglPrivateOpen.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/990/trunk/mgllib/mglPrivateOpen.mexmaci64
+END
+mglGluAnnulus.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglGluAnnulus.mexmaci64
+END
+mglBindTexture.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/1011/trunk/mgllib/mglBindTexture.mexmaci64
+END
+mglFillOval.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/747/trunk/mgllib/mglFillOval.mexw32
+END
+mglFillRect.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/967/trunk/mgllib/mglFillRect.mexw64
+END
+mglHFlip.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/380/trunk/mgllib/mglHFlip.m
+END
+mglStencilCreateEnd.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/18/trunk/mgllib/mglStencilCreateEnd.c
+END
+mglFillOval.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglFillOval.mexmaci64
+END
+mglPrivateGetMouseEvent.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/340/trunk/mgllib/mglPrivateGetMouseEvent.c
+END
+mglStencilCreateEnd.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/22/trunk/mgllib/mglStencilCreateEnd.m
+END
+mglStrokeText.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglStrokeText.mexmaci64
+END

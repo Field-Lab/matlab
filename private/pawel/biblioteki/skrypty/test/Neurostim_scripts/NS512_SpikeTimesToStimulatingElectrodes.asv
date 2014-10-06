@@ -1,0 +1,19 @@
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009new\2010-09-14-0\data002min009\data002min009.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009new\2010-09-14-0\data002min009\data002min009.neurons');
+idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+NeuronID=122;
+spikeTimes = double(neuronFile.getSpikeTimes(NeuronID))'; % for given neuron, import the spikes times
+
+full_path='E:\analysis\2010-09-14-0\movie002';
+
+for neuron=
+MovieNumbers=zeros(1,length(spikeTimes));
+RepetitionNumbers=MovieNumbers;
+PatternNumbers=MovieNumbers;
+Latencies=MovieNumbers;
+
+MoviesBegins=NS512_MoviesBegins(full_path,NS_GlobalConstants);
+for i=1:length(spikeTimes)
+    i
+    [MovieNumbers(i),RepetitionNumbers(i),PatternNumbers(i),Latencies(i)]=NS512_SpikeTimesToStimulationPatterns(full_path,spikeTimes(i),MoviesBegins,NS_GlobalConstants);
+end

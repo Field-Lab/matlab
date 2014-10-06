@@ -1,0 +1,11 @@
+eegfegsweg
+
+Y=1e8;
+beta=0.8;
+Rs=20000;
+I0=1e9;
+alfa=0.5;
+N=2;
+
+model_nielin=struct('Y',Y,'Rs',Rs,'I0',I0,'alfa',alfa,'N',N);
+Vcourse=art_cpe_nielin_sym1(model_nielin,1e-6,t0,T,dt);

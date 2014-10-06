@@ -1,0 +1,8 @@
+
+cd H:/pliki/nauka/stymulacja/chip/testy/CURRENT_MODE/
+
+dane0=importdata('curr_r2_4700k_b4_c1.dat')';
+dac=[-127:127];
+R1=4800e3;
+
+doubleaxis(dac,dane0,R1);

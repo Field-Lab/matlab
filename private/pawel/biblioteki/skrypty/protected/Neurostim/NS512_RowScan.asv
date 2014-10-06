@@ -1,0 +1,37 @@
+TimeShiftInMs=7.5;
+InterPulseLatencyInMs=30;
+
+TimeShift=TimeShiftInMs*20;
+InterPulseLatency=InterPulseLatencyInMs*20;
+
+NumberOfSamples=10000;
+electrodes=[1:512];
+
+Rows=[9:13];
+WhichColumns=[
+
+Array=zeros(length(Rows),512);
+ble=NS512_PatternsForRowStimulation(RowIndexes,WhichColumns);
+
+for i=1:length(Rows)
+    Array(i,ble(i,:))=1;
+end
+Times=[TimeShift:InterPulseLatency:TimeShift+length(Columns)*InterPulseLatency];
+
+Chunks=[];
+Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,Patterns);
+
+MovieChunksFile=[1 Chunks]; %only one movie
+break;
+cd C:\home\pawel\2010\stim_files; 
+fid = fopen('512_Culumns_el','wb')
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('512_Columns_pt','wb','ieee-le.l64')
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('512_Columns_mv','wb','ieee-le.l64')
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid); 

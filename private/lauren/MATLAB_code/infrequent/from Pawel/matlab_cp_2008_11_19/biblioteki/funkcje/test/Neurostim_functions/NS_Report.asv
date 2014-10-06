@@ -1,0 +1,75 @@
+function [ChannelInfo,MoviesInfo]=NS_Report(FileName,unit,NS_GlobalConstants);
+%Gives overall information about which channels were used for sending
+%stimulation pulses in the all movies of the file. The output data is an
+%array of the size: total_number_of_channels*number_of_movies. For each
+%movie, for given channel the number of pattern corresponding to this file
+%is given. If the value is zero, then given channel was not being used for
+%stimulation in given movie (but could be used in the previous or later
+%movies).
+ChipAddresses=NS_GlobalConstants.ChipAddresses;
+NumberOfChannelsPerChip=NS_GlobalConstants.NumberOfChannelsPerChip;
+CurrentRanges=NS_GlobalConstants.CurrentRanges;
+
+TotalNumberOfChannels=length(ChipAddresses)*NumberOfChannelsPerChip;
+MovieInfo=struct('StartTime',0,'PeriodOfRep',0,'NumberOfRep',0,'NumberOfPatt',0);
+
+filename=['movie' FileName]
+l=length(filename);
+SPfilename=[filename(1:l-8) 'pattern' filename(l-2:l)];
+
+fid0=fopen(filename,'r','b');
+%ID=fread(fid0,8,'int8')'
+header=readMHchunk(fid0);
+NumberOfMovies=header.number_of_movies;
+MoviesInfo(1,NumberOfMovies)=MovieInfo;
+ChannelInfo=zeros(TotalNumberOfChannels,NumberOfMovies);
+
+offset=6; %the value 6 come sfrom the fact that 6 values on the beginning on the data array are not for events definition
+
+for i=1:NumberOfMovies
+    ID=fread(fid0,8,'int8')';
+    if ID==[75 116 5 96 -84 122 -59 -64] %if this is a SC chunk...
+        ChunkSize=fread(fid0,1,'int64'); %read in the chunk size
+        commands=fread(fid0,ChunkSize,'int32'); 
+     elseif ID==[114 -69 27 -4 99 66 -12 -123] %MD chunk
+        ChunkSize=fread(fid0,1,'int64');
+        data=fread(fid0,ChunkSize,'int32');
+        %reading in the movie parameters:
+        PD_chunk_index=data(1);
+        MovieBegin=data(2)*(2^30)+data(3); %beginning of first iteration of the movie
+        RepetNumber=data(4); %number of repetitions of the movie;
+        RepetPeriod=data(5)*(2^30)+data(6); %period of movie repetitions;                        
+        
+        [pattern,PatternsIndexes,status]=ReadPatternDataChunk(SPfilename,PD_chunk_index,NS_GlobalConstants); %reading in the pattern data        
+        disp(['movie ' num2str(i) ': start at ' num2str(MovieBegin) ', period of repetitions: ' num2str(RepetPeriod) ', number of repetitions: ' num2str(RepetNumber) ', number of patterns: ' num2str(length(PatternsIndexes))]);
+        MoviesInfo(1,i).StartTime=MovieBegin;
+        MoviesInfo(1,i).PeriodOfRep=RepetPeriod;
+        MoviesInfo(1,i).NumberOfRep=RepetNumber;
+        MoviesInfo(1,i).NumberOfPatt=length(PatternsIndexes);
+        
+        PI=[0 PatternsIndexes]; %this is an additional variable
+        ChannelNumberOfset=0;
+        for j=1:length(PatternsIndexes);
+            NumberOfChannels=PI(j+1)-PI(j);
+            for k=1:NumberOfChannels
+                ind=pattern(k+ChannelNumberOfset).channel;
+                filename
+                [Pulse,Status]=NS_FindPulseShapeForMovie(filename,ind,i,NS_GlobalConstants);
+                if (find(Pulse(3,:))==1)
+                    ChannelInfo(ind,i)=j;
+                end
+            end
+            ChannelNumberOfset=ChannelNumberOfset+NumberOfChannels;
+        end      
+    end
+end
+%For each electrode that was in use for stimulation, display the number of
+%movies that the electrode was used in:
+for i=1:TotalNumberOfChannels
+    movies=find(ChannelInfo(i,:)~=0);
+    if length(movies)>0
+        disp(['channel ' num2str(i) ': movies ' num2str(movies)]);
+    end
+end
+fclose(fid0);
+output=ChannelInfo;

@@ -1,0 +1,35 @@
+NumberOfSamples=60000;
+
+% * * * * just example !!! * * * * *
+StimElectrodes = [1 6 12 16 19 26 34 36 38 45 56 58 64];
+StimAmps = [0.2 1.2 1.3 1.5 0.56 1 1.3 0.8 0.2 1 1 0.45 0.06];
+
+Times=round(rand(1,4000)*NumberOfSamples);
+Patterns=StimElectrodes(ceil(rand(1,length(Times))*length(StimElectrodes)));
+% * * * * * end of example * * * * *
+
+electrodes=1:64;
+Array=zeros(64);
+for i = 1:length(StimElectrodes)
+    Array(StimElectrodes(i),StimElectrodes(i)) = StimAmps(i);
+end
+
+Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,Patterns);
+MovieChunksFile=[1 Chunk];
+
+cd C:\pawel\pliki\nauka\matlab\StimuliFiles; 
+
+fid = fopen('avalanche_electrodes','wb','ieee-le.l64');
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('avalanche_patterns','wb','ieee-le.l64');
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('avalanche_movie','wb','ieee-le.l64');
+fwrite(fid,MovieChunksFile,'int32');
+
+
+
+fclose(fid); 

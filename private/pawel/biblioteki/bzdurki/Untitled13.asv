@@ -1,0 +1,42 @@
+ID=96;
+MovieID=8;
+StimEl=127;
+
+fid=fopen(['D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data005\Matlab\RawDataPieces\ID' num2str(ID) '_stim' num2str(StimEl)],'r','ieee-le'); 
+a=fread(fid,'int32');
+fclose(fid)
+
+t=[0:9999]/20;
+s=reshape(a,16,50,10000);
+s1=reshape(s(MovieID,:,:),50,10000);
+figure(16)
+clf
+h=plot(t,s1');
+set(h,'Color','b');
+hold on
+
+%trzeba znalezc te spiki, ktore zostaly znalezione przez Vision i narysowac
+%je na czerwono:
+fid=fopen(['D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data005\Matlab\dane\ID=' num2str(ID)],'r','ieee-le'); 
+a=fread(fid,'int32');
+l=length(a);
+b=reshape(a,5,l/5);
+fclose(fid);
+
+SpikesForMovie=find(b(1,:)==MovieID);
+SpikesForElectrode=find(b(3,:)==StimEl);
+
+ID=[96 216 217 289];
+
+for rep=1:50
+    SpikesForRepetition=intersect(find(b(2,:)==rep),SpikesForMovie);
+    if SpikesForRepetition
+        SignalForRepetition=s1(rep,:);
+        for spike=1:length(SpikesForRepetition)
+            Latency=b(5,SpikesForRepetition(spike))
+            SpikeWaveform=SignalForRepetition(Latency-10:Latency+20);
+            plot([Latency-11:Latency+19]/20,SpikeWaveform,'g')
+        end
+    end
+end
+    

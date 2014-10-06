@@ -1,0 +1,33 @@
+%D:\analysis\cultures\2009-11-20-0\data002
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+FileName='E:\2009-11-20\data002';
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\pawel\praca\analysis\2009-11-20-0\data002\data002.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\pawel\praca\analysis\2009-11-20-0\data002\data002.neurons');
+%eiFile=edu.ucsc.neurobiology.vision.io.EIFile('D:\analysis\cultures\2009-11-20-0\data002\data002.ei');
+idList = neuronFile.getIDList();
+NeuronID=6647;
+spikeTimes = neuronFile.getSpikeTimes(NeuronID)';
+N=500;
+Timings1=spikeTimes(1,1:min(N,length(spikeTimes)))-20;
+break;
+Data=zeros(513,N);
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(FileName); 
+for i=1:length(Timings1)
+    RawData=double(rawFile.getData(Timings1(i),N)');
+    %figure(1)
+    %plot(RawData(468,:))
+    %axis([0 100 -450 -320]);
+    %pause(1)
+    Data=Data+RawData;
+end
+m=mean(Data')';
+for i=1:513
+    Data(i,:)=Data(i,:)-m(i);
+end
+%clear T;
+
+T(1,:,:)=Data(426:513,:)/N;
+FigureProperties=struct('FigureNumber',3,'TimeRange',[0 80],'AmplitudeRange',[-60 40],'FontSize',16,'Colors',['k' 'r' 'b' 'y'],'XTick',[0 0.5 1 1.5 2 2.5 3 3.5],'YTick',[-60:20:40],'LineWidth',2,'YLabel','signal');
+y=NS512_PlotClustersOfSignaturesOnArrayLayoutWithMarks(T,[425:512],[1],500,FigureProperties,NS_GlobalConstants,[484 493 459 434 504 499]);
+
+%M=NS512_SaveMovieFromSignatureWithMarks(Data,[425:512],[],ArrayID,FigureProperties,NS_GlobalConstants,[]);

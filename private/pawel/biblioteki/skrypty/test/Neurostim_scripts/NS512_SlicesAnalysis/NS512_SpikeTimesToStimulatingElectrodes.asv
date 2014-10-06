@@ -1,0 +1,26 @@
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009paramSninya\2010-09-14-0\data002min009\data002min009.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009paramSninya\2010-09-14-0\data002min009\data002min009.neurons');
+idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+
+full_path='E:\analysis\2010-09-14-0\movie002';
+MoviesBegins=NS512_MoviesBegins(full_path,NS_GlobalConstants);
+
+for neuron=1:length(idList)
+    NeuronID=idList(neuron);
+    spikeTimes = double(neuronFile.getSpikeTimes(NeuronID))'; % for given neuron, import the spikes times
+    dane=zeros(4,length(spikeTimes));
+    for i=1:length(spikeTimes)
+        i
+        [dane(1,i),dane(2,i),dane(3,i),dane(4,i)]=NS512_SpikeTimesToStimulationPatterns(full_path,spikeTimes(i),MoviesBegins,NS_GlobalConstants);
+    end
+    FullName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009paramSninya\2010-09-14-0\dane\ID=' num2str(NeuronID)];
+    fid=fopen(FullName,'wb','ieee-le');                                    
+    fwrite(fid,dane,'int32');
+    fclose(fid);
+end
+
+% to read:
+%fid=fopen('ID=3','r','ieee-le'); 
+%a=fread(f,'int32')
+%l=length(a);
+%b=reshape(a,4,l/4);

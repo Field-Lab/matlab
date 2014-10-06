@@ -1,0 +1,3 @@
+function y=SigmoidalFunction(x)
+
+y0=(1+exp(x)).^-1;

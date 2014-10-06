@@ -1,0 +1,5 @@
+Could probably simplify interface to decode_distclass_string_and_call.  Turns out don't really need a version that calls without creating a dist or calls without already having a struct.
+
+Try to setup CMWC as a generator that can work with distributions; I think all I need are the methods listed as required in Boost docs.
+
+Should be fairly simple to make return mxArray type match the result_type of the distribution.  I played with this a little in the CMWC code and it didn't really help that much, but a small speedup.  Not a high priority.

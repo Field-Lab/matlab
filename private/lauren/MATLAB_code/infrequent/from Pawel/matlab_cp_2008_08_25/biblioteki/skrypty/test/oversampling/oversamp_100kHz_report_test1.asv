@@ -1,0 +1,13 @@
+animal=1;
+spike_type=0;
+figura=11;
+ktore_spiki=[1:16];
+style=0;
+y=oversamp_100kHz_report(animal,spike_type,figura,ktore_spiki,style);
+
+animal=1;
+spike_type=1;
+figura=12;
+ktore_spiki=[1:16];
+style=0;
+y=oversamp_100kHz_report(animal,spike_type,figura,ktore_spiki,style);

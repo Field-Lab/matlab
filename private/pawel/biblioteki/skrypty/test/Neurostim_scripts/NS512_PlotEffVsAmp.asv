@@ -1,0 +1,22 @@
+NeuronNumber=7;
+
+FilePath='E:\pawel\analysis\cultures\2009-11-20-0\2009-11-20-0\data003e\';
+FileName=['ClusterFile_003_n' num2str(NeuronNumber)];
+FullPath=[FilePath FileName]
+
+ClusterIndexes=NS_ReadClusterFileAll(FullPath);
+CI=ClusterIndexes(:,:,1:100);
+
+SCI=size(CI);
+
+for i=1:SCI(2)
+    a=find(CI(:,i,:)==2);
+    if a>0
+        pattern=i;
+    end
+end
+
+for i=1:SCI(1)
+    b=CI(i,pattern,:);
+    a=sum(find(
+end

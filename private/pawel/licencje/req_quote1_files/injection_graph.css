@@ -1,0 +1,247 @@
+span#__skype_highlight_id {
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 11px !important;
+  font-style: bold; 
+  font-weight: bold;
+  border: 0px none; 
+  margin: 0px 0px 0px 0px; 
+  padding: 0px 0px 0px 0px; 
+  white-space:nowrap; 
+  line-height: 17px !important;
+  /*vertical-align: baseline;/*top; */
+  text-indent:0px; 
+  border-width:none; 
+  color:black; 
+  cursor:pointer;
+  position:static;
+  display: inline !important;
+  background:transparent none no-repeat scroll 0% 0px; 
+  height:16px!important; 
+  float: none ! important;
+ }
+  
+ #__skype_highlight_id span.skype_tb_injection_left {
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 11px !important; 
+  font-style: bold; 
+  font-weight: bold;
+  border: 0px none; 
+  margin: 0px 0px 0px 0px; 
+  padding: 1px 0px 3px 0px; 
+  white-space:nowrap; 
+  line-height: 17px;
+  text-indent:0px; 
+  color:black; 
+  cursor:pointer; 
+  display: inline !important;
+  background:transparent none no-repeat scroll 0px 0px; 
+  height:16px;
+  position:static;
+/*  position:relative; 
+  left:0px; 
+  top:0px; */
+  vertical-align: middle; 
+  float: none ! important;
+}
+#__skype_highlight_id span.skype_tb_injection_right {
+  font-family: Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 11px !important; 
+  font-style: bold; 
+  font-weight: bold;
+  border: 0px none; 
+  margin: 0px 0px 0px 0px; 
+  padding: 0px 0px 2px 0px; 
+  white-space:nowrap; 
+  line-height: 17px;
+  text-indent:0px; 
+  color:black; 
+  cursor:pointer; 
+  display: inline !important;
+  background:transparent none no-repeat scroll 0px 0px; 
+  height:16px;
+  position:static;
+  /*position:relative; 
+  left:0px; 
+  top:0px; */
+  vertical-align: middle; 
+  float: none ! important;
+}
+/*next one is used for adges and flag with arrow spans*/
+ #__skype_highlight_id span.skype_tb_injection_left_img {
+  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; 
+  font-size: 11px !important; 
+  font-style: bold; 
+  font-weight: bold;
+  border: 0px none; 
+  margin: 0px 0px 0px 0px !important; 
+  padding: 1px 0px 5px 0px; 
+  white-space:nowrap; 
+  line-height: 17px;
+  text-indent:0px; 
+  color:black; 
+  cursor:pointer; 
+  display: inline !important;
+  background:transparent url('chrome://skype_ff_toolbar_win/content/cb_normal_m.gif') repeat-x scroll 0px 0px;
+  height:15px;
+  position:static;
+  /*position:relative; 
+  left:0px; 
+  top:1px; */
+  /*vertical-align: middle; */
+  float: none ! important;
+}
+
+/*Right images*/
+/*margin, padding: top right bottom left*/
+#__skype_highlight_id span.skype_tb_innerText {
+  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; 
+  text-decoration: none !important;
+  font-size: 11px !important; 
+  font-style: normal !important; 
+  font-weight: bold !important;
+  border: 0px none; 
+  margin: 3px 0px 0px 0px; 
+  padding: 1px 0px 2px 0px;
+  white-space:nowrap; 
+  line-height: 17px;
+  text-indent:0px; 
+  border-width:none; 
+  color:rgb(73,83,90) !important; 
+  cursor:pointer; 
+  display: inline !important;  
+  height:15px; 
+  float: none ! important;
+  position:static;
+  /*position:relative; 
+  left:0px; 
+  top:1px;*/
+  background:transparent url('chrome://skype_ff_toolbar_win/content/cb_normal_m.gif') repeat-x scroll 0% 0px;
+  letter-spacing:0px;
+}
+
+font#__skype_highlight_font_id {
+  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; 
+  text-decoration: none !important;
+  font-size: 11px !important; 
+  font-style: normal !important;   
+  font-weight: bold !important;
+  color:rgb(73,83,90) !important;
+}
+
+#__skype_highlight_id img.skype_tb_img {
+  vertical-align: middle; 
+  border: 0px none ; 
+  margin: 0px !important;
+  float: none !important;
+  padding: 0px 0px 2px 0px;
+  position:static;
+  /*position:relative; 
+  left:0px; 
+  top:0px;*/
+  line-height: 17px; 
+  display: inline !important;
+}
+
+span#__skype_highlight_id #__skype_highlight_id_left #__skype_highlight_id_left_img img.skype_tb_img_flag {
+  vertical-align: middle; 
+  margin: 0px 0px 2px 0px;/*1*/
+  float: none ! important;
+  border-color:white; 
+  padding:0px 1px 1px 0px; 
+  position:static;
+/*  position:relative; 
+  left:0px; 
+  top:0px;*/
+  line-height: 17px;
+  display: inline !important; 
+  border: 0px none;  
+  background:transparent url('chrome://skype_ff_toolbar_win/content/shadow.gif') no-repeat scroll 1px 1px;
+  height:11px;
+  width:16px;
+} 
+span#__skype_highlight_id #__skype_highlight_id_left #__skype_highlight_id_left_adge img.skype_tb_img_adge,
+span#__skype_highlight_id #__skype_highlight_id_right #__skype_highlight_id_right_adge img.skype_tb_img_adge {
+  vertical-align: middle; 
+  margin: 0px 0px 2px 0px;
+  float: none ! important;
+  border-color:white; 
+  padding:0px 0px 0px 0px; 
+  position:static;
+  line-height: 17px;
+  display: inline !important; 
+  border: 0px none;  
+  background:transparent none no-repeat scroll 0px 0px;
+  height:11px;
+  width:7px;
+} 
+
+span#__skype_highlight_id img.skype_tb_img_space {
+  vertical-align: middle; 
+  margin: 0px 0px 0px 0px;
+  float: none ! important;
+  border: 0px none;  
+  padding:0px 0px 0px 0px; 
+  position:static;
+  line-height: 17px;
+  display: inline !important;   
+  background:transparent none no-repeat scroll 0px 0px;
+  height:1px;
+  width:1px;
+} 
+
+span#__skype_highlight_id img.skype_tb_img_arrow {
+  vertical-align: middle; 
+  margin: 0px 0px 0px 0px !important;
+  float: none ! important;
+  border-color:white; 
+  padding:0px 0px 0px 0px;
+  position:static;
+/*  position:relative; 
+  left:0px; 
+  top:0px;*/
+  line-height: 17px;
+  display: inline !important; 
+  border: 0px none;  
+  background:transparent none no-repeat scroll 0% 0px;
+  height:3px;
+  width:5px;
+}
+.skype_tb_hidimg { visibility:hidden;position:absolute;left:0px;top:0px; }
+
+#skype_dc {
+  background:#FFFFE1; border:1px solid #666666; color:#333333; font:menu; margin:0px;
+  padding:3px 5px; position:absolute; left:0px; top:0px; visibility:hidden; cursor:pointer; z-index:101;
+}
+#skype_menu {
+  background:#FFFFFF; border:1px solid #666666; color:#333333; font:menu; margin:0px;
+  padding:0px 2px 0px 2px; position:absolute; left:0px; top:0px; visibility:hidden; cursor:pointer; z-index:101;
+  width: auto;
+}/*width: 138px;*/
+
+.skype_tb_table {
+  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; font-style: normal; font-weight: normal;
+  border: 0; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; line-height: normal;
+  vertical-align: top; background-position: 0 0; text-indent:0; cursor:pointer; 
+  table-layout:auto;border-collapse:separate;
+  text-align:left;
+}
+.skype_tb_tr {
+  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; font-style: normal; font-weight: normal;
+  background:background-image; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; line-height: normal;
+  border: 0; line-height: normal; vertical-align: middle; text-indent:0; cursor:pointer;
+  text-align:left;
+}
+.skype_tb_td {
+  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; font-style: normal; font-weight: normal;
+  background:background-image; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; line-height: normal;
+  vertical-align: middle; border: 0; background-position: 0 0; text-indent:0; border-width:thin; color:black; cursor:pointer;
+  text-align:left;
+}
+.skype_tb_link,.skype_tb_link:link,.skype_tb_link:visited {
+  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; font-style: normal; font-weight: normal;
+  color: #003366; text-decoration: underline; background:background-image;
+}
+.skype_tb_link:hover,.skype_tb_link:active {
+  color: #FF0000; background:background-image; font-style: normal; font-weight: normal;
+  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px;
+}

@@ -1,0 +1,30 @@
+%cd C:\data\;
+cd D:\2008-08-11-test;
+%cd D:\2008-03-18saline;
+SPfilename='pattern001';
+number_of_PD_chunk=26;
+ChipAddresses=[30 31];
+NumberOfChannelsPerChip=32;
+
+ChipAddresses=[30 31];
+NumberOfChannelsPerChip=32;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=1;
+%[patterns_out,PatternsIndexes,Status]=ReadPatternDataChunk(SPfilename,number_of_PD_chunk,NS_GlobalConstants);
+
+%[pattern,PatternsIndexes,status]=ReadPatternDataChunk(SPfilename,PD_chunk_index,ChipAddresses,NumberOfChannelsPerChip)
+%for i=1:length(pattern)
+%    pattern(i).channel;
+%end
+for i=1:0
+    if Status.ChannelsStatus(i).range~=2
+        i
+        Status.ChannelsStatus(i).range
+    end
+end
+
+for i=1:24
+    name=NS_PatternAmplitudes(patterns_out,PatternsIndexes,Status,i,NS_GlobalConstants)
+end

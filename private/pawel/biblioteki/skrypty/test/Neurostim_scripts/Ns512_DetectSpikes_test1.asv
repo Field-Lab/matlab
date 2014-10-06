@@ -1,0 +1,28 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+ArrayID=500;
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
+Radius=1;
+
+FigureProperties=struct('FigureNumber',12,'Subplot',[2 3 3],'TimeRange',[0 50],'AmplitudeRange',[-200 100],'FontSize',16,'Colors',['k' 'r' 'b' 'm' 'g' 'c' 'y'],'LineWidth',1,'YLabel','signal [mV]');
+DataPath='D:\analysis\retina\2009-11-27-0\data001';
+WritePathFigs='D:\analysis\retina\2009-11-27-0\data001\figures';
+
+PatternNumber=20;
+MovieNumber=57;
+
+Patterns=[1:64];
+Patterns=20;
+Movies=[21:2:151];
+%Channels=[1:12];
+
+for i=1:length(Patterns)
+    [StimChannels,Amplitudes]=NS_StimulatedChannels(DataPath,Patterns(i),1,[1:512],NS_GlobalConstants);
+    for j=1:length(StimChannels)
+        CenterChannel=StimChannels(j)
+        CenterChannels(i,j)=CenterChannel;
+        Channels=electrodeMap.getAdjacentsTo(CenterChannel,Radius)';        
+        Amplitudes(i,j)=NS512_FindThresholdForLocalStimulation(DataPath,PatternNumber,Movies,Channels,ArrayID,FigureProperties,NS_GlobalConstants);
+        FullName=[WritePathFigs '\'   'p' num2str(l) '_m' num2str(i) Names{l}];
+                %print(hj, '-dtiff', FullName);
+    end
+end

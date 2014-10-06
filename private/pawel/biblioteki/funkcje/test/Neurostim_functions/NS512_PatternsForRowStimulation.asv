@@ -1,0 +1,13 @@
+function Patterns=NS512_PatternsForRowStimulation(RowIndexes,WhichColumns);
+
+Indexes=NS512_RowAndColumnForElectrode(500,[1:512]);
+Patterns=zeros(length(RowIndexes),length(WhichColumns));
+
+for i=1:length(RowIndexes)
+    RowIndex=RowIndexes(i);
+    for j=1:length(WhichColumns)
+        
+    
+    electrodes=find(Indexes(:,2)==RowIndex);
+    Patterns(i,:)=electrodes(WhichColumns);
+end

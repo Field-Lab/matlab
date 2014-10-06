@@ -1,0 +1,10 @@
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500)
+
+x=zeros(1,512);
+y=zeros(1,512);
+for i=1:512
+    x(i)=electrodeMap.getXPosition(i);
+    y(i)=electrodeMap.getYPosition(i);
+end
+
+hist(y,10000);

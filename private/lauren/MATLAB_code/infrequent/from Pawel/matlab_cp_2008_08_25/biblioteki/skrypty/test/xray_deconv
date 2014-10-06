@@ -1,0 +1,3 @@
+cd pliki/nauka/xray_piotrus;
+ps=importdata('pasek.dat');
+pm=importdata('pomiar.dat');

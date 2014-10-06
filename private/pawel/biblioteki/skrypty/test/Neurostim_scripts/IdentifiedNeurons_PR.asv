@@ -1,0 +1,15 @@
+sid1=size(id1);
+IfOnes=zeros(1,sid1(1));
+
+for i=10:15
+    
+    electrode=id1(i,1)
+    pattern=id1(i,2);
+    movie=id1(i,3)    
+    [StimChannels,Amplitudes]=NS_StimulatedChannels(DataPath,pattern,movie,[1:512],NS_GlobalConstants);
+    StimChannels;
+    find (StimChannels==electrode)
+    if (StimChannels==electrode)
+        IfOnes=1;
+    end
+end

@@ -1,0 +1,28 @@
+function h=NS512_ShowEIAsCircles(EI,ArrayID,Channels,MarkedChannels,XRange,YRange);
+
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
+
+hold on;
+%find max value
+for i=1:length(Channels)
+    Channels(i)
+    S=max(abs(EI(i,:)));
+    rad=max(1,round(S/6));
+    
+    X=electrodeMap.getXPosition(Channels(i));
+    Y=electrodeMap.getYPosition(Channels(i));
+    if find((MarkedChannels==Channels(i)))
+        h=plot(X,Y,'ro');
+        set(h,'MarkerFaceColor','r');
+    else
+        h=plot(X,Y,'bo');
+        set(h,'MarkerFaceColor','b');
+    end
+    set(h,'MarkerSize',rad);
+    %set(h,'MarkerFaceColor','b');
+end
+h=gca;
+set(h,'XLim',XRange);
+set(h,'YLim',YRange);
+
+    

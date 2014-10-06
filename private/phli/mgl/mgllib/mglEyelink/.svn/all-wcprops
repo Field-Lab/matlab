@@ -1,0 +1,311 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/1024/trunk/mgllib/mglEyelink
+END
+mglEyelinkSetup.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/999/trunk/mgllib/mglEyelink/mglEyelinkSetup.m
+END
+mglPrivateEyelinkClose.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkClose.mexmaci64
+END
+mglEyelinkOpen.m
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/mgl/!svn/ver/874/trunk/mgllib/mglEyelink/mglEyelinkOpen.m
+END
+mglPrivateEyelinkEDFOpen.c
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/mgl/!svn/ver/948/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFOpen.c
+END
+mglPrivateEyelinkGoOffline.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkGoOffline.mexmaci64
+END
+mglEyelinkClose.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mgl/!svn/ver/717/trunk/mgllib/mglEyelink/mglEyelinkClose.m
+END
+mglPrivateEyelinkCMDPrintF.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/mgl/!svn/ver/753/trunk/mgllib/mglEyelink/mglPrivateEyelinkCMDPrintF.c
+END
+mglEyelinkGoOffline.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/mgl/!svn/ver/893/trunk/mgllib/mglEyelink/mglEyelinkGoOffline.m
+END
+mglPrivateEyelinkSendCommand.c
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/mgl/!svn/ver/717/trunk/mgllib/mglEyelink/mglPrivateEyelinkSendCommand.c
+END
+mglPrivateEyelinkEDFRead.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/mgl/!svn/ver/1019/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFRead.c
+END
+mglPrivateEyelinkRecordingStart.c
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/mgl/!svn/ver/717/trunk/mgllib/mglEyelink/mglPrivateEyelinkRecordingStart.c
+END
+mglPrivateEyelinkEDFOpen.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFOpen.mexmaci64
+END
+mglEyelinkEDFOpen.m
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mgl/!svn/ver/956/trunk/mgllib/mglEyelink/mglEyelinkEDFOpen.m
+END
+mglPrivateEyelinkDriftCorrection.c
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/mgl/!svn/ver/769/trunk/mgllib/mglEyelink/mglPrivateEyelinkDriftCorrection.c
+END
+mglPrivateEyelinkCMDPrintF.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkCMDPrintF.mexmaci64
+END
+mglPrivateEyelinkOpen.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/753/trunk/mgllib/mglEyelink/mglPrivateEyelinkOpen.c
+END
+mglPrivateEyelinkSendCommand.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkSendCommand.mexmaci64
+END
+mglPrivateEyelinkEDFRead.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/mgl/!svn/ver/1019/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFRead.mexmaci64
+END
+mglEyelinkCMDPrintF.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/mgl/!svn/ver/717/trunk/mgllib/mglEyelink/mglEyelinkCMDPrintF.m
+END
+mglPrivateEyelinkRecordingStart.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkRecordingStart.mexmaci64
+END
+mglEyelinkValidate.m
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/768/trunk/mgllib/mglEyelink/mglEyelinkValidate.m
+END
+mglEyelinkDriftCorrect.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/mgl/!svn/ver/768/trunk/mgllib/mglEyelink/mglEyelinkDriftCorrect.m
+END
+mglEyelinkEDFRead.m
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/mgl/!svn/ver/1024/trunk/mgllib/mglEyelink/mglEyelinkEDFRead.m
+END
+mglPrivateEyelinkDriftCorrection.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkDriftCorrection.mexmaci64
+END
+mglPrivateEyelinkOpen.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkOpen.mexmaci64
+END
+mglEyelinkEDFGetFile.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/mgl/!svn/ver/893/trunk/mgllib/mglEyelink/mglEyelinkEDFGetFile.m
+END
+mglEyelinkRecordingCheck.c
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/mgl/!svn/ver/893/trunk/mgllib/mglEyelink/mglEyelinkRecordingCheck.c
+END
+mglPrivateEyelinkEDFPrintF.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/mgl/!svn/ver/929/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFPrintF.c
+END
+mglPrivateEyelinkGetCurrentSample.c
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/mgl/!svn/ver/717/trunk/mgllib/mglEyelink/mglPrivateEyelinkGetCurrentSample.c
+END
+mglEyelinkGetCurrentEyePos.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/mgl/!svn/ver/980/trunk/mgllib/mglEyelink/mglEyelinkGetCurrentEyePos.m
+END
+mglEyelinkRecordingStop.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/mgl/!svn/ver/717/trunk/mgllib/mglEyelink/mglEyelinkRecordingStop.c
+END
+mglEyelinkRecordingCheck.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglEyelinkRecordingCheck.mexmaci64
+END
+mglPrivateEyelinkEDFPrintF.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFPrintF.mexmaci64
+END
+mexopts.10.5.sh
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mexopts.10.5.sh
+END
+mglPrivateEyelinkEDFGetFile.c
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/mgl/!svn/ver/893/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFGetFile.c
+END
+mglPrivateEyelinkGetCurrentSample.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkGetCurrentSample.mexmaci64
+END
+mglEyelinkEDFPrintF.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/mgl/!svn/ver/929/trunk/mgllib/mglEyelink/mglEyelinkEDFPrintF.m
+END
+mglPrivateEyelinkSetup.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/mgl/!svn/ver/998/trunk/mgllib/mglEyelink/mglPrivateEyelinkSetup.c
+END
+mglEyelinkRecordingStop.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglEyelinkRecordingStop.mexmaci64
+END
+mglEyelinkIsConnected.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/933/trunk/mgllib/mglEyelink/mglEyelinkIsConnected.c
+END
+mglEyelinkCalibrate.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/mgl/!svn/ver/768/trunk/mgllib/mglEyelink/mglEyelinkCalibrate.m
+END
+mglPrivateEyelinkClose.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/mgl/!svn/ver/878/trunk/mgllib/mglEyelink/mglPrivateEyelinkClose.c
+END
+mglPrivateEyelinkSetup.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/mgl/!svn/ver/998/trunk/mgllib/mglEyelink/mglPrivateEyelinkSetup.h
+END
+developer.txt
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/769/trunk/mgllib/mglEyelink/developer.txt
+END
+mglPrivateEyelinkGoOffline.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/mgl/!svn/ver/893/trunk/mgllib/mglEyelink/mglPrivateEyelinkGoOffline.c
+END
+mglPrivateEyelinkEDFGetFile.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkEDFGetFile.mexmaci64
+END
+mglEyelinkRecordingStart.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/mgl/!svn/ver/949/trunk/mgllib/mglEyelink/mglEyelinkRecordingStart.m
+END
+mexopts.sh
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mexopts.sh
+END
+mglPrivateEyelinkSetup.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglPrivateEyelinkSetup.mexmaci64
+END
+mglEyelinkIsConnected.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/mgl/!svn/ver/893/trunk/mgllib/mglEyelink/mglEyelinkIsConnected.m
+END
+mglEyelinkIsConnected.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/mgl/!svn/ver/968/trunk/mgllib/mglEyelink/mglEyelinkIsConnected.mexmaci64
+END

@@ -1,0 +1,6 @@
+function EI=NS512_EI_CorrectedTim(Traces,Channels,Type,UniSpikesIndic,WaveformTypes);
+%Type: 0 - artifact, 1 - spikes, 2 - different class of spikes etc.
+
+Indexes= WaveformTypes==Type; % only 
+TracesForEI=Traces(Indexes,Channels,UniSpikesIndic:UniSpikesIndic+L-1);
+EI=mean(TracesForEI);

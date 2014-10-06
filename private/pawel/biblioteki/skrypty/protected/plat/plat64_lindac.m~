@@ -1,0 +1,66 @@
+cd /home/pawel/pliki/dane/chip1_plat;
+R=10000;
+str0='Vstim=';
+jedn=' V';
+
+a1=importdata('stim1_chip1.dat');
+%a2=importdata('stim2_chip1.dat');
+
+numer1=103;
+numer2=104;
+t=[0:0.005:2]-1;
+
+ampl=[1 51 101 151 201 251 301 351 401];
+
+figure(numer1);
+for i=1:4
+  subplot(2,2,5-i);
+  s1=abs(a1(:,ampl(10-i)))/R*1000000;
+  s2=abs(a1(:,ampl(i)))/R*1000000;
+  
+  v1=num2str(t(ampl(10-i)));
+  v2=num2str(t(ampl(i)));
+  str1=[str0 v1 jedn];
+  str2=[str0 v2 jedn];
+  
+  t0=[0:31];
+  plot(t0,s1,'ko-',t0,s2,'k*-');
+  xlabel('DAC value');
+  ylabel('output current [uA]');
+  
+  legend(str1,str2,2);
+  %hold on;
+  axis([0 31 0 200]);
+  grid on;
+end
+%hold off;
+
+figure(numer2);
+for i=1:4
+  subplot(2,2,5-i);
+  
+  %xlabel('DAC value');
+  %ylabel('output current');
+  
+  s1=abs(a1(1:7,ampl(10-i)))/R*1000000;
+  s2=abs(a1(1:7,ampl(i)))/R*1000000;
+  
+  %xlabel='DAC value';
+  %ylabel='output current';
+  v1=num2str(t(ampl(10-i)));
+  v2=num2str(t(ampl(i)));
+  str1=[str0 v1 jedn];
+  str2=[str0 v2 jedn];
+  
+  t0=[0:6];
+  plot(t0,s1,'ko-',t0,s2,'k*-'); 
+  %figure(2)
+  
+  xlabel('DAC value');
+  ylabel('output current [uA]'); 
+  legend(str1,str2,2);
+  %hold on;
+  %axis([0 31 -0.2 1.2]);
+  grid on;
+end
+%hold off;

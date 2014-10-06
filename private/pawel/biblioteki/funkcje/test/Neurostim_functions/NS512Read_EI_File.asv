@@ -1,0 +1,11 @@
+function EI=NS512Read_EI_File(FilePath,NeuronID,Channels);
+
+fid2=fopen(FilePath,'r');
+a=fread(fid2,'integer*2');
+fclose(fid2);
+
+NeuronIDs=a(4:3+a(3));
+WhichNeuron=find(NeuronIDs==NeuronID)
+Index=
+
+EIfull=reshape(a(

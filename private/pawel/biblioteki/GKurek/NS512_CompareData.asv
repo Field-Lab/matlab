@@ -1,0 +1,37 @@
+clear
+clc
+
+%full_path='E:\ne\data003';          
+%full_pathTTX='E:\ne\data005';        
+%output_path = 'E:\ne\data000';     
+%vision_path = 'E:\ne\Vision.jar'; 
+
+%javaaddpath(vision_path);  
+
+full_path='G:\2010-09-14-0\data002';          
+full_pathTTX='G:\2010-09-14-0\data009\';        
+output_path = 'D:\Home\Pawel\analysis\2010-09-14-0\data002min009';      
+
+StartPosition=170000;      %<---
+AmountOfData=10000;         %<---
+
+
+rawFileIN=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path);   
+rawFileOUT=edu.ucsc.neurobiology.vision.io.RawDataFile(output_path);   
+rawFileTTX=edu.ucsc.neurobiology.vision.io.RawDataFile(full_pathTTX);   
+
+RawDataIN= rawFileIN.getData(StartPosition,AmountOfData)';
+RawDataOUT= rawFileOUT.getData(StartPosition,AmountOfData)';
+RawDataTTX= rawFileTTX.getData(StartPosition,AmountOfData)';
+    
+clf
+g=plot(RawDataIN(100,:));
+set(g(1),'Displayname','RawData');
+hold on
+g=plot(RawDataOUT(100,:),'r');
+set(g(1),'Displayname','RawData-TTX');
+
+g=plot(RawDataTTX(100,:),'g');
+set(g(1),'Displayname','TTX');
+
+legend('Location','NorthEast')

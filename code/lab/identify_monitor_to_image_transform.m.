@@ -1,0 +1,30 @@
+function T_monitor_to_camera = identify_monitor_to_camera_transform(datarun, varargin)
+% identify_monitor_to_camera_transform     
+%
+% usage:  T_monitor_to_camera = identify_monitor_to_camera_transform(datarun)
+%
+% arguments:     datarun - datarun struct
+%            varargin - struct or list of optional parameters (see below)
+%
+% outputs:     T_monitor_to_camera - transformation
+%
+%
+% 2010-01  gauthier
+%
+
+
+
+
+% use datarun.piece.rig, datarun.piece.optical_path to determine orientation and mirroring of the array in STA coordinates
+
+switch [datarun.piece.rig ' ' datarun.piece.optical_path]
+    case 'A above'
+        T_monitor_to_camera = maketform('affine',[0 1;0 0;1 0],[]);
+    case 'A above'
+        T_monitor_to_camera = maketform('affine',[0 1;0 0;1 0],[]);
+    case 'A above'
+        T_monitor_to_camera = maketform('affine',[0 1;0 0;1 0],[]);
+    case 'A above'
+        T_monitor_to_camera = maketform('affine',[0 1;0 0;1 0],[]);
+    otherwise
+        

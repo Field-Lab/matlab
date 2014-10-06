@@ -1,0 +1,71 @@
+function plot_ei_scroll(datarun,cell_id, varargin)
+% plot_ei_scroll     plot an EI with a scroll bar
+%
+% usage:  plot_ei_scroll(datarun,cell_id, <params>)
+%
+% arguments:     arg1 - argument 1
+%            varargin - struct or list of optional parameters (see below)
+%
+% outputs:     result - result of computation
+%
+%
+% optional params, their default values, and what they specify:
+%
+% figur               gca            	figure or axes to plot in. if 0, make new figure.
+% coordinates       'vision ei'     which coordinate frame to plot in
+%                                       'vision ei'
+%                                       'array'
+%                                       'array image'
+%
+%
+% 2010-03  gauthier
+%
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% specify list of optional parameters
+p.addParamValue('verbose', false);
+p.addParamValue('fig_or_axes', []);
+p.addParamValue('coordinates', 'vision ei',@(x)any(strcmpi(x,{'vision ei','array','array image'})));
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+
+
+% get cell index
+cell_index=get_cell_indices(datarun,cell_id);
+
+% transform electrode positions...
+switch params.coordinates
+    case 'vision ei'  % to vision EI coordinates
+        array_info = load_array_info(datarun,2);
+        positions = tformfwd(array_info.T_array_to_vision_ei,datarun.ei.position);
+        
+    case 'array'  % to array coordinates
+        positions = datarun.ei.position;
+        
+    case 'array image'  % to array image coordinates
+        array_info = load_array_info(datarun,2);
+        positions = tformfwd(array_info.T_array_to_array_image,datarun.ei.position);
+        
+    otherwise
+        error('coordinates spec ''%s'' not recognized.',params.coordinates)
+end
+
+
+% start the the time of the spike
+start_index = datarun.ei.nlPoints;
+
+% get the ei
+ei = get_ei(datarun,cell_id);
+
+% call low level function
+plot_ei_scroll_(ei, positions,'start_index',start_index)
+

@@ -1,0 +1,136 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949
+{\fonttbl\f0\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww16400\viewh13780\viewkind0
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\b\fs26 \cf0 Using the Matlab raw data file opener\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\b0 \cf0 emailed from Matthew Grivich, 2007-11-29\
+\
+***the first time you use this, you need to run something: (ask Matthew)\
+\pard\pardeftab720\ql\qnatural
+\cf0 % Include Vision.jar.\
+% edit classpath.txt\
+\
+
+\b % open raw file
+\b0 \
+rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile('c:\\data\\data002\\data002000.bin');\
+\
+
+\b %gets data from sample 0 to 20000 (first second)
+\b0 \
+data = rawFile.getData(0, 20000);\
+\
+
+\b %plot TTLs (electrode 0)
+\b0  \'a0Recall that matlab starts counting from 1, while\
+%java starts from 0\
+plot(1:1:20000, data(:,1));\
+\
+
+\b %plot electrode 1
+\b0 \
+plot(1:1:20000, data(:,2));\
+\
+%-------------------------------------------------------------------------\
+
+\b %Open spike file
+\b0 \
+spikeFile = edu.ucsc.neurobiology.vision.io.SpikeFile('c:\\data\\data000-3.spikes');\
+\
+
+\b %get spikeTimes for electrode 1
+\b0 \
+spikeTimes = spikeFile.getSpikeTimes(1);\
+\
+
+\b %histogram of spike times
+\b0 \
+hist(spikeTimes, 0:10000:double(max(spikeTimes)));\
+\
+\
+%-------------------------------------------------------------------------\
+
+\b %open neuron file
+\b0 \
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('c:\\data\\data002\\data002.neurons');\
+\
+
+\b %get list of neuron numbers
+\b0 \
+idList = neuronFile.getIDList();\
+\
+
+\b %get spike times for first neuron
+\b0 \
+spikeTimes = neuronFile.getSpikeTimes(idList(1));\
+\
+
+\b %histogram of spike times
+\b0 \
+hist(spikeTimes, 0:10000:double(max(spikeTimes)));\
+\
+\
+%-------------------------------------------------------------------------\
+\
+\
+
+\b % Open params file
+\b0 \
+paramsFile = edu.ucsc.neurobiology.vision.io.ParametersFile('c:\\data\\data002\\data002.params');\
+\
+
+\b % gets list of neuron ids
+\b0 \
+ids = paramsFile.getIDList();\
+\
+
+\b % Get the class name for a particular neuron.
+\b0  \'a0You can loop through all the neurons to get all the class names.\
+% It would be nicer to get an array of strings directly. \'a0I do not know if matlab could handle this.\
+name = paramsFile.getStringCell(ids(1), 'classID');\
+\
+
+\b % gets neurons from a particular class
+\b0 \
+neurons = paramsFile.getNeuronsInClass('All/On/X/T1/OMS');\
+\
+\
+%To see what parameters are possible, look in vision.analysis package\
+%for classes that implement ParametersCalculator. \'a0The parameters will be in\
+%the getParameterTypes() function.\
+\
+
+\b %Get gaussian fit parameters for a given neuron.
+\b0 \
+%Other Double parameters are gotten the same way.\
+paramsFile.getDoubleCell(ids(1), 'x0');\
+paramsFile.getDoubleCell(ids(1), 'y0');\
+paramsFile.getDoubleCell(ids(1), 'SigmaX');\
+paramsFile.getDoubleCell(ids(1), 'SigmaY');\
+paramsFile.getDoubleCell(ids(1), 'Theta');\
+\
+
+\b %Get red timecourse.
+\b0  \'a0Other DoubleArray Parameters are gotten the same way.\
+paramsFile.geArrayCell(ids(1), 'RedTimeCourse');\
+\
+%-------------------------------------------------------------------------\
+\
+
+\b % Get electrode maps
+\b0 \
+electrodeMap = edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(rawArrayID);\
+\
+% if(arrayID < 500), give 64 map\
+% if(array >= 500 && arrayID < 1500) give 512 map\
+% if(array >= 1500 && < 2500) give 519 map\
+xPoint = electrodeMap.getXPosition(electrode);\
+yPoint = electrodeMap.getYPosition(elecrode);\
+\
+neighbors = electrodeMap.getAdjacentsTo(electrode, radius); \'a0%radius is in nearest neighbor number (integer)\
+}

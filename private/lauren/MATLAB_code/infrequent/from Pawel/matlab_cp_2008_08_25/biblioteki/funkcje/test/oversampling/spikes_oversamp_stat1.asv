@@ -1,0 +1,17 @@
+function y=spikes_oversamp_stat1(s,detect_param,filter_param,margins,figures,RC_filter);
+
+s(1,1:margins(1,1))=0;
+s(1,length(s):-1:length(s)-margins(1,2))=0;
+y=blad_vs_energy2(s,detect_param,filter_param,margins);
+figure(figures(1,1));
+plot(y(2,:),y(3,:),'b.');
+
+figure(figures(1,2));
+for i=1:min(length(y),300)
+    subplot(15,20,i);
+    plot(s(y(1,i)-margins(1,1):y(1,i)+margins(1,2)));
+    axis([0 sum(margins) -200 200]);
+end
+
+spikes=[8 185 87 300 258 114];
+y=oversamp_report_onechannel(s,y(1,:),spikes,filter_param,figures(1,3),2,margins,RC_filter);

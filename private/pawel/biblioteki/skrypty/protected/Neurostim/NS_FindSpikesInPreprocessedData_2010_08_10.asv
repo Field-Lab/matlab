@@ -1,0 +1,39 @@
+ChipAddresses=[24:31];
+NumberOfChannelsPerChip=64;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=500;
+
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+%break
+WritePath='D:\analysis\2009-11-20-0\data003c';
+
+
+
+WritePath='D:\analysis\2009-11-20-0\data003d';
+
+
+PrepDataPath='I:\analysis\2010-07-29-0\data';
+ClusterFileName='I:\analysis\2010-07-29-0\artifacts';
+GoodChannels=[1:512];
+Movies=[1:8:209];
+
+Patterns=NS512_OptimalElectrodeSequence();
+PatternsForMovie=Patterns((i-1)*64+1:i*64)
+
+ArtifactSubtraction=1;
+
+Patterns=[29:32 61:64 93:96 125:129 133 145 149 161 165 
+Responses=zeros(length(Patterns),512);
+Noise=Responses;
+tic
+for PatternNumber=PatternsForMovie
+    PatternNumber
+    [a,b]=NS512_ApplyLinearArtifactModel3(PrepDataPath,ArtifactDataPath,ArtifactSubtraction,PatternNumber,Movies,GoodChannels,0,0,ClusterFileName,NS_GlobalConstants);
+    Responses(PatternNumber,:)=a;
+    Noise(PatternNumber,:)=b;
+end
+toc
+save Responses;
+Save Noise;

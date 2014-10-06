@@ -1,0 +1,2 @@
+fid = fopen('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\duplicates2.txt');
+C = textscan(fid,'%d%s%s%d%s%f32');

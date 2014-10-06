@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/snle/matlab/!svn/ver/1046/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui
+END
+chooseNeuronID.m
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/snle/matlab/!svn/ver/4/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/chooseNeuronID.m
+END
+dispOtherTemplatesGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/snle/matlab/!svn/ver/438/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/dispOtherTemplatesGui.m
+END
+checkMultipleOccurrences.m
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/snle/matlab/!svn/ver/209/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/checkMultipleOccurrences.m
+END
+chooseElecForManualClusterGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/snle/matlab/!svn/ver/165/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/chooseElecForManualClusterGui.m
+END
+refreshAll.m
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/snle/matlab/!svn/ver/963/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/refreshAll.m
+END
+chooseTracesGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/snle/matlab/!svn/ver/1045/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/chooseTracesGui.m
+END
+analysisGUI.m
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/snle/matlab/!svn/ver/1065/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/analysisGUI.m
+END
+chooseTemplateAndChannelGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/snle/matlab/!svn/ver/4/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/chooseTemplateAndChannelGui.m
+END
+refreshEiPlots.m
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/snle/matlab/!svn/ver/1046/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/refreshEiPlots.m
+END
+createElecRespStructGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/snle/matlab/!svn/ver/313/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/createElecRespStructGui.m
+END
+generateAnalysisGuiLayout.m
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/snle/matlab/!svn/ver/1065/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/generateAnalysisGuiLayout.m
+END
+lockOverwriteGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/snle/matlab/!svn/ver/4/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/lockOverwriteGui.m
+END
+altClusterPlots.m
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/snle/matlab/!svn/ver/348/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/altClusterPlots.m
+END
+findNeuronsOnElecsGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/snle/matlab/!svn/ver/371/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/findNeuronsOnElecsGui.m
+END
+chooseMoviesGui.m
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/snle/matlab/!svn/ver/4/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/chooseMoviesGui.m
+END
+addActiveNeuron.m
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/snle/matlab/!svn/ver/4/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/addActiveNeuron.m
+END
+checkAlignment.m
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/snle/matlab/!svn/ver/4/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/checkAlignment.m
+END
+generateEIFromStimData.m
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/snle/matlab/!svn/ver/438/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/generateEIFromStimData.m
+END
+checkOccurrencesPlotter.m
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/snle/matlab/!svn/ver/517/private/lauren/MATLAB_code/analysis/for%20joint%20code/analysis_gui/checkOccurrencesPlotter.m
+END

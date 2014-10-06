@@ -1,0 +1,44 @@
+function y=rysuj_bledy2(current,res,bits);
+%
+%Funkcja wymaga istnienia w katalogu biezacym
+%trzech plikow o nazwach typu: 1u_pos_20k.out, 1u_neg_20k.out,
+%1u_input.out. 
+%Wejscia:
+%current - STRING, dla powyzszego przykladu '1u';
+%res - STRING, dla powyzszego przykladu: '20k';
+%bits - ilosc bitow, konieczna dla znormalizowania funkcji bledu i
+%wyskalowania osi pionowej w LSB.
+
+filename=[current '_neg_' res '.out']
+a=importdata(filename);
+x_neg=a(:,1);
+y_neg=a(:,2);
+l_neg=length(x_neg)
+
+filename=[current '_pos_' res '.out'];
+a=importdata(filename);
+x_pos=a(:,1);
+y_pos=a(:,2);
+l_pos=length(x_pos)
+
+x=[-x_neg(l_neg:-1:1,1)' 0 x_pos(:,1)']
+y=[y_neg(l_neg:-1:1,1)' 0 y_pos(:,1)']
+%plot(x,y)
+
+a=(max(y)-min(y))/(2*max(x))
+
+
+
+p=[a 0]
+
+w=polyval(p,x);
+blad=(w-y)/max(abs(y))*2^bits;
+
+%x=x/max(x);
+plot(x,blad,'b-');%,x,blad2,'k:',x,blad3,'r--');
+grid on;
+
+title(['range=' current ', res=' res]);
+legend('neg. curr.','pos. curr.', 'input curr.');
+xlabel('DAC output current [range]');
+ylabel('linearity error [LSB]');

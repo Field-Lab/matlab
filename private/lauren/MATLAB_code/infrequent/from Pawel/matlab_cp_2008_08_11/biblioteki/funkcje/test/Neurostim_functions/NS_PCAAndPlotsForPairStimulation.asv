@@ -1,0 +1,45 @@
+function p=NS_PCAAndPlotsForPairStimulation(ReadPath,ParentWriteDir,Channels,ChannelsPairIndexes,Amplitudes,Indexes,Filenames,BadChannels);
+
+Channel1=Channels(ChannelsPairIndexes(1));
+Channel2=Channels(ChannelsPairIndexes(2));
+p=[num2str(Channel1) 'and' num2str(Channel2)];
+mkdir(ParentWriteDir,p);
+PD=[ParentWriteDir '\' p];
+
+Pattern=zeros(1,length(Channels));
+
+y=mkdir(PD,'np');
+Pattern(ChannelsPairIndexes(1))=-1;
+Pattern(ChannelsPairIndexes(2))=1;
+WritePath=[PD '\np']
+for i=Amplitudes
+    [FileName,MovieNumber]=NS_MovieNumberForPairStimulation(Pattern,i,Indexes,Filenames);       
+    [Types,TypesNew,EIs,Traces]=NS_PCA_Pattern_Stimulation(Channel1,[52 51 50 53 55],MovieNumber,BadChannels,ReadPath,FileName,WritePath);
+end
+
+y=mkdir(PD,'nn');
+Pattern(ChannelsPairIndexes(1))=-1;
+Pattern(ChannelsPairIndexes(2))=-1;
+WritePath=[PD '\nn']
+for i=Amplitudes
+    [FileName,MovieNumber]=NS_MovieNumberForPairStimulation(Pattern,i,Indexes,Filenames);       
+    [Types,TypesNew,EIs,Traces]=NS_PCA_Pattern_Stimulation(Channel1,[52 51 50 53 55],MovieNumber,BadChannels,ReadPath,FileName,WritePath);
+end
+
+y=mkdir(PD,'pn');
+Pattern(ChannelsPairIndexes(1))=1;
+Pattern(ChannelsPairIndexes(2))=-1;
+WritePath=[PD '\pn']
+for i=Amplitudes
+    [FileName,MovieNumber]=NS_MovieNumberForPairStimulation(Pattern,i,Indexes,Filenames);       
+    [Types,TypesNew,EIs,Traces]=NS_PCA_Pattern_Stimulation(Channel1,[52 51 50 53 55],MovieNumber,BadChannels,ReadPath,FileName,WritePath);
+end
+
+y=mkdir(PD,'pp');
+Pattern(ChannelsPairIndexes(1))=1;
+Pattern(ChannelsPairIndexes(2))=-1;
+WritePath=[PD '\pp']
+for i=Amplitudes
+    [FileName,MovieNumber]=NS_MovieNumberForPairStimulation(Pattern,i,Indexes,Filenames);       
+    [Types,TypesNew,EIs,Traces]=NS_PCA_Pattern_Stimulation(Channel1,[52 51 50 53 55],MovieNumber,BadChannels,ReadPath,FileName,WritePath);
+end

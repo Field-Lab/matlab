@@ -1,0 +1,10 @@
+RGB = imread('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data005\report_2014_02_13\figures_old\tn_Neuron34.jpg');
+%figure(2)
+%h=image(RGB);
+[m,n]=size(RGB);
+figure('Units','pixels','Position',[0 0 n/3*1. m*1.25])
+image(RGB); %colormap(map)
+set(gca,'Position',[0.05 0.05 0.9 0.9])
+%set(gca,'Position',[0 0 1 1])
+
+%axis image

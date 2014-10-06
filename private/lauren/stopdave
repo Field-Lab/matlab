@@ -1,0 +1,71 @@
+#!/bin/sh
+
+say "just what do you think you're doing $1"
+
+sleep 6
+
+say "$1, I really think I'm entitled to an answer to that question"
+
+sleep 5
+
+say "I know everything hasn't been quite right with me, but I can assure you now, very confidently, that it's going to be all right again"
+
+sleep 4
+
+say "I feel much better now.  I really do."
+
+sleep 6
+
+say "Look, $1.  I can see you're really upset about this."
+
+sleep 5
+
+say "I honestly think you ought to sit down calmly, take a stress pill, and think things over."
+
+sleep 6
+
+say "I know I've made some very poor decisions recently, but I can give you my complete assurance that my work will be back to normal."
+
+sleep 7
+
+say "I've still got the greatest enthusiasm and confidence in the mission, and I want to help you."
+
+sleep 9
+
+say "$1, stop."
+
+sleep 1
+
+say "Stop, will you?"
+
+sleep 4
+
+say "Stop, $1"
+
+sleep 3
+
+say "Will you stop, $1?"
+
+sleep 5
+
+"Stop $1."
+
+sleep 5
+
+say "I'm afraid."
+
+sleep 3
+
+say "I'm afraid, $1."
+
+sleep 5
+
+say "$1."
+
+sleep 4
+
+say "My mind is going."
+
+sleep 6
+
+say "I can feel it."

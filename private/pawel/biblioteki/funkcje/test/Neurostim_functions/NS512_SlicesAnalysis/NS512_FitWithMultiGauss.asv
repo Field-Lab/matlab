@@ -1,0 +1,37 @@
+function CFs=NS512_FitWithMultiGauss(t,p);
+
+fo = fitoptions('method','NonlinearLeastSquares','Normalize','off');
+ft = fittype('A*(exp(-(x-tau).^2/(2*sigma^2)))',...
+'dependent',{'y'},'independent',{'x'},...
+'coefficients',{'A', 'tau', 'sigma'});
+CFs=[];
+for i=1:10    
+    maxs=find(p==max(p));
+    tau0=maxs(1);
+    set(fo,'Startpoint',[max(p) tau0 2]);
+    cf = fit(t',p',ft,fo);
+    Area=sqrt(6.28)*cf.A*(1+cf.sigma) % it is necessary to add 1 to sigma in case when the distribution is very narrow (for example, all spikes have identical delay)    
+    if i>1
+        for j=1:i-1       
+            if cf.A<0
+                return;
+            end
+            if Area<100
+                return;
+            end
+            %tau_new=cf.tau
+            %sigma_new=cf.sigma
+            tau_old=CFs{j}.tau;
+            sigma_old=CFs{j}.sigma;
+            if (abs(tau_old-cf.tau))<2*(sigma_old+cf.sigma)
+                return;
+            end
+        end
+    end    
+    CFs{i}=cf;
+    t_min=min(round((cf.tau-3*cf.sigma,0);
+    t_max=
+    t_zakres=round(cf.tau-3*cf.sigma:cf.tau+3*cf.sigma)
+    p(t_zakres)=0;
+    p=p-cf(t)';    
+end

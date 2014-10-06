@@ -1,0 +1,109 @@
+function [template channel reanalyze] = chooseTemplateAndChannelGui(elecResp, movieIndex)
+
+% template: returns 0 if cancel button is hit
+%
+
+
+latencies = [elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
+
+failuresBin = (latencies == 0);
+
+if sum(min(failuresBin, [], 2)) %some traces have no spikes
+    if size(elecResp.cells.mainEI,1) == 512 %LG modification 1/24/2014
+        channelsToUse = getCluster512(elecResp.cells.recElec);
+    else
+        channelsToUse = getCluster(elecResp.cells.recElec);
+    end    
+else %all traces have spikes
+    channelsToUse = elecResp.cells.goodElecs;
+end
+nChannels = length(channelsToUse);
+
+templates = [elecResp.cells.main elecResp.cells.active{movieIndex}];
+%removes templates that have no spikes 
+for i = length(templates):1
+    if max(latencies(:,i)) == 0
+        templates(i) = [];
+    end
+end
+
+nTemplates = length(templates);
+
+%% constructing gui
+chooseTempChanGui = figure('position', [500 500 300 300], 'color', 'white', 'Toolbar', 'none',...
+    'Menubar', 'none', 'visible', 'off', 'KeyPressFcn', @(h_obj, evt)chooseTempChanGui_keyPressFcn(h_obj, evt));
+
+uicontrol(chooseTempChanGui, 'Style', 'text', 'String', 'choose electrode and neuron',...
+    'Position', [20 260 260 15], 'HorizontalAlignment', 'center', 'BackgroundColor', 'white');
+
+channelRadioButtons = cell(nChannels);
+templateRadioButtons = cell(nTemplates);
+
+chanButtonGroup = uibuttongroup('Parent', chooseTempChanGui, 'Units', 'pixels',...
+    'Position', [20 110 120 140], 'BorderType', 'none', 'BackgroundColor', 'white');
+for i = 1:nChannels
+    channelRadioButtons{i} = uicontrol(chanButtonGroup, 'Style', 'radiobutton',...
+        'String', ['electrode ' num2str(channelsToUse(i))], 'Position', [0 110-(i-1)*120/nChannels 120 20]);
+end
+
+tempButtonGroup = uibuttongroup('Parent', chooseTempChanGui, 'Units', 'pixels',...
+    'Position', [160 110 120 140], 'BorderType', 'none', 'BackgroundColor', 'white');
+for i = 1:nTemplates
+    templateRadioButtons{i} = uicontrol(tempButtonGroup, 'Style', 'radiobutton',...
+        'String', ['neuron ' num2str(templates(i))], 'Position', [0 110-(i-1)*120/nChannels 120 20]);
+end
+
+checkbox = uicontrol(chooseTempChanGui, 'Style', 'checkbox', 'Position', [20 70 20 20],...
+    'String', ['spike belongs to neuron', 10, 'not included in automated analysis']);
+
+uicontrol(chooseTempChanGui, 'Style', 'text', 'Position', [50 70 240 15],...
+    'String', 'reanalyze using other templates',...
+    'BackgroundColor', 'white', 'HorizontalAlignment', 'left')
+
+
+uicontrol(chooseTempChanGui,  'Style', 'pushbutton', 'String', 'OK',...
+    'Position', [20 20 120 20], 'Callback', @okFunction);
+uicontrol(chooseTempChanGui,  'Style', 'pushbutton', 'String', 'cancel',...
+    'Position', [160 20 120 20], 'Callback', @cancelFunction);
+
+
+
+%% initializing
+
+set(chooseTempChanGui, 'visible', 'on')
+
+uiwait(chooseTempChanGui)
+
+%% Callbacks
+
+    function okFunction(hObject, eventdata) %#ok<INUSD>
+        selectedChan = get(chanButtonGroup, 'SelectedObject');
+        selectedTemp = get(tempButtonGroup, 'SelectedObject');
+        for ii = 1:nChannels
+            if selectedChan == channelRadioButtons{ii}
+                channel = channelsToUse(ii);
+            end
+        end
+        for ii = 1:nTemplates
+            if selectedTemp == templateRadioButtons{ii}
+                template = templates(ii);
+            end
+        end
+        
+        reanalyze = get(checkbox, 'Value');
+
+        close(chooseTempChanGui)
+    end
+
+    function cancelFunction(hObject, eventdata) %#ok<INUSD,INUSD>
+        template = 0;
+        channel = 0;
+        reanalyze = 0;
+        close(chooseTempChanGui)
+    end
+    function chooseTempChanGui_keyPressFcn(hObject, eventdata)
+        if strcmpi(eventdata.Key, 'return')
+            okFunction();
+        end
+    end
+end

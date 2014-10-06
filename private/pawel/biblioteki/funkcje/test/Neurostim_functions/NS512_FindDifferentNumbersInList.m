@@ -1,0 +1,1 @@
+function DifferentNumbers=NS512_FindDifferentNumbersInList(List);

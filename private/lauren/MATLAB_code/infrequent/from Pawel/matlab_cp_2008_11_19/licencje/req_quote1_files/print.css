@@ -1,0 +1,9 @@
+/*Print Sheet*/
+body {background-color:white}
+a:link, a:visited {color: #003366; background: transparent; font-weight: bold; text-decoration: underline;}
+#leftnavcol, #banner, #rightcol {display:none}
+#globaltop2, #bodycol, #topnav { width: 96%; align: left;}
+#globaltop2 {background-image:none; background-color:white}
+#site_search, #search_button, #ptools2, #access2, #pixelfade, #topstrip, #language_pref  { display: none; }
+#mainbody {margin-left:10px; margin-bottom:20px;}
+#print_logo { display: block; }

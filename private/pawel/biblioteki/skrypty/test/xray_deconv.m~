@@ -1,0 +1,26 @@
+cd /home/pawel/pliki/nauka/xray_piotrus;
+ps=importdata('pasek.dat');
+pm=importdata('pomiar_new.dat');
+
+pasek=ps(2,:);
+pomiar=pm(2,:);
+
+figure(1);
+subplot(2,1,1);
+plot(pasek,'bd-');
+grid on;
+subplot(2,1,2);
+plot(pomiar);
+grid on;
+
+N=10000;
+fpasek=fft(pasek,N);
+fpomiar=fft(pomiar,N);
+
+figure(2);
+subplot(2,1,1);
+loglog(abs(fpasek));
+grid on;
+subplot(2,1,2);
+loglog(abs(fpomiar));
+grid on;

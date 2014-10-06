@@ -1,0 +1,34 @@
+ChipAddresses=[24:31];
+NumberOfChannelsPerChip=64;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=1;
+
+%cd F:\2010-07-29-0;
+%FileName='002';
+%WritePath='C:\home\pawel\2010\analysis\07_2010_Cultures\2010-07-29-0\files_new';
+
+%WritePathFigs=WritePath;
+
+FigureProperties=struct('FigureNumber',1,'Subplot',[2 3 3],'TimeRange',[0 40],'AmplitudeRange',[-50 50],'FontSize',20,'Colors',['g' 'r' 'b' 'm' 'k'],'LineWidth',1);
+%[PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,ClusterFileName]=NS_PreprocessDataNew512(FileName,WritePath,WritePathFigs,FigureProperties,NS_GlobalConstants,0,[1:90],[1:5],[1:512]);
+
+for i=3:8
+    MoviesToRead=[i:8:i+27*8];
+    for j=0:7
+        PatternsToRead=[1:8]+j*8;
+        
+        cd F:\2010-07-29-0;
+        FileName='002';
+        WritePath='I:\analysis\2010-07-29-0\data';
+        WritePathFigs=WritePath;
+        [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,ClusterFileName]=NS_PreprocessDataNew512v2(FileName,WritePath,WritePathFigs,FigureProperties,NS_GlobalConstants,0,MoviesToRead,PatternsToRead,[1:512]);
+        
+        cd G:\2010-07-29-0;
+        FileName='018';
+        WritePath='I:\analysis\2010-07-29-0\artifacts';
+        WritePathFigs=WritePath;
+        [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,ClusterFileName]=NS_PreprocessDataNew512v2(FileName,WritePath,WritePathFigs,FigureProperties,NS_GlobalConstants,0,MoviesToRead,PatternsToRead,[1:512]);                
+    end
+end

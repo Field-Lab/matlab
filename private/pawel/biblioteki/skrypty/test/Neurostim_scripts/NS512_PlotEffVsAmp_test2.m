@@ -1,0 +1,46 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+colors=['b' 'k' 'r' 'm' 'g' 'c'];
+
+FilePath='E:\pawel\analysis\cultures\2009-11-20-0\2009-11-20-0\data003e\';
+FilePath='D:\analysis\cultures\2009-11-20-0\data003e\';
+
+%Amplitudes:
+for m=1:55
+    [StimChannels,Amplitudes]=NS_StimulatedChannels(FilePath,1,m,[1:512],NS_GlobalConstants);
+    A(m)=max(max(abs(Amplitudes)));
+end
+
+NeuronNumber=5;
+Neurons=[1:7 7 8 9 10 0 11 6 0 12 10 2 13 6 3 5 10 6 3 0 14 11 8 15 5 5 15 10 2 9 15 6 6 16 8 16 10 15 8 17 13 10 0 0 12 5 5 15 18 11 19 20 13 21 1 18 0 3 18 0];
+
+NeuronIDs=[1 5 6 7 11 13 14 16 17 18 20 25 30 31 32 34 36 37 38 41 44 45 48 51 52 54 55 56 61 62 65];
+figure(1);
+clf;
+for i=1:66
+    FileName=['ClusterFile_003_n' num2str(i)];
+    FullPath=[FilePath FileName];
+    ClusterIndexes=NS_ReadClusterFileAll(FullPath);
+    CI=ClusterIndexes(:,:,1:100);    
+    Neuron=Neurons(i);
+    if Neuron==21
+        Neuron=0;
+    end
+    if Neuron>0
+        a=find(Neurons==Neuron);
+        b=find(a==i);
+        %subplot(6,6,i);
+        subplot(5,4,Neuron);
+        h=NS512_PlotEffVsAmp(A,CI);   
+        set(h,'Color',colors(b));
+        h=text(1.2,75,num2str(Neuron));
+        set(h,'FontSize',16);
+        h=gca;
+        set(h,'XTick', [1:1:4]);
+        set(h,'FontSize',16);
+        if Neuron==17
+        xlabel('Amplitude [microamps]');
+        ylabel('Efficacy [%]');
+        end
+        hold on;
+    end
+end

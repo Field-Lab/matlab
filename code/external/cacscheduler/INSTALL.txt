@@ -1,0 +1,6 @@
+Installation Instructions 
+(last updated 25 October 2010)
+
+For updated install instructions please visit:
+
+http://www.cac.cornell.edu/matlab/downloads/Install.aspx

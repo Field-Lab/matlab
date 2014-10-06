@@ -1,0 +1,44 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+FigureProperties=struct('FigureNumber',4,'Subplot',[2 3 3],'TimeRange',[0 80],'AmplitudeRange',[-25 10],'FontSize',16,'Colors',['k' 'r' 'b' 'm' 'g' 'k' 'y'],'LineWidth',2,'YLabel','signal [mV]');
+
+ClusterFilePath='E:\pawel\analysis\cultures\2009-11-20-0\2009-11-20-0\data003c\ClusterFile_003';
+
+EIs1=zeros(5,36,80);
+EIs2=zeros(5,44,80);
+
+DataPath='E:\pawel\analysis\cultures\2009-11-20-0\2009-11-20-0\data003c';
+[EI1,Channels1]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,43,52,100,0);
+EIs1(1,:,:)=EI1(1,10:45,:);
+[EI1,Channels1]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,48,37,100,0);
+EIs1(2,:,:)=EI1(1,10:45,:);
+[EI1,Channels1]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,20,41,100,0);
+EIs1(3,:,:)=EI1(1,10:45,:);
+[EI1,Channels1]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,25,49,100,0);
+EIs1(4,:,:)=EI1(1,10:45,:);
+[EI1,Channels1]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,39,54,100,0);
+EIs1(5,:,:)=EI1(1,10:45,:);
+
+DataPath='E:\pawel\analysis\cultures\2009-11-20-0\2009-11-20-0\data003d';
+[EI2,Channels2]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,43,52,100,0);
+EIs2(1,:,:)=EI2(1,:,:);
+[EI2,Channels2]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,48,37,100,0);
+EIs2(2,:,:)=EI2(1,:,:);
+[EI2,Channels2]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,20,41,100,0);
+EIs2(3,:,:)=EI2(1,:,:);
+[EI2,Channels2]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,25,49,100,0);
+EIs2(4,:,:)=EI2(1,:,:);
+[EI2,Channels2]=NS512_EI_FromClusteredData(DataPath,DataPath,0,ClusterFilePath,39,54,100,0);
+EIs2(5,:,:)=EI2(1,:,:);
+
+Channels=[Channels1' Channels2']';
+Channels=Channels(10:89);
+EIs=[EIs1 EIs2];
+%EIs(1,:,:)=EI(1,10:89,:);
+
+[StChannels,Amplitudes]=NS_StimulatedChannels(DataPath,39,54,[1:512],NS_GlobalConstants)
+
+%y=NS512_PlotClustersOfSignaturesOnArrayLayout(EIs,Channels,[1:5],500,FigureProperties,NS_GlobalConstants);
+
+EI=[EI1 EI2];
+FigureProperties=struct('FigureNumber',63,'TimeRange',[1 80],'AmplitudeRange',[-400 400],'FontSize',12,'Colors',['g' 'b' 'r' 'y']);
+M=NS_SaveMovieFromSignature(reshape(EI,89,80),Channels,1,FigureProperties,NS_GlobalConstants);

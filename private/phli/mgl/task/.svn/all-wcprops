@@ -1,0 +1,317 @@
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/mgl/!svn/ver/1026/trunk/task
+END
+getStimvolFromVarname.m
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/1017/trunk/task/getStimvolFromVarname.m
+END
+taskTemplateStaircase.m
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/mgl/!svn/ver/427/trunk/task/taskTemplateStaircase.m
+END
+taskTemplate.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/835/trunk/task/taskTemplate.m
+END
+getTaskVarnames.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/862/trunk/task/getTaskVarnames.m
+END
+fixStairInitTask.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/708/trunk/task/fixStairInitTask.m
+END
+calculatedRandomization.m
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/mgl/!svn/ver/918/trunk/task/calculatedRandomization.m
+END
+getLastStimfile.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/930/trunk/task/getLastStimfile.m
+END
+pauseTask.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/122/trunk/task/pauseTask.m
+END
+mglCheckEyepos.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/1026/trunk/task/mglCheckEyepos.m
+END
+mglEatKeys.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/667/trunk/task/mglEatKeys.m
+END
+calibrateEyeTracker.m
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/807/trunk/task/calibrateEyeTracker.m
+END
+endScreen.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/667/trunk/task/endScreen.m
+END
+eyeCalib9.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/726/trunk/task/eyeCalib9.m
+END
+upDownStaircase.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/844/trunk/task/upDownStaircase.m
+END
+taskTemplateContrast10bit.m
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mgl/!svn/ver/818/trunk/task/taskTemplateContrast10bit.m
+END
+mglGetHostName.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/596/trunk/task/mglGetHostName.m
+END
+uniformRandomization.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/711/trunk/task/uniformRandomization.m
+END
+makeTraces.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/1008/trunk/task/makeTraces.m
+END
+testExperiment.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/750/trunk/task/testExperiment.m
+END
+mglGetScreenParams.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/822/trunk/task/mglGetScreenParams.m
+END
+addCalculatedVar.m
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mgl/!svn/ver/875/trunk/task/addCalculatedVar.m
+END
+removeTaskFunctionHandles.m
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/33/trunk/task/removeTaskFunctionHandles.m
+END
+mglDefaultScreenParams.m
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/mgl/!svn/ver/819/trunk/task/mglDefaultScreenParams.m
+END
+blockRandomization.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/711/trunk/task/blockRandomization.m
+END
+endTask.m
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/mgl/!svn/ver/918/trunk/task/endTask.m
+END
+recoverStimData.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/mgl/!svn/ver/296/trunk/task/recoverStimData.m
+END
+eyeCalibDisp.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/963/trunk/task/eyeCalibDisp.m
+END
+mglValidateScreenParams.m
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/mgl/!svn/ver/1016/trunk/task/mglValidateScreenParams.m
+END
+taskTemplateGazeContingent.m
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/760/trunk/task/taskTemplateGazeContingent.m
+END
+jumpSegment.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/232/trunk/task/jumpSegment.m
+END
+getParameterTrace.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/849/trunk/task/getParameterTrace.m
+END
+mglSetScreenParams.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/822/trunk/task/mglSetScreenParams.m
+END
+getVarFromParameters.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/855/trunk/task/getVarFromParameters.m
+END
+initRandomization.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/711/trunk/task/initRandomization.m
+END
+taskTemplateSaccade.m
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/mgl/!svn/ver/820/trunk/task/taskTemplateSaccade.m
+END
+initScreen.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/1016/trunk/task/initScreen.m
+END
+taskTemplateDualSubsidiary.m
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mgl/!svn/ver/320/trunk/task/taskTemplateDualSubsidiary.m
+END
+updateTask.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/918/trunk/task/updateTask.m
+END
+getTaskEyeTraces.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/mgl/!svn/ver/1019/trunk/task/getTaskEyeTraces.m
+END
+tickScreenGRU.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/mgl/!svn/ver/576/trunk/task/tickScreenGRU.m
+END
+initStimulus.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/631/trunk/task/initStimulus.m
+END
+taskTemplateDualMain.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/413/trunk/task/taskTemplateDualMain.m
+END
+writeTrace.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/mgl/!svn/ver/475/trunk/task/writeTrace.m
+END
+readme.txt
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/mgl/!svn/ver/475/trunk/task/readme.txt
+END
+initEyeTracker.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/mgl/!svn/ver/754/trunk/task/initEyeTracker.m
+END
+saveStimData.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/891/trunk/task/saveStimData.m
+END
+getTaskParameters.m
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/mgl/!svn/ver/1003/trunk/task/getTaskParameters.m
+END
+initTask.m
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/mgl/!svn/ver/918/trunk/task/initTask.m
+END
+mglEditScreenParams.m
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/mgl/!svn/ver/1016/trunk/task/mglEditScreenParams.m
+END
+fixStairTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/mgl/!svn/ver/699/trunk/task/fixStairTest.m
+END
+addTraces.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/mgl/!svn/ver/498/trunk/task/addTraces.m
+END
+tickScreen.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/mgl/!svn/ver/1001/trunk/task/tickScreen.m
+END

@@ -1,0 +1,41 @@
+%M: nr_kola x0 y0 a b kat
+%N: czas nr_kola kolor czas_zycia
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\Pawel\nauka\praktyki2011\data002000\data002000.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\Pawel\nauka\praktyki2011\data002000\data002000.neurons');
+%idList = neuronFile.getIDList(); 
+idList=[31 76 227 256 271 391 406 541 616 691 736 856 901];
+M=zeros(length(idList),6);
+
+N=[];
+for i=1:length(idList)
+    neuronID=idList(i);
+    %neuronID = params.getNeuronsInClass('All/good/over the array/ON');
+    M(i,1)=i;
+    M(i,2)=paramsFile.getDoubleCell(neuronID(1), 'x0');
+    M(i,3) = paramsFile.getDoubleCell(neuronID(1), 'y0');
+    M(i,4) = paramsFile.getDoubleCell(neuronID(1), 'SigmaX');
+    M(i,5) = paramsFile.getDoubleCell(neuronID(1), 'SigmaY');
+    M(i,6)= paramsFile.getDoubleCell(neuronID(1), 'Theta');
+    
+    spikeTimes = neuronFile.getSpikeTimes(neuronID)';
+    indeksy=find(spikeTimes<40000);
+    czasy=round(spikeTimes(indeksy)/50)
+    
+    N0=zeros(length(czasy),4);
+    N0(:,1)=czasy;
+    N0(:,2)=i;
+    N0(:,3)=3;
+    N0(:,4)=1;
+    %K(i)=N0;
+    N=[N' N0']';
+end
+times=N(:,1);
+[t1,ind1]=sort(times);
+N1=N(ind1,:);
+
+break
+
+cd C:\home\Pawel\nauka\praktyki2011;
+P = struct('PaperSize', [8 6], 'PaperPosition', [0 0 8 6], 'PathName', '', 'FileName', {'wykres'}, 'EdgeColor', 'k', 'LineWidth', 0.5, 'Resolution', '-r100', 'FormatType', '-dtiff', 'Axis', [27 37 10 20], 'XBackgroundLimits', [-10 30], 'YBackgroundLimits', [-10 30])
+Nc = convert_matrix(N1)
+print_cell_plots(M, Nc, P);

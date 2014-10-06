@@ -1,0 +1,68 @@
+Movie=223;
+NumberOfElectrodes=4;
+NumberOfRepetitions=50;
+Length=10000;
+
+StimElectrodes=505%[505:508 497:499 4 8 489:492 7 484 11 19 478 14 38 470 10 42 13 379];
+
+StimTimes=[300:300:9600];
+
+figure(1);
+clf
+N=14
+AmplitudesPerFigure=3;
+N0=ceil(N/AmplitudesPerFigure);
+T=[1:Length]/20;
+for SE=1:length(StimElectrodes);
+    Info=NS512_MovieNumberAndTimingForPattern('G:\2010-09-11-0\movie003',StimElectrodes(SE));
+    MovieStart=Info(1,1);
+    XStart=Info(1,3);
+    if MovieStart==16
+        N=N-1;
+    end
+    for M=
+        FigureNumber=ceil(M/AmplitudesPerFigure)
+        SubplotNumber=M-(FigureNumber-1)*AmplitudesPerFigure
+        
+        Movie=MovieStart+16*(M-1);    
+        f=fopen(['D:\Home\Pawel\analysis\2010-09-11-0\data003b\mv_' num2str(Movie)]);
+        a=fread(f,'int16');
+        fclose(f);
+        b=reshape(a,NumberOfElectrodes,NumberOfRepetitions,Length);
+        s1=reshape(b(1,:,:),NumberOfRepetitions,Length);
+        s2=reshape(b(2,:,:),NumberOfRepetitions,Length);    
+        s3=reshape(b(3,:,:),NumberOfRepetitions,Length);    
+        s4=reshape(b(4,:,:),NumberOfRepetitions,Length);    
+        
+        figure(FigureNumber);
+    
+        hold on;    
+        for i=StimTimes
+            s1(:,i:i+10)=-300;
+            s2(:,i:i+10)=-300;
+            s3(:,i:i+10)=-300;
+            s4(:,i:i+10)=-300;
+            h=plot([i i],[-250 -200],'r-');
+        end
+        subplot(3,AmplitudesPerFigure,SubplotNumber);
+        plot(T,s1(1:50,:)');    
+        %plot(s2(1:50,:)'-150);        
+        h=text(XStart+100,-250,num2str(Movie));
+        set(h,'FontSize',20);
+        axis([XStart/20 XStart/20+10 -400 -250]);
+        %pause(1);
+   
+        sm=mean(s3,1);        
+        subplot(3,AmplitudesPerFigure,SubplotNumber+AmplitudesPerFigure);
+        h=plot(T,s3');
+        set(h,'Color','b')
+        axis([XStart/20 XStart/20+10 -360 -260]);
+        for i=1:50
+            s3(i,:)=s3(i,:)-sm;
+        end
+        subplot(3,AmplitudesPerFigure,SubplotNumber+2*AmplitudesPerFigure);
+        h=plot(T,s3');
+        set(h,'Color','b')
+        axis([XStart/20 XStart/20+10 -40 30]);        
+    end
+end

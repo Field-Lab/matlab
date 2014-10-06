@@ -1,0 +1,890 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf350
+{\fonttbl\f0\froman\fcharset0 TimesNewRomanPSMT;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 AndaleMono;
+}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww18580\viewh22660\viewkind1\viewscale150
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\b\fs30 \cf0 New Proposed Standard for Matlab Code
+\b0\fs22 \
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 Introduction
+\b0 \
+\
+	Matlab is becoming a critical tool in SNL-E.  Currently, the server contains a standard set of code which includes several important functions and clear documentation.  However, some key elements are missing and there is no clear path for expansion.  As a result, several authors have developed private schemes to meet their individual needs, but these code bases are mutually incompatible.\
+	We here propose a set of universal standards for all present and future Matlab code to follow.  The proposal encompasses all information accessible in Matlab.  It resolves ambiguities and redundancies of the current schemes, and creates a simpler and easier workflow for users.  In addition, the proposed standard provides a modular framework that can easily be expanded to meet future needs.  If this proposal is carefully adopted, all our code will work together and everyone will benefit.\
+	To adopt this new proposal, existing code will need to be updated, both on the server and in our private collections.  We believe the cost of this one-time upgrade is far outweighed by the new proposal's simplicity, modularity, and expandability.\
+	This proposal has three main sections: 1) file storage, 2) nomenclature and data types, 3) function style and standard functions.\
+\
+\
+
+\b 1. File Storage
+\b0 \
+\
+	The proposed standard consists of Matlab functions and documentation.  Both will be stored on the server in /snle/lab/Development/RRS/matlab-source/ .  Matlab function text files will live in this directory, potentially within subdirectories.  Backups will be in a folder called "backup" in the same directory.  Backup functions will keep their file names but be located in a folder with the appropriate date.  The documentation will be in a folder called "documentation", and will consist of text files and intaglio files.\
+	Summary:\
+\
+.../matlab-source/<function>.m\
+.../matlab-source/<function_folder>/<function>.m\
+.../matlab-source/backup/<date>/<function>.m\
+.../matlab-source/documentation/\
+\
+\
+
+\b 2. Nomenclature and Data Types
+\b0 \
+\
+	The fundamental unit of the lab's data is a single recording.  Obvius calls it a "series", in Vision it corresponds to a neurons file.  Under this proposal, Matlab will store all information pertaining to a single recording in a struct called "datarun".\
+	Below is a list of the fields in "datarun".  For each field, the standard name is given along with a brief description of what it stores.  These names were chosen to be as similar as possible to the standard currently on the server.  Note that some pieces of information exist for every datarun (e.g. cell ids) while others do not (e.g. STAs).  For the datarun-specific items listed below, we believe these are sufficiently common that they need to follow a standard nomenclature.\
+\page 
+\b nomenclature for "datarun"
+\f1\fs36 \
+\pard\tx1005\tx2185\tx3605\ql\qnatural\pardirnatural
+
+\f0\b0\fs22 \cf0 \
+\pard\tx1005\tx2185\tx3951\ql\qnatural\pardirnatural
+\cf0 \ul \ulc0 names specifying the datarun\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	names.	experiment	
+\f0\fs20 e.g. '2007-07-05-1'
+\f2\fs18\fsmilli9100 \
+		condition	
+\f0\fs20 e.g. 'rf-0-mg'
+\f2\fs18\fsmilli9100 \
+		rrs_prefix	
+\f0\fs20 e.g. '/snle/lab/Experiments/.../data000-gdf/data000'
+\f2\fs18\fsmilli9100 \
+		rrs_neurons_path	
+\f0\fs20 e.g. '/snle/lab/Experiments/.../data000.neurons'
+\f2\fs18\fsmilli9100 \
+		rrs_params_path	
+\f0\fs20 e.g. '/snle/lab/Experiments/.../data000.params'
+\f2\fs18\fsmilli9100 \
+		rrs_ei_path	
+\f0\fs20 e.g. '/snle/lab/Experiments/.../data000.ei'
+\f2\fs18\fsmilli9100 \
+		rrs_sta_path	
+\f0\fs20 e.g. '/snle/lab/Experiments/.../data000.sta'
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul piece information\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	piece.	rig	
+\f0\fs20 'A','B',etc
+\f2\fs18\fsmilli9100 \
+		preparation	
+\f0\fs20 'isolated','rpe'
+\f2\fs18\fsmilli9100 \
+		map	
+\f0\fs20 Mx2 matrix of array map
+\f2\fs18\fsmilli9100 \
+		aperture	
+\f0\fs20 Lx2 matrix of stimulus aperture map
+\f2\fs18\fsmilli9100 \
+		eccentricity	
+\f0\fs20 temporal equivalent (mm)
+\f2\fs18\fsmilli9100 \
+		distance	
+\f0\fs20 distance from fovea (mm)
+\f2\fs18\fsmilli9100 \
+		angle	
+\f0\fs20 angle with respect to fovea-optic nerve axis (clock angle?)
+\f2\fs18\fsmilli9100 \
+		array	
+\f0\fs20 number of the recording array
+\f2\fs18\fsmilli9100 \
+		electrode_map	
+\f0\fs20 format TBD, gives the spatial locations of all electrodes
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul neurons file information\ulnone \
+
+\f2\fs18 datarun
+\fs18\fsmilli9100 .	cell_ids		
+\f0\fs20 Nx1 vector of cell ID's
+\f2\fs18\fsmilli9100 \
+	spikes		
+\f0\fs20 Nx1 cell array of spike times
+\f2\fs18\fsmilli9100 \
+	channels		
+\f0\fs20 Nx1 vector of electrodes
+\f2\fs18\fsmilli9100 \
+	triggers		
+\f0\fs20 column vector of trigger times
+\f2\fs18\fsmilli9100 \
+	duration		
+\f0\fs20 duration of recording (sec)
+\f2\fs18\fsmilli9100 \
+	sampling_rate	
+\f0\fs20 samples per second, typically 20000
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul EIs\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	eis.		
+\f0\fs20 format TBD, possibly a Nx1 cell array of XxYxT matrices
+\f2\fs18\fsmilli9100 \
+
+\f0\fs12 \
+
+\fs22 \ul stimulus information\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	stimulus.	type	
+\f0\fs20 string specifying stimulus type
+\fs22 \
+\pard\tx1005\tx2185\tx3951\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 		light_path	
+\f0\fs20 'above' or 'below'
+\f2\fs18\fsmilli9100 \
+		...	
+\f0\fs20 [following obvius conventions, e.g. rgb, interval, stixel_height]
+\fs22 \
+\pard\tx1005\tx2185\tx3951\ql\qnatural\pardirnatural
+
+\fs12 \cf0 \
+
+\fs22 \ul STAs\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	stas.	stas	
+\f0\fs20 Nx1 cell array of 4-D matrices (x,y,rgb,time)
+\f2\fs18\fsmilli9100 \
+		summaries	
+\f0\fs20 Nx1 cell array of 2-D matrices (x,y), spatial summary of the STA
+\f2\fs18\fsmilli9100 \
+		summary_type	
+\f0\fs20 string indicating how spatial summaries were computed (e.g. 'svd')
+\f2\fs18\fsmilli9100 \
+		contours	
+\f0\fs20 format TBD
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul vision classification & fits\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	vision.	cell_types	
+\f0\fs20 cell array specifying the classification, see below
+\f2\fs18\fsmilli9100 \
+		sta_fits	
+\f0\fs20 Nx1 cell array of structures storing sta fits in "vision" format
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul obvius classification & fits\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	obvius.	cell_types	
+\f0\fs20 cell array specifying the classification, see below
+\f2\fs18\fsmilli9100 \
+		sta_fits	
+\f0\fs20 Nx1 cell array of structures storing sta fits in "obvius" format
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul "working list" of cell types\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	cell_types		
+\f0\fs20 cell array specifying the classification, see below
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul "working list" of cell types\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	sta_fits		
+\f0\fs20 Nx1 cell array of structures storing sta fits in standard format
+\fs22 \
+
+\fs12 \
+
+\fs22 \ul default values\ulnone \
+
+\f2\fs18\fsmilli9100 datarun.	default_sta_fits	
+\f0\fs20 default STA fits ('vision','obvius',etc), see below
+\f2\fs18\fsmilli9100 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \page 	Below are several sections explaining the fields and data types in "datarun".\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 cell_id versus cell_number
+\b0 \
+	The user should always refer to cells by their cell id, and functions which plot or print out information about cells should also use cell ids.\
+	Within Matlab functions, however, the cell id is a cumbersome reference that must be manually translated to access Matlab data structures.  Instead, a better reference is the 
+\i cell number
+\i0 , i.e. the ordinality in the list of cell ids.  Under the new proposal, the cell number will be the standard reference for cells within Matlab functions.  Translation from the user's input to a list of cell numbers will be done by a new standard function, "get_cell_numbers" (see below).\
+	This scheme has the potential drawback that translation is still required in the opposite direction (from number to id).  Fortunately, the cell id is used less frequently inside Matlab functions, and translation is easy, even for a long list:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 cell_id = datarun.cell_ids(cell_number);
+\f0\fs22 \
+
+\f2\fs18\fsmilli9100 cell_ids = datarun.cell_ids(cell_numbers);
+\f0\fs22 \
+\
+Thus the cell number convention is generally preferable to cell ids inside Matlab functions: it works well with commonly-used Matlab variables, and can be easily translated when needed.\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 new format for listing cell types
+\b0 \
+	Currently, cell types are stored in two variables, "cell_type" and "cell_types".  This scheme suffers from three problems.  First, the variable "cell_type" is redundant, which means any update to "cell_types" requires re-computing "cell_type".  Second, cell names can not contain spaces or other reserved characters.  Third, these variables do not permit a cell to belong to more than one type.  Overlapping cell types can serve important purposes, e.g. having two cell types called "ON parasol" and "ON parasol high quality".\
+	The new scheme solves all three problems with a single variable called "cell_types".  It is a cell array of three-field structs, e.g.:\
+\
+\pard\tx1645\tx2933\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 cell_types\{1\}.	name	'ON parasol'\
+	cell_ids	[17 114 385 ...]
+\f0\fs22 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 \
+The "nice_name" field is a Matlab-friendly string that can be used as a field name in a struct, and is generated at load time (see "storing information for different cell types" below).  The "cell_types" variable will be stored as a field at several locations in "datarun" (see above).\
+	This scheme might seem to have drawbacks that make it less convenient for the user, and these potential drawbacks are remedied by an important new function explained below ("get_cell_numbers").\
+	We also propose a standard order for listing cell types: 1) ON parasol, 2) OFF parasol, 3) ON midget,  4) OFF midget, 5) SBC.  If this standard is followed, the user will be able to call "datarun.cell_types\{1\}" and always get the ON parasol cells.  Under the previous scheme ("cell_type" and "cell_types"), the user needed to know the exact name of a cell type in order to reference it.  These names could vary, so the user needed to manually check whether it was "ON_parasol", "ON_PARASOL","on_parasol","on_y", etc.  When cell types are listed in the proposed standard order, the user will be freed from having to specify the exact name.\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 working list of cell types ("datarun.cell_types")
+\b0 \
+	What good are lots of cells if you can't classify them?  As we all know, what really separates the primates from the larvae is cell classification.\
+	When a function or the user needs to know which cells belong to which type, the standard place to check is "datarun.cell_types".  This field serves two important needs:\
+	1) The server contains two cell classifications (from vision and obvius), and when they conflict the user must choose which one to use.  Under the new proposal, the user specifies this choice by putting the name of the desired classification ing the field "datarun.cell_types" (this can be done using a simple function, "use_classification", explained below).  By storing the preferred classification in a standard place, functions will not require an extra argument specifying to use the obvius or vision classification.  Also, there will be no need to go down the dangerous path of global variables.  Of course, optional arguments to a function can still specifya particular classification.\
+	2) The stored vision and obvius classifications are usually quite accurate.  However, sometimes the user will want to modify the classification on the fly, and that's why a special field is needed to store the "working list" of cell types.  For example, the user can omit cells that don't meet a certain quality criterion as determined by a Matlab function, or generate a new cell type such as "L-cone ON midgets".  By making a standard place to store these temporary cell types, the user will not be tempted to invent new fields and modify functions to look there.  Instead, all functions can simply use the "working list".\
+\
+\
+
+\b default STA fits ("datarun.default_fits")
+\b0 \
+	As with classification, different STA fits are desirable in different circumstances.  In addition to the two standard varieties (vision & obvius), some users will need multiple versions of obvius fits.  For example, two sets of fits are needed to compare center-only to center-plus-surround fits, or to examine a cell type like small bistratified cells, with one set of fits for the center and one for the surround.  Given these diverse needs, it is important for the code to be maximally flexible.  Otherwise, users will be tempted to invent their own private schemes and/or use private versions of standard functions.\
+	All sets of STA fits will be stored in the same way.  The standard obvius and vision STA fits will be stored in the fields "datarun.obvius.sta_fits" and "datarun.vision.sta_fits".  Other special sets of fits will be stored similarly, in fields such as "datarun.sta_fits_center_only.sta_fits" or "datarun.sta_fits_sbc_surr.sta_fits".  For these special fits, the name of the field should be descriptive and begin with "sta_fits_".  It will be up to the user to manually store the STA fits into these fields (for an example, see "load_sta_fits" below).\
+	Because most functions don't need to access special STA fits, the user can specify a default set of fits in the field "datarun.default_fits", e.g.\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun.default_fits = 'obvius';
+\f0\fs22 \
+\
+or\
+\
+
+\f2\fs18\fsmilli9100 datarun.default_fits = 'sta_fits_center_only';
+\f0\fs22 \
+\
+Any function that accesses STA fits should default to using the fits specified in this field rather than requiring the user to choose the fits each time:\
+\
+
+\f2\fs18\fsmilli9100 my_function( datarun, ... )\
+% load STA fits\
+sta_fits = datarun.(datarun.default_fits).sta_fits;
+\f0\fs22 \
+\
+	For the special case of functions that act on multiple sets of fits, the names of which fits to use should be included in the function arguments, e.g.:\
+\
+
+\f2\fs18\fsmilli9100 plot_multiple_rf_outlines( datarun, ..., 'sta_fits_sbc_surr', 'sta_fits_sbc_surr', ... );
+\f0\fs22 \
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 format of STA fits and STAs
+\b0 \
+	The format for STA fits is different in obvius and vision, and neither format is well suited for plotting in Matlab.  Therefore, both vision and obvius STA fits will be converted to a common Matlab-friendly format at load time.  STAs will also be converted so that they work well with low level Matlab plotting functions.\
+	STA format is a four dimensional matrix, with dimensions x, y, color, time.  This format will be more thoroughly illustrated in an intaglio file.\
+	The STA fit format will be chosen to integrate with the STA format, so that low level functions can, for example, overlay the STA fit on an image of the STA without conversion.  Details of the STA fit format TBD.\
+\
+\
+
+\b multiple dataruns
+\b0 \
+	If the user wishes to have several dataruns open at once, they can be stored as separate variables with custom names (e.g. "rgb_datarun", "bw_datarun"), or together in cell array format (e.g. "datarun\{1\}", "datarun\{2\}").\
+	If dataruns holding mapped data are stored in a cell array, the master datarun must appear first, followed by each slave datarun.  For more conventions about mapped data, see below.\
+\
+\
+\
+
+\b 3. Function Style and Standard Functions
+\b0 \
+\
+	This section describes standard function usage, how to initially load values into "datarun", and details several important new functions.\
+\
+\
+
+\b Standard Usage
+\b0   \
+	Most high level functions should take the entire "datarun" variable as their primary argument, followed by required parameters and an optional struct of extra parameters.  For example:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 function my_function( datarun, <parameter_1>, ..., <parameter_n>, params )
+\f0\fs22 \
+\
+	Having functions read in the entire "datarun" variable is the heart of this proposal.  This usage gives the function complete access to any needed data with a single argument, rather than a long list of arguments specifying each piece of information.  In addition, the user does not need to know the internal data structure, thus creating an easier workflow which is less prone to error.  Most importantly, if the author later decides that the function needs to access additional information, there's no need to pile on extra arguments that break previous usage.\
+	In some cases, the entire datarun variable should also be read out (for more on this topic, see "function output" below).  For example:\
+\
+
+\f2\fs18\fsmilli9100 function [datarun] = my_function( datarun, <parameter_1>, ..., <parameter_n>, params )\
+\
+% perform analysis\
+...\
+\
+% save results\
+datarun.new_field = <analysis result>
+\f0\fs22 \
+\
+This style also has the benefits described above: it creates a simple workflow, and allows for arbitrary expansion without breaking previous usage.\
+	The argument "params" is optional for the user and it contains optional parameters.  "params" is a struct whose usage is similar to the keyword arguments in obvius:\
+\
+
+\f2\fs18\fsmilli9100 clear params\
+params.plot_outlines = true;\
+params.outline_color = 'k';\
+my_function( datarun, params )
+\f0\fs22 \
+\
+Matlab syntax also allows this to be done in one line:\
+\
+
+\f2\fs18\fsmilli9100 my_function( datarun, struct('plot_outlines',true,'outline_color','k') )
+\f0\fs22 \
+\
+Internally, a function will look for optional fields in "params".  It will use any values specified there, and otherwise revert to a default.  The "params" argument provides two primary benefits.  First, it is a standard means to overload functions.  Second, "params" can be used to expand a function's input without breaking previous usage or cluttering the list of arguments.  The "params" argument should appear in every function.\
+	Below, several concrete examples illustrate the proposed function style.\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 load_data
+\b0 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun = load_data( datarun, params )\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 	This function initializes "datarun" by adding and filling in fields according to the above nomenclature.  It loads two kinds of information: items which always load quickly (e.g. stimulus description), and 
+\i specifications
+\i0  for items which generally take a long time to load (e.g. file path to the STA file).  In most workflows, other functions will call "require_stas", etc, to load additional information as needed.\
+	There are three ways to use "load_data".  First, the use can specify the experiment and condition:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun = load_data( '2007-07-05-1','rf-0-mg' )
+\f0\fs22 \
+\
+When an experiment and condition are provided, "load_data" will automatically check inside the appropriate Index file for the paths to corresponding vision files (params, neurons, etc).\
+	Second, the user can specify a "rrs_prefix" to generate vision file paths automatically:\
+\
+
+\f2\fs18\fsmilli9100 datarun = load_data( '/Analysis/Greschner/2007-07-05-0/data000/data000' )
+\f0\fs22 \
+\
+Based on "rrs_prefix", various vision file extensions (e.g. ".params") will be appended, and any files which exist will have their names entered in the appropriate field (e.g. "datarun.names.rrs_params_path").  In this case, the "experiment" and "condition" fields will be left blank.\
+	Third, the user can specify the experiment, condition and file names manually: \
+\
+
+\f2\fs18\fsmilli9100 % specify parameters\
+datarun.names.experiment = '2007-07-05-1';\
+datarun.names.condition = 'rf-0-mg';\
+datarun.names.rrs_neurons_path = '/snle/lab/Experiments/.../data000.neurons';\
+datarun.names.rrs_params_path = '/snle/lab/Experiments/.../data000.params';\
+datarun.names.rrs_sta_path = '/snle/lab/Experiments/.../data000.sta';\
+\
+% load datarun\
+datarun = load_data( datarun );
+\f0\fs22 \
+\
+Matlab syntax allows this to be one (long) command:\
+\
+
+\f2\fs18\fsmilli9100 datarun = load_data(struct('names',struct(...\
+	'experiment','2007-07-05-1',...\
+	'condition','rf-0-mg',...\
+	'rrs_neurons_path','/snle/lab/Experiments/.../data000.neurons',...\
+	'rrs_params_path','/snle/lab/Experiments/.../data000.params';)) );\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+In this manual usage, the user can also specify a vision file path from which the appropriate path names will be generated:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 % specify parameters\
+datarun.names.experiment = '2007-07-05-1';\
+datarun.names.condition = 'rf-0-mg';\
+datarun.names.rrs_prefix = '/snle/lab/Experiments/2007-07-05-0/data000/data000';\
+\
+% load datarun\
+datarun = load_data( datarun );
+\f0\fs22 \
+\
+When the user specifies an experiment and condition as well as some vision file paths, "load_data" will check the index file for additional vision file paths.  Of course, vision files manually specified by the user will always be used, regardless of what is in the index file.\
+	"load_data"  can read in multiple datarun specifications in a cell array, with each specification being any of the three types described above.  "load_data" operates on each one in turn, and returns a cell array of variables in the standard "datarun" format.  For an example, see "how to load mapped data" below.\
+\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 load functions\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b0 \cf0 	Several functions read information from disk which are not loaded by default in "load_data":\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun = load_neurons( datarun, params );
+\f0\fs22 \
+
+\f2\fs18\fsmilli9100 datarun = load_ei( datarun, params );
+\f0\fs22 \
+
+\f2\fs18\fsmilli9100 datarun = load_params( datarun, params );
+\f0\fs22 \
+
+\f2\fs18\fsmilli9100 datarun = load_sta( datarun, params );\
+datarun = load_sta_fits( datarun, params );\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+	These functions provide flexibility and modularity for the user.  If, for example, the user has so far been working only with spike times, and wants to incorporate STAs, "load_stas" can be called without having to look up the file path again (and potentially get it wrong):\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun = load_stas( datarun );
+\f0\fs22 \
+\
+"load_stas" will seamlessly incorporate new information into the extisting struct, and all pre-existing fields, including the results of any analysis, will remain untouched.\
+	For further modularity, these functions will ideally call other functions which perform parts of each task, e.g. "load_params" calals "load_vision_sta_fits" and "load_vision_classification".\
+	For these functions, the optional set of parameters in "params" will indicate to NOT load a particular kind of data, even if the file exists.  For example, the user might want only the cell IDs from the neurons file, but not the spikes times (which can take much longer to load):\
+\
+
+\f2\fs18\fsmilli9100 datarun = load_neurons( datarun, struct('load_spikes',false) );
+\f0\fs22 \
+\
+	Ideally, load functions will read directly from files on disk rather than calling Java commands via the JavaVM, which will not always work.  Writing such functions in Matlab will require a major investment of labor.\
+	In the special case of STA fits, sometimes the user will not want to load from the standard location.  For example, if there are separate center and surround fits for small bistratified cells, these should be loaded from a path specified manually by the user.  This requires that the function "load_sta_fits" be overloaded accept a string as its primary argument:\
+\
+
+\f2\fs18\fsmilli9100 datarun = load_sta_fits( <path to center fits>, datarun, 'sta_fits_sbc_center')\
+datarun = load_sta_fits( <path to surround fits>, datarun, 'sta_fits_sbc_surr')
+\f0\fs22 \
+\
+Then "datarun" will have fits stored at two locations:
+\f2\fs18\fsmilli9100 \
+\
+datarun.sta_fits_sbc_center.sta_fits\
+datarun.sta_fits_sbc_surr.sta_fits
+\f0\fs22 \
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 require_data, require_neurons, require_params, require_stas, require_eis
+\b0 \
+	These functions ensure that particular data is loaded.  If the appropriate fields already have the required information, nothing is done.  Otherwise, the corresponding load function is called.\
+	Most functions should begin by calling "require_*" for any needed information.\
+	The reason to have separate function that 
+\i always
+\i0  load information is so that the user can at any time overwrite existing variables with a fresh copy of the data on disk.\
+\
+\
+
+\b wrapper functions
+\b0 \
+	Most computations should have two functions: a basic function that performs the computation, and a wrapper function that accommodates common usage.\
+	The low level function should read in "datarun", an arbitrary list of cell ids, and various parameters including the optional "params" struct.  It should output the result of the computation, plus a struct of extra information which might be useful to other functions (e.g. intermediate values in the computation).  For computing the conformity ratio, here is an example of the basic function: \
+\
+\
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 function [cr, extras] = conformity_ratio( datarun, cell_ids, ..., params)\
+% CONFORMITY_RATIO    returns conformity ratio of a group of cells\
+% ...\
+\
+% compute conformity ratio\
+...\
+cr =  <result>;\
+extras = <extra results>;
+\f0\fs22 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 \
+\
+	The corresponding wrapper function should operate on multiple cell types, save information in "datarun", and/or plot the results.\
+\
+\
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 function [output_value] = get_conformity_ratio( datarun, cell_specification, ..., params)\
+% GET_CONFORMITY_RATIO    computes conformity ratio, wrapper for CONFORMITY_RATIO\
+% ...\
+\
+% combine default values and user preferences\
+<set params.save and params.plot to be false by default>\
+\
+% get cell numbers\
+[cell_numbers, cell_type, cell_type_number] = get_cell_numbers( datarun, cell_specification);\
+\
+% ensure cell types are specified in a cell array\
+if ~iscell(cell_numbers)	cell_numbers = \{cell_numbers\};\
+	cell_type = \{cell_type\};\
+	cell_type_number = \{cell_type_number\};\
+end\
+\
+% loop through cell types\
+for cc = 1:length(cell_type)\
+\
+	% compute conformity ratio\
+	[cr,extras] = conformity_ratio(datarun, datarun.cell_ids(cell_numbers\{cc\}), ..., params);\
+\
+	% plot, if desired\
+	if params.plot\
+		<make plot>\
+		title(sprintf('CR for %s', cell_type\{cc\} ))\
+	end\
+\
+	% set the output value\
+	if params.save\
+		% return the result\
+		output_value(cc) = cr;\
+	else\
+		% return the whole datarun		datarun.conformity_ratio\{cell_type_number\}.cr = cr;		datarun.conformity_ratio\{cell_type_number\}.extras = extras;\
+		output_value = datarun;\
+	end\
+end
+\f0\fs22 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 \
+\
+	Here are examples of the wrapper function accommodating a variety of usages, from simple to complex.\
+\
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 \
+get_conformity_ratio( datarun, 'ON parasol')\
+\
+	ans = <cr>\
+\
+\
+get_conformity_ratio( datarun, \{'ON parasol','OFF parasol'\}, struct('plot',true))\
+\
+	ans = [ <cr of ON parasol> <cr of OFF parasol> ]\
+\
+\
+get_conformity_ratio( datarun, \{'ON parasol','OFF parasol'\}, struct('save',true))\
+\
+	ans = <entire datarun struct with the results stored in standard locations>
+\f0\fs22 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 \
+\
+	As this example illustrates, standard nomenclature is to call the basic function by the name of what it computes ("conformity_ratio"), while the wrapper function should be the same name with "get_" prepended ("get_conformity_ratio").\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b \cf0 function output
+\b0 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 	Most workflows are based on a series of intermediate computations that arrive at a final result.  Usually, the intermediate computations will be generally useful results  (e.g. the distance between STA fit centers, or the conformity ratio of a cell type).  Functions that compute such results should reside on the server and accommodate the needs of a general user.\
+	What value should these functions return?   For functions that operate on low level data (e.g. computing the distance between STA fit centers), only the result of the computation should be returned.  But for high level functions that operate on the entire "datarun" variable (e.g. computing the conformity ratio), the best output is not so clear.\
+	In simple circumstances, returning only the result is preferable: the result can be immediately seen by the user, stored in the Matlab workspace, or directly passed to the next function.  But in more complicated cases, returning only the result is problematic.  If the user is working with multiple cell types or dataruns and wishes to save intermediate results for later use, it is confusing to store and track all results in the workspace.  Instead, results would easier to keep track of if they were stored inside "datarun" at standard locations (e.g. "datarun.conformity_ratio\{\}").  The following rules offer some general guidance about when a function should return only the result or the full "datarun".\
+	Functions should return "datarun" with the result stored at a standard location when:\
+	\'95 information is loaded from disk\
+	\'95 a result is computed that is close to the original data and will be widely useful (e.g. STA spatial summary)\
+	\'95\'a0the user explicitly requests it\
+	In all other cases, functions should default to returning only the result.\
+	The flexibility of supporting both options is provided by an optional argument in the params struct called "save".  For most functions, "save" is false by default, so that the function returns only the result.  This allows fast access to the result, freeing users from having to dig into the guts of "datarun".\
+	When the user sets "save" to true, the function will return the entire datarun variable with the result already stored in the proper location.  In workflows that include a series of computations, this option frees the user from manually storing results at standard locations, a cumbersome and error-prone process.\
+	High level functions that store their result inside datarun should note the standard storage location in the help text.  Inside the fucntion, results should first be saved to a temporary variable, with "datarun" only modified at the very end, if at all.\
+\
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 function output_value = my_function( datarun, ..., params)\
+% ...\
+% standard location: datarun.<new_field>\
+\
+% perform analysis\
+result = <result>;\
+\
+% set the output value\
+if params.save\
+	% return the result\
+	output_value = result;\
+else\
+	% return the whole datarun	datarun.<new_field> = result;\
+	output_value = datarun;\
+end
+\f0\fs22 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 \
+With this usage, any author can see at a glance exactly which fields of "datarun" the function modifies.  This practice guards against the function modifying fields it shouldn't.\
+	For results that are specific to particular cell types, the standard storage location should be in a cell array with ordinality matching the list of cell types.  For example, if the "OFF parasol" cell class is item 2 in the list of cell types, then the conformity ratio of the OFF parasol cells should be stored at "datarun.conformity_ratio\{2\}".\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 plot_psth
+\b0 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 h = plot_psth( datarun, stard_time, end_time, params )\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 	This hypothetical example illustrates an important purpose for the "params" argument.  In addition to optional parameters such as bin size and figure location, it can contain a meta-parameter field ("params.meta").  If, for example, Martin needed very specific settings for plotting a psth in a paper, he could specify them inside the function "plot_psth".  No other users would need to worry about it, and Martin could call the function like this:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 h = plot_psth( datarun, 'ON parasol', start_time, end_time, struct('meta','martin_2008_02_nature_figure_1') )
+\f0\fs22 \
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 use_classification
+\b0 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun = use_classification( datarun, new_classification )\
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 	This simple function puts the appropriate list of cell types into "datarun.cell_types".  Here's the code:\
+\
+
+\f2\fs18\fsmilli9100 function datarun = use_classification( datarun, new_classification )\
+\
+switch new_classification\
+	case 'obvius'\
+		datarun.cell_types = datarun.obvius.cell_types;\
+	case 'vision'\
+		datarun.cell_types = datarun. vision.cell_types;\
+	otherwise\
+		error('Only ''obvius'' or ''vision'' cell classification can be used (not %s).',...\
+			new_classification)\
+end
+\f0\fs22 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0 \
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 get_cell_numbers
+\b0 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 [cell_numbers, cell_type, cell_type_number] = get_cell_numbers( datarun, cell_specification);
+\f0\fs22 \
+	Functions frequently need to operate on more than one cell.  There are several ways to specify a group of cells, and which specification is best varies for different functions.  For example, a function which makes a collection of serial plots only needs to read in a list of cell ids.\
+
+\f2\fs18\fsmilli9100 \
+plot_ccfs( datarun, [17 114 385], ... )\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+In other cases, functions need to know what kinds of cells they are operating on.  For example, a function that computes the conformity ratio should display the name of the cell type alongside the result.  If the function did not know the cell type, the user would need to manually keep track of which output corresponded to which input, a workflow that invites error.\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 \
+compute_conformity_ratio( datarun, 'ON parasol', ... )\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+Finally, some functions need to read in several cell types.  For example, a function that overlays the average RF profiles of several types needs a list of cell types.\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 \
+compare_rf_profiles( datarun, \{'ON parasol','OFF parasol'\}, ... )
+\f0\fs22 \
+\
+Specifying cells with such flexibility is important for users.  However, it can be daunting for the code to handle so many cases.\
+	This proposal provides the needed flexibility with a single function, "get_cell_numbers".  This function takes in one argument, "cell_specification", which can be a list of cells, the name of a cell type, or a list of names.  It returns the desired cell numbers, along with the name(s) of the specified cell type(s), if applicable.  Here is the form of the function, followed by some examples:\
+\
+\
+
+\f2\fs18\fsmilli9100 [cell_numbers, cell_type, cell_type_number ] = ...\
+	get_cell_numbers( datarun, cell_specification )\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 cell_specification = 'OFF parasol'  >>>\
+\
+cell_numbers = [1 3 5 8 15]\
+cell_type = 'OFF parasol' \
+cell_type_number = 2\
+\
+\
+cell_specification = [17 114 385]  >>>\
+\
+cell_numbers = [1 2 4]\
+cell_type = []  % if no name is specified, the field is empty\
+cell_type_number = []\
+\
+\
+cell_specification = \{'ON parasol','OFF parasol'\}  >>>\
+\
+% if a list of names is given, a list of numbers and\
+% names is returned as two cell arrays\
+\
+cell_numbers\{1\} = [2 4 7 16]\
+cell_type\{1\} = 'ON parasol'\
+cell_type_number\{1\} = 1\
+cell_numbers\{2\} = [1 3 5 8 15]\
+cell_type\{2\} = 'OFF parasol'\
+cell_type_number\{2\} = 2\
+\
+\
+cell_specification =  \{1,2\}  >>>\
+\
+% if a cell array of numbers is given, it is interpreted as\
+% the ordinal number of the desired cell type\
+\
+cell_numbers\{1\} = [2 4 7 16]\
+cell_type\{1\} = 'ON parasol'\
+cell_type_number\{1\} = 1\
+cell_numbers\{2\} = [1 3 5 8 15]\
+cell_type\{2\} = 'OFF parasol'\
+cell_type_number\{2\} = 2\
+\
+\
+cell_specification =  \{1\}  >>>\
+\
+% if there's only one element in the list, the function\
+% does not return a cell array \
+\
+cell_numbers = [2 4 7 16]\
+cell_type = 'ON parasol'\
+cell_type_number\{1\} = 1\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+\
+	For most functions, the first or second usage is appropriate.  In these cases, "get_cell_numbers" can be easily incorporated by adding a brief boilerplate at the beginning of the function:\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 \
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+\cf0 my_function( datarun, cell_specification, params )\
+\
+% get cell numbers\
+cell_numbers = get_cell_numbers( cell_specification )\
+...\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+\cf0  
+\f0\fs22 \
+Thus "get_cell_numbers" meets the needs of functions that care about cell types, while seamlessly integrating with functions that don't.\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 how to load mapped data
+\b0 \
+	The standard format for mapped data is to collect the master and slave dataruns in a single cell array.  The master must be listed first, followed by the slave dataruns.  An efficient way to load mapped data is in a single step as follows:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun = load_data( \{ \{'2007-07-05-1','rf-0-mg'\}, \{'2007-07-05-1','rf-1-mapped-0-mg'\} \};\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\fs22 \cf0 \
+	Note that the master datarun classification can be applied to the slave in a single line:\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 datarun\{2\}.cell_types = datarun\{1\}.cell_types
+\f0\fs22 \
+\
+This step will simplify the operation of functions that only need cell type information from the master. For example, a function that only uses slave datarun spike times doesn't need to care whether this is a slave or master datarun:\
+\
+
+\f2\fs18\fsmilli9100 compute_ccf( datarun\{2\}, 'ON parasol', ...);
+\f0\fs22 \
+\
+	To perform more complex operations on mapped data (e.g. compare RF shape to gratings response), the function should read in the various dataruns separately:\
+\
+
+\f2\fs18\fsmilli9100 compare_RF_to_DS( datarun\{1\}, datarun\{2\}, ...);
+\f0\fs22 \
+\
+Note, however, that such a function should NOT assume which datarun (RF or gratings) is the master and which is the slave.  Is is possible, for example, for the master to be either the RF run or the gratings run.\
+\
+\
+\
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\b \cf0 Summary
+\b0 \
+\
+	This proposal aims to make the Matlab code as simple, modular, inclusive, and expandable as possible.  Internally, a single, parallel structure stores all data and analysis, making them accessible to every function.  Externally, the user can operate on the data without worrying about its internal details.  In the future, the proposed structures can be easily expanded to incorporate new needs.\
+	We therefore believe this new proposal can serve SNL-E's Matlab needs indefinitely.
+\b \
+\
+\
+\page Appendix\
+\
+code for an example function
+\b0 \
+	Summaries of code are placed between "<" and ">".\
+\
+\pard\tx434\tx861\tx1289\tx1733\tx2160\ql\qnatural\pardirnatural
+
+\f2\fs18\fsmilli9100 \cf0 function [cell_numbers, cell_type ] = get_cell_numbers( datarun, cell_specification )\
+\
+switch class(cell_specification)\
+\
+	case 'double'  % a list of cell numbers\
+		cell_numbers = double(cell_specification);\
+		cell_type = [];\
+\
+	case 'char'  % a cell type name\
+		[cell_numbers, cell_type] = get_cell_numbers_by_type( datarun, cell_specification);\
+\
+	case 'cell'  % a list of names or cell type numbers\
+		% handle one element of the list at a time\
+		for cc = 1:length(cell_specification)\
+			[ cell_numbers\{cc\}, cell_type\{cc\} ] = ...\
+				get_cell_numbers_by_type( datarun, cell_specification\{cc\} );\
+		end\
+\
+		% if only one cell type was specified, don't return a cell array\
+		if length(cell_specification) == 1\
+			cell_numbers = cell_numbers\{1\};\
+			cell_type = cell_type\{1\};\
+		end\
+\
+	otherwise\
+		<give an appropriate error>\
+end\
+\
+function [cell_numbers, cell_type] = get_cell_numbers_by_type( datarun, cell_specification );\
+% internal function\
+% return the cell numbers of the type specified in 'cell_specification'\
+\
+switch type(cell_specification)\
+	case 'number'\
+		cell_type_number = cell_specification;\
+	case 'char'\
+		<loop through cell types looking for a type with the given name>\
+		cell_type_number = <result>;\
+	otherwise\
+		<give an appropriate error>\
+end\
+\
+cell_numbers = datarun.cell_types\{cell_type_number\}.cell_numbers;\
+cell_type = datarun.cell_types\{cell_type_number\}.name;}

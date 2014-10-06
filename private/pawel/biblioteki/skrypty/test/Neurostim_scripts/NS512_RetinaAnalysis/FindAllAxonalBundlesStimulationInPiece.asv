@@ -1,0 +1,9 @@
+DataPath='G:\D\Home\Pawel\analysis\retina\2012sept\2012-09-24-0\scan_proc'
+
+Patterns=[1:512];
+Eletrodes=[1:512];
+Movies=[1:2:63];
+
+Thresholds=zeros(length(Patterns,length(Electrodes);
+
+for i=

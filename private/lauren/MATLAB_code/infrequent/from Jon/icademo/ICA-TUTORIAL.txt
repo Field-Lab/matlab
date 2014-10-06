@@ -1,0 +1,103 @@
+Late updated: 23 August 2002, Jon Shlens
+
+To start running the ICADEMO, type "icademo" in Matlab.
+
+Here are a series of steps that might help you understand the ICADEMO. Note that all of the mixing matrices denoted  A = [a b; c d] actually means:
+A = [a b]
+    [c d]
+
+PART 1 - PLOT 2-D DISTRIBUTIONS
+===============================
+
+1) Set the mixing matrix to A= [1 0; 0 1]
+
+2) View the 2-D distributions of several input distributions. Set both signal distributions to:
+	- Exponential (note sparseness of points near 45 degree angles)
+	- Gaussian (note circularly symmertric)
+	- Uniform (a square)
+
+
+PART 2 - SHOW HOW MIXING MATRIX  TRANSFORMS THE DIST AXES
+===================================================
+For all of these examples, note how the basis vectors (green and red lines) change according to linear transformation A. Also, make sure to note that these basis vectors equal the columns of A.
+
+1) View the special case of A as a rotation
+	- set both distributions to Uniform
+	- set A = [.7 -.7; .7 .7] 
+
+2) Use the mixing matrix to change the variance
+	- set bout distributions to Gaussian
+	- set A = [1 0; 0 .5]
+
+3) View what happens to in a weird linear combination mixing
+	- set both distributions to Exponential
+	- set A = [1 0; 1 -1]
+
+
+PART 3 - VIEW THE LIMITS OF PCA
+===============================
+For all of these examples, first view the "columns of A" (this the 'solution') and then view the "PCA" model and compare. Note the covariance measure for the PCA output is near zero.
+
+1) A standard data set that PCA deals with
+	- set both distributions to Gaussian
+	- set A = [1 0; 0 0.5]
+
+2) Rotate the above data set as well.
+	- set both distributions to Gaussian
+        - set A = [.7 -0.35; .7 0.35]
+
+3) Now check out the exponential distribution version of the simple case
+	- set both distributions to Exponential
+        - set A = [1 0; 0 1]
+   Repeat PCA many times by clicking "Update" many times. Notice how the PCA solution is not stable and does not necessariily lie on the X and Y axes (columns of A)
+
+4) Now add linear mixing to the exponential distributions
+        - set both distributions to Exponential
+        - set A = [1 0; -1 1]
+
+   Notice that PCA entirely fails.
+
+
+PART 4 - PERFORM ICA ON THE DATA
+================================
+For all of these examples, note that the outputted bases are not orthogonal and they always follow the column vectors of A (maybe multiplied by -1). Also, note that the output distributions are usually exponential-like distributions.
+
+Also, select ICA (fixed pt) from the model menu and compare it with the columns of A.
+
+1) Return of the weird linear combo.
+        - set both distributions to Exponential
+        - set A = [1 0; -1 1]
+
+2) The simple exponential distributions
+	- set both distributions to Exponential
+        - set A = [1 0; 0 1]
+
+The main point is that the independent components (the green and red vectors) follow the columns of A ===> ICA has identified the mixing matrix A ==> the projections of the data along each axis are statistically independent distributions.
+   
+PART 5 - LIMTS OF ICA
+=====================
+
+1) ICA can not separate a mixture of Gaussian sources.
+	- set both distributions to Gaussian
+	- set A = [1 0; 1 -1]
+
+Press "Update" many times to see how the ICA solution does not converge well. In fact, it is not able to find the correct set of axes (the columns of A). Neither will PCA unless the variances are not equal and there is no mixing.
+
+
+PART 6 - COMPARE THE ICA ALGORITHMS
+===================================
+
+1) ICA (fixed pt) solves the a mixture of exponential distributions a little better (more consistent and accurately).
+       - set both distributions to Exponential
+       - set A = [2 0; 1 -1]
+
+Try "ICA (fixed pt)" and "ICA (infomax)" each several times. Notice that "ICA (fixed pt)" converges closer to the columns of A and it is more consistent.
+
+2) ICA (infomax) totally fails on sub-gaussian distributions (e.g. uniform)
+       - set both distributions to Uniform
+       - set A = [2 0; -1 1]
+
+Again, try both ICA algorithms several times. Notice that "ICA (fixed pt)" will find the columns of A (the solution). "ICA (infomax)" will always totally fail. This is because the original "infomax" algorithm can only handle super-gaussian (e.g. Exponential) distributions (which real world stimuli usually conform to).
+
+A later revision of the "infomax" algorithm fixed this problem by selecting the appropriate non-linearity (instead of a sigmoid) to 'match' a sub-gaussian distribution.
+

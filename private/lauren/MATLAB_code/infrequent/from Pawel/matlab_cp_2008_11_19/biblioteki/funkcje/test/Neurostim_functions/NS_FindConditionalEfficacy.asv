@@ -1,0 +1,39 @@
+function y=NS_FindConditionalEfficacy(RawDataPath,RawFileNumber,ClusterFilePath,Patterns,Movie,
+
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+
+ClusterIndexes=NS_ReadClusterFileAll(ClusterFilePath);
+ClusterIndexesNeg=ClusterIndexes; %when the previous pattern did not elicit spike
+ClusterIndexesPos=ClusterIndexes; % when previous pattern did elicit spike
+
+Timings1=Patterns;
+Timings2=Patterns;
+cd (RawDataPath);
+ChunkData=NS_MovieData(RawFileNumber,Movie,NS_GlobalConstants);
+[PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,MovieData]=NS_DecodeMovieDataChunk(ChunkData);
+
+for i=1:length(Patterns)
+    a=find(MovieData==Patterns(i));
+    Timings1(i)=MovieData(a(1)-1)/600;
+    Timings2(i)=MovieData(a(2)-1)/600;
+end
+
+SuccIfSucc=zeros(1,50);
+SuccIfFail=zeros(1,50);
+for i=1:length(Patterns)
+    T=Timings1(i);
+    PreviousPattern=Patterns(find(Timings1==T-1));
+    if length(find(Patterns==PreviousPattern)==0)
+        SuccIfSucc(i)=-1;
+        SuccIfFail(i)=-1;
+    else
+        PreviousSucc=find(ClusterIndexes(Movie,PreviousPattern,1:50)~=1)
+        CurrentSuccIfPrevSucc=find(ClusterIndexes(Movie,Patterns(i),PreviousSucc)~=1)
+        SuccIfSucc(i)=length(CurrentSuccIfPrevSucc)/length(PreviouSucc);
+        PreviouSucc=find(ClusterIndexes(Movie,PreviousPattern,1:50)==1);
+        CurrentSuccIfPrevSucc=find(ClusterIndexes(Movie,Patterns(i),PreviousSucc)~=1);
+        SuccIfFail(i)=length(CurrentSuccIfPrevSucc)/length(PreviouSucc);    
+    end    
+end
+SuccIfSucc(1:18)
+SuccIfFail(1:18)

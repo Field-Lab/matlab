@@ -1,0 +1,3 @@
+function [x,y]=NS_EstimateSomaPosition(EI,electrodes);
+Amplitude=zeros(1,length(electrodes));
+for i=1:length(electrodes

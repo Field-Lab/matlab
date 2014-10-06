@@ -1,0 +1,17 @@
+function Pairs=NS512_PairsFor16Electrodes;
+% Pairs dimension is 15*8*2: 15 rounds, 8 pairs, two electrodes in pair.
+Table1=[1:15 1:15];
+Pairs=zeros(15,8,2);
+for i=1:8
+    RoundID=(i-1)*2+1; %arbitrary
+    
+    Pairs(RoundID,1,2)=16;
+    Pairs(RoundID,2:8,2)=Table1([(14+i):-1:(8+i)]);
+    Pairs(RoundID,1:8,1)=Table1([i:(i+7)]);
+    
+    if i<8
+        Pairs(RoundID+1,1,1)=16;
+        Pairs(RoundID+1,2:8,1)=Table1(17-i:23-i);
+        Pairs(RoundID+1,1:8,2)=Table1(16-i:-1:9-i);
+    end
+end

@@ -1,0 +1,81 @@
+function plot_ei(datarun, cell_id, varargin)
+% plot_ei     plot an electrophysiological image
+%
+% usage:  plot_ei(datarun, cell_id, varargin)
+%
+% arguments:     datarun - datarun struct
+%                cell_id - cell id of the EI to plot
+%               varargin - struct or list of optional parameters (see below)
+%
+%
+% optional params, their default values, and what they specify:
+%
+% foa               gca            	figure or axes to plot in. if 0, make new figure.
+%                                      	if empty, don't plot.  if -1, plot in current.
+% frame_number      0               frame number to plot.  if 0, plot each electrode's maximal frame%
+% coordinates       'vision ei'     which coordinate frame to plot in
+%                                       'vision ei'
+%                                       'array'
+%                                       'array image'
+%                                       'monitor'
+%                                       'sta'
+%
+% all other parameters are passed to the low level function plot_ei_.  see that function for details.
+%               
+%
+%
+% 2009      greschner
+% 2010-01   gauthier, added option for coordinates
+%
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% some provided arguments might be for the low level function and should be ignored.
+p.KeepUnmatched = true;
+
+% specify list of optional parameters
+p.addParamValue('foa', gca);
+p.addParamValue('frame_number', 0);
+p.addParamValue('coordinates', 'vision ei',@(x)any(strcmpi(x,{'vision ei','array','array image','monitor','sta'})));
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+
+
+
+% transform electrode positions...
+switch params.coordinates
+    case 'vision ei'  % to vision EI coordinates
+        array_info = load_array_info(datarun,2);
+        positions = tformfwd(array_info.T_array_to_vision_ei,datarun.ei.position);
+        
+    case 'array'  % to array coordinates
+        positions = datarun.ei.position;
+        
+    case 'array image'  % to array image coordinates
+        array_info = load_array_info(datarun,2);
+        positions = tformfwd(array_info.T_array_to_array_image,datarun.ei.position);
+        
+    case 'monitor' % to monitor coordinates
+        T =  datarun.piece.T_monitor_to_array;
+        positions = tformfwd(T,datarun.ei.position);
+        
+    case 'sta' % to STA coordinates
+        T = datarun.piece.T_monitor_to_array;
+        positions = tforminv(T,datarun.ei.position);
+        
+    otherwise
+        error('coordinates spec ''%s'' not recognized.',params.coordinates)
+end
+ 
+
+% call low level function
+plot_ei_(get_ei(datarun,cell_id), positions, params.frame_number, p.Unmatched)
+

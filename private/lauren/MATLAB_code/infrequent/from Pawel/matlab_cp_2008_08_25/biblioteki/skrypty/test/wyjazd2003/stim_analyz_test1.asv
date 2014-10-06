@@ -1,0 +1,23 @@
+%y=convert_data(filename,206,65,20000);
+
+filename=[filename 'conv']
+length=100000;
+
+figura=1;
+period=4000;
+margines=50; 
+zakres=200;  % in miliseconds
+filename
+y=stim_analyze_bez_usr(filename,length,period,stim_channels,figura,margines,zakres);
+
+figura=2;
+period=2000;
+margines=5; 
+zakres=20;  % in miliseconds
+y=stim_analyze_bez_usr(filename,length,period,stim_channels,figura,margines,zakres);
+
+figura=3;
+period=40000;
+margines=5; 
+zakres=2000;  % in miliseconds
+y=stim_analyze_bez_usr(filename,length,period,stim_channels,figura,margines,zakres);

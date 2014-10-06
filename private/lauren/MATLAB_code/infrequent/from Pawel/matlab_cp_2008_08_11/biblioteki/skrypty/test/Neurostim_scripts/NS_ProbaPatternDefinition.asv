@@ -1,0 +1,29 @@
+NumberOfSamples=20000;
+
+Channels=[5:64 1:4];
+Channels=[1:64];
+
+TimeShiftInMs=0;
+TimeShift=TimeShiftInMs*20; %in sampling periods (50 microseconds)
+
+DelayInMs=7;
+Delay=DelayInMs*20;
+
+Array=zeros(1,6+length(Channels)*3);
+Array(1,6)=NumberOfSamples;
+
+for i=1:length(Channels)
+    index=6+(i-1)*3;
+    Array(1,index+1)=TimeShift+(i-1)*Delay; %point in time for this pattern
+    Array(1,index+2)=Channels(i);
+    Array(1,index+3)=1; %scaling factor - for now always equal to 1
+end
+
+%a=[1:64];
+
+fid = fopen('proba2','wb')
+%fwrite(fid,a,'int16');
+fclose(fid);
+
+fid1=fopen('proba','r');
+b=fread(fid1,'int16')

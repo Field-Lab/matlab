@@ -1,0 +1,6 @@
+function [ChannelsWithSpikes]=NS512_FindChannelsWithHighResponseRate(Events,SpikesNumberThreshold);
+%- Events - should have size N x length(Channels)
+%- ChannelsWithSpikes - values between 1 and length(Channels)
+
+EventsPerChannel=sum(Events); %How many spikes on each electrode, size - 1 x 512
+ChannelsWithSpikes=find(EventsPerChannel>SpikesNumberThreshold); % ktore elektrody zarejestrowaly wiecej niz 50 spikow

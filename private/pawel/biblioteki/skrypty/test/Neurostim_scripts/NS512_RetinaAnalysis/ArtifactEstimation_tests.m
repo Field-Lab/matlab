@@ -1,0 +1,29 @@
+clear
+DataPath='D:\Home\Pawel\analysis\retina\2010-08-31-0\data009_preproc';
+Patterns=[79 78 81 74 79 75 74 73 73 72 85];
+Movies=[226 194 199 206 218 190 142 222 134 172 227];
+Electrodes=[76 78 308 78 80 79 74 86 73 72 90];
+
+N=length(Patterns)
+figure(4)
+for i=1:N
+    [DataTraces0,ArtifactDataTraces,DataChannels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Patterns(i),Movies(i),0,0);
+    DataTraces=DataTraces0(1:45,[1:512],[6:45]);
+    d=reshape(DataTraces(:,Electrodes(i),:),45,40);
+    dm=mean(d,1);    
+    subplot(3,N,i);
+    plot(d');
+    subplot(3,N,i+N);       
+    [e1,e2]=sort(min(d(:,6:40),[],2));       
+    art=mean(d(e2(45:45),:),1);
+    plot(art)
+    
+    %subplot(3,N,i+2*N);
+    for j=1:45
+        d1(j,:)=d(j,:)-art;
+        
+    end
+    plot(d1')
+    
+    
+end

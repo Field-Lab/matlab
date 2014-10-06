@@ -1,0 +1,100 @@
+function y=NS_PlotDifferentTracesOnArrayLayout(Traces,Channels,OffsetCancellation,OffsetSamples,FigureProperties,NS_GlobalConstants);
+%Traces - the three-dimensional array (NxCxS), where:
+%N - number of traces plotted on each subplot;
+%C - number of channels;
+%S - length of each trace (in points).
+%OffsetCancellation - may have thre values:
+%a) if 0, the trace is plotted directly;
+%b) if 1, then the mean value of the whole trace is subtracted before
+%plotting;
+%c) if 2, then the mean value of all the samples Deined in the OffsetSamples
+%array is subtracted before plotting (for examples, if one wants to plot a spike or
+%artifact tha stats 20 samples after beginning of each trace, it may be
+%reasonable to use the first milisecond to calculate the DC offset).
+Fs=NS_GlobalConstants.SamplingFrequency;
+ArrayID=NS_GlobalConstants.ArrayID;
+
+FigureNumber=FigureProperties.FigureNumber;
+TimeRange=FigureProperties.TimeRange;
+AmplitudeRange=FigureProperties.AmplitudeRange;
+FontSize=FigureProperties.FontSize;
+Colors=FigureProperties.Colors;
+XTicks=FigureProperties.XTick;
+YTicks=FigureProperties.YTick;
+
+ST=size(Traces);
+
+Xstep=60;
+Ystep=60;
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
+TimeRange=TimeRange./Fs*1000; %s-0.35;
+t=[TimeRange(1):(1/Fs*1000):TimeRange(2)];
+
+Coordinates=zeros(2,length(Channels));
+ChannelsNumber=length(Channels);
+for i=1:ChannelsNumber
+    Coordinates(1,i)=electrodeMap.getXPosition(Channels(i));
+    Coordinates(2,i)=electrodeMap.getYPosition(Channels(i));
+end
+
+X0=min(Coordinates(1,:));
+X1=max(Coordinates(1,:));
+Y0=min(Coordinates(2,:));
+Y1=max(Coordinates(2,:));
+
+a=find(Coordinates(2,:)==Y0);
+z=10000;
+for i=1:length(a)
+    if Coordinates(1,a(i))<z
+        z=Coordinates(1,a(i));
+        SE=a(i);
+    end
+end
+
+Xspread=X1-X0+Xstep*3; % *1.5 !!
+Yspread=Y1-Y0+Ystep*1.5;
+
+figure(FigureNumber);
+clf;
+%t=t-0.35;
+for i=1:ChannelsNumber %for each channel (and so each subplot)...
+    X=(Coordinates(1,i)-X0)/Xspread+0.2; % +0.05!!
+    Y=(Coordinates(2,i)-Y0)/Yspread+0.16;
+    XSize=Xstep/Xspread;
+    YSize=Ystep/Yspread;
+    subplot('Position',[X Y XSize*0.9 YSize*0.9]);
+    for j=1:ST(1) %for each trace that is to be plotted in this subplot...
+        switch OffsetCancellation
+            case 1
+                signal=Traces(j,i,:)-mean(Traces(j,i,:));
+            case 2
+                signal=Traces(j,i,:)-mean(Traces(j,i,OffsetSamples));
+            otherwise                                
+                signal=Traces(j,i,:);
+        end    
+        signal=reshape(signal,1,ST(3));
+        WaveformColorIndex=j-floor(j/length(Colors))*length(Colors)+1;            
+        h=plot(t,signal,Colors(WaveformColorIndex));  
+        set(h,'LineWidth',1.5);
+        hold on;
+    end
+    %h=text(TimeRange(1)+(TimeRange(2)-TimeRange(1))*0.92,AmplitudeRange(1)+(AmplitudeRange(2)-AmplitudeRange(1))*0.88,num2str(Channels(i)));
+    %set(h,'FontSize',FontSize);
+    xlim(TimeRange);
+    xlim([-0.5 3]);
+    ylim(AmplitudeRange);
+    grid on;
+    %text(TimeRange(1)+(TimeRange(2)-TimeRange(1))*0.8,AmplitudeRange(1)+(AmplitudeRange(2)-AmplitudeRange(1))*0.8,num2str(Channels(i)));
+    h=gca;
+    set(h,'YTick',[-150 -100 -50 0 50 100]);
+    if i==SE        
+        set(h,'FontSize',FontSize);
+        xlabel('time [ms]');
+        ylabel('output [mV]');
+    else
+        set(h,'XTickLabel',[]);
+        set(h,'YTickLabel',[]);
+    end
+end
+
+y=Coordinates;

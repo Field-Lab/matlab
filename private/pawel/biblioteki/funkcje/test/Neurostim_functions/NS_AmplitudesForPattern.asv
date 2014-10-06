@@ -1,0 +1,16 @@
+function [Amplitudes]=NS_AmplitudesForPattern(DataPath,Channels,PatternNumber,MovieNumber,NS_GlobalConstants);
+
+%electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(1);
+%Channels=electrodeMap.getAdjacentsTo(CenterChannel,1)';
+
+FullName_status=[DataPath filesep 'status_m' num2str(MovieNumber)];
+load(FullName_status);
+FullName_pattern=[DataPath filesep 'pattern' num2str(PatternNumber) '_m' num2str(MovieNumber)];
+load(FullName_pattern);
+[patternTimes,traces] = plotStimulusTraces(Pattern, Status, Channels, [0 50], NS_GlobalConstants);
+ST=size(traces)
+for i=1:length(Channels)
+    Trace=reshape(traces(1,i,:),1,ST(3));
+    index=find(Traces==max(abs(Traces)))
+    Amplitudes(i)=traces(1,i,index(1));
+end

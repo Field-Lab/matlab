@@ -1,0 +1,500 @@
+function [main elecResp] = refreshAll(main)
+
+% a function executed when 'refresh all' pushbutton in analysisGui is pressed
+%
+% refreshed information in upper right panel, all plots, and ei plot legend
+%
+
+analysisMode = get(main.analyzeModeButton, 'Value');
+currentMovie = str2double(get(main.movieNo, 'String'));
+
+filePath = get(main.filePath, 'String');
+
+% makes flag that specifies whether analysis has been done in explore mode (temporarily) or in
+% analysis mode (stored in elecResp)
+exploreAnalyzed = 0;
+analysisAnalyzed = 0;
+prevAnalysisAnalyzed = 0;
+
+
+if analysisMode
+    
+    fileName = get(main.fileName, 'String');
+    temp = load([filePath fileName]);
+    elecResp = temp.elecResp;
+   
+    
+
+    % sets movie number to appropriate number if not already
+    movies = elecResp.stimInfo.movieNos;
+    if ~any(movies == currentMovie)
+        set(main.movieNo, 'String', movies(1))
+        movieIndex = 1;
+        currentMovie = movies(1);
+    else
+        movieIndex = find(movies == currentMovie);
+    end
+    
+    % makes sure stimInfo.nPulses has been correctly set (due to change in elecResp format)
+    updatedElecResp = 0;
+    for i = 1:length(movies)
+        mNum = movies(i);
+        if elecResp.stimInfo.nPulses(i) == 0 %value hasn't been set yet
+            dataTraces=NS_ReadPreprocessedData(elecResp.names.data_path, '', 0, elecResp.stimInfo.patternNo, mNum, 99999);
+            elecResp.stimInfo.nPulses(i) = size(dataTraces, 1);
+            updatedElecResp = 1;
+        end
+    end
+    if updatedElecResp
+        save([filePath filesep fileName], 'elecResp')
+    end
+
+    
+    %sets flag that specifies whether data has been analyzed (in analysis mode)
+    if isfield(elecResp, 'analysis') && analysisMode
+        if ~isempty(elecResp.analysis.estArtifact{movieIndex})
+            analysisAnalyzed = 1;
+        end
+        if movieIndex > 1
+            if ~isempty(elecResp.analysis.estArtifact{movieIndex-1})
+                prevAnalysisAnalyzed = 1;
+            end
+        end
+    end
+    
+   
+    
+    % updates information panel
+    slashIndex = strfind(elecResp.names.rrs_ei_path, '/');
+    
+    slashIndex = slashIndex(end);
+    eiDataset = elecResp.names.rrs_ei_path(slashIndex+1:end);
+
+    set(main.text.name, 'String', elecResp.names.rrs_short_name)
+    set(main.text.ei, 'String', eiDataset)
+    set(main.text.patternNo, 'String', elecResp.stimInfo.patternNo)
+    set(main.text.nPulse, 'String', num2str(elecResp.stimInfo.nPulses(movieIndex)))
+    set(main.text.stimElec, 'String', num2str(elecResp.stimInfo.electrodes))
+    set(main.text.mainElec, 'String', num2str(elecResp.cells.recElec))
+    set(main.text.goodElecs, 'String', num2str(elecResp.cells.goodElecs))
+    set(main.text.mainNeuron, 'String', num2str(elecResp.cells.main))
+    set(main.text.activeNeurons, 'String', num2str(elecResp.cells.active{movieIndex}))
+    set(main.text.analysisType, 'String', elecResp.analysis.type{movieIndex})
+
+    
+    if isnumeric(elecResp.stimInfo.patternNo)
+        pnTmp = num2str(elecResp.stimInfo.patternNo);
+    else
+        pnTmp = elecResp.stimInfo.patternNo;
+    end
+    if exist([elecResp.names.data_path filesep 'pattern_files' filesep 'pattern' pnTmp '_m' num2str(currentMovie) '.mat'], 'file') ||...
+            exist([elecResp.names.data_path filesep 'pattern' pnTmp '_m' num2str(currentMovie) '.mat'], 'file')
+        try
+            amps = getStimAmps(elecResp.names.data_path, elecResp.stimInfo.patternNo, currentMovie);
+            set(main.text.stimAmps, 'String', num2str(amps));
+        catch
+            set(main.text.stimAmps, 'String', '');
+            disp('unable to determine stimulus amplitude')
+        end
+    else
+        set(main.text.stimAmps, 'String', '');
+        disp('unable to determine stimulus amplitude due to missing pattern file')
+    end
+
+
+    % updates miscellaneous
+    if elecResp.analysis.finalized(movieIndex)
+        set(main.lockLatenciesButton, 'enable', 'off', 'String', 'analysis locked')
+    else
+        set(main.lockLatenciesButton, 'enable', 'on', 'String', 'lock this analysis')
+    end
+    
+    % loading data
+    
+    dataTraces=NS_ReadPreprocessedData(elecResp.names.data_path, '', 0, elecResp.stimInfo.patternNo,...
+        elecResp.stimInfo.movieNos(movieIndex), 99999);
+    
+    % loading TTX artifact
+    
+    if ~isempty(elecResp.names.artifact_path)
+        artTraces = NS_ReadPreprocessedData(elecResp.names.artifact_path, '', 0, elecResp.stimInfo.patternNo,...
+        elecResp.stimInfo.movieNos(movieIndex), 99999);
+        
+        meanArtTrace = squeeze(mean(artTraces,1));
+    end
+
+    
+else % explore mode
+    % sets exploreAnalyzed flag to 1 only if corresponding cell in tempAnalysis can be found and
+    % isn't empty
+    exploreAnalyzed = 1;
+    try
+        patternNo = str2double(get(main.patternNo, 'String'));
+        if isnan(patternNo);
+            tempSuccesses = main.tempAnalysisNoSave;
+        else
+            tempSuccesses = main.tempAnalysis{patternNo, currentMovie};
+        end
+        if isempty(tempSuccesses)
+            exploreAnalyzed = 0;
+        end
+    catch
+        exploreAnalyzed = 0;
+    end
+    
+    % loading data
+    dataPath = get(main.filePath, 'String');
+    patternNo = get(main.patternNo, 'String');
+
+      
+    currentMovie = str2double(get(main.movieNo, 'String'));
+    centerChannel = str2double(get(main.centerElec, 'String'));
+    
+        
+    if exist([dataPath filesep 'p' patternNo filesep 'p' patternNo '_m' num2str(currentMovie)], 'file')
+        dataTraces=NS_ReadPreprocessedData([dataPath filesep 'p' patternNo], '', 0, patternNo, currentMovie, 99999);
+    elseif exist([dataPath filesep 'p' patternNo '_m' num2str(currentMovie)], 'file')
+        dataTraces=NS_ReadPreprocessedData(dataPath, '', 0, patternNo, currentMovie, 99999);
+    else
+        %find out which movie numbers exist for specified pattern
+        movieNos = [];
+
+        if exist([dataPath filesep 'p' patternNo], 'file')
+            files = dir([dataPath filesep 'p' patternNo]);
+        elseif exist(dataPath, 'file')
+            files = dir(dataPath);
+        else
+            warnH = warndlg('invalid data path');
+            uiwait(warnH)
+            return
+        end
+        
+        for i = 1:length(files)
+            if strfind(files(i).name, ['p' patternNo]) == 1
+                mIndices = strfind(files(i).name, 'm');
+                movieNos = [movieNos str2double(files(i).name(mIndices+1:end))]; %#ok<AGROW>
+            end
+        end
+        movieNos = sort(movieNos);
+                
+        if ~isempty(movieNos)
+            if strcmpi(main.movieDirection, 'up') && any((movieNos - currentMovie)>0) %increase movie number if possible
+                movieNosPos = movieNos((movieNos - currentMovie)>0);
+                minDiff = min(movieNosPos - currentMovie);
+                iChangeMovie = find((movieNos - currentMovie) == minDiff,1);
+            elseif strcmpi(main.movieDirection, 'down') && any((movieNos - currentMovie)<0) %increase movie number if possible
+                movieNosNeg = movieNos((movieNos - currentMovie)<0);
+                minDiff = min(abs(movieNosNeg - currentMovie));
+                iChangeMovie = find((movieNos - currentMovie) == -1*minDiff,1);
+            else
+                iChangeMovie = find(abs(movieNos - currentMovie) == min(abs(movieNos - currentMovie)),1);
+            end
+            currentMovie = movieNos(iChangeMovie);
+
+            set(main.movieNo, 'String', num2str(currentMovie))
+            dataTraces=NS_ReadPreprocessedData(dataPath, '', 0, patternNo, currentMovie, 99999);
+        else
+            warnH = warndlg(['no movies could be found for ' dataPath filesep 'p' patternNo]);
+            uiwait(warnH)
+            return
+        end
+  
+    end
+    
+    nPulses = size(dataTraces, 1);
+    
+    % updating displayed information
+    set(main.text.name, 'String', '')
+    set(main.text.ei, 'String', '')
+    set(main.text.patternNo, 'String', patternNo)
+    set(main.text.nPulse, 'String', num2str(nPulses))
+                
+
+    if exist([dataPath filesep 'pattern_files' filesep 'pattern' patternNo '_m' num2str(currentMovie) '.mat'], 'file') ||...
+            exist([dataPath filesep 'pattern' patternNo '_m' num2str(currentMovie) '.mat'], 'file')
+        try
+            [amps electrodes] = getStimAmps(dataPath, patternNo, currentMovie);
+            set(main.text.stimElec, 'String', num2str(electrodes))
+            set(main.text.stimAmps, 'String', num2str(amps));
+        catch
+            set(main.text.stimElec, 'String', '')
+            set(main.text.stimAmps, 'String', '');
+            disp('unable to retrieve stimulus information')
+        end
+    else
+        set(main.text.stimElec, 'String', '')
+        set(main.text.stimAmps, 'String', '');
+        disp('unable to retrieve stimulus information due to missing pattern file')
+    end
+    
+    set(main.text.mainElec, 'String', num2str(centerChannel))
+    set(main.text.goodElecs, 'String', '')
+    set(main.text.mainNeuron, 'String', '')
+    set(main.text.activeNeurons, 'String', '')
+    set(main.text.analysisType, 'String', '')
+
+end
+
+%%%% updates main figures %%%%
+
+% plotting preparations
+
+plotType = get(main.dataDisplayType, 'Value');
+
+if analysisMode
+    centerChannel = elecResp.cells.recElec;
+    nPulses = elecResp.stimInfo.nPulses(movieIndex);
+end
+
+if plotType == 2 %subtract mean
+    subtractionVector = squeeze(mean(dataTraces(:, centerChannel, :), 1));
+elseif plotType == 3 %subtract estimated artifact
+    if ~analysisMode || ~analysisAnalyzed
+        warning('No artifact estimate has been calculated yet.  Displaying raw data.') %#ok<WNTAG>
+        %warnh = warndlg('No artifact estimate has been calculated yet.  Displaying raw data.');
+        %uiwait(warnh)
+        subtractionVector = zeros(size(dataTraces, 3), 1);
+    else
+        subtractionVector = elecResp.analysis.estArtifact{movieIndex}(elecResp.cells.goodElecs == centerChannel, :)';
+        %elecResp.analysis.estArtifact{movieIndex}(elecResp.cells.goodElecs == elecResp.cells.recElec, :)
+    end
+end
+
+dataToPlot = zeros(size(dataTraces, 1), size(dataTraces, 3));
+if any(plotType == [2 3]) %subtract mean or estimated artifact
+    for i = 1:nPulses
+        dataToPlot(i, :) = squeeze(dataTraces(i, centerChannel, :)) - subtractionVector;
+    end
+    if analysisMode && analysisAnalyzed
+        estArtToPlot = elecResp.analysis.estArtifact{movieIndex}(elecResp.cells.goodElecs == elecResp.cells.recElec, :)'...
+            - subtractionVector;
+        if prevAnalysisAnalyzed
+            estArtPrevToPlot = elecResp.analysis.estArtifact{movieIndex-1}(elecResp.cells.goodElecs == elecResp.cells.recElec, :)'...
+                - subtractionVector;
+        end
+        if ~isempty(elecResp.names.artifact_path)
+            meanArtTraceToPlot = meanArtTrace(elecResp.cells.recElec, :)' - subtractionVector;            
+        end
+    end
+else %display raw data
+    dataToPlot = squeeze(dataTraces(:, centerChannel, :));
+    if analysisMode && analysisAnalyzed
+        estArtToPlot = elecResp.analysis.estArtifact{movieIndex}(elecResp.cells.goodElecs == elecResp.cells.recElec, :)';
+        if prevAnalysisAnalyzed
+            estArtPrevToPlot = elecResp.analysis.estArtifact{movieIndex-1}(elecResp.cells.goodElecs == elecResp.cells.recElec, :)';
+        end
+        if ~isempty(elecResp.names.artifact_path)
+            meanArtTraceToPlot = meanArtTrace(elecResp.cells.recElec, :)';
+        end
+    end
+end
+
+
+xmin = str2double(get(main.xAxisLimitLow, 'String'));
+xmax = str2double(get(main.xAxisLimitHigh, 'String'));
+
+try
+    ymin = min(min(dataToPlot(:, xmin:xmax)));
+    ymax = max(max(dataToPlot(:, xmin:xmax)));
+    ymin = 50*floor(ymin/50);
+    ymax = 50*ceil(ymax/50);
+catch
+    ymin = min(min(dataToPlot));
+    ymax = max(max(dataToPlot));
+    ymin = 50*floor(ymin/50);
+    ymax = 50*ceil(ymax/50);
+end
+
+if analysisMode
+    latencies = [elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
+end
+
+
+if (~analysisMode && ~exploreAnalyzed) || (analysisMode && ~analysisAnalyzed) % not analyzed yet (in explore or analysis mode): just plot all traces as failures
+
+    cla(main.a1)
+
+    axes(main.a2)
+    cla
+
+    hold on
+    plot(dataToPlot', 'k')
+    hold off
+    set(main.a2, 'xlim', [xmin xmax], 'ylim', [ymin ymax])
+
+    for i = 1:7
+        if analysisMode || get(main.eiRefreshCheckbox, 'value') == 0
+            cla(main.aEi{1,i})
+            set(main.aEi{1,i}, 'visible', 'off')
+            set(main.aButton{1,i}, 'visible', 'off', 'enable', 'off')
+        end
+        if strcmp('/', filesep) %mac
+            cla(main.aEi{2,i})
+            set(main.aEi{2,i}, 'visible', 'off')
+            set(main.aButton{2,i}, 'visible', 'off', 'enable', 'off')
+        end
+    end
+
+
+elseif ~analysisMode && exploreAnalyzed %% temporarily analyzed in explore mode (by hand-clustering)
+    
+    %plotting successes
+    axes(main.a1)
+    cla
+    
+    hold on
+    for i = 1:length(tempSuccesses)
+        if ~tempSuccesses(i)
+            current = plot(dataToPlot(i, :));
+            set(findobj(current,'Type','line'),'Color',[0.8 0.8 0.8])
+        end
+    end
+    for i = 1:length(tempSuccesses)
+        if tempSuccesses(i)
+            plot(dataToPlot(i, :), 'r')
+        end
+    end
+    hold off
+    set(main.a1, 'xlim', [xmin xmax], 'ylim', [ymin ymax])
+    
+    %plotting failures
+    axes(main.a2)
+    cla
+
+    hold on
+    for i = 1:length(tempSuccesses)
+        if ~tempSuccesses(i)
+            plot(dataToPlot(i, :), 'k')
+        end
+    end
+    hold off
+    set(main.a2, 'xlim', [xmin xmax], 'ylim', [ymin ymax])
+    
+else %in analysis mode, analyzed
+    residStart = elecResp.analysis.details.residCalcWindow{movieIndex}(1);
+    residEnd = elecResp.analysis.details.residCalcWindow{movieIndex}(2);
+    
+    neuronID = [elecResp.cells.main elecResp.cells.active{movieIndex}];
+    goodChannels = elecResp.cells.goodElecs;
+    centerChannelIndex = find(goodChannels == elecResp.cells.recElec);
+    nTemplates = length(neuronID);
+    
+    templates = cell(nTemplates, 1);
+    templateMinPos = zeros(nTemplates, 1);
+    if isfield(elecResp.cells, 'allEIs')
+        for i = 1:nTemplates
+            templates{i} = elecResp.cells.allEIs{elecResp.cells.all == neuronID(i)}(goodChannels, :);
+            templateMinPos(i) = find(squeeze(templates{i}(centerChannelIndex,:)) ==...
+                min(squeeze(templates{i}(centerChannelIndex,:))));
+        end
+    else
+        eiFile = edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile(elecResp.names.rrs_ei_path);
+        ei = cell(nTemplates, 1);
+        for i = 1:nTemplates
+            ei{i} = eiFile.getImage(neuronID(i)); %gets ei data for neuron, storing the information as a 3D array: 2 x nElectrodes x nSamples
+            templates{i} = reshape(ei{i}(1, goodChannels + 1, :), length(goodChannels), []);
+
+            templateMinPos(i) = find(squeeze(templates{i}(centerChannelIndex,:)) ==...
+                min(squeeze(templates{i}(centerChannelIndex,:))));
+        end
+    end
+
+    tempMinStart = elecResp.analysis.details.tempOffsetWindow{movieIndex}(1) + max(templateMinPos);
+    tempMinEnd = elecResp.analysis.details.tempOffsetWindow{movieIndex}(2) + min(templateMinPos);
+    
+    axes(main.a1)
+    cla
+
+    %plotting successes
+    hold on
+    for i = 1:elecResp.stimInfo.nPulses(movieIndex)
+        if ~any(latencies(i,:))
+            plot(dataToPlot(i, :), 'Color',[0.8 0.8 0.8])
+        end
+    end
+    for i = 1:elecResp.stimInfo.nPulses(movieIndex)
+        if any(latencies(i,:))
+            plot(dataToPlot(i, :), 'r')
+        end
+    end
+    plot([residStart residStart], [ymin ymax], 'Color',[0.5 0.5 0.5])
+    plot([residEnd   residEnd],   [ymin ymax], 'Color',[0.5 0.5 0.5])
+    
+    plot([tempMinStart tempMinStart], [ymin ymax], 'Color',[0.5 0.5 1])
+    plot([tempMinEnd   tempMinEnd],   [ymin ymax], 'Color',[0.5 0.5 1])
+    
+    hold off
+
+    set(main.a1, 'xlim', [xmin xmax], 'ylim', [ymin ymax])
+
+    %plotting failures
+    axes(main.a2)
+    cla
+
+    hold on
+    for i = 1:elecResp.stimInfo.nPulses(movieIndex)
+        if ~any(latencies(i,:))
+            plot(dataToPlot(i, :), 'k')
+        end
+    end
+    %current = plot(elecResp.analysis.estArtifact{movieIndex}(elecResp.cells.goodElecs == elecResp.cells.recElec, :));
+    plot(estArtToPlot, 'Color', [0.5 0.5 0.5], 'LineWidth', 2)
+    if prevAnalysisAnalyzed
+        plot(estArtPrevToPlot, '--', 'Color', [0.6 0.9 1], 'LineWidth', 2)
+    end
+    
+    %plot TTX artifact
+    if ~isempty(elecResp.names.artifact_path)
+        plot(meanArtTraceToPlot, '--', 'Color', [0.3 0.8 0.3], 'LineWidth', 2)
+    end
+    
+    plot([residStart residStart], [ymin ymax],'Color', [0.5 0.5 0.5])
+    plot([residEnd residEnd], [ymin ymax], 'Color', [0.5 0.5 0.5])
+
+    plot([tempMinStart tempMinStart], [ymin ymax], 'Color', [0.5 0.5 1])
+    plot([tempMinEnd   tempMinEnd],   [ymin ymax], 'Color', [0.5 0.5 1])
+    
+    hold off
+    set(main.a2, 'xlim', [xmin xmax], 'ylim', [ymin ymax])
+end
+
+main.a1
+
+%%%%% updates ei legend %%%%%
+if analysisMode && analysisAnalyzed
+    neuronIDs = [elecResp.cells.main elecResp.cells.active{movieIndex}];
+    nTemplates = length(neuronIDs);
+    templateColors = hsv(nTemplates);
+    
+    
+    for i = 1:nTemplates
+        set(eval(['main.legendCheckBox' num2str(i)]), 'Visible', 'on',...
+            'String', ['neuron ' num2str(neuronIDs(i))], 'ForegroundColor', templateColors(i,:))
+    end
+    
+    %set(main.legendRefreshButton, 'visible', 'on', 'enable', 'on')
+    set(main.showTemplatesCheckbox, 'visible', 'on');
+    set(main.eiRefreshCheckbox, 'visible', 'off', 'enable', 'off')
+else
+    for i = 1:5
+        set(eval(['main.legendCheckBox' num2str(i)]), 'Visible', 'off')
+    end
+    %set(main.legendRefreshButton, 'visible', 'off', 'enable', 'off')
+    set(main.showTemplatesCheckbox, 'visible', 'off')
+    if ~analysisMode
+        set(main.eiRefreshCheckbox, 'visible', 'on', 'enable', 'on')
+    else
+        set(main.eiRefreshCheckbox, 'visible', 'off', 'enable', 'off')
+    end
+end
+
+%%%%% updates ei figures %%%%%
+
+if ~analysisMode 
+    elecResp.dummyField = 0;
+    refreshEiPlots(main, elecResp, dataTraces)
+elseif analysisAnalyzed
+    refreshEiPlots(main, elecResp, dataTraces)
+end
+
+end

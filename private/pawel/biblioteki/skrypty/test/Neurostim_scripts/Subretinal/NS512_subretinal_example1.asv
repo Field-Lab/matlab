@@ -1,0 +1,97 @@
+TimeShiftInMs=50;
+DelayInMs=50;
+
+TimeShift=TimeShiftInMs*20;
+Delay=DelayInMs*20;
+
+NumberOfSamples=10000;
+electrodes=[1:512];
+Array=eye(512,512); 
+%Array=zeros(512,64); 
+Times=[];
+
+El=[10:64:512];
+
+Patterns=[];
+Times=[];
+Disconnecting=zeros(1,8);
+TTLs=ones(1,6)*(-1);
+
+addTTL=[0 0 1 1 0 0 1 1]*0;
+%addTTL=zeros(1,8);
+addDisc=[0 1 0 1 0 1 0 1]*0;
+AddElectrodes=[0 0 0 0 1 1 1 1]*1;
+
+%addDisc=zeros(1,8);
+
+TTL_pulse_timings=[50:100:450]; %in miliseconds
+TTL_pulse_width=1; % in miliseconds
+
+Disconnect_timings=[99.9 249.9]; % in miliseconds
+Disconnect_width=0.5; % in miliseconds
+
+Patterns=[];
+Times=[];
+
+for i=1:length(TTL_pulse_timings)
+    p1=ones(1,TTL_pulse_width*20)*(-1); % multiplication by 20 to get value in samples; -1 is the pattern number for TTL
+    t1=TTL_pulse_timings(i)*20:(TTL_pulse_timings(i)+TTL_pulse_width)*20-1;
+    
+    Patterns=[Patterns p1];
+    Times=[Times t1]
+end
+
+break
+T=[50:50:400];
+
+for i=1:8
+    if addTTL(i)==1
+        p1=TTLs;
+        t1=[T(i)+1.4:0.05:T(i)+1.65];
+    else
+        p1=[];
+        t1=[];
+    end
+    
+    if addDisc(i)==1
+        p2=Disconnecting;
+        t2=[T(i)+1.35:0.05:T(i)+1.7];
+    else
+        p2=[];
+        t2=[];
+    end
+    
+    if AddElectrodes(i)==1
+        p3=El(i);
+        t3=T(i);
+    else
+        p3=[];
+        t3=[];
+    end
+    
+    Patterns=[Patterns p1 p2 p3];
+    Times=[Times t1 t2 t3]; %the patterns for generating the stimulation current will overwrite the disconnstion signals for the stimulating channel, only if they follow the disconnection signal in the stim files
+end
+Patterns
+Times=Times*20
+
+%Patterns=El;
+Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,Patterns);
+MovieChunksFile=[1 Chunk]; %only one movie
+
+cd C:\home\Pawel\nauka\StimFiles\subretinal\stimfiles; 
+fid = fopen('SubTest_el','wb','l')
+fwrite(fid,electrodes,'int32');
+fclose(fid);
+
+fid = fopen('SubTest_pt','wb','l')
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('SubTest_mv','wb','l')
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid); 
+
+break
+h2=fopen('ble1','r','l');
+s1=fread(h2,'int32');

@@ -1,0 +1,50 @@
+clear;
+
+ChipAddresses=[24:31];
+NumberOfChannelsPerChip=64;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+%NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=500;
+
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+FigureProperties=struct('FigureNumber',12,'Subplot',[2 3 3],'TimeRange',[0 100],'AmplitudeRange',[-100 50],'FontSize',12,'Colors',['k' 'r' 'b' 'm' 'g' 'c' 'y'],'LineWidth',1,'YLabel','signal [mV]');
+
+WritePath='C:\home\pawel\2010\analysis\07_2010_Cultures\SpikesInStimData';
+WritePathFigsGood='C:\home\pawel\2010\analysis\07_2010_Cultures\SpikesInStimData\good';
+WritePathFigsBad='C:\home\pawel\2010\analysis\07_2010_Cultures\SpikesInStimData\bad';
+PrepDataPath='I:\analysis\2010-07-29-0\data';
+ArtifactDataPath='I:\analysis\2010-07-29-0\artifacts';
+%ClusterFileName='I:\analysis\2010-07-29-0\artifacts';
+GoodChannels=[1:512];
+Movies=[1:8:217];
+Patterns=NS512_OptimalElectrodeSequence();
+PatternsForMovie=Patterns(1:64);
+ClusterFileName=NS_CreateClusterFile(WritePath,'002',length(Movies),length(PatternsForMovie),100);
+
+ArtifactSubtraction=1;
+Responses=zeros(length(PatternsForMovie),512);
+Noise=Responses;
+
+cd C:\home\pawel\2010\analysis\07_2010_Cultures\SpikesInStimData2;
+for PatternNumber=PatternsForMovie
+    [Events,ChannelsWithSpikes,Thresholds]=NS512_FindThresholdForAxonalStimulation3PH(PrepDataPath,ArtifactDataPath,WritePathFigsGood,WritePathFigsBad,PatternNumber,Movies,GoodChannels,ArrayID,FigureProperties,NS_GlobalConstants,[],[12:100]);
+    k=[ChannelsWithSpikes' Thresholds']';
+    filename=['Pattern_' num2str(PatternNumber)];
+    fid=fopen(filename,'w');
+    fwrite(fid,k,'ubit16');
+    fclose(fid); % how to read: f=fopen('Pattern_129'); a=fread(f); b=reshape(a,2,length(a)/2);
+end
+break;
+
+tic
+for PatternNumber=29 %PatternsForMovie(1,1)
+    PatternNumber
+    [a,b]=NS512_ApplyLinearArtifactModel3(PrepDataPath,ArtifactDataPath,ArtifactSubtraction,PatternNumber,Movies,GoodChannels,45,0,0,ClusterFileName,NS_GlobalConstants);
+    Responses(PatternNumber,:)=a;
+    Noise(PatternNumber,:)=b;
+end
+toc
+save Responses;
+%Save Noise;
+%[Responses,Noise]=NS512_ApplyLinearArtifactModel3(DataPath,ArtifactDataPath,ArtifactSubtraction,PatternNumber,Movies,GoodChannels,Threshold,TracesNumberLimit,EventNumber,ClusterFileName,NS_GlobalConstants);

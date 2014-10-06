@@ -1,0 +1,34 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf440
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;\f1\fnil\fcharset77 Monaco;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww9000\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs32 \cf0 UNUSED TEXT\
+\
+\
+	Under this scheme, it is critical that data be stored according to the nomenclature listed above.  If information is stored in the wrong place, functions will fail.  To keep everything on track, this documentation must be easy to find, easy to read, and easy to expand.\
+\
+\
+	For example, compare how the user plots RF outlines under the current standard on the server and the new proposal.\
+\
+Current standard:
+\f1\fs24 \
+plot_rf_outlines( series, series.cell_types.ON_parasol )\
+\
+
+\f0\fs32 New proposal:
+\f1\fs24 \
+plot_rf_outlines( dataset, 'ON parasol' )
+\f0\fs32 \
+
+\f1\fs24 \
+
+\f0\fs32 \
+\
+	Of course, functions should also have an option (in "params", see below) to use a particular set of fits specifically requested by the user.  If the field is not defined, functions that try to access the STA fits will give an error.\
+\
+\
+	The proposed names follow a single guiding principle: don't create new information, only represent what already exists.  As such, the names closely follow what's on disk, e.g. there is one list of cell ids, but separate classifications for vision and obvius.  (We don't call it "series" because the struct will contain more information than just a series, such as the vision classification, EIs, and additional analysis results.  Moreover, loading a "dataset" does not require that an obvius series be defined.)\
+\
+}

@@ -1,0 +1,78 @@
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(1);
+figure(100)
+clf;
+
+MarkedElectrodes=[1 10 11  16 17 18 20 24 ];
+MovieNumbers=[25 10 23 26 15 21 14 6 10 14 18 24 15 18 25 12 12 22 13 15 11 25 15 15 13 16 22 16];
+MarkedElectrodesNew=[16 17 20 30 32 37 45 51 54 41 64 10 24];
+for i=1:length(MarkedElectrodesNew)
+    index=find(MarkedElectrodes==MarkedElectrodesNew(i))
+    MovieNumbersNew(i)=MovieNumbers(index);
+end
+MT=20;
+for i=1:64    
+    X(i)=electrodeMap.getXPosition(i);
+    Y(i)=electrodeMap.getYPosition(i);
+    h=text(X(i),Y(i),num2str(i));
+    j=find(MarkedElectrodesNew==i & MovieNumbersNew<MT);
+    if j
+        set(h,'Color','r');
+    end
+    set(h,'FontSize',18);
+end
+axis([-300 300 -300 300])
+
+break;
+%plot(X,Y,'bd')
+
+figure(1)
+plot([0:0.1:100])
+axis([0 1000 0 1000])
+break;
+FontSize=26;
+h=text(100,900,'A)');
+set(h,'FontSize',FontSize);
+
+h=text(200,900,'B)');
+set(h,'FontSize',FontSize);
+
+h=text(300,900,'C)');
+set(h,'FontSize',FontSize);
+
+h=text(400,900,'D)');
+set(h,'FontSize',FontSize);
+
+
+FontSize=30;
+h=text(100,700,'A)');
+set(h,'FontSize',FontSize);
+
+h=text(300,700,'B)');
+set(h,'FontSize',FontSize);
+
+h=text(500,700,'C)');
+set(h,'FontSize',FontSize);
+
+h=text(700,700,'D)');
+set(h,'FontSize',FontSize);
+
+FontSize=36;
+h=text(100,500,'A)');
+set(h,'FontSize',FontSize);
+
+h=text(300,500,'B)');
+set(h,'FontSize',FontSize);
+
+h=text(500,500,'C)');
+set(h,'FontSize',FontSize);
+
+h=text(700,500,'D)');
+set(h,'FontSize',FontSize);
+break;
+
+name='C:\home\pawel\2010\Stimchip_paper\literki';
+hc=figure(1);
+set(hc,'PaperUnits','inches');
+set(hc,'PaperSize',[10 7]);
+set(hc,'PaperPosition',[0 0 10 7]);
+print(hc, '-dtiff', '-r120', name);

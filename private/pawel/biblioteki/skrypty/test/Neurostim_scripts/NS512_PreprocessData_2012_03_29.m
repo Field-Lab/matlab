@@ -1,0 +1,24 @@
+ChipAddresses=[24:31];
+NumberOfChannelsPerChip=64;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=500;
+
+FigureProperties=struct('FigureNumber',1,'Subplot',[2 3 3],'TimeRange',[0 80],'AmplitudeRange',[-50 50],'FontSize',20,'Colors',['g' 'r' 'b' 'm' 'k'],'LineWidth',1);
+
+[NumberOfMovies,NumberOfPatternsPerMovie,AllPatternsUsed,Patterns]=NS512_MoviePatterns('I:\2010-08-31-0\movie009',NS_GlobalConstants);
+MoviesToRead=[1:NumberOfMovies];
+PatternsToRead=AllPatternsUsed;
+PatternsToRead=[1:64];
+ChannelsToRead=[1:512];
+
+cd I:\2010-08-31-0;
+FileName='009';
+WritePath='D:\Home\Pawel\analysis\retina\2010-08-31-0\data009_preproc';
+WritePathFigs='D:\Home\Pawel\analysis\retina\2010-08-31-0\data009_figs';
+
+for i=6:8
+    PatternsToRead=[1:64]+(i-1)*64;
+    NS_PreprocessDataNew512v5(FileName,WritePath,WritePathFigs,ArrayID,FigureProperties,NS_GlobalConstants,0,MoviesToRead,PatternsToRead,ChannelsToRead);
+end

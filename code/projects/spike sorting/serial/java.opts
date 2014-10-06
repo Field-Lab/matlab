@@ -1,0 +1,9 @@
+# In Java 1.5.0_13 and later on Mac OS X 10.5 (Leopard), the default
+# rendering pipeline is provided by Sun. Previous versions used the Quartz
+# pipeline. This change has significantly slowed down rendering for many
+# interface components.
+# 
+# Setting the following system property to true forces Java to use the 
+# Quartz rendering pipeline to improve rendering performance.
+-Dapple.awt.graphics.UseQuartz=true
+-Xmx2560m

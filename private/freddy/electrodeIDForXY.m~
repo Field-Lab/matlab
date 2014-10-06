@@ -1,0 +1,8 @@
+function electrodeIDForXY(positions, x, y)
+
+for i = 1:size(positions, 1)
+    if positions(i, 1) == x && positions(i, 2) == y
+        return i;
+    end
+end
+end

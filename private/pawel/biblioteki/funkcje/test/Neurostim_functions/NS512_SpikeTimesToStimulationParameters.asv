@@ -1,0 +1,62 @@
+function spikeTimes=NS512_SpikeTimesToStimulationParameters(idList,paramsFile,neuronFile,MovieFilePath,DuplicatesFilePath);
+%Ta funkcja generuje dla danego neuronu (powiedzmy o numerze 15) plik
+%wyjsciowy o nazwie 'ID=15'. Plik ten zawiera macierz o wymiarach 5xN,
+%gdzie N - ilo?c spików dla danego neuronu. UWAGA: mówimy tutaj o fizycznym
+%neuronie, na który mo?e si?sk?ada?kilka neurons ID znalezione przez
+%Vision. St?d te? w parametrach wej?ciowych jest ?cie?ka do pliku, który
+%zawiera iinformacje o duplikatach (zidentyfikowanych przez Vision).
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+
+a=importdata(DuplicatesFilePath);
+sa=size(a.textdata);
+
+
+%paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data005\data005.params');
+%neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data005\data005.neurons');
+
+
+
+idList=289
+
+%full_path='I:\analysis\slices\2013-12-12-3-PH\movie005';
+MoviesBegins=NS512_MoviesBegins(MovieFilePath,NS_GlobalConstants);
+
+for neuron=1:length(idList)
+    neuron
+    PrimaryNeuronID=idList(neuron);
+    Duplicates=[PrimaryNeuronID];
+    for i=1:sa(1) %unfortunately, the loop is required    
+        PrimaryNeuron=str2num(a.textdata{i,4});
+        if PrimaryNeuron==PrimaryNeuronID
+            Duplicates=[Duplicates str2num(a.textdata{i,1})];
+        end            
+    end
+    
+    spikeTimes=[];
+    for j=1:length(Duplicates)
+        spikeTimes = [spikeTimes double(neuronFile.getSpikeTimes(PrimaryNeuronID))']; % for given neuron, import the spikes times
+    end
+    
+    SpikeToSpikeTime=diff(sort(spikeTimes));
+    
+    
+    L=length(spikeTimes);
+        
+        
+    %dane=zeros(5,length(spikeTimes));
+    %for i=1:length(spikeTimes)
+    %    %i
+    %    [dane(1,i),dane(2,i),dane(3,i),dane(4,i),dane(5,i)]=NS512_SpikeTimesToStimulationPatterns_v3(full_path,spikeTimes(i),MoviesBegins,NS_GlobalConstants);
+    %end
+    %FullName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009paramSninya\2010-09-14-0\dane\ID=' num2str(NeuronID)];
+    %FullName=['D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data005\Matlab\dane\ID=' num2str(NeuronID)];
+    %fid=fopen(FullName,'wb','ieee-le');                                    
+    %fwrite(fid,dane,'int32');
+    %close(fid);
+end
+
+% to read:
+%fid=fopen('ID=3','r','ieee-le'); 
+%a=fread(f,'int32');
+%l=length(a);
+%b=reshape(a,4,l/4);

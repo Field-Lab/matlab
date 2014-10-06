@@ -1,0 +1,9 @@
+javaaddpath 'C:\Vision6-std-executable\Vision-std.jar'; %define path to Vision jar file
+
+full_path='E:\data\data\2008-12-06-0\data002\data002000.bin'; %define path to raw data file
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
+RawData=rawFile.getData(100000,20000)'; %the output is 65x40000 array. First index is channel number, and there is 40000 samples for each channel. The first sample is sample number 100000, as specified in the first argument.
+channel=3;
+RawDataChannel=RawData(channel+1,:)';
+r2=rawFile.getData(channel,100000,20000);
+plot(

@@ -1,0 +1,20 @@
+clear
+cd H:/pliki/nauka/stymulacja/chip/testy/2006_03_28/
+dane1=importdata('voltage1.dat')';
+
+figure(1);
+clf;
+
+R1=19100;
+R2=74500;
+R3=299000;
+R4=1189e3;
+
+
+dac=[-127:127];
+[slope1,lin_err1]=Volt_lin(dac,dane1+0.017);
+
+slope=slope1/R1;
+
+plot(dac,lin_err1,'bd-');
+grid on;

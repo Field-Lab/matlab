@@ -1,0 +1,201 @@
+function portraits = plot_rf_portraits(datarun,cell_specification,varargin)
+% DOCUMENTATION OF THIS FUNCTION SHOULD BE IMPROVED
+% plot_rf_portraits     Show small portraits of many RFs in a single figure
+%
+% usage:  portraits = plot_rf_portraits(datarun,cell_specification,params)
+%
+% arguments:      datarun - datarun struct with cell array of spatial summary frames
+%      cell_specification - which RFs to plot (see get_cell_indices for options)
+%                  params - struct of optional parameters (see below)
+%
+% outputs:      portraits - cell array of small summary images
+%
+%
+% optional fields in params, their default values, and what they specify:
+%
+% plot_radius       10          radius of region in which to plot RF.  automatically clipped at edges
+% plot_color        []          which color to plot.  if empty, plot all 3.
+% figure            []          which figure to plot in.  if empty, make new figure.
+% rfs_field_name    'rfs'       name of the field in datarun.stas in which summary frames are stored
+% scale_factor      1           how much to scale up portraits (see matrix_scaled_up for options)
+% cones             false       overlay cone locations
+% cone_size         5           point size of cones
+%
+% 2008-10 gauthier
+%
+%
+
+
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% specify list of optional parameters
+p.addParamValue('plot_radius', 10);
+p.addParamValue('plot_color', []);
+p.addParamValue('figure', []);
+p.addParamValue('rfs_field_name', 'rfs');
+p.addParamValue('scale_factor', 1);
+p.addParamValue('cones', false);
+p.addParamValue('cone_size', 5);
+
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+
+
+
+% get figure number
+if isempty(params.figure)
+    fig_num = figure;
+else
+    fig_num = params.figure;
+end
+
+% set up figure
+figure(fig_num)
+clf
+
+
+% get cell numbers
+cell_nums = get_cell_indices(datarun,cell_specification);
+
+% initialize varible to store output
+portraits = cell(length(cell_nums),1);
+
+% if no cells are selected, forget it
+if isempty(cell_nums)
+    % don't return portraits if not requested
+    if nargout<1
+        clear portraits
+    end
+    return
+end
+
+
+% make portrait frames
+px = ceil(sqrt(length(cell_nums)));
+py = ceil(length(cell_nums)/px);
+plot_axes = subplot_axes(fig_num,[0 0 1 .95],0.05,0.15,px,py);
+
+% plot cells in the frames
+for cc = 1:length(cell_nums)
+
+    cell_index = cell_nums(cc);
+    cell_id = datarun.cell_ids(cell_index);
+    
+    % note cell ID
+    title(plot_axes{cc},num2str(datarun.cell_ids(cell_nums(cc))))
+    
+    % don't plot if there's no summary or center point
+    if isempty(datarun.stas.(params.rfs_field_name){cell_nums(cc)}) || isempty(datarun.stas.rf_coms{cell_nums(cc)})
+        % note cell ID
+        set(plot_axes{cc},'XTick',[],'YTick',[])
+        title(plot_axes{cc},num2str(datarun.cell_ids(cell_nums(cc))))
+        continue
+    end
+
+    % get polarity (to multiply times the summary)
+    % if it doesn't exist or is empty, assume positive
+    if isfield(datarun.stas,'polarities') && ~isempty(datarun.stas.polarities{cell_nums(cc)}) && ...
+            datarun.stas.polarities{cell_nums(cc)} < 0
+        pol = -1;
+    else
+        pol = 1;
+    end
+
+    % get summary
+    summary = pol * get_rf(datarun,datarun.cell_ids(cell_nums(cc)));
+    
+    % if no color specified, plot all colors
+    if ~isempty(params.plot_color)
+        % otherwise, plot only the specified color
+        summary = summary(:,:,params.plot_color);
+    end
+
+    % get center point, rounded
+    %ctr = round(datarun.stas.rf_coms{cell_nums(cc)});
+    ctr = round(rf_center(datarun,cell_id
+
+    % get plot radius
+    rad = params.plot_radius;
+
+    % get plot range, clipping edges if it goes beyond the boundaries of the summary itself
+    xrng = max(ctr(1)-rad,1):min(ctr(1)+rad,size(summary,2));
+    yrng = max(ctr(2)-rad,1):min(ctr(2)+rad,size(summary,1));
+    
+    % skip if no range exists
+    if isempty(xrng) || isempty(yrng)
+        continue
+    end
+
+    % plot the image
+    
+    axes(plot_axes{cc})
+    
+    % scale up if desired
+    if params.scale_factor == 1
+        image(norm_image(summary(yrng,xrng,:)))
+    else
+        image(matrix_scaled_up(norm_image(summary(yrng,xrng,:)),params.scale_factor))
+    end
+    
+    % note cell ID (plotted again, because function "image" deletes titles
+    title(plot_axes{cc},num2str(datarun.cell_ids(cell_nums(cc))))
+    
+    axis image
+    set(plot_axes{cc},'XTick',[],'YTick',[])
+    
+
+    % plot cones
+    if params.cones
+        
+        % convert cone center points to current coordinates
+        cone_centers = datarun.cones.centers;
+        cone_centers = cone_centers - repmat([min(xrng)-1 min(yrng)-1],size(cone_centers,1),1);
+        cone_centers = params.scale_factor * (cone_centers - 0.5) + 0.5;
+        
+        S_cones = find(datarun.cones.types == 'S');
+        M_cones = find(datarun.cones.types == 'M');
+        L_cones = find(datarun.cones.types == 'L');
+        unsure_cones = find(datarun.cones.types == 'U');
+        
+        % plot them
+        hold on
+        plot_params = struct;
+        plot_params.MarkerSize = params.cone_size;
+        
+        switch 1
+            case 1 % plot without halo
+                plot(cone_centers(L_cones,1),cone_centers(L_cones,2),'.','Color',[255 0 102]/255,plot_params)
+                plot(cone_centers(M_cones,1),cone_centers(M_cones,2),'.','Color',[51 255 0]/255,plot_params)
+                plot(cone_centers(S_cones,1),cone_centers(S_cones,2),'.','Color',[100 134 228]/255,plot_params)
+                plot(cone_centers(unsure_cones,1),cone_centers(unsure_cones,2),'.','Color',[0 0 0]/255,plot_params)
+                
+            case 2 % plot with halo
+                plot(cone_centers(:,1),cone_centers(:,2),'.k','MarkerSize',1.2*params.cone_size)
+                plot(cone_centers(L_cones,1),cone_centers(L_cones,2),'.','Color',[225 75 83]/255,plot_params)
+                plot(cone_centers(M_cones,1),cone_centers(M_cones,2),'.','Color',[116 181 73]/255,plot_params)
+                plot(cone_centers(S_cones,1),cone_centers(S_cones,2),'.','Color',[100 134 228]/255,plot_params)
+                plot(cone_centers(unsure_cones,1),cone_centers(unsure_cones,2),'.','Color',[180 180 180]/255,plot_params)
+        end
+  
+    end
+    
+    % save to the output
+    portraits{cc} = summary(yrng,xrng,:);
+
+
+end
+
+
+% don't return images if not requested
+if nargout<1
+    clear portraits
+end

@@ -1,0 +1,132 @@
+function h=NS_PlotManyTracesOnArrayLayout(FileName,Channels,Timings,WaveformTypes,ArtifactCancellation,ArrayID,FigureNumber,FigureProperties,NS_GlobalConstants);
+%Plots many traces showing raw data for given channel. For ewach trace the
+%starting timing point is defined in 'Timings' input array.
+%If ArtifatCancellation=1, then if the WaveformTypes(i)=0, it is assumed to
+%be artifact (on all channels at the same time). Then artifacts are
+%averaged for each channel and subtracted from each trace.
+
+ChipAddresses=NS_GlobalConstants.ChipAddresses;
+NumberOfChannelsPerChip=NS_GlobalConstants.NumberOfChannelsPerChip;
+CurrentRanges=NS_GlobalConstants.CurrentRanges;
+Fs=NS_GlobalConstants.SamplingFrequency;
+
+TimeRange=FigureProperties.TimeRange
+AmplitudeRange=FigureProperties.AmplitudeRange;
+FontSize=FigureProperties.FontSize;
+Colors=FigureProperties.Colors;
+
+t=[TimeRange(1):TimeRange(2)]/Fs*1000;
+
+full_path=[pwd '\' 'data' FileName];
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path);
+str=[8 4 7 3 6 2 5 1];
+
+if ArtifactCancellation==1
+    Artifact=zeros(length(Channels),TimeRange(2)-TimeRange(1)+1)';
+    size(Artifact)
+    find(WaveformTypes==0)
+    for i=find(WaveformTypes==0)
+        data=rawFile.getData(Timings(i)+TimeRange(1),TimeRange(2)-TimeRange(1)+1);
+        signal=data(:,Channels+1); %first channel is a TTL channel 
+        size(signal)
+        Artifact=Artifact+double(signal);
+    end
+    Artifact=Artifact/length(find(WaveformTypes==0));
+end
+%i
+%size(signal)
+
+Xstep=60;
+Ystep=60;
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
+%TimeRange=TimeRange./Fs*1000
+%t=[TimeRange(1):(1/Fs*1000):TimeRange(2)];
+t=[TimeRange(1):TimeRange(2)]/Fs*1000;
+t=t-0.4;
+
+Coordinates=zeros(2,length(Channels));
+ChannelsNumber=length(Channels);
+for i=1:ChannelsNumber
+    Coordinates(1,i)=electrodeMap.getXPosition(Channels(i));
+    Coordinates(2,i)=electrodeMap.getYPosition(Channels(i));
+end
+
+X0=min(Coordinates(1,:));
+X1=max(Coordinates(1,:));
+Y0=min(Coordinates(2,:));
+Y1=max(Coordinates(2,:));
+
+a=find(Coordinates(2,:)==Y0);
+z=10000;
+for i=1:length(a)
+    if Coordinates(1,a(i))<z
+        z=Coordinates(1,a(i));
+        SE=a(i);
+    end
+end
+
+Xspread=X1-X0+Xstep*1.5;
+Yspread=Y1-Y0+Ystep*2.5;
+
+figure(FigureNumber);
+%clf;
+for i=1:ChannelsNumber    
+    X=(Coordinates(1,i)-X0)/Xspread+0.05;
+    Y=(Coordinates(2,i)-Y0)/Yspread+0.1;
+    XSize=Xstep/Xspread;
+    YSize=Ystep/Yspread;
+    subplot('Position',[X Y XSize*0.9 YSize*0.9]);
+    hold on;    
+    for j=1:length(Timings)
+        data=rawFile.getData(Timings(j)+TimeRange(1),TimeRange(2)-TimeRange(1)+1);
+        signal=double(data(:,Channels(i)+1)); %first channel is a TTL channel  
+        signal=signal+1000;
+        if ArtifactCancellation==1
+            if WaveformTypes(j)~=0 %if this is NOT an artifact...
+                WaveformColorIndex=WaveformTypes(j)-floor(WaveformTypes(j)/length(Colors))*length(Colors)+1;  
+                signal=signal-Artifact(:,i);
+                plot(t,signal,Colors(WaveformColorIndex));                    
+                %hold on;
+            end
+        else
+            plot(signal);    
+            hold on;
+        end
+        
+        %WaveformColorIndex=WaveformTypes(i)-floor(WaveformTypes(i)/length(Colors))*length(Colors)+1;    
+        %plot(t,signal,Colors(WaveformColorIndex));    
+        %switch OffsetCancellation
+        %case 1
+        %    signal=signal-mean(signal(:,1));
+        %case 2
+        %    signal=signal-mean(signal(OffsetSamples,1));        
+        %end                
+        %plot(signal);    
+        %hold on;
+    end    
+        
+    %h=text(TimeRange(1)/Fs*1000+(TimeRange(2)/Fs*1000-TimeRange(1)/Fs*1000)*0.88,AmplitudeRange(1)+(AmplitudeRange(2)-AmplitudeRange(1))*0.9,num2str(Channels(i)));
+    %h=text(TimeRange(1)/Fs*1000+(TimeRange(2)/Fs*1000-TimeRange(1)/Fs*1000)*0.9,AmplitudeRange(1)+(AmplitudeRange(2)-AmplitudeRange(1))*0.9,num2str(str(i)));
+    %set(h,'FontSize',FontSize);
+    %xlim(TimeRange);
+    xlim(TimeRange/Fs*1000);
+    xlim([-0.5 3]);
+    ylim(AmplitudeRange);
+    grid on;    
+    grid off;
+    %text(TimeRange(1)+(TimeRange(2)-TimeRange(1))*0.8,AmplitudeRange(1)+(AmplitudeRange(2)-AmplitudeRange(1))*0.8,num2str(Channels(i)));
+    h=gca;
+    set(h,'Box','on');
+    set(h,'YTick',[-200 -100 0 100]);
+    %hold off;
+    if i==SE        
+        set(h,'FontSize',FontSize);
+        xlabel('time [ms]');
+        ylabel('signal [mV]');
+    else
+        set(h,'XTickLabel',[]);
+        set(h,'YTickLabel',[]);
+    end
+end
+
+y=Coordinates;

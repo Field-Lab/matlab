@@ -1,0 +1,85 @@
+%break;
+clear;
+NumberOfSamples=10000;
+AllElectrodes=[1:512];
+Array=eye(512,512); 
+
+ThresholdFilePath='C:\home\data\2012-09-19-0-test\ThresholdFile1.bin';
+fid1=fopen(ThresholdFilePath,'r');
+b=fread(fid1,inf,'double');
+fclose(fid1);
+NeuronInformation=reshape(b,length(b)/4,4);
+
+Neurons=NeuronInformation(:,1)
+Electrodes=NeuronInformation(:,3)
+Amplitudes=NeuronInformation(:,4)
+
+% 1. Apply the amplitudes
+for i=1:length(Electrodes)
+    Array(Electrodes(i),Electrodes(i))=Amplitudes(i);    
+end
+
+figure(1);
+clf;
+
+% 2. Natural activivy under white noise
+subplot(4,1,1);
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data002_old\data002000\data002000.neurons');
+
+startTime=26e4;
+TimeRange=[startTime startTime+NumberOfSamples];
+Times=[];
+Patterns=[];
+for i=1:length(Electrodes)
+    Pattern=Electrodes(i);
+    spikeTimes = neuronFile.getSpikeTimes(Neurons(i))';
+    spikeTimesWithinRangeIndexes=find(spikeTimes>TimeRange(1) & spikeTimes<TimeRange(2));
+    SpikeTimesToApply=spikeTimes(spikeTimesWithinRangeIndexes)-TimeRange(1);
+    Times=[Times SpikeTimesToApply]; 
+    Patterns=[Patterns ones(1,length(SpikeTimesToApply))*Pattern];        
+    plot(SpikeTimesToApply,ones(1,length(SpikeTimesToApply))*i,'bd');
+    hold on;
+end
+NoOfPulsesForWhiteNoise=length(Patterns)
+Chunk1=NS_MovieChunkGenerationForExperiment(40*round(Times/40),NumberOfSamples,Patterns);
+break
+% 2. Natural activity under moving bar. 
+subplot(4,1,2);
+
+%paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\pawel\2010\analysis\retina_61\2010-09-21-0\data002_old\data002000\data001000.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\pawel\2010\analysis\retina_61\2010-09-29-0\data000\data000.neurons');
+
+%idList = neuronFile.getIDList();
+
+startTime=28.37e4;
+TimeRange=[startTime startTime+20000];
+Times=[];
+Patterns=[];
+for i=1:length(Electrodes)
+    Pattern=Electrodes(i);
+    spikeTimes = neuronFile.getSpikeTimes(Neurons(i))';
+    spikeTimesWithinRangeIndexes=find(spikeTimes>TimeRange(1) & spikeTimes<TimeRange(2));
+    SpikeTimesToApply=spikeTimes(spikeTimesWithinRangeIndexes)-TimeRange(1);
+    Times=[Times SpikeTimesToApply]; 
+    Patterns=[Patterns ones(1,length(SpikeTimesToApply))*Pattern];        
+    plot(SpikeTimesToApply,ones(1,length(SpikeTimesToApply))*i,'bd');
+    hold on;
+end
+NoOfPulsesForMovingBar=length(Patterns)
+Chunk2=NS_MovieChunkGenerationForExperiment(80*round(Times/80),NumberOfSamples,Patterns);
+
+% 4. Create files
+MovieChunksFile=[1 Chunk3];
+%break
+cd E:\StimFiles;
+fid = fopen('61_Mosaic5_el','wb');
+fwrite(fid,AllElectrodes,'int32');
+fclose(fid);
+
+fid = fopen('61_Mosaic5_pt','wb','ieee-le.l64');
+fwrite(fid,Array,'double');
+fclose(fid);
+
+fid = fopen('61_Mosaic5_mv','wb','ieee-le.l64');
+fwrite(fid,MovieChunksFile,'int32');
+fclose(fid);

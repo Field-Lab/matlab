@@ -1,0 +1,170 @@
+%This script makes, for one retinal piece, the following plots:
+%a) histogram of thresholds distribution for axonal bundles stimulation
+%over all the stimulating electrodes, where thue number of recording
+%electrodes that show above-threshold signal (EI) aplitude is dfined by
+%variable "MinimumElectrodeAboveThreshold". The electrodes neighboring to
+%the stimulating electrode (up to 180 um away if the variable radius=3) are
+%disclosed from this analysis. The threshold for the EI amplitude is not
+%defined here, since it is not analyzing the RAW data. Instead, it takes
+%advantage of the data generated before - by using the "load(['Thresholds'
+%num2str(day) '_' num2str(piece)])". Then, the variable Thresholds
+%(512x512) includes information for each pair of the stimulating electrode
+%and the neighboring electrode, whether given recording electrode shows
+%signal above some threshold (it was 20 unit stypically) and if yes, then
+%for which movie. Finally, once the distribution of threshold currents for 
+%stimulating the axonal bundle is calculated, it is plotted overlaid with 
+%distribution of threshld for somatic stimulation.
+%b) comparison plot - for each electrode that stimulated *soma) of some
+%cell, the threshold for axonal bundle stimulation is also calculated.
+%Then, these two values serve as coordinates for a point put on the figure.
+%c) spatial distribution of axonal bundle stimulation thresholds - for
+%given stimulating electrode, the inverse of the stimulation current is
+%taken as a circle diameter.
+
+clear
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+ArrayID=500;
+Movies=[1:2:63];
+
+cd C:\pawel\nauka\analiza\retina\Sept2012
+day=24;
+piece=3;
+
+% Read in the somatic thresholds
+ThresholdFilePath1=['C:\pawel\nauka\analiza\retina\2012-09-27-4\threshold_files\2012-09-' num2str(day) '-' num2str(piece) '\stim_scan\thresholds_1']
+ThresholdFilePath2=['C:\pawel\nauka\analiza\retina\2012-09-27-4\threshold_files\2012-09-' num2str(day) '-' num2str(piece) '\stim_scan\thresholds_2']
+[Neurons Electrodes Amplitudes]=NS512_ReadThresholdFiles(ThresholdFilePath1,ThresholdFilePath2);
+ElectrodesForHistogram_Somas=find(Amplitudes>0)
+
+%ThresholdFileName=['Thresholds' num2str(day) '_' num2str(piece)]
+load(['Thresholds' num2str(day) '_' num2str(piece)])
+%load Thresholds27_4;
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
+
+MinimumElectrodeAboveThreshold=4;
+ThresholdForSignalAboveThresholdOnEnoughElectrodes=zeros(1,512);
+
+%DataPath='F:\analiza\retina\2012-09-27-4\files\scan_new';
+%for i=1:length(Movies)    
+%    StimAmplitudes(i)=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],4,Movies(i),NS_GlobalConstants);
+%end
+
+radius=3;
+MinThresholds=ones(1,512)*100;
+NumberOfElectrodesToShow=zeros(1,512);
+for i=1:512
+    ElectrodesToExclude=electrodeMap.getAdjacentsTo(Patterns(i),radius)';
+    ThresholdsForPattern=Thresholds(i,:);
+    ThresholdsForPattern(ElectrodesToExclude)=0;
+    ElectrodesAbovEThreshold=find(ThresholdsForPattern>0); 
+    NumberOfElectrodesAboveThreshold(i)=length(ElectrodesAbovEThreshold);
+    
+    ThresholdValues=ThresholdsForPattern(ElectrodesAbovEThreshold);
+    for j=min(ThresholdValues):max(ThresholdValues)
+        NumberOfElecrodesWithThresholdEQualOrSmaller=length(find(ThresholdValues<=j));
+        if NumberOfElecrodesWithThresholdEQualOrSmaller>=MinimumElectrodeAboveThreshold
+            ThresholdForSignalAboveThresholdOnEnoughElectrodes(i)=j;
+            break
+        end            
+    end
+    
+    %if ElectrodesToShow
+    %    MinThresholds(i)=min(ThresholdsForPattern(ElectrodesToShow));
+    %end
+end
+
+%selectivity analysis:
+      
+
+figure(1)
+plot(ThresholdForSignalAboveThresholdOnEnoughElectrodes,'bd')
+ElectrodesForHistogram_Bundles=find(ThresholdForSignalAboveThresholdOnEnoughElectrodes>0);
+
+ThresholdsRatio=zeros(1,length(ElectrodesForHistogram_Somas));
+SomaThresholdsForParasolOnPrimaries=ThresholdsRatio;
+BundleThresholdsForParasolOnPrimaries=ThresholdsRatio;
+for i=1:length(ElectrodesForHistogram_Somas)
+    ElectrodeIndex=ElectrodesForHistogram_Somas(i); %not real electrode number!
+    SomaThreshold=Amplitudes(ElectrodeIndex);
+    SomaThresholdsForParasolOnPrimaries(i)=SomaThreshold;
+    
+    
+    Electrodes(ElectrodeIndex); %real electrode number
+    BundleThresholdForTheSameElectrodeIndex=ThresholdForSignalAboveThresholdOnEnoughElectrodes(Electrodes(ElectrodeIndex));
+    if BundleThresholdForTheSameElectrodeIndex>0
+        BundleThresholdForTheSameElectrode=StimAmplitudes(BundleThresholdForTheSameElectrodeIndex);
+        BundleThresholdsForParasolOnPrimaries(i)=BundleThresholdForTheSameElectrode
+        ThresholdsRatio(i)=SomaThreshold/BundleThresholdForTheSameElectrode;
+    end        
+end  
+
+figure(2)
+clf
+h1=hist(StimAmplitudes(ThresholdForSignalAboveThresholdOnEnoughElectrodes(ElectrodesForHistogram_Bundles)),StimAmplitudes);
+hold on
+h10=gca
+AmplitudesLabels={};
+for i=1:length(Movies)    
+    StimAmplitudes(i)=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],4,Movies(i),NS_GlobalConstants);
+    if i/2==round(i/2)
+        AmplitudesLabels{i}=num2str(StimAmplitudes(i),'%4.1f');
+    else
+        AmplitudesLabels{i}='';
+    end
+end
+set(h10,'XTick',[11:32]);
+set(h10,'XTickLabels',AmplitudesLabels(11:32));
+set(h10,'FontSize',9);
+
+%figure(3)
+h2=hist(Amplitudes(ElectrodesForHistogram_Somas),StimAmplitudes);
+h3=bar(h1/sum(h1)*100)
+set(h3,'BarWidth',1)
+hold on
+h3=bar(h2/sum(h2)*100)
+set(h3,'EdgeColor','r')
+set(h3,'FaceColor','none')
+set(h3,'LineWidth',2)
+set(h3,'BarWidth',1)
+h4=gca
+set(h4,'xLim',[10 35])
+set(h4,'yLim',[0 20])
+xlabel('Current amplitude');
+ylabel('[%]')
+text(11,19,['axons: ' num2str(length(ElectrodesForHistogram_Bundles)) '/512 = ' num2str(length(ElectrodesForHistogram_Bundles)/512*100,'%4.1f') '%'])
+text(11,17.5,['somas: ' num2str(length(ElectrodesForHistogram_Somas)) '/' num2str(length(Neurons)) ' = ' num2str(length(ElectrodesForHistogram_Somas)/length(Neurons)*100,'%4.1f') '%'])
+text(11,16,['SI: ' num2str(length(find(ThresholdsRatio<1))) '/' num2str(length(ElectrodesForHistogram_Somas)) ' = ' num2str(length(find(ThresholdsRatio<1))/length(ElectrodesForHistogram_Somas)*100, '%4.1f') '%'])
+
+FullName=['C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4\figures2\histogram_' num2str(day) '_' num2str(piece) '_t' num2str(MinimumElectrodeAboveThreshold)];            ;
+h=gcf;
+set(h,'PaperUnits','inches');
+set(h,'PaperSize',[4 3]);
+set(h,'PaperPosition',[0 0 4 3]); 
+print(h, '-dtiff', '-r200', FullName);
+
+figure(3)
+plot(SomaThresholdsForParasolOnPrimaries,BundleThresholdsForParasolOnPrimaries,'bd',[0 4],[0 4],'r-')
+xlabel('Thresholds for somas [\muA]');
+ylabel('Thresholds for bundles [ \muA]');
+text(0.2,3.7,['SI: ' num2str(length(find(ThresholdsRatio<1))) '/' num2str(length(ElectrodesForHistogram_Somas)) ' = ' num2str(length(find(ThresholdsRatio<1))/length(ElectrodesForHistogram_Somas)*100, '%4.1f') '%'])
+
+
+FullName=['C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4\figures2\comparison_' num2str(day) '_' num2str(piece) '_t' num2str(MinimumElectrodeAboveThreshold)];            ;
+h=gcf;
+set(h,'PaperUnits','inches');
+set(h,'PaperSize',[4 3]);
+set(h,'PaperPosition',[0 0 4 3]); 
+print(h, '-dtiff', '-r200', FullName);
+
+figure(4)
+clf
+%NS512_ShowEIAsCircles(ThresholdForSignalAboveThresholdOnEnoughElectrodes(find(ThresholdForSignalAboveThresholdOnEnoughElectrodes>0))'.^(-1)*2000,500,find(ThresholdForSignalAboveThresholdOnEnoughElectrodes>0),[],[-1005 1005],[-505 505]);
+NS512_ShowEIAsCircles(60./StimAmplitudes(ThresholdForSignalAboveThresholdOnEnoughElectrodes(find(ThresholdForSignalAboveThresholdOnEnoughElectrodes>0)))',500,find(ThresholdForSignalAboveThresholdOnEnoughElectrodes>0),[],[-1005 1005],[-505 505]);
+%h1=gca
+%set(h1,'Visible','off');
+FullName=['C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4\figures2\spatial_' num2str(day) '_' num2str(piece) '_t' num2str(MinimumElectrodeAboveThreshold)];            ;
+h=gcf;
+set(h,'PaperUnits','inches');
+set(h,'PaperSize',[8 4]);
+set(h,'PaperPosition',[0 0 8 4]); 
+print(h, '-dtiff', '-r200', FullName);

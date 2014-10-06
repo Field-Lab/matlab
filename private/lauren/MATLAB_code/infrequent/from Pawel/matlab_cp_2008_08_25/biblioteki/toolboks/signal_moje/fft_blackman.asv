@@ -1,0 +1,10 @@
+function [s_tb,f]=fft_blackman(s,marg,N);
+%[s_tb,f]=fft_blackman(s,marg);
+%Funkcja zwraca widmo fft sygnalu przemnozonego przez funkcje okna
+%trapez_blackman. Argumenty: s - sygnal, marg - margines (po lewej i
+%prawej) definiujacy przedzialy probek mnozonych przez wartosci mniejsze 0d
+%1; N - ilosc zwracany
+%Funkcja zwraca wartosc sygnalu po "zokienkowaniu" (s_tb) oraz widmo.
+tb=trapez_blackman(length(s),marg);
+s_tb=s.*tb;
+f=fft(s_tb);

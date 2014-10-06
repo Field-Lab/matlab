@@ -1,0 +1,56 @@
+
+
+%EI=abs(rand(512,100))*60;
+%VisionOutputPath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002';
+RawDataPath='D:\Home\Data\slices\2010-09-14-0\data002'; %define path to raw data file
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(RawDataPath); 
+
+paramsFilePath=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons');
+
+NeuronEI=NS512_LoadNeuronEIFromRawData(RawDataPath,paramsFilePath,neuronFilePath,NeuronID,MaxSpikeNumber,Length,Offset);
+
+
+
+idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+NeuronID=5566;
+spikeTimes = neuronFile.getSpikeTimes(NeuronID)'; % for given neuron, import the spikes times
+
+L=200;
+spikes=int16(zeros(513,L));
+for i=1:100:length(spikeTimes)
+    t=spikeTimes(i);
+    d0=rawFile.getData(t-20,L)';
+    %d1=d0(CenterChannel+1,:); % add 1, since the first channel in the raw data is the TTL channel and not electrode 1
+    spikes=spikes+d0;
+end
+spikes=spikes/225;
+
+break;
+figure(1)
+for Frame=1:100
+    clf
+    
+    for i=7%1:length(NeuronWithManyStimulations)
+        Events=find(neurons==NeuronWithManyStimulations(i));
+        S1=sigmas(Events);
+        DirectivityIndex(i)=length(find(S1<7))/length(S1);    
+    
+        %clf;
+        hold on;
+        for j=1:length(Events)
+            h15=plot([XStim(Events(j)) XSeed(Events(j))],[YStim(Events(j)) YSeed(Events(j))],'b-');
+            text(XStim(Events(j)),YStim(Events(j)),num2str(j));
+            if sigmas(Events(j))<40 %7
+                set(h15,'Color','r');
+            end        
+        end
+        axis([-1000 1000 -500 500]);
+    end
+
+    
+    
+    
+    h=NS512_ShowEIAsCircles(EI(:,Frame),500,[1:512],[],[-1000 1000],[-500 500]);
+    pause(0.2)
+end

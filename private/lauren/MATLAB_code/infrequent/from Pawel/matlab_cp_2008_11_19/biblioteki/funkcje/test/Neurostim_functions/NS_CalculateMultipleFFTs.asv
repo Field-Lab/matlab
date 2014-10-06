@@ -1,0 +1,6 @@
+function spectrum=NS_CalculateMultipleFFTs(Traces,SamplingFrequency);
+
+STraces=size(Traces);
+for i=1:Straces
+    s=Traces(i,:)l
+    

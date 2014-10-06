@@ -1,0 +1,11 @@
+function Amplitude=NS_PulseAmplitude(PreprocessedDataPath,PatternNumber,Channels,MovieNumber);
+cd(PreprocessedDataPath);
+NS_GlobalConstants=NS_GenerateGlobalConstants(61);
+FullName_pattern=[PreprocessedDataPath filesep 'pattern' num2str(PatternNumber) '_m' num2str(MovieNumber)];
+clear Pattern;
+load(FullName_pattern);
+FullName_status=[PreprocessedDataPath filesep 'status_m' num2str(MovieNumber)];
+clear Status;
+load(FullName_status);
+[patternTimes,traces] = plotStimulusTraces(Pattern, Status, Channels, [0 50], NS_GlobalConstants);
+Amplitude=max(max(max(abs(traces))));

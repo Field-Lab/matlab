@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/opt/local/bin/g++-mp-4.6 -std=c++0x -c -I/Users/peterli/Downloads/libcppa/ -I/Applications/MATLAB7.10.app/extern/include -I/Applications/MATLAB7.10.app/simulink/include -DMATLAB_MEX_FILE -fno-common -fexceptions -fpermissive -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5  -DMX_COMPAT_32 -O2 -DNDEBUG  "test_libcppa.cpp"
+/opt/local/bin/gcc-mp-4.6 -O -Wl,-twolevel_namespace -undefined error -Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 -bundle -Wl,-exported_symbols_list,/Applications/MATLAB7.10.app/extern/lib/maci64/mexFunction.map -o  "test_libcppa.mexmaci64"   "test_libcppa.o"  /Users/peterli/Downloads/libcppa/.libs/libcppa.a /opt/local/lib/libboost_thread-mt.a -L/Applications/MATLAB7.10.app/bin/maci64 -lmx -lmex -lmat -lstdc++

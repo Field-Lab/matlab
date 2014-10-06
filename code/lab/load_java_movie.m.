@@ -1,0 +1,62 @@
+function datarun = load_java_movie(datarun,movie_xml_path)
+% datarun = load_java_movie(datarun,movie_xml_path)
+%
+% arguments:     datarun - datarun struct with fields datarun.triggers, datarun.sampling_rate
+%                              if these do not exist, then load_neurons is called
+%         movie_xml_path - full path to xml file
+%                           if not specified, used datarun.names.movie_xml_path
+%
+% outputs:     datarun - datarun struct with fields:
+%
+%           datarun.stimulus.java_movie      - java movie object
+%           datarun.names.movie_xml_path     - path to xml movie
+%
+%  NOTE: if movie_xml_path does not specify a legitimate movie xml file, Java will cause matlab to crash
+%
+%
+% 2009-09  gauthier
+%
+
+
+% get movie_xml_path from datarun.names if not provided as input
+if ~exist('movie_xml_path','var')
+    movie_xml_path = datarun.names.movie_xml_path;
+end
+
+% ensure triggers and sampling rate are loaded
+if ~isfield(datarun,'triggers') || ~isfield(datarun,'sampling_rate')
+    datarun = load_neurons(datarun,'load_spikes,',[]);
+end
+
+% show progress
+fprintf('\nComputing movie %s...',movie_xml_path);
+start_time = clock; % note when it started
+
+% ensure file exists, and ends in ".xml"
+if ~exist(movie_xml_path,'file') && strcmp(movie_xml_path(end-3:end),'.xml
+    error('movie xml file ''%s'' does not exist',movie_xml_path)
+end
+
+% generate movie
+movie = edu.ucsc.neurobiology.vision.matlab.Matlab.computeMovie(...
+    movie_xml_path, datarun.triggers*datarun.sampling_rate);
+
+% show duration
+fprintf(' done (%0.1f seconds)\n',etime(clock,start_time));
+
+% identify the stimulus in the java movie, and guess about parameters that were not specified
+the_stimulus = guess_stimulus(stimulus_from_java_movie(movie));
+
+% load into datarun, and check for consistency
+datarun = sync_stimulus(datarun,the_stimulus,sprintf('XML movie %s',movie_xml_path));
+
+% incorporate into datarun
+datarun.stimulus.java_movie = movie;
+
+% don't overwrite existing value
+if ~isfield(datarun.names,'movie_xml_path')
+    datarun.names.movie_xml_path = movie_xml_path;
+end
+    
+% old location
+%datarun.stimulus.xml_movie_path = movie_xml_path;

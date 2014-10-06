@@ -1,0 +1,12 @@
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+FigureProperties=struct('FigureNumber',2,'Subplot',[2 3 3],'TimeRange',[0 50],'AmplitudeRange',[-1200 450],'FontSize',20,'Colors',['g' 'r' 'b' 'm' 'k'],'LineWidth',1);
+Patterns=[1];
+PatternsIndexes=[2];
+
+DataPath='E:\analysis\2008-08-26-0\data006_proba';
+ArtifactDataPath='E:\analysis\2008-08-26-0\data011_proba';
+
+PatternNumber=24;
+MovieNumber=22;
+
+[Channels]=NS_ShowPreprocessedData(DataPath,ArtifactDataPath,PatternNumber,MovieNumber,Patterns,PatternsIndexes,FigureProperties,NS_GlobalConstants);

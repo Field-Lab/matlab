@@ -1,0 +1,152 @@
+function [cell_types] = load_cell_types(server_path, condition)
+% LOAD_CELL_TYPES    Load cell types from Obvius Index file
+%
+% usage: cell_types = load_cell_types(server_path, condition, slave_cell_ids);
+%
+% arguments:   server_path - full path of index file
+%                condition - condition in index
+%
+% outputs:      cell_types - structure of identified cell types
+%                            from Index file. Each list of cell
+%                            types is an ascending column vector of
+%                            cell IDs.
+%
+% Parses through Obvius index file to grab identified cell
+% IDs. Assumes ':' identified new cell types. Does not recognize
+% comments beginning with ';' well. Use at your own peril. Function
+% called by LOAD_SERIES.
+%
+% example:
+%   server_path = '/snle/lab/Experiments/Array/Analysis/2005-02-10-0/Index';
+%    cell_types = load_cell_types(server_path, 'rf-2-mg-auto');
+%
+% See also: LOAD_SERIES
+%
+% shlens 2005-03-10 edits
+% greschner 2006-02-10
+% greschner 2008-09-23 search for condition check for equal:if isequal(textfile{i},condition)
+
+
+warning('\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s',...
+    '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',...
+    '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',...
+    '!                                                                       !',...
+    '!  The function load_cell_types has been incorporated into load_index.  !',...
+    '!  Use only load_index to get cell types from an index file.            !',...
+    '!                                                                       !',...
+    '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',...
+    '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+
+
+
+% check arguments
+if nargin<2 | nargin>3
+    error('load_index: incorrect number of arguments');
+end
+
+% open and load file
+fid=fopen(server_path);
+if (fid == -1)
+    error('load_cell_types: file not found');
+end
+
+% read entire Index file
+file=textscan(fid, '%s');
+fclose(fid);
+textfile=file{1};
+
+
+% scan over Index file
+i=1;
+cell_types=[];
+
+% scan until found right condition
+while i<=length(textfile)
+
+    % found "condition" keyword
+    %if ~isempty(strfind(textfile{i},condition));
+    if isequal(textfile{i},condition)
+
+        % scan until found 'cell-types'
+        while i<=length(textfile)
+
+            % found 'cell-types' keyword
+            if ~isempty(strfind(textfile{i},'cell-types'));
+                i=i+1;
+
+                % scan until find 'CONDITION' or 'condition'
+                while (i<length(textfile)) & ...
+                        (isempty(strfind(textfile{i},'CONDITION'))) & ...
+                        (isempty(strfind(textfile{i},'condition')))
+
+                    % scan until found keyword beginning with ":" (e.g. :on-y)
+                    if ~isempty(strfind(textfile{i},':'));
+
+                        % format identified field name
+                        field_name = strrep(textfile{i},':','');
+                        field_name = strrep(field_name,'(','');
+                        field_name = strrep(field_name,'-','_');
+
+                        % create blank structure field name
+                        cell_types.(field_name)=[];
+
+                        % scan until ')' or end of textfile
+                        while i<=length(textfile) & isempty(strfind(textfile{i},')'))
+
+                            % format identified field values (cell ID's)
+                            field_value = strrep(textfile{i},'(','');
+                            field_value = strrep(field_value,')','');
+
+                            % set identified field value
+                            cell_types.(field_name)=[cell_types.(field_name) str2num(field_value)];
+                            i=i+1;
+                        end
+
+                        % save last value
+                        % -- format identified field value (cell ID's)
+                        field_value = strrep(textfile{i},'(','');
+                        field_value  =strrep(field_value,')','');
+
+                        % -- set identified field value
+                        cell_types.(field_name)=[cell_types.(field_name) str2num(field_value)];
+
+                    end
+                    i=i+1;
+                end
+
+                i=length(textfile); % stop loop
+            end
+            i=i+1;
+        end
+    end
+    i=i+1;
+end
+
+% if any cell types were found...
+if ~isempty(cell_types)
+    % sort ID's in each cell type
+    field_names = fieldnames(cell_types);
+
+    for i=1:length(field_names)
+        ids = getfield(cell_types, field_names{i});
+        ids = sort(ids',1,'ascend');
+        cell_types = setfield(cell_types, field_names{i}, ids);
+    end
+
+else
+    % otherwise, return empty struct
+    cell_types = struct;
+end
+
+
+
+
+
+
+
+
+
+
+
+
+

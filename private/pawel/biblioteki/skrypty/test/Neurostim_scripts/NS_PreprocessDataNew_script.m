@@ -1,0 +1,32 @@
+ChipAddresses=[30 31];
+NumberOfChannelsPerChip=32;
+CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
+Fs=20000;
+NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+ArrayID=1;
+
+cd E:\data\2008-12-06-0;
+FileName='005';
+
+WritePath='C:\home\pawel\nauka\analysis\2008-12-06-0';
+WritePath='E:\analysis\2008-12-06-0';
+WritePathFigs=WritePath;
+
+FigureProperties=struct('FigureNumber',1,'Subplot',[2 3 3],'TimeRange',[0 40],'AmplitudeRange',[-50 50],'FontSize',20,'Colors',['g' 'r' 'b' 'm' 'k'],'LineWidth',1);
+
+MoviesToRead=[1:30];
+PatternsToRead=[1:10];
+ChannelsToRead=[1:64];
+%[PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,ClusterFileName]=NS_PreprocessDataNew(FileName,WritePath,WritePathFigs,FigureProperties,NS_GlobalConstants,0,MoviesToRead,PatternsToRead,ChannelsToRead);
+ClusterFileName='C:\home\pawel\nauka\analysis\2008-12-06-0\ClusterFile_005';
+Channels=[1:64];
+tic
+a=NS_ApplyLinearArtifactModel(WritePath,44,MoviesToRead,Channels,0,0,ClusterFileName);
+toc
+break;
+PatternNumber=44;
+MovieNumber=18;
+for i=1:30
+    [DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(WritePath,WritePath,0,PatternNumber,i,0,0);
+    
+end

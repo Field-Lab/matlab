@@ -1,0 +1,102 @@
+function plot_ei_scroll_(ei, positions, varargin)
+% plot_ei_scroll_     plot an ei with a scroll bar
+%
+% usage:  plot_ei_scroll_(ei, positions, <params>)
+%
+% arguments:       ei - ExF matrix, E = # electrodes, F = # frames
+%           positions - Ex2 matrix of electrode coordinates
+%            <params> - struct or list of optional parameters (see below)
+%
+%
+% optional params, their default values, and what they specify:
+%
+% spike_frame           []      frame of t
+% start_frame           []      first frame to plot
+% prefix                ''      text to prepend to figure title
+%
+%
+% 2010-03  gauthier
+%
+
+
+% SET UP OPTIONAL ARGUMENTS
+
+p = inputParser;
+
+% some provided arguments might be for the low level function and should be ignored.
+p.KeepUnmatched = true;
+
+% specify list of optional parameters
+p.addParamValue('start_frame', []);
+p.addParamValue('spike_frame', []);
+p.addParamValue('prefix', '');
+p.addParamValue('figure', 0);
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+% collect parameters that are ostensibly arguments to plot_ei_
+params.to_pass = p.Unmatched;
+
+
+% add comma to prefix if nonempty
+if ~isempty(params.prefix)
+    params.prefix = [params.prefix ', '];
+end
+
+
+% if not specified, set start frame to be spike frame
+if isempty(params.start_frame) && ~isempty(params.spike_frame)
+    params.start_frame = params.spike_frame;
+end
+
+
+% make figure
+set_up_fig_or_axes(params.figure);
+params.plot_fig = gcf;
+
+% create slider control
+ha = make_loop_slider_list(params.start_frame, 1, size(ei,2), {@slider_plot, ei, positions, params});
+
+
+% plot once before any clicks
+slider_plot(ha, [], ei, positions, params);
+
+
+function slider_plot(handle, event, ei, positions, params) %#ok<INUSL>
+% display one frame of the STA
+
+% get the slider position
+frame = round(get(handle,'Value'));
+figure(params.plot_fig);cla
+
+
+% note xlim, ylim
+
+% if this is the first time, note it, and don't get the axis limits
+if all([xlim ylim]==[0 1 0 1])
+    first_time = true;
+else
+    % if this is NOT the first time, note it, and get the axis limits
+    curr_lim = [xlim; ylim];
+    first_time = false;
+end
+
+
+% plot ei
+plot_ei_(ei,positions,frame,'cutoff',-1,'neg_color',[0 0 1],'pos_color',[1 0 0],params.to_pass);
+
+
+% if this was NOT the first time, restore the axis limits to their previous values
+if ~first_time
+    xlim(curr_lim(1,:))
+    ylim(curr_lim(2,:))
+end
+
+% title
+title(sprintf('%sframe %d of %d (%d relative to spike)',params.prefix,frame,size(ei,2),frame - params.spike_frame))
+
+

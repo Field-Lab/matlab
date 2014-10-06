@@ -1,0 +1,43 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(61);
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(1);
+DataPath= 'E:\data\data\2008-12-06-0\data005';
+PreprocessedDataPath='C:\Users\pawel\analysis\2008-12-06-0\data005';
+cd 'E:\data\data\2008-12-06-0\data005';
+FileName='005';
+Channel=44;
+TimeRange=[5 80];
+
+PatternNumber=Channel;
+
+Channels=electrodeMap.getAdjacentsTo(Channel,1)';
+
+MovieStart=6;
+NumberOfMovies=26;
+Signals=zeros(NumberOfMovies,length(Channels),TimeRange(2)-TimeRange(1)+1);
+for i=1:NumberOfMovies
+    MovieNumber=MovieStart+(i-1)*3
+    [Timings,PDChunkIndex]=NS_FindPulsesTimingsForMovie(FileName,Channel,MovieNumber,NS_GlobalConstants);
+    [RAWTraces,signal1]=NS_AverageTraces(DataPath,Timings,Channels,[5 80],NS_GlobalConstants);
+    Signals(i,:,:)=signal1';   
+    figure(1);
+    FullName_pattern=[PreprocessedDataPath filesep 'pattern' num2str(PatternNumber) '_m' num2str(MovieNumber)]
+    clear Pattern;
+    load(FullName_pattern);
+    FullName_status=[PreprocessedDataPath filesep 'status_m' num2str(MovieNumber)]
+    load(FullName_status);
+    [patternTimes,traces] = plotStimulusTraces(Pattern, Status, Channels, [0 50], NS_GlobalConstants);
+    Amplitudes(i)=max(max(max(abs(traces))));
+end
+%break;
+Signals2=zeros(NumberOfMovies-2,length(Channels),TimeRange(2)-TimeRange(1)+1);
+for j=3:NumberOfMovies-1
+    s0=Signals(j-2,:,:);
+    s1=Signals(j-1,:,:);
+    s=Signals(j,:,:);
+    Signals2(j-2,:,:)=s-(s1+(s1-s0)*(Amplitudes(j)-Amplitudes(j-1))/(Amplitudes(j-1)-Amplitudes(j-2)));
+end
+
+WaveformTypes=[1:NumberOfMovies-2];
+WaveformTypes=WaveformTypes./WaveformTypes*2; %bright, isn't it? :)
+FigureProperties=struct('FigureNumber',22,'Subplot',[2 3 3],'TimeRange',[5 35],'AmplitudeRange',[-40 40],'FontSize',30,'Colors',['k' 'r' 'b' 'm' 'g' 'c' 'y'],'LineWidth',1,'YLabel','signal [mV]');
+y=NS_PlotClustersOfSignaturesOnArrayLayout(Signals2,Channels,WaveformTypes,1,FigureProperties,NS_GlobalConstants);

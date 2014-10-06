@@ -1,0 +1,86 @@
+function y=rysuj_bledy3(current,res,bits,osie);
+%Funkcja rysuje przebiegi bledu fitowania. Aproksymacja dokonywana jest za
+%pomoca funkcji maxfit. Funkcja wymaga istnienia w katalogu biezacym
+%trzech plikow o nazwach typu: 1u_pos_20k.out, 1u_neg_20k.out,
+%1u_input.out. 
+%Wejscia:
+%current - STRING, dla powyzszego przykladu '1u';
+%res - STRING, dla powyzszego przykladu: '20k';
+%bits - ilosc bitow, konieczna dla znormalizowania funkcji bledu i
+%wyskalowania osi pionowej w LSB.
+
+%1. czytanie danych z plikow
+%a) dla pradu negatywnego (x - wartosci DACa, y - wartosci pradu)
+filename=[current '_neg_' res '.out'];
+a=importdata(filename);
+x_neg=a(:,1);
+y_neg=a(:,2);
+
+%1b) dla pradu pozytywnego
+filename=[current '_pos_' res '.out'];
+a=importdata(filename);
+x_pos=a(:,1);
+y_pos=a(:,2);
+
+%2. Fitowanie
+%2a) zszywanie danych w jedna charakterystyke (od minus 127 LSB do +127 LSB)
+x=[-x_neg(length(x_neg):-1:1)' 0 x_pos(1:1:length(x_pos))']/max(x_pos)*(2^bits-1);
+y=[y_neg(length(y_neg):-1:1)' 0 y_pos(1:1:length(y_pos))'];
+
+%2b) wstepne fitowanie (zwykle najmniejsze kwadraty)
+p1=polyfit(x,y,1);
+a=(max(y_pos)-min(y_neg))/(2*max(x))
+
+%2c) fitowanie iteracyjne - minimalizacja bledu maksymalnego - funkcja w zerze ma wymuszona wartosc zero
+for i=1:500
+    p2=[a 0];
+    w1=polyval(p2,x);
+    blad0=max(abs((w1-y)));
+    
+    a1=a*0.9999;
+    p1=[a1 0];
+    w1=polyval(p1,x);
+    blad1=max(abs((w1-y)));
+    
+    a2=a*1.0001;
+    p2=[a2 0];
+    w1=polyval(p2,x);
+    blad2=max(abs((w1-y)));
+    
+    if blad1<blad0
+        a=a1;
+    else
+        if blad2<blad0
+            a=a2;
+        else
+        end
+    end
+end
+
+%3. Odczytanie wartosci dla znalezionego wielomianu (funkcja liniowa z czynnikiem stalym rownym zero)
+p2=[a 0];
+w1=polyval(p2,x);
+blad1=(w1-y)/max(abs(y))*2^bits;
+
+a=plot(x,blad1);
+set(a,'LineWidth',2);
+grid on;
+
+%w1=polyval(p2,x);
+%blad1=(w1-y)/max(abs(y))*2^bits;
+%yneg=y;
+
+%Eteor3*2^bits;
+
+%plot(x,blad1,'b-',x,blad2,'k:',x,blad3,'r--',x,sym,'g-.');
+%grid on;
+
+a=title([current 'A, R=' res]);
+set(a,'FontSize',16);
+%legend('neg. curr.','pos. curr.', 'input curr.');
+if osie==1
+    a=xlabel('DAC value [LSB]');
+    set(a,'FontSize',16);
+    a=ylabel('output current linearity error [LSB]');
+    set(a,'FontSize',16);
+end

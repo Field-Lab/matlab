@@ -1,0 +1,16 @@
+function EI=NS_CalculateEI(Traces);
+%Calculates the average traces for each channel.
+%Input:
+%Traces - array of size NxTxC, where:
+%N - number of traces for each channel;
+%T - length of single trace;
+%T - .
+STraces=size(Traces);
+EI=zeros(STraces(2),STraces(3));
+
+for i=1:STraces(2) %for each channel...
+    ChannelData=Traces(:,i,:);
+    ChannelDataBis=reshape(ChannelData,STraces(1),STraces(3));
+    Waveform=mean(ChannelDataBis);
+    EI(i,:)=Waveform;    
+end

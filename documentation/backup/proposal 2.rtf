@@ -1,0 +1,268 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red252\green0\blue0;\red255\green0\blue0;}
+\margl1440\margr1440\vieww15300\viewh21960\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs32 \cf0 \
+
+\b Proposed Standard for Matlab
+\b0 \
+\
+	Matlab is becoming a critical tool in SNL-E.  Unfortunately, there is no documented standard for importing or accessing our data in matlab.  As a result, several authors have developed several incompatible schemes.\
+	We here propose a set of standards that all future matlab code can follow.  The proposal attempts to encompass all information that is commonly accessed in matlab, resolving ambiguities and redundancies of the current individual schemes.  As new kinds of analyses crop up (e.g. vectors between EIs and STAs), the nomenclature and documentation should be expanded to include them.  All our code will work together, and that will rock!\
+	This proposal has three parts: 1) file storage of common code, 2) nomenclature and data types, 3) standard functions and function style.\
+\
+\
+
+\b 1. Storage of Common Code
+\b0 \
+\
+	The proposed standard consists of matlab functions and documentation.  Both will be stored on the server in /snle/lab/Development/matlab-source/ .  The documentation will be in a folder called "documentation", and will consist of text files and intaglio files.  Matlab functions will also live in this directory, potentially within subdirectories.  Backups will be in a folder called "backup" in the same directory.  Backup functions will keep their file names but be located in a folder with the appropriate date.\
+	Summary:\
+\
+.../matlab-source/documentation\
+.../matlab-source/backup/2008-01-31/<function>.m\
+.../matlab-source/<function>.m\
+.../matlab-source/<function_folder>/<function>.m\
+\
+\
+
+\b 2. Nomenclature and Data Types
+\b0 \
+\
+	The fundamental unit of our lab's data is what obvius calls a "series".  Under this proposal, matlab will store all information pertaining to a series in a single struct called "dataset".  We don't call it "series" because the struct will contain more information than just a series, such as EIs, the vision classification, and additional analysis results.\
+	Below is a complete list of the proposed nomenclature.  The standard name of each variable is given, along with a brief description of what it stores.  These names were chosen to be as similar as possible to the standard that currently exists on the server.\
+	For presentation purposes, the data nomenclature is divided into two classes: "basic" and "extra".  "Basic data" is information that theoretically exists for every dataset (e.g. cell ids and spike times).  "Extra data" is information found in only some datasets (e.g. STAs).  Although the latter is dataset-specific, it is sufficiently common that it needs to have a standard nomenclature.  The proposed names follow a single guiding principle: don't create new information, only represent what already exists.  As such, the names closely follow what's on disk, e.g. there is one list of cell ids, but separate classifications for vision and obvius.\
+\
+
+\b basic data
+\fs48 \
+
+\b0\fs32 theoretically applicable to all datasets\
+\
+\ul names specifying a dataset\ulnone \
+
+\f1\fs24 dataset.	names.	experiment		'2007-07-05-1'\
+				condition		'rf-0-mg'\
+				neurons_path	'/snle/lab/Experiments/.../data000.neurons'\
+				params_path	'/snle/lab/Experiments/.../data000.params'\
+				ei_path		'/snle/lab/Experiments/.../data000.ei'\
+				sta_path		'/snle/lab/Experiments/.../data000.sta'
+\f0\fs32 \
+\
+\ul neurons file information\ulnone \
+
+\f1\fs24 dataset.	cell_ids				Nx1 vector of cell ID's\
+		spikes				Nx1 cell array of spike times\
+		channels				Nx1 vector of electrodes\
+		triggers				column vector of trigger times\
+		duration				duration of recording (sec)\
+		seconds_per_sample		typically 0.00005
+\f0\fs32 \
+\
+\ul stimulus information\ulnone \
+
+\f1\fs24 dataset.	stimulus.	type\
+				... [following obvius conventions, e.g. rgb, interval, stixel_height]
+\f0\fs32 \
+\
+\ul vision classification & fits\ulnone \
+
+\f1\fs24 dataset.	vision.	cell_types		see below\
+				sta_fits		Nx1 cell array of structures of sta fits
+\f0\fs32 \
+\
+\ul obvius classification & fits\ulnone \
+
+\f1\fs24 dataset.	obvius.	cell_types		see below\
+				sta_fits		Nx1 cell array of structures of sta fits
+\f0\fs32 \
+\
+\ul EIs\ulnone \
+
+\f1\fs24 dataset.	eis					format TBD
+\f0\fs32 \
+\
+flag to specify which classification/fits to use\
+\
+
+\b extra data
+\fs48 \
+
+\b0\fs32 applies only to some datasets, but sufficiently common that it's worth standardizing\
+\
+\ul "working list" of cell types\ulnone \
+
+\f1\fs24 dataset.	cell_types				see below
+\f0\fs32 \
+\
+\ul stas\ulnone \
+
+\f1\fs24 dataset.	stas.		stas			Nx1 cell array of 4-dimensional matrices (x,y,rgb,time)\
+				summaries		spatial summary of the STA\
+				summary_type	string indicating how spatial summaries were computed (e.g. 'svd')\
+				contours		format TBD
+\f0\fs32 \
+\
+\
+
+\b cell_id versus cell_number
+\b0 \
+	Currently, cells are commonly referenced by their cell id number.  While the cell id is convenient for externally calling java functions, this number is very inconvenient within matlab.  For example, to get the spike times of cell id 100, you need to first get the 
+\i cell number
+\i0 , i.e. the ordinality in the list of cell ids:\
+\
+
+\f1\fs24 cell_number = find( dataset.cell_ids == 100 );\
+dataset.spikes( cell_number, : )
+\f0\fs32 \
+\
+For a long list of cells, translation is even more painful:\
+\
+
+\f1\fs24 clear cell_numbers\
+for cc = 1:length(list_of_cell_ids)\
+	cell_numbers(cc) = find( dataset.cell_ids == list_of_cell_ids(cc) );\
+end
+\f0\fs32 \
+\
+Under the new proposal, the cell number will become the standard reference for each cell.  For example, the list of which cells belong to each type is a list of cell numbers.  The cell number is uniquely defined by the list of cell ids found in the neurons file.\
+	This scheme has the potential drawback that getting cell id numbers will require translating from cell number.  Fortunately, the cell id is used less frequently, and, when it is needed, translation is very easy:\
+\
+
+\f1\fs24 cell_id = dataset.cell_ids(cell_number);
+\f0\fs32 \
+
+\f1\fs24 cell_ids = dataset.cell_ids(list_of_cell_numbers);
+\f0\fs32 \
+\
+Thus the cell number convention is preferable for internal matlab usage, and can be easily translated to call external java commands.\
+\
+
+\b new format for storing cell types
+\b0 \
+	Currently, cell types are stored in two redundant variables, "cell_type" and "cell_types".  The new scheme replaces these with a single variable called "cell_types".  It is a cell array of two-field structs, e.g.:\
+\
+
+\f1\fs24 cell_types\{1\}.	name			"ON parasol"\
+			cell_numbers	[1 2 5 6 8 10 15]
+\f0\fs32 \
+\
+This new scheme eliminates redundancy, and uses the more convenient cell number convention.\
+	An additional benefit is that cells can belong to more than one type.  Overlapping cell types can serve a useful purpose, e.g. having two cell types called "ON parasol" and "ON parasol high quality".\
+	We also propose a standard order for listing cell types: ON parasol, OFF parasol, ON midget, OFF midget, SBC.  If this standard is followed, the user will be able to call "dataset.cell_types\{1\}" and always get the ON parasol cells.  In the past, cell type names could vary, so the user needed to check ahead of time whether the classification was stored as "cell_types.ON_parasol", "cell_types.ON_PARASOL", "cell_types.on_y", etc.\
+\
+
+\b working list of cell types ("dataset.cell_types")
+\b0 \
+\cf2 SUMMARY: each function should accept either a list of cell numbers, or a string specifying the type, to be read from "dataset.cell_types".\cf0 \
+\
+	Functions typically access a collection of cells.  The collection can contain one cell type or more than one cell type.\
+	For functions that act on only one cell type, there should always be an option to accept a list of cell numbers as an argument.\
+	Sometimes, however, knowing the cell type is required.  For example, a function that compares the RF profile of ON and OFF parasol cells.  These functions should always read the cell clasification from "dataset.cell_types".  This field serves two purposes:\
+	1) Two cell classifications exist on the server: vision and obvius.  These may agree or disagree.  As such, the user must decide which classification to use.  The current "working list" of cell types is the place to store the chosen classification.  Under this scheme, functions that access a particular cell type will not need an additional argument specifying whether to use the obvius or vision classification.\
+	2) Sometimes the user will want to modify the classification on the fly.  For example, the user can omit cells that don't meet a certain quality criterion, or generate a new cell type such as "ON parasol clean".  Because there is a standard place to store this new list, the user won't have to invent new fields and modify standard functions to look there.  Instead, functions can refer to the list in a standard fashion, e.g.\
+\
+
+\f1\fs24 plot_rf_outlines( dataset, get_cell_numbers(dataset,'ON parasol clean'), params )
+\f0\fs32 \
+\
+(see below for explanation of "get_cell_numbers")\
+\
+\
+\cf3 MULTIPLE CELL TYPES?\cf0 \
+\
+\
+
+\b 3. Standard functions and function style
+\b0 \
+\
+	All functions should read in the whole dataset variable, along with user-specified parameters.  This allows each function to access the complete array of information, including information whose need was not anticipated when the function was first defined.  To illustrate and argue for this usage, below are some standard functions (which will need to be written), as well as a hypothetical function Martin cooked up.\
+\
+
+\b load_data
+\b0 \
+
+\f1\fs24 dataset = load_data( dataset, params )\
+
+\f0\fs32 	This function fills "dataset" with all relevant information, adding and filling in fields according to the above nomenclature.\
+	Informaiton is only loaded if the appropriate fields in the input struct "dataset.names" are non-empty.  If a field is empty, the corresponding information is not loaded.\
+	To load a dataset for the first time, the user specifies the parameters and calls "load_data":\
+\
+
+\f1\fs24 % specify parameters\
+dataset.names.experiment = '2007-07-05-1';\
+dataset.names.condition = 'rf-0-mg';\
+dataset.names.neurons_path = '/snle/lab/Experiments/.../data000.neurons';\
+dataset.names.params_path = '/snle/lab/Experiments/.../data000.params';\
+dataset.names.sta_path = '/snle/lab/Experiments/.../data000.sta';\
+\
+% load dataset\
+dataset = load_data( dataset );
+\f0\fs32 \
+\
+Alternatively, the arguments can theoretically be specified in one (long) line:\
+\
+
+\f1\fs24 dataset = load_data( struct('names',struct('experiment','2007-07-05-1','condition','rf-0-mg' )) );
+\f0\fs32 \
+\
+	The primary advantage of this format is consistency, both within wrapper functions and for the user.  For example, "load_data" might simply call lower level functions to load the various parts of the struct: \
+\
+
+\f1\fs24 dataset = load_series( dataset, params );
+\f0\fs32 \
+
+\f1\fs24 dataset = load_neurons( dataset, params );
+\f0\fs32 \
+
+\f1\fs24 dataset = load_params( dataset, params );
+\f0\fs32 \
+
+\f1\fs24 dataset = load_stas( dataset, params );\
+
+\f0\fs32 \
+Such consistency also provides a great service to the user.  If, for example, the user has been working only with spike times, and then wants to incorporate STAs, "load_stas" can be called without having to look up the file path again (and potentially get it wrong):\
+\
+
+\f1\fs24 dataset = load_stas( dataset );
+\f0\fs32 \
+\
+The new information will be seamlessly incorporated into the extisting struct, and all pre-existing fields, including the results of any analysis, will remain untouched.\
+	The argument "params" is a general feature that should appear in all functions.  It is a struct containing optional parameters, and permits a standard means to overload functions.  In this case, params might indicate to NOT load a particular kind of data, even if the file exists.  For example, the user might want only the cell IDs, but not the spikes times, which can take much longer to load:\
+\
+
+\f1\fs24 dataset = load_data( dataset, struct('load_spikes',false) );
+\f0\fs32 \
+\
+\
+
+\b get_cell_numbers
+\b0 \
+
+\f1\fs24 cell_numbers = get_cell_numbers( dataset, cell_type_list )\
+
+\f0\fs32 	This function exists primarly for user convenience.  It returns the cell numbers corresponding to the cell type(s) specified in "cell_type_list".  A cell type can be specified either by its name or its number.  For example,\
+\
+
+\f1\fs24 cell_numbers = get_cell_numbers( dataset, [1 2] )\
+cell_numbers = get_cell_numbers( dataset, \{'ON_parasol','OFF_parasol'\} )
+\f0\fs32 \
+\
+The function simply looks in "dataset.cell_type" to obtain these values.\
+\
+\
+
+\b plot_psth
+\b0 \
+
+\f1\fs24 h = plot_psth( dataset, stard_time, end_time, params )\
+
+\f0\fs32 	This hypothetical example illustrates an important purpose for the "params" argument.  In addition to optional parameters such as bin size and figure location, it can contain a meta-parameter field ("params.meta").  If Martin needed very specific settings for plotting a particular psth, he could specify them inside the function "plot_psth".  Then Martin could call the function like this:\
+\
+
+\f1\fs24 h = plot_psth( dataset, cell_numbers, stard_time, end_time, struct('meta','martin_2008_02_figure_1') )
+\f0\fs32 \
+\
+}

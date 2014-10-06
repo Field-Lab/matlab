@@ -1,0 +1,26 @@
+clear
+
+cd H:/pliki/nauka/stymulacja/chip/testy/2006_07_12/
+dac=[-127:127];
+
+a=importdata('60nA_4700k_channels_scan_board1_chip_left.dat');
+b=importdata('4uA_75k_channels_scan_board3_chip_left.dat');
+slope1=przekladki_channels_scan(a,b);
+
+a=importdata('60nA_4700k_channels_scan_board3_chip_left.dat');
+b=importdata('4uA_75k_channels_scan_board3_chip_left.dat');
+slope1=przekladki_channels_scan(a,b);
+
+a=importdata('60nA_4700k_channels_scan_board3_chip_left.dat');
+b=importdata('4uA_75k_channels_scan_board3_chip_left.dat');
+slope1=przekladki_channels_scan(a,b);
+
+a=importdata('60nA_4700k_channels_scan_board3_chip_left.dat');
+b=importdata('4uA_75k_channels_scan_board3_chip_left.dat');
+slope1=przekladki_channels_scan(a,b);
+
+
+
+
+figure(11)
+plot(slope,'bd-')

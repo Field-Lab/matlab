@@ -1,0 +1,61 @@
+% AKHeitman 2014-04-06
+% concise naming scheme parameter folder name associated with a fit
+% built in mechanism to locate older fits by optional condition
+% Input the standard GLMType which dictate the fit_type
+
+
+function GLM_fitname = GLM_fitname(GLMType , condition)
+% condition = 'netappsnle'  just a hack to load up old fits
+
+if ~exist('condition','var') 
+    
+    % Find the major model components define core fit name
+    core = GLMType.k_filtermode;
+    if GLMType.MU
+        core = sprintf('%s_MU'  , core);
+    else
+        core = sprintf('%s_noMU', core);
+    end    
+    if GLMType.PS
+        core = sprintf('%s_PS'  , core);
+    else
+        core = sprintf('%s_noPS', core);
+    end 
+    if GLMType.Coupling
+        core = sprintf('%s_CP'  , core);
+    else
+        core = sprintf('%s_noCP', core);
+    end
+    GLM_fitname_core = sprintf('%s_%s', core, GLMType.cone_sname);
+    
+    % Modify 
+    if GLMType.debug  
+        GLM_fitname_core = sprintf('debug_%s', GLM_paramname);
+    end
+    
+    
+    
+    if ~GLMType.specialchange
+        GLM_fitname = GLM_fitname
+    end
+    if GLMType.specialchange
+        strcmp
+    
+end
+
+if exist('condition', 'var') && strcmp(condition, 'netappsnle')
+    if  GLMType.Coupling,  Main_SolPars = sprintf('%s_ps%d_%s',GLMType.k_filtermode,GLMType.n_psf,'cpON');  end
+    if ~GLMType.Coupling,  Main_SolPars = sprintf('%s_ps%d_%s',GLMType.k_filtermode,GLMType.n_psf,'cpOFF'); end
+
+     if isfield(GLMType, 'rect') && GLMType.rect
+        Main_SolPars = sprintf('%s_%s' , GLMType.rect_type , Main_SolPars );
+    end 
+    
+	Other_SolPars = sprintf( 'bin%d_blk%d_tolfun%d',GLMType.binning,length(SPars.FitBlocks),GLMType.tolfun);
+    if GLMType.Coupling, Other_SolPars = sprintf('%s_cpbasisno%d_neighborpertype%d', Other_SolPars,GLMType.n_cp, GLMType.neighbornumber); end
+    if GLMType.debug, Other_SolPars = sprintf('debug_%s', Other_SolPars); end
+    
+    GLM_paramname = sprintf('%s/%s/%s', Main_SolPars, Other_SolPars,GLMType.cone_model);
+end
+
+end

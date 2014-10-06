@@ -1,0 +1,26 @@
+function y=NS_ShowChannelData(Channel,TimeStart,TimeLength,Unit,FigureNumber)
+
+time=[TimeStart+1 TimeStart+TimeLength];
+
+filename_movie=['movie' filename];
+output1=ReadMovieDataChunk4(filename_movie,Channel,time,ChipAddresses,NumberOfChannelsPerChip,CurrentRanges,unit);
+
+t=[time_start+1:time_start+time_length]/Fs;
+
+figure(FigureNumber);
+
+%javaaddpath C:\praca\vision5-2006-11-27-updated-filter\vision5/vision.jar;
+full_path=[pwd '\' ['data' filename];
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path);
+data = rawFile.getData(TimeStart+1,TimeLength);
+size(data);
+
+subplot(2,1,1);
+plotPH(t,output1(1,:).*output1(3,:),100);
+clear output1;
+gca;
+xlabel('t')
+ylabel('I')
+subplot(2,1,2);
+plot(t,data(:,channel+1));
+clear data;

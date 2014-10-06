@@ -1,0 +1,22 @@
+function [PCA_CoeffsNew,TypesNew]=NS_CleanClusters(PCA_Coeffs,Types,Threshold);
+
+number=1;
+while find(Types==number)
+    number=number+1;
+end
+number=number-1; %number of clusters
+
+PCA_CoeffsNew=PCA_Coeffs;
+TypesNew=Types;
+for i=1:number
+    Ind1=find(Types==i);
+    [Ind11,a1]=NS_CleanCluster(PCA_Coeffs(Ind1,:),Threshold);
+    TypesNew(
+    indexes=ones(1,length(Ind1));
+    indexes(Ind11)=0;
+    a=find(indexes==1);
+    TypesNew(a)=0;
+end
+
+Types1=Types;
+Types1(Ind1(Ind11))=NumberOfClusters+1;
