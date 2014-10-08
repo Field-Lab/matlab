@@ -17,6 +17,7 @@ p.addRequired('pathToAnalysisData', @ischar)
 p.addRequired('patternNo', @isnumeric)
 
 p.addParamValue('movieNo', 0, @isnumeric) 
+p.addParamValue('movieIndex', 0, @isnumeric)
 p.addParamValue('saveMovie', false, @islogical) %default: don't save movie
 p.addParamValue('colorScale',[-20 10], @isnumeric); 
 p.addParamValue('circleSize', 350, @isnumeric);
@@ -24,6 +25,7 @@ p.addParamValue('circleSize', 350, @isnumeric);
 p.parse(pathToAnalysisData, patternNo, varargin{:})
 saveMovie = p.Results.saveMovie; 
 movieNo = p.Results.movieNo;
+movieIndex = p.Results.movieIndex;
 colorScale = p.Results.colorScale; 
 circleSize = p.Results.circleSize; 
 
@@ -52,6 +54,11 @@ if movieNo
 else
     mIndices = 2:size(movieNos,2);
 end
+
+if movieIndex
+    mIndices = movieIndex;
+end
+
 dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
     movieNos(1), 99999);
 
