@@ -1,0 +1,50 @@
+Hi all,
+
+Below I provide explanation of how the TTL pulses and the disconnection functionality are controlled.
+
+1) Keep in mind that whatever sequence of TTL pulses and disconnetion signals you define, the total lenth of this sequence must be 0.5 seconds and such 0.5-sec sequence will be then repeated by the Labview software. Of course, you can define many such 0.5-sec sequences but for Labview to swtich from one sequence to another takes a few seconds (to calculate appropriate stream of real time data, that is next sent to Stimchips). So it is not a solution to generate many sequences, and plan to apply each just once to obtain long (say 10-second) sequence, because Labview will not do that - instead, it will spend 90% of time on calculating the real-time data signals for the Stimchips (and it will eventually crush). Instead, the experimet works such that you define your 0.5 sec sequence, Labview repeats this some number of times, and then another 0.5 sequence is generated, again applied this many times etc. We discussed that before and this seems to be not a problem for your experiments.
+
+2) States of all the control signals in the eelctronics changes with period of 50 us (20 kHz sampling). To define 0.5-sec sequence, you in fact apply the TTL signal and/or the disconnection signal for any combination of the 10000 samples within 0.5 second. (There is just one disconnection signal that you define, as the disconnection is always synchronous in all the 512 channels of the electronics.) Let's say you want to generate the TTL pulse with frequency of 2 Hz. Then, your 0.5-second sequence must include just one pulse. It will be problematic to generate the pulse with say 7 Hz repetition frequency, but you can do 6 Hz or 8 Hz.
+
+3) The timing for the TTL and disconenction is defined in matlab script. In order to say Labview "apply the TTL pulse at t=300 ms" you have to specify in the script: generate signal "-1" at sample number 6000. If you want this pulse to be 200 us long, you must specify: apply pattern "-1" at samples 6000, 6011, 6002 and 6003. You can generate the TTL pulse at any sample (out of the 10000) so you can generate many pulses of varius durations (if you want). The control of the disconnection signals is identical, except that the corresponding signal is "0" instead of "-1". The timing of TTL signal and the disconnection control signal are defined independently, then obviously disconnection timing can overlap (possible partially) with TTL pulse timing.
+
+4) I attach the required Matlab library, with examplary Matlab script (path: matlab_cp_2013_08_05\biblioteki\skrypty\test\Neurostim_scripts\Subretinal\NS512_subretinal_example1.m). The timing for the TTL signal and the disconnection signal are shown in the attached PDF file. There are 5 TTL pulses, applied every 100 ms and the duration is always 1 ms. Synchronously with pulse number 2 and pulse number 4, there is disconnection applied - however, the disconnection always starts 0.1 ms before start of the TTL, and ends 0.1 ms after end of the TTL pulse. Again, the sequence is 0.5 sec long and it will be repeated by Labview. Please note that what really matters, are the two arrays: Times and Patterns. Taken together they define that at given point of time, given control signal will be applied. There is one-to-one correspondence between those two arrays - you take element number N from Times array (name it T1), element number N from Patterns array (name it P1), and it means: apply signal P1 at t=T1.
+
+5) I propose you run the examplary script, take a look at the Patterns and Timings array in Matlab, and compare this to the plots in the pdf file. Once you understand this (and at that point you will probably think - this is really trivial), you should be ready to prepare your own script, with another sequence of TTL pulses and disconneciotn signals. Then take the examplary script and modify sections 2 and 3. I also imagine you will want to build some functions etc. Just keep sections 1 and 4 of the script unchanged. I think the best is if you build your own example and send me back the script and the desired timing of both control signals (as in my PDf file) so I can check them.
+
+6) Have fun!
+
+cheers,
+Pawel
+
+---------------------------------------------------------------------
+Hello Pawel,
+
+Thanks for sending the scripts. Here's a slightly modified version of the script, which should disconnect according to the figure I'm attaching. Pulse width is supposed to be 0.8ms, it's not obvious on the figure.
+Does it look correct to you?
+
+Thank you,
+Georges.
+
+---------------------------------------------------------------------
+Hi Georges,
+
+This looks correct - the timings for TTL and disconnections are consistent in the script and in the plot. What I am not sure about is how the actual laser pulses are expected to be generated - looks like just a single TTL pulse triggers the whole sequence of three laser pulses, that is generated by external software (in Labview I guess). Is this the point?
+
+Anyway, seem like you are ready tu run the system. Here is a short description on how to find the relevant data in the RAW data generated by the data acquisition software.
+
+The general idea is that the data acquisition saves both the RAW output data (as the older version of the 512-electrode system that you are familiar with) and additional files that contain detailed information about the stimulation protocol. (I hope Sinya can show you how to run the Labview data acquisition software.) In your case, the only thing that you need to know is when Labview generated your 0.5-second sequence for the first time, and how many times the sequqnce was repeated. Then, you can load the pieces of the RAW data that you need using your standard reader (I guess, the Visiom method called from Matlab).
+
+The Labview output is then a folder with RAW data (name for example 'data004') and corresponding two files: pattern004 and movie004. All the information you need is in the file movie004. Put the following into Matlab:
+
+NS_GlobalConstants=NS_GenerateGlobalConstants(512);
+MovieData=NS_MovieData_GlobalPath('G:\2010-09-21-0\movie009',1,NS_GlobalConstants); % of course define your own path and file name
+FirstRepetitionTime=MovieData(3) % this will be always an integer multiplication of 10000
+NumberOfRepetitions=MovieData(4) % repetition period is of course 10000
+
+Then 'FirstRepetitionTime' tells you when the first repetition of the sequence started, and 'NumberOfRepetitions' tells how many repetitions was there. The number of repetitions is not exactly identical to the value of 'NumberOfRepetitions' variable you define in Labview program - it is smaller then what you put in Labview by typically 2 or 3. This is related to the fact that Laview needs some time to calculate the control signals for the Stimchips - it is one of imperfections of the Labview code that I am hoping to clear once we manage to build the hardware copy for me here in Krakow (otherwise testing is too difficult). But this is not a problem for the experiment, the "rule of thumb" is that if you want N repetitions, put 'N+5' in Labview, and then check in the output movie file (using the code I put above) to check whether the actual number is say N+1 or maybe N+3.
+
+The rest, I believe, is obvious for you. For your information - I will be away starting this Saturday and until October 2 (with no regular access to the Internet) so it would be good to clarify things this week.
+
+cheers,
+Pawel

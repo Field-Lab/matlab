@@ -1,0 +1,532 @@
+function ei = refreshEiPlots(main, elecResp, dataTraces, varargin)
+
+% callback for analysisGui
+
+p = inputParser;
+
+p.addRequired('main', @isstruct)
+p.addRequired('elecResp', @isstruct)
+p.addRequired('dataTraces', @isnumeric)
+
+p.addParamValue('elecOverride', 0, @(x)isnumeric(x))
+p.addParamValue('axesOverride', 0, @(x)ishandle(x))
+
+p.parse(main, elecResp, dataTraces, varargin{:})
+
+
+if p.Results.elecOverride;
+    overridePlotElec = 1;
+    plotElecIndeces = p.Results.elecOverride;
+    plotAxes = p.Results.axesOverride;
+    if ~plotAxes;
+        warndlg('must specify axes to plot into when specifying a single electrode to plot', 'warning', 'modal')
+        return
+    end
+else
+    overridePlotElec = 0;
+    if p.Results.axesOverride
+        warndlg('must specify which electrode to plot when specifying an axes handle to plot into', 'warning', 'modal')
+        return
+    end
+end
+
+artFromSubset = get(main.artFromSubsetCheckBox, 'Value');
+analysisMode = get(main.analyzeModeButton, 'Value');
+currentMovie = str2double(get(main.movieNo, 'String'));
+nPulses = size(dataTraces, 1);
+
+if analysisMode
+    movieIndex = find(elecResp.stimInfo.movieNos == currentMovie);
+    neuronIDs = [elecResp.cells.main elecResp.cells.active{movieIndex}];
+    nTemplates = length(neuronIDs);
+    templateColors = hsv(nTemplates);
+    latencies = [elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
+    centerChannel = elecResp.cells.recElec;
+    showTemplates = get(main.showTemplatesCheckbox, 'Value');
+    if strcmp('/', filesep) %mac
+        centerElecBottomRow = str2double(get(main.centerExploreNoSpikes, 'String'));
+        subtractSpikesBottomRow = get(main.subtractSpikesCheckBox, 'Value');
+        excludeSpikeTraces = get(main.excludeSpikeTracesCheckBox, 'Value');
+    end
+    
+%     if get(main.fixedLimsCB, 'value') %update edit boxes to reflect elecResp values
+%         if ~isempty(elecResp.analysis.details.residCalcWindow{movieIndex})
+%             set(main.xAxisLimitLow, 'string', num2str(elecResp.analysis.details.residCalcWindow{movieIndex}(1)-10));
+%             set(main.xAxisLimitHigh, 'string', num2str(elecResp.analysis.details.residCalcWindow{movieIndex}(2)+5))
+%         end
+%     end
+    
+    if ~isempty(elecResp.analysis.type{movieIndex})
+        residStart = elecResp.analysis.details.residCalcWindow{movieIndex}(1);
+
+        failuresBin = (latencies == 0);
+        failuresBin = min(failuresBin, [], 2);
+        
+        if artFromSubset %when calculating artifact, only use unflagged failure traces
+            unflaggedBin = elecResp.analysis.details.analysisFlags{movieIndex}==0;
+        else
+            unflaggedBin = true(size(elecResp.analysis.details.analysisFlags{movieIndex}));
+        end
+        
+        failuresBinForArtifact = logical(failuresBin.*min(unflaggedBin,[],2));
+        
+        
+        
+        
+        if sum(failuresBinForArtifact) %some traces have no spikes
+            channelsToUse = getCluster(centerChannel);
+        else %all traces have spikes (or have analysis flags when artFromSubset = true)
+            channelsToUse = elecResp.cells.goodElecs;
+        end
+        nChannels = length(channelsToUse);
+        
+        channelsToUpdate = false(1, nChannels);
+        for ii = 1:nChannels
+            channelsToUpdate(ii) = logical(get(main.aCheckBox{1,ii}, 'Value'));
+        end
+
+        
+        if strcmp('/', filesep) %mac
+            channelsToUseBottom = getCluster(centerElecBottomRow);
+            nChannelsBottom = length(channelsToUseBottom);
+            channelsToUpdateBottom = false(1, nChannelsBottom);
+            for ii = 1:nChannelsBottom
+                channelsToUpdateBottom(ii) = logical(get(main.aCheckBox{2,ii}, 'Value'));
+            end
+        end
+                
+        
+        eiData = cell(nTemplates, 1); %stores EIs of active neurons: eiData{neuronIndex}(channels, samples)
+        
+        eiData{1} = elecResp.cells.mainEI;
+        for i = 2:nTemplates
+            eiData{i} = elecResp.cells.allEIs{elecResp.cells.all == elecResp.cells.active{movieIndex}(i-1)};
+        end
+                
+        eiYMin = 5000; eiYMax = -5000;
+        for i = 1:nTemplates
+            eiYMin = min([min(min(eiData{i}(channelsToUse(channelsToUpdate),:))), eiYMin]);
+            eiYMax = max([max(max(eiData{i}(channelsToUse(channelsToUpdate),:))), eiYMax]);
+        end
+        clear eiFile
+
+        ei = cell(nTemplates, 1);
+        targetEi = cell(nTemplates, 1);
+        targetEiMinPos = zeros(nTemplates, 1);
+        nSpikes = zeros(nTemplates, 1);
+        for i = 1:nTemplates
+            ei{i} = zeros(nPulses, nChannels, 26);
+            ei{i}(:,channelsToUpdate,:) = findStimEi(dataTraces, elecResp, currentMovie, i-1, eiData, channelsToUse(channelsToUpdate), artFromSubset);
+            targetEi{i} = eiData{i}(channelsToUse, :);
+            targetEiMinPos(i) = find(squeeze(targetEi{i}(channelsToUse==centerChannel,:))...
+                ==min(squeeze(targetEi{i}(channelsToUse==centerChannel,:)))); %position of minimum on primary electrode
+            nSpikes(i) = sum(latencies(:,i)~=0);
+            
+            eiYMin = min([min(min(min(ei{i}))), eiYMin]);
+            eiYMax = max([max(max(max(ei{i}))), eiYMax]);
+        end
+
+        if ~overridePlotElec;
+            for j = 1:nChannels
+                axes(main.aEi{1,j})
+                cla
+                
+                if channelsToUpdate(j)
+                    hold on
+                    %show other (non-target) templates if desired
+                    if isfield(main, 'otherDispEIs') && ~isempty(main.otherDispEIs)
+                        for kk = 1:length(main.otherDispEIs)
+                            tmpMinPos = find(squeeze(main.otherDispEIs{kk}(centerChannel,:))...
+                                ==min(squeeze(main.otherDispEIs{kk}(centerChannel,:))));
+                            plot(squeeze(main.otherDispEIs{kk}(channelsToUse(j), tmpMinPos(i)-10:tmpMinPos(i)+15)), 'LineWidth', 2,...
+                                'color', [0.5 0.5 0.5])
+                        end
+                    end
+                    for i = 1:nTemplates
+                        if get(eval(['main.legendCheckBox' num2str(i)]), 'Value')
+                            if showTemplates
+                                plot(squeeze(targetEi{i}(j, targetEiMinPos(i)-10:targetEiMinPos(i)+15)), 'LineWidth', 2,...
+                                    'color', 0.5*templateColors(i,:))
+                            end
+                            if nSpikes(i)
+                                for k = 1:nPulses
+                                    if latencies(k,i)
+                                        unfitRegion = 10 + residStart - round(latencies(k,i));
+                                        if unfitRegion > 1
+                                            plot(1:unfitRegion, squeeze(ei{i}(k,j,1:unfitRegion)),...
+                                                'color', templateColors(i,:) + 0.7*([1 1 1] - templateColors(i,:)))
+                                            %set(findobj(current,'Type','line'),'Color', templateColors(i,:) + 0.7*([1 1 1] - templateColors(i,:)))
+                                            
+                                            plot(unfitRegion:size(ei{i},3), squeeze(ei{i}(k,j,unfitRegion:end)),...
+                                                'color', templateColors(i,:))
+                                            %set(findobj(current,'Type','line'),'Color', templateColors(i,:))
+                                        else
+                                            plot(squeeze(ei{i}(k,j,:)), 'color', templateColors(i,:))
+                                            %set(findobj(current,'Type','line'),'Color', templateColors(i,:))
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    hold off
+                    set(main.aEi{1,j}, 'YLim', [eiYMin eiYMax], 'XLim', [1 26], 'visible', 'on')
+                    set(main.aButton{1,j}, 'visible', 'on', 'enable', 'on', 'String', ['electrode ' num2str(channelsToUse(j))])
+                    set(main.aCheckBox{1,j}, 'visible', 'on', 'enable', 'on')
+                else
+                    set(main.aEi{1,j}, 'visible', 'off')
+                    set(main.aButton{1,j}, 'visible', 'on', 'enable', 'off')
+                    set(main.aCheckBox{1,j}, 'visible', 'on', 'enable', 'on')
+                end
+            end
+            if nChannels < 7 %need to clear other axes
+                for j = nChannels+1:7
+                    cla(main.aEi{1,j})
+                    set(main.aEi{1,j}, 'visible', 'off')
+                    set(main.aButton{1,j}, 'visible', 'off', 'enable','off')
+                    set(main.aCheckBox{1,j}, 'visible', 'off', 'enable', 'off')
+                end
+            end
+            
+            %%% update bottom row of plots %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            if strcmp('/', filesep) %mac
+                if get(main.exploreOtherElecsCheckBox, 'Value')
+                    plotType = get(main.dataDisplayType, 'Value');
+                    xmin = max(str2double(get(main.xAxisLimitLow, 'String')),1);
+                    xmax = min(str2double(get(main.xAxisLimitHigh, 'String')), size(dataTraces, 3));
+                    dataToPlot = zeros(nPulses, length(channelsToUseBottom), xmax-xmin+1);
+                    if plotType == 2 %subtract mean
+                        for i = 1:nPulses
+                            dataToPlot(i, channelsToUpdateBottom, :) = dataTraces(i, channelsToUseBottom(channelsToUpdateBottom), xmin:xmax) - ...
+                                mean(dataTraces(:, channelsToUseBottom(channelsToUpdateBottom), xmin:xmax), 1);
+                        end
+                    elseif plotType == 3 && max(failuresBinForArtifact) %subtract estimated artifact (only works if there are failure traces)
+                        %determine artifact
+                        estArtifact = mean(dataTraces(failuresBinForArtifact, :, :), 1);
+                        
+                        for i = 1:nPulses
+                            dataToPlot(i, channelsToUpdateBottom, :) = dataTraces(i, channelsToUseBottom(channelsToUpdateBottom), xmin:xmax) - ...
+                                estArtifact(:, channelsToUseBottom(channelsToUpdateBottom), xmin:xmax);
+                        end
+                    else %plot raw data
+                        dataToPlot(:,channelsToUpdateBottom,:) = dataTraces(:, channelsToUseBottom(channelsToUpdateBottom), xmin:xmax);
+                    end
+                  
+                    
+                    if excludeSpikeTraces
+                        for k = nPulses:-1:1
+                            if sum(latencies(k,:)) %if any neurons spike, get rid of trace
+                                dataToPlot(k,:,:) = [];
+                            end
+                        end
+                    
+                        
+                    elseif subtractSpikesBottomRow
+                        for j = 1:length(neuronIDs)
+                            for k = 1:nPulses
+                                if latencies(k,j)
+                                    offset = latencies(k,j) - targetEiMinPos(j);
+                                    template{1} = eiData{j}(channelsToUseBottom(channelsToUpdateBottom), :); %#ok<AGROW>
+                                    dataToPlot(k,channelsToUpdateBottom,:) = subtractWithShifts(squeeze(dataToPlot(k,channelsToUpdateBottom,:)), template, offset);
+                                end
+                            end
+                        end
+                        
+                    end
+                        
+                    if ~isempty(dataToPlot)
+                        eiYMin = min(min(min(dataToPlot)));
+                        eiYMax = max(max(max(dataToPlot)));
+                    else
+                        eiYMin = 0;
+                        eiYMax = 0;
+                    end
+                    
+                    for j = 1:length(channelsToUseBottom)
+                        axes(main.aEi{2,j})
+                        cla
+                        if channelsToUpdateBottom(j)
+                            plot(squeeze(dataToPlot(:,j,:))', 'k');
+                            set(main.aEi{2,j}, 'XLim', [1 xmax-xmin+1], 'YLim', [eiYMin eiYMax], 'visible', 'on')
+                            set(main.aButton{2,j}, 'visible', 'on', 'enable', 'on', 'String', ['electrode ' num2str(channelsToUseBottom(j))])
+                            set(main.aCheckBox{2,j}, 'visible', 'on', 'enable', 'on')
+                        else
+                            set(main.aEi{2,j}, 'visible', 'off')
+                            set(main.aButton{2,j}, 'visible', 'on', 'enable', 'off')
+                            set(main.aCheckBox{2,j}, 'visible', 'on', 'enable', 'on')
+                        end
+                    end
+                    
+                    if length(channelsToUseBottom) < 7 %need to clear other axes
+                        for j = length(channelsToUseBottom)+1:7
+                            cla(main.aEi{2,j})
+                            set(main.aEi{2,j}, 'visible', 'off')
+                            set(main.aButton{2,j}, 'visible', 'off', 'enable','off')
+                            set(main.aCheckBox{2,j}, 'visible', 'off', 'enable', 'off')
+                        end
+                    end
+                else
+                    for j = 1:7
+                        cla(main.aEi{2,j})
+                        set(main.aEi{2,j}, 'visible', 'off')
+                        set(main.aButton{2,j}, 'visible', 'off', 'enable','off')
+                        set(main.aCheckBox{2,j}, 'visible', 'off', 'enable', 'off')
+                    end
+                end
+            end
+            
+
+        else %overridePlotElec: plots data for single electrode into externally specified axes
+            axes(plotAxes)
+            hold on
+
+            elecIndex = plotElecIndeces(2);
+            elecPlotType = plotElecIndeces(1); %1 means normal ei plot, 2 means "explore other electrodes" plot
+            if elecPlotType == 1 %normal ei plot
+                
+                %plot other (non-target) EI waveforms if desired
+                if isfield(main, 'otherDispEIs') && ~isempty(main.otherDispEIs)
+                    for kk = 1:length(main.otherDispEIs)
+                        tmpMinPos = find(squeeze(main.otherDispEIs{kk}(centerChannel,:))...
+                            ==min(squeeze(main.otherDispEIs{kk}(centerChannel,:))));
+                        plot(squeeze(main.otherDispEIs{kk}(channelsToUse(elecIndex), tmpMinPos(i)-10:tmpMinPos(i)+15)), 'LineWidth', 2,...
+                            'color', [0.5 0.5 0.5])
+                    end
+                end
+                
+                for i = 1:nTemplates
+                    if get(eval(['main.legendCheckBox' num2str(i)]), 'Value')
+                        
+                        if showTemplates
+                            plot(squeeze(targetEi{i}(elecIndex, targetEiMinPos(i)-10:targetEiMinPos(i)+15)), 'LineWidth', 2,...
+                                'color', 0.5*templateColors(i,:))
+                        end
+                        if nSpikes(i)
+                            for k = 1:nPulses
+                                if latencies(k,i)
+                                    unfitRegion = 10 + residStart - round(latencies(k,i));
+                                    if unfitRegion > 1
+                                        plot(1:unfitRegion, squeeze(ei{i}(k,elecIndex,1:unfitRegion)),...
+                                            'color', templateColors(i,:) + 0.7*([1 1 1] - templateColors(i,:)))
+                                        plot(unfitRegion:size(ei{i},3), squeeze(ei{i}(k,elecIndex,unfitRegion:end)),...
+                                            'color', templateColors(i,:))
+                                    else
+                                        plot(squeeze(ei{i}(k,elecIndex,:)), 'color', templateColors(i,:))
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            else %"explore other electrodes" plot
+                
+                plotType = get(main.dataDisplayType, 'Value');
+                xmin = str2double(get(main.xAxisLimitLow, 'String'));
+                xmax = min(str2double(get(main.xAxisLimitHigh, 'String')), size(dataTraces, 3));
+                dataToPlot = zeros(nPulses, xmax-xmin+1);
+                if plotType == 2 %subtract mean
+                    meanTrace = squeeze(mean(dataTraces(:, channelsToUseBottom(elecIndex), xmin:xmax), 1));
+                    for i = 1:nPulses
+                        dataToPlot(i, :) = squeeze(dataTraces(i, channelsToUseBottom(elecIndex), xmin:xmax)) - ...
+                            meanTrace;
+                    end
+                else %plotType == 1 or 3 (ignore 3)
+                    dataToPlot = reshape(dataTraces(:, channelsToUseBottom(elecIndex),...
+                        xmin:xmax), nPulses, []);
+                end
+
+                if subtractSpikesBottomRow
+                    %subtracts out identified spikes
+                    for j = 1:length(neuronIDs)
+                        for k = 1:nPulses
+                            if latencies(k,j)
+                                offset = latencies(k,j) - targetEiMinPos(j);
+                                template{1} = eiData{j}(channelsToUseBottom(elecIndex), :); %#ok<AGROW>
+                                dataToPlot(k,:) = subtractWithShifts(squeeze(dataToPlot(k,:,:)), template, offset);
+                            end
+                        end
+                    end
+                    
+                    plot(dataToPlot', 'k');
+                    
+                else %don't subtract out identified spikes
+                        plot(dataToPlot', 'k');
+                end
+                set(plotAxes, 'XLim', [1 xmax-xmin+1])
+                
+            end
+            hold off
+        end
+    end
+        
+else %explore mode
+    if get(main.eiRefreshCheckbox, 'Value') == 0 %don't update if checkbox isn't checked
+        return
+    end
+    
+    exploreAnalyzed = 1;
+    try
+        patternNo = str2double(get(main.patternNo, 'String'));
+        if isnan(patternNo);
+            tempSuccesses = main.tempAnalysisNoSave;
+        else
+            tempSuccesses = main.tempAnalysis{patternNo, currentMovie};
+        end
+        if isempty(tempSuccesses)
+            exploreAnalyzed = 0;
+        end
+    catch
+        exploreAnalyzed = 0;
+    end
+
+    centerChannel = str2double(get(main.centerElec, 'String'));
+    channelsToUse = getCluster(centerChannel);
+
+    nChannels = length(channelsToUse);
+        
+    channelsToUpdate = false(1, nChannels);
+    for ii = 1:nChannels
+        channelsToUpdate(ii) = logical(get(main.aCheckBox{1,ii}, 'Value'));
+    end
+    
+    xmin = max(str2double(get(main.xAxisLimitLow, 'String')), 1);
+    xmax = min(str2double(get(main.xAxisLimitHigh, 'String')),size(dataTraces, 3));
+
+    plotType = get(main.dataDisplayType, 'Value');
+    dataToPlot = zeros(nPulses, nChannels, xmax-xmin+1);
+    if plotType == 2 && ~exploreAnalyzed %subtract mean
+        for i = 1:nPulses
+            dataToPlot(i, channelsToUpdate, 1:xmax-xmin+1) = dataTraces(i, channelsToUse(channelsToUpdate), xmin:xmax) - ...
+                mean(dataTraces(:, channelsToUse(channelsToUpdate), xmin:xmax), 1);
+        end
+    else %display raw data
+        dataToPlot(:,channelsToUpdate,1:xmax-xmin+1) = dataTraces(:, channelsToUse(channelsToUpdate), xmin:xmax);
+    end
+    
+    if exploreAnalyzed
+        if ~overridePlotElec;
+            dataToPlotFinal = zeros(nPulses, nChannels, xmax-xmin+1);
+            for j = 1:nChannels
+                failureMean = mean(dataToPlot(~tempSuccesses, j, :), 1);
+                for k = 1:nPulses
+                    dataToPlotFinal(k,j,:) = squeeze(dataToPlot(k,j,:)-failureMean);
+                end
+            end
+            
+            eiYMin = min(min(min(dataToPlotFinal)));
+            eiYMax = max(max(max(dataToPlotFinal)));
+
+            for j = 1:nChannels
+                axes(main.aEi{1,j})
+                cla
+                if channelsToUpdate(j)
+                    hold on
+%                     for k = 1:nPulses
+%                         if ~tempSuccesses(k)
+%                             plot(squeeze(dataToPlotFinal(k,j,:)), 'color', [0.8 0.8 0.8])
+%                         end
+%                     end
+%                     for k = 1:nPulses
+%                         if tempSuccesses(k)
+%                             plot(squeeze(dataToPlotFinal(k,j,:)), 'r');
+%                         end
+%                     end
+                    plot(squeeze(dataToPlotFinal(~tempSuccesses,j,:))', 'color', [0.8 0.8 0.8])
+                    plot(squeeze(dataToPlotFinal(logical(tempSuccesses),j,:))', 'r')
+                    hold off
+                    set(main.aEi{1,j}, 'XLim', [1 xmax-xmin+1], 'YLim', [eiYMin eiYMax], 'visible', 'on')
+                    set(main.aButton{1,j}, 'visible', 'on', 'enable', 'on', 'String', ['electrode ' num2str(channelsToUse(j))])
+                    set(main.aCheckBox{1,j}, 'visible', 'on', 'enable', 'on')
+                else
+                    set(main.aButton{1,j}, 'visible', 'on', 'enable', 'off')
+                    set(main.aEi{1,j}, 'visible', 'off')
+                    set(main.aCheckBox{1,j}, 'visible', 'on', 'enable', 'on')
+                end
+            end
+
+            if nChannels < 7 %need to clear other axes
+                for j = nChannels+1:7
+                    cla(main.aEi{1,j})
+                    set(main.aEi{1,j}, 'visible', 'off')
+                    set(main.aButton{1,j}, 'visible', 'off', 'enable', 'off')
+                    set(main.aCheckBox{1,j}, 'visible', 'off', 'enable', 'off')
+                end
+            end
+
+
+        else %overridePlotElec
+            elecIndex = plotElecIndeces(2);
+            dataToPlotFinal = zeros(nPulses, xmax-xmin+1);
+
+            failureMean = mean(dataToPlot(~tempSuccesses, elecIndex, :), 1);
+            for k = 1:nPulses
+                dataToPlotFinal(k,:) = squeeze(dataToPlot(k,elecIndex,:)-failureMean);
+            end
+            
+            axes(plotAxes)
+            hold on
+            for k = 1:nPulses
+                if ~tempSuccesses(k)
+                    plot(dataToPlotFinal(k,:), 'color', [0.8 0.8 0.8])
+                end
+            end
+            for k = 1:nPulses
+                if tempSuccesses(k)
+                    plot(dataToPlotFinal(k,:), 'r');
+                end
+            end
+            hold off
+        end
+        
+    else %~exploreAnalyzed
+        
+        if ~overridePlotElec;
+            eiYMin = min(min(min(dataToPlot)));
+            eiYMax = max(max(max(dataToPlot)));
+
+            for j = 1:nChannels
+                axes(main.aEi{1,j})
+                cla
+                if channelsToUpdate(j)
+                    hold on
+                    plot(squeeze(dataToPlot(:,j,:))', 'k');
+                    hold off
+                    set(main.aEi{1,j}, 'XLim', [1 xmax-xmin+1], 'YLim', [eiYMin eiYMax], 'visible', 'on')
+                    set(main.aButton{1,j}, 'visible', 'on', 'enable', 'on', 'String', ['electrode ' num2str(channelsToUse(j))])
+                    set(main.aCheckBox{1,j}, 'visible', 'on', 'enable', 'on')
+                else
+                    set(main.aButton{1,j}, 'visible', 'on', 'enable', 'off')
+                    set(main.aEi{1,j}, 'visible', 'off')
+                    set(main.aCheckBox{1,j}, 'visible', 'on', 'enable', 'on')
+                end
+            end
+
+            if nChannels < 7 %need to clear other axes
+                for j = nChannels+1:7
+                    cla(main.aEi{1,j})
+                    set(main.aEi{1,j}, 'visible', 'off')
+                    set(main.aButton{1,j}, 'visible', 'off', 'enable','off')
+                    set(main.aCheckBox{1,j}, 'visible', 'off', 'enable', 'off')
+                end
+            end
+            
+            for j = 1:7
+                cla(main.aEi{2,j})
+                set(main.aEi{2,j}, 'visible', 'off')
+            end
+
+        else %overridePlotElec
+            axes(plotAxes)
+            hold on
+            elecIndex = plotElecIndeces(2);
+            for k = 1:nPulses
+                plot(squeeze(dataToPlot(k,elecIndex,:)), 'k');
+            end
+            hold off
+        end
+    end
+end
+
+    
+end

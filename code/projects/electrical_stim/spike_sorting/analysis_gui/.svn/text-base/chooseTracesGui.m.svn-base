@@ -1,0 +1,220 @@
+function traceIndeces = chooseTracesGui(traces, varargin)
+%
+%
+%
+%
+% traces: nTraces x nSamples
+%
+% traceIndeces: indeces of traces that have been selected
+
+p = inputParser;
+
+p.addRequired('traces', @isnumeric)
+
+p.addParamValue('initialSelectedBin', [], @(x)isnumeric(x)||islogical(x))
+p.addParamValue('returnSingleIndex', 'false', @(x)any(strcmpi(x,{'true', 'false', 'on', 'off'})))
+p.addParamValue('traceColors', [], @isnumeric)
+p.addParamValue('figTitle', [], @ischar)
+p.addParamValue('plotAlso', [], @isnumeric)
+p.addParamValue('annotation', [], @ischar)
+p.addParamValue('xPlotLim', [], @isnumeric)
+p.parse(traces, varargin{:})
+
+initialSelectedBin = p.Results.initialSelectedBin;
+traceColors = p.Results.traceColors;
+figTitle = p.Results.figTitle;
+plotAlso = p.Results.plotAlso;
+annotation = p.Results.annotation;
+xPlotLim = p.Results.xPlotLim;
+if isempty(xPlotLim)
+    xPlotLim = [1 size(traces,2)];
+end
+
+if any(strcmpi(p.Results.returnSingleIndex, {'true','on'}));
+    returnSingleIndex = 1;
+else
+    returnSingleIndex = 0;
+end
+
+if isempty(initialSelectedBin)
+    initialSelectedBin = ones(size(traces, 1), 1);
+end
+
+%% construct gui
+if isempty(figTitle)
+    chooseTraces.gui = figure('position', [500 400 620 400], 'Toolbar', 'none', 'Menubar', 'none', 'Color', 'white',...
+        'visible', 'off', 'name', 'choose trace(s)');
+else
+    chooseTraces.gui = figure('position', [500 400 620 400], 'Toolbar', 'none', 'Menubar', 'none', 'Color', 'white',...
+        'visible', 'off', 'name', figTitle);
+end
+
+uicontrol(chooseTraces.gui,  'Style', 'pushbutton',...
+    'String', 'make new selection', 'Position', [20 20 100 20], 'Callback', @newSelection);
+uicontrol(chooseTraces.gui,  'Style', 'pushbutton',...
+    'String', 'remove selected', 'Position', [140 20 100 20], 'Callback', @removeTraces);
+uicontrol(chooseTraces.gui,  'Style', 'pushbutton',...
+    'String', 'remove unselected', 'Position', [260 20 100 20], 'Callback', @keepTraces);
+uicontrol(chooseTraces.gui,  'Style', 'pushbutton',...
+    'String', 'start over', 'Position', [380 20 100 20], 'Callback', @startOver);
+uicontrol(chooseTraces.gui,  'Style', 'pushbutton',...
+    'String', 'finalize selection', 'Position', [500 20 100 20], 'Callback', @finalizeTraces);
+
+chooseTraces.axes = axes('parent', chooseTraces.gui, 'units', 'pixels', 'position', [50 60 540 320], 'xlim', xPlotLim);
+
+
+%% initialize
+
+axes(chooseTraces.axes)
+set(chooseTraces.gui, 'visible', 'on')
+
+nTraces = size(traces, 1);
+nSamples = size(traces, 2);
+selectedTracesBin = initialSelectedBin;
+
+if ~isempty(plotAlso)
+    plot(plotAlso, 'color', [0.5 0.5 0.5], 'LineWidth', 2)
+end
+hold on
+plot(traces(~~selectedTracesBin, :)', 'b')
+addAnnotation
+hold off
+currentSelectionBin = zeros(nTraces, 1);
+
+uiwait(chooseTraces.gui)
+
+    function startOver(hObject, eventdata) %#ok<INUSD>
+
+        selectedTracesBin = initialSelectedBin;
+
+        currentSelectionBin = zeros(nTraces, 1);
+        cla(chooseTraces.axes)
+        if ~isempty(plotAlso)
+            plot(plotAlso, 'color', [0.5 0.5 0.5], 'LineWidth', 2)
+        end
+        hold on
+        plot(traces(~~selectedTracesBin, :)', 'b')
+        addAnnotation
+        hold off
+    end
+
+    function removeTraces(hObject, eventdata) %#ok<INUSD>
+        for i = 1:nTraces
+            if currentSelectionBin(i) && selectedTracesBin(i)
+                selectedTracesBin(i) = 0;
+            end
+        end
+        cla(chooseTraces.axes)
+        if ~isempty(plotAlso)
+            plot(plotAlso, 'color', [0.5 0.5 0.5], 'LineWidth', 2)
+        end
+        hold on
+        plot(traces(~~selectedTracesBin, :)', 'b')
+        addAnnotation        
+        hold off
+    end
+
+    function keepTraces(hObject, eventdata) %#ok<INUSD>
+        if isempty(currentSelectionBin)
+            warnH = warndlg('you need to select at least one trace', 'warning', 'modal');
+            uiwait(warnH)
+        else
+            for i = 1:nTraces
+                if ~currentSelectionBin(i) && selectedTracesBin(i)
+                    selectedTracesBin(i) = 0;
+                end
+            end
+            cla(chooseTraces.axes)
+            if ~isempty(plotAlso)
+                plot(plotAlso, 'color', [0.5 0.5 0.5], 'LineWidth', 2)
+            end
+            hold on
+            plot(traces(~~selectedTracesBin, :)', 'b')
+            addAnnotation
+            hold off
+        end
+    end
+
+    function finalizeTraces(hObject, eventdata) %#ok<INUSD>
+        if returnSingleIndex && sum(selectedTracesBin) ~= 1
+            warnH = warndlg('You must select one trace.');
+            uiwait(warnH)
+            return
+        else
+            traceIndeces = find(selectedTracesBin);
+            close(chooseTraces.gui)
+        end
+    end
+
+
+    function newSelection(hObject, eventdata) %#ok<INUSD>
+        
+        colors = hsv(size(traces,1));
+        axes(chooseTraces.axes)
+        cla(chooseTraces.axes)
+        if ~isempty(plotAlso)
+            plot(plotAlso, 'color', [0.5 0.5 0.5], 'LineWidth', 2)
+        end
+        hold on
+        for i = 1:nTraces
+            if selectedTracesBin(i)
+                current = plot(traces(i,:));
+                if ~isempty(traceColors)
+                    set(findobj(current,'Type','line'), 'Color', traceColors(i,:))
+                else
+                    set(findobj(current,'Type','line'), 'Color', colors(i,:))
+                end
+            end
+        end
+        addAnnotation
+        hold off
+
+        las_x=[];
+        las_y=[];
+        key=1;
+        while key==1
+            [a,b,key]=ginput(1);
+            las_x=[las_x;a];las_y=[las_y;b]; %#ok<AGROW,AGROW>
+            line(las_x,las_y)
+        end;
+
+        las_x(length(las_x)+1)=las_x(1); %"closes loop" by making adding first coordinates to end
+        las_y(length(las_y)+1)=las_y(1);
+
+        line(las_x,las_y) % redraws closed loop
+        pause(.2)
+
+        currentSelectionBin = zeros(nTraces, 1);
+        for i = 1:nTraces
+            in=inpolygon((1:nSamples),traces(i,:),las_x,las_y); %matrix of zeros and ones specifying which points are in polygon
+            currentSelectionBin(i) = max(in) > 0;
+        end
+        
+        cla(chooseTraces.axes)
+        if ~isempty(plotAlso)
+            plot(plotAlso, 'color', [0.5 0.5 0.5], 'LineWidth', 2)
+        end
+        hold on
+        for i = 1:nTraces
+            if ~selectedTracesBin(i)
+            elseif currentSelectionBin(i)
+                plot(traces(i, :)', 'r')
+            else
+                plot(traces(i, :)', 'b')
+            end
+        end
+        addAnnotation
+        hold off
+        
+    end
+
+    function addAnnotation(~,~)
+        if ~isempty(annotation)
+            yLims = get(chooseTraces.axes, 'ylim');
+            yRange = yLims(2)-yLims(1);
+            set(chooseTraces.axes, 'ylim', [yLims(1) yLims(2)+yRange*0.2])
+            text(1, yLims(2)+yRange*0.1, annotation)
+        end
+    end
+
+end

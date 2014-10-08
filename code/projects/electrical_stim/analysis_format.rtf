@@ -1,0 +1,247 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf350
+{\fonttbl\f0\froman\fcharset0 TimesNewRomanPSMT;\f1\fnil\fcharset0 AndaleMono;\f2\fswiss\fcharset0 Helvetica;
+}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww18720\viewh17660\viewkind1\viewscale150
+\pard\tx466\tx973\tx2233\tx3493\ql\qnatural\pardirnatural
+
+\f0\b\fs22 \cf0 nomenclature for "elecResp"\
+\
+
+\b0\fs20 save files as '
+\f1\fs18 elecResp_n1_p1.mat
+\f0\fs20 ' (n indicates neuron ID, p indicates pattern number)
+\f2\b\fs36 \
+\pard\tx1005\tx2185\tx3605\ql\qnatural\pardirnatural
+
+\f0\b0\fs22 \cf0 \
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+\cf0 \ul \ulc0 names specifying the dataset\
+
+\f1\fs18 \ulnone elecResp.	names.	experiment
+\f0 	
+\fs20 e.g. '2008-08-27-4'\
+		
+\f1\fs18 data_path
+\f0\fs20 	e.g. '/snle/lab/Experiments/.../data000' (directory containing files)\
+		
+\f1\fs18 artifact_path
+\f0\fs20 	as above
+\fs18 \
+		
+\f1 rrs_ei_path
+\f0 	
+\fs20 e.g. '/snle/lab/Experiments/.../data000.ei'
+\fs18 \
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+
+\f1\fs18\fsmilli9100 \cf0 		
+\fs18 rrs_sta_path
+\fs18\fsmilli9100 	
+\f0\fs20 e.g. '/snle/lab/Experiments/.../data000.sta'\
+		
+\f1\fs18 rrs_params_path
+\f0\fs20 	e.g. '/snle/labe/Experiments/.../data000.params'
+\fs18 \
+		
+\f1 rrs_short_name
+\f0 	
+\fs20 e.g. '2008-08-27-4_data001_n1_p1'\
+		
+\f1\fs18 savePath
+\f0\fs20 	location where generated figures, etc. will be saved\
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+
+\fs18 \cf0 \
+
+\f1 elecResp.	stimInfo.	patternNo	
+\f0\fs20 pattern number
+\f1\fs18 \
+		movieNos	
+\f0\fs20 vector of movie numbers included in pattern
+\f1\fs18 \
+		artMovieNos	
+\f0\fs20 vector of movie numbers of artifact files 			corresponding to movies in movieNos
+\f1\fs18 \
+		stimAmps
+\f0 	
+\fs20 vector of stimulus amplitudes corresponding with the 			movie numbers (for 'main' electrode in pattern)
+\fs18 \
+		
+\f1 electrodes
+\f0 	
+\fs20 vector of integers indicating electrodes used in pattern (main 			electrode should be first in list)
+\fs18 \
+		
+\f1 nPulses
+\f0 	
+\fs20 number of repetitions of stimulus for movie: nPulses(movieIndex)\
+		
+\f1\fs18 pulseVectors
+\f0\fs20 	cell array of arrays specifying full current pulses: 			pulseVectors\{movie index\}(electrode, x, value), where x = 1 for 			values = time (in \'b5s) and x = 2 for values = current amplitude
+\fs22 \
+		\
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+
+\fs18 \cf0 \ul \
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+
+\f1 \cf0 \ulnone elecResp.	cells.	main	
+\f0\fs20 cell ID of neuron being analyzed
+\f1\fs18 \
+		all
+\f0 	
+\fs20 vector of integers specifying cell IDs of all cells that have 			signal > 10 DAQ on recElec + neighbors of recElec + goodElecs
+\fs18 \
+		
+\f1 active
+\f0 	
+\fs20 subset of all containing cells that are responding to the 			electrical stimulus: active\{movieIndex\}\
+		
+\f1\fs18 recElec
+\f0\fs20 	electrode on which the largest signal amplitude is recorded for 			main cell\
+		
+\f1\fs18 goodElecs
+\f0\fs20 	electrodes which are best for distinguishing between main cell and 			other responding cells\
+		
+\f1\fs18 mainEI
+\f0\fs20 	ei data for main cell (64 electrodes x samples)\
+		
+\f1\fs18 allEIs
+\f0\fs20 	ei data for all cells in elecResp.cells.all (in that order) cell array of 			(64 electrodes x samples)\
+
+\fs18 \
+\
+
+\f1 elecResp
+\f0 .	
+\f1 analysis
+\f0 .	
+\f1 type
+\f0 	
+\fs20 cell array of strings specifying which analysis was used \
+			(type of automated, version, manually cleaned, etc.) for each 			movie number\
+		
+\f1\fs18 estArtifact
+\f0\fs20 	cell array of estimated artifacts, based on failure traces (if available 			or estimated artifact from traces with spikes after subtraction of 			template vectors: estArtifact\{movieNo\}(electrode in goodElecs, 			samples)
+\fs18 \
+		
+\f1 latencies
+\f0 	
+\fs20 cell array of vectors of values corresponding to responses of 			main cell: elecResp.analysis.latencies\{movieIndex\}(pulse 			number), in samples (=0 for no response)\
+		
+\f1\fs18 otherLatencies
+\f0\fs20 	cell array of vectors of values corresponding to responses of other 			active cells: otherLatencies\{movieIndex\}(pulse number, cell index 			in elecResp.analysis.active)\
+		
+\f1\fs18 successRates
+\f0\fs20 	vector of values between 0 and 1 corresponding to the ratio of 			pulses that elicit a spike for each movie number\
+		
+\f1\fs18 erfParams
+\f0\fs20 	parameters of best-fit error function [a b]: 0.5 + 0.5*erf(ax+b)\
+		
+\f1\fs18 logErfParams
+\f0\fs20 	same as erfParams, but fitting based on log(amplitudes)\
+		
+\f1\fs18 constrainedSlopeLogErfParams\
+			
+\f0\fs20 same as erfParams, but slope of erf determined by fitting many 			patterns simultaneously (patterns specified in
+\f1\fs18 			constrainSlopeLogThreshPatternsUsed)
+\f0\fs20 \
+		
+\f1\fs18 erfErr
+\f0\fs20 	square error of error function fit (linear erf fit)\
+		
+\f1\fs18 logErfErr
+\f0\fs20 	square error of error function fit (log erf fit)\
+		
+\f1\fs18 constrainedSlopeLogErfErr\
+			
+\f0\fs20 square error of error function fit (log erf constrained slope fit)\
+		
+\f1\fs18 threshold
+\f0\fs20 	stimulus amplitude at which best-fit error function crosses 0.5\
+		
+\f1\fs18 threshStd
+\f0\fs20 	standard deviation based on bootstrapping (linear erf fit)\
+		
+\f1\fs18 logThresh	
+\f0\fs20 same as threshold, but erf fit to log-scaled data\
+		
+\f1\fs18 logThreshStd	
+\f0\fs20 standard deviation based on bootstrapping (log erf fit)\
+		
+\f1\fs18 constrainedSlopeLogThresh\
+			
+\f0\fs20 same as threshold, but log scale and slope of erf determined by 			simultaneously fitting many patterns\
+
+\f1\fs18 		constrainedSlopeLogThreshStd\
+			
+\f0\fs20 same as threshStd, but for constrainedSlopeLogThresh
+\f1\fs18 \
+
+\f0\fs20 \
+		\
+		
+\f1\fs18 erfCurrent
+\f0\fs20 	0 if successRates has been updated without recalculating 			erfParams, threshold\
+		
+\f1\fs18 finalized
+\f0\fs20 	binary vector indicating whether analysis of a movie has been 			"locked" in order to prevent accident reanalysis\
+\
+\pard\tx1005\tx2038\tx3977\tx6120\ql\qnatural\pardirnatural
+\cf0 		
+\f1\fs18 details
+\f0\fs20 .	* each field is a cell array with index = movieIndex\
+			
+\f1\fs18 residCalcWindow
+\f0\fs20 	window of time (in samples) over 				which norm of residual is calculated 				when determining optimal template 				position\
+			
+\f1\fs18 tempOffsetWindow
+\f0\fs20 	window of offsets (in samples) over 				which template traces are tested\
+			
+\f1\fs18 tempOffsetStep
+\f0\fs20 	step size (in samples) between offsets at 				which template traces are tested\
+			
+\f1\fs18 linkCalcWindow
+\f0\fs20 	window of time (in samples) used for 				linkage analysis\
+			
+\f1\fs18 linkThresh
+\f0\fs20 	threshold link size used to find largest 				branches\
+			
+\f1\fs18 nBranches
+\f0\fs20 	number of branches below threshold 				that are considered as possible clusters 				of artifact traces\
+			
+\f1\fs18 handPickedIndeces
+\f0\fs20 	indeces of traces that were hand-picked\
+				to create initial artifact model (not 				created if not used)\
+			
+\f1\fs18 analysisFlags
+\f0\fs20 	cell array of vectors specifying details 				about analysis related to manually 				removing false positives or adding 				misses\
+				0: normal analysis, \
+				1: skip reanalysis of trace\
+				2: force trace to not be a failure for 				specific template\
+				3: force trace to not be a failure for one 				of the possible templates\
+				4: force trace to be a failure for specific 				template\
+			
+\f1\fs18 bootstrapReps
+\f0\fs20 	number of times data is resampled and 				erf recalculated to determine the 				standard deviation of the threshold 				values (linear erf fits)\
+			
+\f1\fs18 logBootstrapReps
+\f0\fs20 	as above, but log erf fits\
+			
+\f1\fs18 constrainedSlopeBootstrapReps
+\f0\fs20 \
+				as above, but for constrained slope\
+			
+\f1\fs18 constrainSlopeLogThreshPatternsUsed
+\f0\fs20 \
+				vector of pattern numbers that were fit 				simultaneously to determine erf slope
+\fs18 \
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+
+\fs22 \cf0 \
+\pard\tx1005\tx2038\tx3977\ql\qnatural\pardirnatural
+
+\f1\fs18 \cf0 elecResp.	details.	sample_rate
+\f0\fs22 	
+\fs20 samples/second, usually 20,000}
