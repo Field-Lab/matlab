@@ -1,13 +1,16 @@
-function [PDChunkNumber, MovieBegin, nRepeats, repeatPeriod]=NS_SaveRespForMovieAllPatternsAllChannelsNew(FileName, WritePath,...
+function [PDChunkNumber, movieBegin, numRepetitions, repetitionPeriod]= ...
+    NS_SaveRespForMovieAllPatternsAllChannelsNew(rawDataPath, WritePath,...
     NS_GlobalConstants, traceLength)
-
-% preprocesses raw electrical stimulation (STIM64) data
+%
+% This function preprocesses raw electrical stimulation data
 % 
-% Determines the time points at which patterns are applied, then extracts a
-% window of time beginning with the pattern and outputs it to a new file.
+% NS_SaveRespForMovieAllPatternsAllChannelsNew(...) will determine the 
+% time points at which stimulation patterns are applied, extract the
+% chunk of raw data corresponding to a pattern, and save the chunk to a 
+% new file.
 %  
 % Input Arguments
-% FileName - string in the form '###'
+% rawDataPath - full path to the filenames string in the form '###'
 % WritePath - string, directory to write to
 % NS_GlobalConstants - structure, contains SamplingFrequency, ChipAddresses, NumberOfChannelsPerChip, CurrentRanges
 % traceLength - number of samples to process after the pattern is applied
@@ -18,60 +21,61 @@ function [PDChunkNumber, MovieBegin, nRepeats, repeatPeriod]=NS_SaveRespForMovie
 % nRepeats
 % repeatPeriod
 %
-% current directory should contain the data (down to date-piece folder)
-%
 % this function was originally written by Pawel, but has been modified (in mostly cosmetic ways) by
-% Lauren in 2009-09
+% Lauren Jepson in 2009-09
 % Some comments added by Geoff Weiner 2013-01
+% Lauren Grosberg modified to read the pattern and movie files from 
+% arbitrary directories 2014-10
 
-
-%ArrayID=1;
-
-% The location of the data (set to the current directory).
-full_path=[pwd filesep 'data' FileName] %#ok<NOPRT>
 
 % Creates a java object (rawFile) that let's you intereact with the raw data files (sort of the stitched together bin files).
-rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path);
-
+rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(rawDataPath);
+header = rawFile.getHeader();
 % Returns the number of samples contained in the raw data file.
-totalSamples = getRawDataFileSize(full_path);
-% keyboard; 
-oldpath = pwd; 
-% Generates the full filenames for movie and pattern.
-filename_movie=['movie' FileName] %#ok<NOPRT>
-SPfilename=['pattern' FileName] %#ok<NOPRT>
-% tmp_moviepath = '/Volumes/Data/Auxiliary/2014-04-15-4/electrical/' ; %lg temp mod for data processing 5/20/14 ---- delete!
-% tmp_moviepath = '/Volumes/Analysis/2012-09-24-0/stim_files/'; %lg/nishal temp mod for data processing ---- delete!
-% cd(tmp_moviepath); 
+totalSamples = header.getNumberOfSamples(); 
+
+[parentstr,datarun,~] = fileparts(rawDataPath); 
+datarunNumber = datarun(5:end); 
+altFileOrg = fullfile(parentstr,'Electrical', 'Output');
+if ~isempty(dir(fullfile(parentstr,'movie*')))
+    movieFileName= fullfile(parentstr,['movie' datarunNumber]);
+    SPfilename    = fullfile(parentstr,['pattern' datarunNumber]);
+elseif ~isempty(dir(fullfile(altFileOrg,'movie*')))
+    movieFileName= fullfile(altFileOrg, ['movie' datarunNumber]);
+    SPfilename    = fullfile(altFileOrg,['pattern' datarunNumber]);
+else
+    % User selects directory with the labview output files
+    correctFileOrg = uigetdir(parentstr, 'Select directory containing LabVIEW output files ''movie*'' and ''pattern*'''); 
+    if correctFileOrg
+        movieFileName = fullfile(correctFileOrg,['movie' datarunNumber]);
+        SPfilename     = fullfile(correctFileOrg,['pattern' datarunNumber]);
+    else
+        err = MException('MATLAB:missingLabVIEWFiles', ...
+            'Cannot find labview output files that define the times and patterns of electrical stimulation');
+        throw(err);
+    end
+end
+
 % Open the movie file.
-fid0=fopen(filename_movie,'r','b'); 
+fid0=fopen(movieFileName,'r','b'); 
 % Read through the header.
 header=readMHchunk(fid0);
 % Number of movie chunks x number of amplitudes.
 nMovies=header.number_of_movies;
 
-% Calculates the number of channels, 1:64.
+% Calculates the number of channels
 Channels = 1:NS_GlobalConstants.NumberOfChannelsPerChip*length(NS_GlobalConstants.ChipAddresses);
 % Initialize a stopwatch.
-t0 = clock;
+t0 = tic;
 
-
-% Iterates through all the movies.
-% It always saves an extra movie at the end that should be discarded.
-
-% Unless specific movie numbers defined!!
-% Minus 1 because the last movie is expected to be empty.
-
-for i=1:nMovies-1
+for i=1:nMovies-1 % the last movie is expected to be empty.
     
     % Displays progress/time left.
     if i>1
         finished = (i-1)/(nMovies-1); % proportion of files created so far
-        disp(sprintf('finished writing %0.1f%% of files', finished*100))
-        tnow = clock;
-        timeElapsed = etime(tnow, t0); % time elapsed since loop started
-        estimatedTimeLeft = (timeElapsed/finished)*(1-finished);
-        disp(sprintf('estimated time left: %0.1f seconds',estimatedTimeLeft))
+        fprintf('finished writing %0.1f%% of files', finished*100)
+        estimatedTimeLeft = (toc(t0)/finished)*(1-finished);
+        fprintf('estimated time left: %0.1f minutes',estimatedTimeLeft/60)
     end
     
     % Read the chunk type ID.
@@ -82,27 +86,13 @@ for i=1:nMovies-1
         error('command chunk found in the movie file');
         %ChunkSize = fread(fid0,1,'int64'); %read in the chunk size
         %commands=fread(fid0,ChunkSize,'int32');        
-    elseif ID==[114 -69 27 -4 99 66 -12 -123] % MD chunk ID.
-        
+    elseif ID==[114 -69 27 -4 99 66 -12 -123] % movie data chunk ID.
         % Advance the file pointer to the correct position for the next iteration.
-        ChunkSize=fread(fid0, 1, 'int64'); % Size of MD chunk.
+        ChunkSize=fread(fid0, 1, 'int64'); % Size of movie data chunk.
         fread(fid0, ChunkSize, 'int32'); % Move the pointer along that size.
-        
         % Reading in the movie parameters.
-        ChunkData=NS_MovieData(FileName,i,NS_GlobalConstants); %stimulus information: times at which patterns are played
-        
-        % Interprets first 6 values in ChunkData.
-        % See NS_DecodeMovieDataChunk for descriptions.
-        [PDChunkNumber,MovieBegin,nRepeats,repeatPeriod,MovieData]=NS_DecodeMovieDataChunk(ChunkData);
-        %% temporary hack!!!
-%         repeatPeriod = 40000;
-%         if i==1
-%             MovieBegin = 440000;
-%         elseif i==2
-%             MovieBegin = 1440000;    
-%         else
-%             MovieBegin = repeatPeriod*(25*i-15);
-%         end
+        %stimulus information: times at which patterns are played
+        [PDChunkNumber,movieBegin,numRepetitions,repetitionPeriod,data] = getMovieData(movieFileName, i); 
     end
     
     % Calculate the number of pattern applications in the current movie.
@@ -111,14 +101,14 @@ for i=1:nMovies-1
     %                   y = ID of the pattern applied
     %                       z = the number 1 (not used)
     % So every 3 entries define the information for 1 event.
-    nEvents=length(MovieData)/3; 
+    nEvents=length(data)/3; 
     Events=zeros(nEvents,1);
     
     % Read the pattern information in.
     [Patterns,PatternsIndexes,status]=ReadPatternDataChunk(SPfilename,PDChunkNumber,NS_GlobalConstants); %#ok<NASGU> 
     
     % Create a status file for each movie and save it.
-    FullName_status=[WritePath filesep 'status_files' filesep 'status_m' num2str(i)];
+    FullName_status= fullfile(WritePath,'status_files',['status_m' num2str(i)]);
     save(FullName_status,'status')
     
     % Store the number of different patterns.MovieBegin + repeatPeriod*(j-1)
@@ -129,27 +119,28 @@ for i=1:nMovies-1
     %       N = nRepeats
     %           O = length(Channels), typcially 64
     %               P = traceLength
-    Traces=int16(zeros(nEvents, nRepeats, length(Channels), traceLength));
+    Traces=int16(zeros(nEvents, numRepetitions, length(Channels), traceLength));
     
     % Iterates through the repetitions of the current (i-th) movie.
-    for j=1:nRepeats 
+    for j=1:numRepetitions 
         
         % Checks to make sure raw data file has all of the samples that the stimulus files thinks it does.
-        if totalSamples <= MovieBegin+repeatPeriod*j+traceLength
-            warndlg(['Raw data file ' full_path ' does not have as many samples as expected by stimulus files']);
-            return
+        if totalSamples <= movieBegin+repetitionPeriod*j+traceLength
+            err = MException('MATLAB:rawDataMissingSamples', ...
+                ['Raw data file ' full_path ' does not have as many samples as expected by stimulus files']);
+            throw(err);
         end
        
         % Gets the raw data at the time MovieBegin + j-1 repetition periods up through the length of 1 repetition plus a trace length.
         % LH: Added traceLength samples to retrieved portion of data to prevent index out-of-bounds error.
-        RawData=int16(rawFile.getData(MovieBegin + repeatPeriod*(j-1), repeatPeriod + traceLength)');
+        RawData=int16(rawFile.getData(movieBegin + repetitionPeriod*(j-1), repetitionPeriod + traceLength)');
         
         % Iterates through each event of the j-th repetition of the i-th movie.
         for k = 1:nEvents
             % Index moves through MovieData in steps of 3.
             index=(k-1)*3;
-            t = MovieData(index+1);
-            PatternNumber = MovieData(index+2);
+            t = data(index+1);
+            PatternNumber = data(index+2);
             
             % Store the PatternNumber in a vector.
             Events(k)=PatternNumber;
@@ -175,7 +166,7 @@ for i=1:nMovies-1
             %   M = nRepeats*length(WhichEvents)
             %       N = length(Channels), typically 64
             %           O = traceLength
-            TracesToSave=reshape(Traces(WhichEvents,:,1:length(Channels),:),nRepeats*length(WhichEvents),length(Channels),traceLength);
+            TracesToSave=reshape(Traces(WhichEvents,:,1:length(Channels),:),numRepetitions*length(WhichEvents),length(Channels),traceLength);
             
             % Reshape the TracesToSave matrix so it can be written to a binary file.
             % a is a vector that contains all of the TracesToSave matrix.
@@ -214,5 +205,4 @@ for i=1:nMovies-1
     end 
     clear Traces;
     clear TracesToSave;
-    cd(oldpath); 
 end  

@@ -1,73 +1,38 @@
-% Extracts the data surrounding current pulses and saves to a new file.
-% Does all repetitions of one specific stimulus pulse in a given movie chunk at once.
+% This script organizes raw electrical stimulation data according to
+% stimulation patterns. A folder for each pattern is created, and data 
+% surrounding current pulses for all repetitions are saved in a new file
+% for each movie chunk / amplitude
 
 system = 'stim512'; %'stim64'; %stim512 or stim64
 %system = 'stim64';
 
-% Points to the directory of the raw data.
-%cd /tmp/Data/lauren/2013-01-28-2/
-%cd /Volumes/Data/2011-06-24-5/
-%cd /Data/2012-09-18-2/
-%cd /braid/snle/data/2011-06-24-5/
-% cd /Volumes/Acquisition/Data/2014-04-15-4
-% cd /Volumes/Data/2014-04-10-0
-% cd /Volumes/Data/2014-04-15-4
-% cd /Volumes/Data/2014-06-04-3
-% cd /Volumes/Data/2014-07-08-3
-% cd /Volumes/Data/2012-09-24-3/
-% cd /Volumes/Acquisition/Data/2014-07-21-test
-% cd /Volumes/Data/2014-07-24-0
-% cd /Volumes/Data/2012-09-24-0/
-% cd /Volumes/Data/2014-08-13-0
-% cd /Volumes/Data/2014-08-20-1
-cd /Volumes/Data/2014-09-10-0
+% rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
+rawDataDir = '/Volumes/Data/2014-09-10-0';
+if ~strcmp(rawDataDir(end),filesep)
+    rawDataDir = [rawDataDir filesep];
+end
+% cd(rawDataDir);
 
 % Points to the directory of the output.
-%WritePathBase = '/Analysis/lauren/2011-08-03/';
-%WritePathBase = '/Analysis/2012-09-27-4/';/snle/lab/Experiments/Array/Analysis/2/snle/lab/Experiments/Array/Analysis/20101
-% WritePathBase = '/Volumes/Acquisition/Analysis/2014-04-15-4/';
-%WritePathBase = '/Analysis/2012-09-18-2/';
-%WritePathBase = '/braid/snle/data/2011-06-24-5/';
-% WritePathBase = '/Volumes/Analysis/2014-04-15-4/';
-% WritePathBase = '/Volumes/Analysis/2014-06-04-3/';
-% WritePathBase = '/Volumes/Analysis/2014-07-08-3/';
-% WritePathBase = '/Volumes/Analysis/delete/2012-09-24-3/'; 
-% WritePathBase = '/Volumes/Acquisition/Analysis/2014-07-21-test/';
-% WritePathBase = '/Volumes/Analysis/2014-07-24-0/';
-% WritePathBase = '/Volumes/Analysis/2012-09-24-0/';
-% WritePathBase = '/Volumes/Analysis/2014-08-13-0/';
-% WritePathBase = '/Volumes/Analysis/2014-08-20-1/'; 
-WritePathBase = '/Volumes/Analysis/2014-09-10-0/'; 
+% WritePathBase = uigeDtdir('/Volumes/Analysis', 'Select your output directory'); 
+WritePathBase = '/Volumes/Analysis/2014-09-10-0-temp/';
+if ~strcmp(WritePathBase(end),filesep)
+    WritePathBase = [WritePathBase filesep];
+end
 
 % Appends this number to 'data ---'
 fileNos = [4];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Sets some parameter values depending on what system is in use.
-if strcmpi(system, 'stim512')
-    % ChipAddresses is an arbitrary designation number for each chip.
-    ChipAddresses=31:-1:24;
-    NumberOfChannelsPerChip=64;
-    % Each array has a particular ArrayID.
-    ArrayID=500;
-elseif strcmpi(system, 'stim64')
-    ChipAddresses=[30 31];
-    NumberOfChannelsPerChip=32;
-    ArrayID=1;
-else
-    error('no other systems currently supported')
+switch system
+    case 'stim512'
+        numElectrodes = 512; 
+    case 'stim64'
+        numElectrodes = 64; 
 end
 
-% These 3 parameters never change - correspond to hardware.
-% Upper limit of current ranges. Constant within a movie chunk (for an
-% electrode?)
-CurrentRanges=[0.066 0.266 1.07 4.25 16.9 67.1 264 1040];
-% Fs = sampling rate (in Hz)
-Fs=20000;
-
-NS_GlobalConstants=struct('SamplingFrequency',Fs,'ChipAddresses',ChipAddresses,...
-    'NumberOfChannelsPerChip',NumberOfChannelsPerChip,'CurrentRanges',CurrentRanges);
+% Sets some parameter values depending on what system is in use.
+NS_GlobalConstants = NS_GenerateGlobalConstants(numElectrodes);
 
 for i = fileNos
     % Set the number of zeros in the file name.
@@ -78,7 +43,8 @@ for i = fileNos
     else
         FileName = num2str(i);
     end
-
+    
+    rawDataPath = [rawDataDir 'data' FileName];
     WritePath = [WritePathBase 'data' FileName];
     
     % Determine if WritePath exists, if not then make it.
@@ -108,7 +74,7 @@ for i = fileNos
 %     Generates the "p m" files (the pattern-movie files), the
 %     stimulus_files, and the status_files
 
-NS_SaveRespForMovieAllPatternsAllChannelsNew(FileName,WritePath,NS_GlobalConstants,traceLength);
+NS_SaveRespForMovieAllPatternsAllChannelsNew(rawDataPath,WritePath,NS_GlobalConstants,traceLength);
     
     %%%%%% special %%%%%%%
     

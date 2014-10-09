@@ -2,7 +2,7 @@ function [PDChunkNumber,movieBegin,numRepetitions,repetitionPeriod,Data] = getMo
 %GETMOVIEDATA finds all the time points in one specified movie at which a 
 % a pulse was generated on a given electrode. 
 
-% This function combines NS_MovieData and NS_DecodeMovieData LG
+% This function combines NS_MovieData and NS_DecodeMovieData LGrosberg
 
 %Input arguments:
 % movieFileName: full path to the labview output movie file, 'movieXXX';

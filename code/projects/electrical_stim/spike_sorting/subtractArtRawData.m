@@ -22,7 +22,7 @@ end
 
 javaaddpath(visionWritePath);
 
-% Linking to the relevant files
+% Link to the relevant files
 originalRawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(dataFolderIn);
 refHeader = originalRawFile.getHeader();
 ttxRawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(artDataFolderIn);
