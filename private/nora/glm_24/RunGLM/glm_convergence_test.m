@@ -34,10 +34,10 @@ clear; close all;  clc
 % INITIALIZATION AND DIRECTORY IDENTIFICATION / IMPORTANT PARAMS
 
 % SETUP cells and experiments, the TYPE of GLM (GLMType) 
-GLMType.fit_type = 'WN'; 
-debug_blocks=1:10:51;
-exptests = [1];
-cellselectiontype = 'debug';
+fit_type={'WN','NSEM'};
+debug_blocks=[1 2 3 4 5 7 9 11 20 30 40 50];
+exptests = [1 2 3 4];
+cellselectiontype = 'shortlist';
 
 % stuff not to change for this test
 GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';
@@ -59,16 +59,16 @@ GLMType.Subunits = false;
 GLMType.func_sname = 'glmwrap24_CP';
 GLMType.fullmfilename =mfilename('fullpath'); 
 i_exp = 1; i_cell = 1;
-GLMType.fitname  = GLM_fitname(GLMType);   
 troubleshoot.doit    = false;
 troubleshoot.name    = 'singleopt';
 BD = NSEM_BaseDirectories;
 troubleshoot.plotdir = BD.GLM_troubleshootplots;
+
+for i_type=1:2
+GLMType.fit_type = fit_type{i_type}; 
+GLMType.fitname  = GLM_fitname(GLMType);  
 %%
-
-
-
-for i=1:length(debug_blocks)
+for i_debug=1:length(debug_blocks)
     
     for i_exp = exptests
         %%
@@ -78,7 +78,12 @@ for i=1:length(debug_blocks)
         
         %%%%  Shorten Block count if using Debug
         if GLMType.debug
-            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:debug_blocks(i));
+            try
+                StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:debug_blocks(i_debug));
+            catch
+                debug_blocks=debug_blocks(1:(i_debug-1))
+                break;
+            end
         end
         clear boolean_debug map_type fit_type shead_cellID expname
         
@@ -89,7 +94,7 @@ for i=1:length(debug_blocks)
         inputs.fitname   = GLMType.fitname;
         
         d_save = NSEM_secondaryDirectories('savedir_GLMfit', inputs);  clear inputs;
-        d_save=[d_save '/debug_blocks_' num2str(i)];
+        d_save=[d_save '/debug_blocks_' num2str(debug_blocks(i_debug))];
         display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
         display(sprintf('Save Directory :  %s', d_save));
         if ~exist(d_save), mkdir(d_save); end
@@ -122,6 +127,7 @@ for i=1:length(debug_blocks)
         clear inputs
         
         for i_cell = 1:length(cells)
+            
             clear glm_cellstruct
             cid = cells{i_cell};
             [celltype , cell_savename, ~]  = findcelltype(cid, datarun_mas.cell_types);
@@ -198,6 +204,9 @@ for i=1:length(debug_blocks)
                 printname = sprintf('%s/DiagPlots_%s', d_save,fittedGLM.cellinfo.cell_savename);
                 printglmfit_CP(fittedGLM,datarun_mas,printname)
                 
+                
+                BPS{i_type,i_cell,debug_blocks(i_debug)}=fittedGLM.xvalperformance.glm_normedbits;
+                
                 % NB 06-11-2014
             else
                 error('Previous results still in directory')
@@ -210,13 +219,11 @@ for i=1:length(debug_blocks)
     
 end
 
-
-%%
-inputs.exp_nm    = exp_nm;
-inputs.map_type  = GLMType.map_type;
-inputs.stim_type = GLMType.fit_type;
-inputs.fitname   = GLMType.fitname;
-d_save = NSEM_secondaryDirectories('savedir_GLMfit', inputs)
-for i=1:length(debug_blocks)
-    load([d_save '/debug_blocks_' num2str(i) '/OFFPar_3676.mat'])
 end
+
+hold on
+plot(debug_blocks, BPS_WN, 'r')
+plot(debug_blocks, BPS_NSEM, 'b')
+ylabel('Bits per spike')
+xlabel('Number of fitting blocks')
+legend ('WN', 'NSEM')
