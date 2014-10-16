@@ -57,7 +57,7 @@ subdivideRefresh= 1; % So, each frame refresh is subdivided into this many parts
 % 8.33ms. So, set subdivideRefresh=4. If you want temporal resolution of
 % 4.16ms, then set subdivideRefresh=8. subdivideRefresh must be an integer
 
-distinctImagesbetweenTriggers=round(mean(abs(diff(triggers)))*1000/refresh);
+distinctImagesbetweenTriggers=100%round(mean(abs(diff(triggers)))*1000/refresh);
 % 'distinctImagesbetweenTriggers' is the number of distinct images which
 % are shown between refreshes. 
 
@@ -82,23 +82,23 @@ frMov=frMov';
 
 % TODO - nishal!! CHANGE
 % 
-% interestingCellIds=matlab_ids;%[1:length(datarun.cell_ids)];% These would be matlabcellIds - NOT.. datarun.cell_ids;% This would change in future, I think
-% nCells=length(interestingCellIds);
-% 
-% spk_coll=cell(nCells,1);
-% for icell=1:nCells
-%     icell
-%     % Next, count spikes in each of these bins.
-% cellID=interestingCellIds(icell);
-% spikes=datarun.spikes{cellID};
-% % spikes are in s. convert to ms
-% spikes=round(spikes*1000);
-% spks=zeros(length(fr)-1,1);
-% for ibin=1:length(fr)-1
-% spks(ibin)=sum(double(spikes>=fr(ibin) & spikes<fr(ibin+1)));
-% end
-% spk_coll{icell}=spks;
-% end
+interestingCellIds=matlab_ids;%[1:length(datarun.cell_ids)];% These would be matlabcellIds - NOT.. datarun.cell_ids;% This would change in future, I think
+nCells=length(interestingCellIds);
+
+spk_coll=cell(nCells,1);
+for icell=1:nCells
+    icell
+    % Next, count spikes in each of these bins.
+cellID=interestingCellIds(icell);
+spikes=datarun.spikes{cellID};
+% spikes are in s. convert to ms
+spikes=round(spikes*1000);
+spks=zeros(length(fr)-1,1);
+for ibin=1:length(fr)-1
+spks(ibin)=sum(double(spikes>=fr(ibin) & spikes<fr(ibin+1)));
+end
+spk_coll{icell}=spks;
+end
 
 load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
 
@@ -157,6 +157,7 @@ end
 % Correct for short movie
 % If there was an error because movie was small in length, correct for it.
 finalLen=ibin;
+nCells=length(spk_coll);
 mov=mov(1:finalLen);
 for icell=1:nCells
    spk_coll{icell}=spk_coll{icell}(1:finalLen); 
