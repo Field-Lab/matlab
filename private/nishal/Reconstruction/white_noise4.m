@@ -2,7 +2,7 @@
 %finalLen from before
 %noCells from before
 %load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_movX.mat');
-load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
+%load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
 newTrialStart=1:3600*3:607844;
 
 

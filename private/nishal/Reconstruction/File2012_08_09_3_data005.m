@@ -170,6 +170,8 @@ for icell=1:nCells
    spk_coll{icell}=spk_coll{icell}(1:finalLen); 
 end
 
+save('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_movXX.mat','X','mov');
+
 % % Play movie ? 
 % figure
 % for ibin=1:100
