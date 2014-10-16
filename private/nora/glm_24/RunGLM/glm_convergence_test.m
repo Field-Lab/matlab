@@ -220,10 +220,3 @@ for i_debug=1:length(debug_blocks)
 end
 
 end
-
-hold on
-plot(debug_blocks, BPS_WN, 'r')
-plot(debug_blocks, BPS_NSEM, 'b')
-ylabel('Bits per spike')
-xlabel('Number of fitting blocks')
-legend ('WN', 'NSEM')
