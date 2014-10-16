@@ -69,22 +69,9 @@ startup_null_analyse_tenessee
 
 %% 
 
-datafile = '2012-08-09-3/data002';
-type_name= cell(1,1);
-type_name{1}='On Parasol';
 
-opt=struct('load_all',true);
-datarun=load_data(datafile,opt)
-datarun=load_sta(datarun)
-datarun=load_params(datarun)
-datarun=load_ei(datarun,'all','array_type',519);
-OnParasol_vis_id=datarun.cell_types{1}.cell_ids;
 
-neuronPairsRefVsNew = crossIdentifyNeuronIDs('/Volumes/Analysis/2012-08-09-3/data002', '/Volumes/Analysis/2012-08-09-3/data000',OnParasol_vis_id);
-ref_on_parasol_cells=neuronPairsRefVsNew(:,2);
 
-%%
-clear datarun
 datarun.names.rrs_neurons_path='/Volumes/Analysis/2012-08-09-3/data000/data000.neurons';
     
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
@@ -92,16 +79,6 @@ datarun=load_data(datarun,opt);
 
 triggers=datarun.triggers; %onsets of the stimulus presentation
 
-
-
-%%
-matlab_ids=zeros(length(ref_on_parasol_cells),1);
-for icell=1:length(ref_on_parasol_cells)
-matlab_ids(icell)=find(datarun.cell_ids==ref_on_parasol_cells(icell));
-end
-matlab_ids = [40,34,32,15];
-
-%%
 mdf_file='/Volumes/Analysis/movie-xml/BW-20-5-0.48-11111-30x30-60.35.xml';
 
  [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
@@ -143,7 +120,7 @@ frMov=frMov';
 
 
 
-interestingCellIds=matlab_ids;%[1:length(datarun.cell_ids)];% These would be matlabcellIds - NOT.. datarun.cell_ids;% This would change in future, I think
+interestingCellIds=[1:length(datarun.cell_ids)];% These would be matlabcellIds - NOT.. datarun.cell_ids;% This would change in future, I think
 nCells=length(interestingCellIds);
 
 spk_coll=cell(nCells,1);
@@ -186,9 +163,9 @@ end
 
 % Play movie ? 
 figure
-for ibin=1:10
+for ibin=1:1000
 imagesc(mov(:,:,:,ibin));
 title(sprintf('%d',ibin));
-pause(1/120)
+pause;
 end
 
