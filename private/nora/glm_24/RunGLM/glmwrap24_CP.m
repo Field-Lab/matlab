@@ -39,10 +39,10 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.cone_model = '8pix_Model1_1e4_8pix'; GLMType.cone_sname = 'p8Mod1Max1e4p8';
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
 GLMType.nullpoint = 'mean'; 
-GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
+GLMType.fit_type = 'WN'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
 GLMType.specialchange = false;
-GLMType.CBP=true;
+GLMType.CBP=false;
 
 %GLMType.stimfilter_mode = 'rk1';
 GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
@@ -90,8 +90,9 @@ for i_exp = exptests
     if GLMType.CBP
         cells={1772}
     else
-        cells
+      cells;
     end
+    cells={1772};
     [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
     
     % NBCoupling 06-12-14
