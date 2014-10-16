@@ -57,13 +57,18 @@ subdivideRefresh= 1; % So, each frame refresh is subdivided into this many parts
 % 8.33ms. So, set subdivideRefresh=4. If you want temporal resolution of
 % 4.16ms, then set subdivideRefresh=8. subdivideRefresh must be an integer
 
-distinctImagesbetweenTriggers=100%round(mean(abs(diff(triggers)))*1000/refresh);
+distinctImagesbetweenTriggers=round(mean(abs(diff(triggers)))*1000/refresh);
 % 'distinctImagesbetweenTriggers' is the number of distinct images which
 % are shown between refreshes. 
+% skipTriggers=[36+1:108:length(triggers)];
+% skipTriggers=[skipTriggers,36+72+1:108:length(triggers)];
+skipTriggers=find(diff(triggers)<0.7); % TODO .. need to set this threshold better! 
 
 fr=[];
 for itrig=1:length(triggers)
+    if(sum(itrig==skipTriggers)==0)
 fr=[fr,triggers(itrig)*1000+(refresh/subdivideRefresh)*[0:distinctImagesbetweenTriggers*subdivideRefresh]];
+    end
 end
 fr=fr';
 % fr are times in ms, when a new bin should start. At times when the movie
@@ -72,7 +77,9 @@ fr=fr';
 
 frMov=[];
 for itrig=1:length(triggers)
+     if(sum(itrig==skipTriggers)==0)
 frMov=[frMov,triggers(itrig)*1000+(refresh)*[0:distinctImagesbetweenTriggers]];
+     end
 end
 frMov=frMov';
 
@@ -95,12 +102,12 @@ spikes=datarun.spikes{cellID};
 spikes=round(spikes*1000);
 spks=zeros(length(fr)-1,1);
 for ibin=1:length(fr)-1
-spks(ibin)=sum(double(spikes>=fr(ibin) & spikes<fr(ibin+1)));
+spks(ibin)=sum(double(spikes>=fr(ibin) & spikes<fr(ibin)+(refresh/subdivideRefresh))); % Interval between two frames weired between movies
 end
 spk_coll{icell}=spks;
 end
 
-load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
+save('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat','spk_coll');
 
 %load_raw_move_data005
 %load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_mov.mat');
