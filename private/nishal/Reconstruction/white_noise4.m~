@@ -121,7 +121,8 @@ figure;
 plot(sum(filt_mat.^2,1))
 
 %% See data
-icell=28;
+icell=1;
+nTrials=50
 load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
 trialData=zeros(3600,nTrials);
 

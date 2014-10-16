@@ -122,15 +122,16 @@ plot(sum(filt_mat.^2,1))
 
 %% See data
 icell=1;
-load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
+nTrials=50
+%load('/Volumes/Analysis/nishal/recons_2012_08_09_3_data005_2.mat');
 trialData=zeros(3600,nTrials);
 
 for iTrial=1:nTrials
-indx=newTrialStart(iTrial)+(iTrial-1):newTrialStart(iTrial)+3600-1+(iTrial-1);
+indx=newTrialStart(iTrial):newTrialStart(iTrial)+3600-1;
 trialData(:,iTrial)=spk_coll{icell}(indx);
 
 end
 
 figure;
-plotSpikeRaster(trialData'>0,'PlotType','vertline');
+plotSpikeRaster(trialData'>0,'PlotType','horzline');
 
