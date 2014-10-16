@@ -2,8 +2,8 @@ startup_analyse_tenessee
 %%
 
 
-datafile = '2012-08-09-3/data005-from-data002/data005-from-data002';
-imov=5;
+datafile = '2012-08-09-3/data006-from-data002/data006-from-data002';
+imov=6;
 bin_datafile=sprintf('/Volumes/Data/2012-08-09-3/data00%d',imov);
 % type_name= cell(1,1);
 % type_name{1}='On Parasol';
@@ -14,7 +14,7 @@ datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
 
 %% 
-vision_id=2101;
+vision_id=1772;
 idx=[1:length(datarun.cell_ids)];
 matlab_id=idx(datarun.cell_ids==vision_id);
 cell_ei=datarun.ei.eis{matlab_id};
@@ -63,7 +63,7 @@ allElecData=cell(9,1);
 
     imov
 %dataTrials{imov}=getTrialData(sprintf('/Volumes/Data/2014-08-20-0/data00%d',imov),center_elec,330,30);
-[allElecData{imov}]=getTrialDataMultipleElectrodesOnly(bin_datafile,center_elec,1.5*60*60,elecList);
+[allElecData{imov}]=getTrialDataMultipleElectrodesOnly(bin_datafile,center_elec,40*60,elecList);
 
 
 
@@ -84,7 +84,7 @@ save('/Volumes/Analysis/nishal/nsem_data.mat','data','dt','-v7.3');
 cd '/Volumes/Analysis/nishal/CBPSpikesortDemo-master/spikesort_demo/'
 [waveforms{imov},spike_times{imov},spike_amps{imov},recon_snippets{imov}]=nsemSpikeSort('nsem_data',no_cells,noise); % need to give number of potential cells and noise amount .. 
 % Store spike sorting result ? 
-cd ('../../NSEM');
+cd ('~/Dropbox/Lab/Development/matlab-standard/private/nishal/NSEM');
 save(sprintf('/Volumes/Analysis/nishal/NSEM_cell%d_long.mat',vision_id),'waveforms','spike_times','spike_amps','recon_snippets');
 save(sprintf('/Volumes/Analysis/nishal/NSEM_cell%d_long2.mat',vision_id),'-v7.3');
 
