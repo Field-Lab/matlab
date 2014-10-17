@@ -39,8 +39,8 @@ P=zeros(vecLen,vecLen);
 nTrials=55;
 P_log=cell(nTrials,1);
 q_log=cell(nTrials,1);
-%A=zeros(nSamples,delay*noCells+1);
-%b=zeros(nSamples,1);
+A=[];
+b=[];
 icnt=0;
 step_sz=smoothParam;
 for iTrial=1:55%1800*120
@@ -58,8 +58,8 @@ for iTrial=1:55%1800*120
     a=full(a);
     y=mov_recons(iLen);
 
-  %  A(iLen,:)=a';
-  %  b(iLen)=y;
+   A=[A;a'];
+  b=[b;y];
     
     q=q+y*a;
     P=P+a*a';
@@ -101,12 +101,12 @@ for iTrial=1:nTestTrials
     end
 end
 
-m1= mov_recons(1:3600);
+m1= mov_recons(newTrialStart(1):newTrialStart(1)+3600-delay);
 m2= mov_pred;
 figure;
 stairs(m1,'b');
 hold on
-stairs(m2(:,1),'r');
+stairs(mean(m2,2),'r');
 %hold on;
 ylim([-1,1]);
 %stairs(double(mov_pred(recons_idx(1)+100:recons_idx(1)+200)>0)-0.5,'g');
@@ -127,6 +127,8 @@ end
 figure;
 plot(sum(filt_mat.^2,1))
 
+figure;
+plot(filt_mat)
 %% See data
 icell=24;
 nTrials=50
