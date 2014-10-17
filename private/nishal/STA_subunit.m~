@@ -3,16 +3,18 @@ std=1;
 pgam = (1/(2*pi*std))*(exp(-(gam.^2)/(2*std^2)));
 plot(gam,pgam)
 
-%f= @(x) double(x>0).*(0.2*x).^1;%double(x>0).*(0.1*x).^2;%exp(0.5*x);
-f= @(x) exp(0.2*x);
+f= @(x) double(x>0).*(0.1*x).^2;%exp(0.5*x);
+%f= @(x) exp(0.05*x);
 N= @(x) exp(x);
 
 orig_rat=[];
 calc_rat=[];
 figure
 for fact_n2=1:0.5:50
-n1=0.1;
-n2=n1*fact_n2;
+
+n2=10;
+n1=n2/fact_n2;
+
 
 eta1 = pgam'*N(n1*f(gam))
 eta2 = pgam'*N(n2*f(gam))
@@ -36,12 +38,15 @@ hold off
 pause(1/120)
 end
 
+orig_norm_max = 1./orig_rat;
+mod_norm_max=1./calc_rat;
+
 figure;
-plot(orig_rat,calc_rat,'LineWidth',1.5);
+plot(mod_norm_max,orig_norm_max,'LineWidth',1.5);
 hold on
-plot(orig_rat,orig_rat,'r','LineWidth',1.5);
-xlim([1,60]);
-ylim([1,60]);
+plot(orig_norm_max,orig_norm_max,'r','LineWidth',1.5);
+xlim([0,1]);
+ylim([0,1]);
 xlabel('O');
 ylabel('$$\hat{O}$$','Interpreter','Latex');
 title('$$\hat{O}$$ v/s O','Interpreter','Latex');
