@@ -5,8 +5,8 @@ std=1;
 pgam = (1/(2*pi*std))*(exp(-(gam.^2)/(2*std^2)));
 plot(gam,pgam)
 
-f= @(x) double(x>0).*(0.2*x).^2;%exp(0.5*x);
-%f= @(x) exp(0.2*x);
+%f= @(x) double(x>0).*(0.2*x).^2;%exp(0.5*x);
+f= @(x) exp(0.2*x);
 N= @(x) exp(x);
 
 orig_rat=[];
