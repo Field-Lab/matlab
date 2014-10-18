@@ -95,7 +95,7 @@ clear datarun
 %     
 % opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true,'load_all',1);
 % datarun=load_data(datarun,opt);
-datafile = '2012-08-09-3/data000';
+datafile = '2012-08-09-3/data002';
 
 
 opt=struct('load_all',true);
