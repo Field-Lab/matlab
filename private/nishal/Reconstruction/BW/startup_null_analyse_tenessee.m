@@ -8,9 +8,9 @@ javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java
 addpath(genpath('~/Dropbox/Lab/Development/matlab/code'));
 
 
-addpath(genpath('../plotSpikeRaster_v1'));
+addpath(genpath('../../plotSpikeRaster_v1'));
 
-addpath(genpath('../create_act_2/'));
+addpath(genpath('../../create_act_2/'));
 
 % set some default plot 
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
