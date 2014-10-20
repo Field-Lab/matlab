@@ -89,6 +89,10 @@ ref_cell_idx=find(neuronPairsRefVsNew(:,1)==vision_id);
 ref_vision_id=neuronPairsRefVsNew(ref_cell_idx,2);
 
 
+matlab_ids=find(datarun.cell_ids==vision_id);
+sta_data002=datarun.stas.stas{matlab_ids(1)};
+
+
 %%
 clear datarun
 % datarun.names.rrs_neurons_path='/Volumes/Analysis/2012-08-09-3/data000/data000.neurons';

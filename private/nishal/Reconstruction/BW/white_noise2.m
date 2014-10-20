@@ -155,14 +155,17 @@ for idx=recons_idx(100:end-100)
 subplot(2,1,1);
 imagesc(mov_recons_full(:,:,idx));
 colormap gray
+axis image
 caxis([-0.5,0.5]);
 colorbar
-title('Spatial')
+%title('Spatial')
+
 subplot(2,1,2);
 imagesc(mov_pred_full(:,:,idx));
 colormap gray
 caxis([-0.5,0.5]);
 colorbar
+axis image
 
 pause
 
@@ -183,4 +186,8 @@ hold on
 stairs(u,'r')
 legend('Original','Reconstructed');
 
+% High correlation between total input and reconstruction .. 
+corr(u,v)
 
+figure;
+plot(xcorr(u,v))
