@@ -2,11 +2,11 @@
 %finalLen from before
 %noCells from before
 
-delay=2;
+delay=5;
 trainsampleLen=round(finalLen*0.75);
 noCells=nCells;
 
-sig_pix_idx=5;
+sig_pix_idx=1;
 pixX=sig_pix(sig_pix_idx,1);
 pixY=sig_pix(sig_pix_idx,2);
 
@@ -44,7 +44,7 @@ end
 filter=P\q;   
 %filter2=(A\(A'\(A'*b)));
 
-filter_use=filter;
+filter_use=filter2;
 
 % Make prediction
 mov_pred=0*mov_recons;
