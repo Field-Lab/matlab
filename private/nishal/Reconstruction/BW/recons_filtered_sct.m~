@@ -1,17 +1,87 @@
+
+%%
+% Fit STA
+addpath(genpath('~/Dropbox/Lab/Development/matlab-standard/code')); 
+addpath(genpath('~/Dropbox/Lab/Development/matlab-standard/private/nishal/fwdfittingfunctions'));
+fit_info = fit_sta(sta_data002)
+%datarun = compute_sta_fits(datarun, 'all');
+
+%params=datarun.matlab.sta_fits{matlab_id}.initial_params;
+params=fit_info.initial_params;
+full_fit = sta_fit_function(params);
+
+ssta=sta_data002;
+
+newSTAFitSz=30;
+sta_rsz=zeros(newSTAFitSz,newSTAFitSz,3,30);
+for itime=1:30
+x=imresize(full_fit(:,:,1,itime),[newSTAFitSz,newSTAFitSz]);
+sta_rsz(:,:,1,itime)=x(end:-1:1,end:-1:1);
+x=imresize(full_fit(:,:,2,itime),[newSTAFitSz,newSTAFitSz]);
+sta_rsz(:,:,2,itime)=x(end:-1:1,end:-1:1);
+x=imresize(full_fit(:,:,3,itime),[newSTAFitSz,newSTAFitSz]);
+sta_rsz(:,:,3,itime)=x(end:-1:1,end:-1:1);
+
+end
+
+figure;
+for itime=30:-1:1
+    itime
+    subplot(3,1,1);
+    imagesc(squeeze(sum(ssta(:,:,:,itime),3)));
+    colormap gray
+    axis image
+    colorbar
+    caxis([min(ssta(:)), max(ssta(:))]);
+
+    
+    subplot(3,1,2);
+    imagesc(squeeze(sum(full_fit(:,:,:,itime),3)));
+    colormap gray
+    axis image
+    colorbar 
+    caxis([min(ssta(:)), max(ssta(:))]);
+% 
+    subplot(3,1,3);
+    imagesc(squeeze(sum(sta_rsz(:,:,:,itime),3)));
+    colormap gray
+    axis image
+    colorbar 
+    caxis([min(ssta(:)), max(ssta(:))]);
+  
+    pause
+    
+end
+
+
+%%
 % Try to reconstruct the filtered cell activity
 % STA not so good .. 
+
+% WHAT TO DO !!?? MOVIE AT COARSER RESOLUTION ..
 mov_norm=(mov-0.5);
 filtered_act=zeros(finalLen,1);
-sta_imp=squeeze(sta).*repmat(full(sig_stixels),[1,1,30]);
-filter_len_use=5
+sta_imp=squeeze(sum(sta_rsz(:,:,:,:),3));
+% 
+sta_bin_sz=100/(distinctImagesbetweenTriggers*subdivideRefresh);
+sta_binned=zeros(30,30,30/sta_bin_sz);
+icnt=0;
+for itime=1:sta_bin_sz:30
+    itime
+    icnt=icnt+1;
+    sta_binned(:,:,icnt)=sum(sta_imp(:,:,itime:itime+sta_bin_sz-1),3);
+end
+
+filter_len_use=2
+
 for itime=30:finalLen
-filtered_act(itime)=sum(sum(sum(mov_norm(:,:,itime-filter_len_use+1:itime).*sta_imp(:,:,30-filter_len_use+1:30))));
+filtered_act(itime)=sum(sum(sum(mov_norm(:,:,itime-filter_len_use+1:itime).*sta_binned(:,:,filter_len_use:-1:1))));
 end
 
 plot(filtered_act)
 
 %%
-delay=10;
+delay=3;
 negdelay=0;
 trainsampleLen=round(finalLen*0.75);
 noCells=nCells;
@@ -70,4 +140,4 @@ stairs(m1,'b');
 hold on
 stairs(m2,'r');
 %hold on;
-ylim([-1,1]);
+%ylim([-1,1]);
