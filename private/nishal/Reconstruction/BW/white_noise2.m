@@ -2,11 +2,11 @@
 %finalLen from before
 %noCells from before
 
-delay=2;
+delay=3;
 trainsampleLen=round(finalLen*0.75);
 noCells=nCells;
 
-filter_collection=cell(length(sig_pix));
+filter_collection=cell(length(sig_pix),1);
 
 for sig_pix_idx=1:length(sig_pix);
 pixX=sig_pix(sig_pix_idx,1);
@@ -131,17 +131,17 @@ for iLen=recons_idx %1800*120
 end
 
 mov_recons = squeeze(mov(pixX,pixY,pixCol,:))-0.5;
-% m1= (mov_recons(recons_idx(1)+100:recons_idx(1)+500));
-% m2= (mov_pred(recons_idx(1)+100:recons_idx(1)+500));
-% figure;
-% stairs(m1,'b');
-% hold on
-% stairs(m2,'r');
-% %hold on;
-% ylim([-1,1]);
-% title(sprintf('sig pix idx %d',sig_pix_idx));
-% %stairs(double(mov_pred(recons_idx(1)+100:recons_idx(1)+200)>0)-0.5,'g');
-% %xlim([1,100])
+m1= (mov_recons(recons_idx(1)+100:recons_idx(1)+500));
+m2= (mov_pred(recons_idx(1)+100:recons_idx(1)+500));
+figure;
+stairs(m1,'b');
+hold on
+stairs(m2,'r');
+%hold on;
+ylim([-1,1]);
+title(sprintf('sig pix idx %d',sig_pix_idx));
+%stairs(double(mov_pred(recons_idx(1)+100:recons_idx(1)+200)>0)-0.5,'g');
+%xlim([1,100])
 % correlation 
 
 
@@ -157,7 +157,7 @@ imagesc(mov_recons_full(:,:,idx));
 colormap gray
 caxis([-0.5,0.5]);
 colorbar
-
+title('Spatial')
 subplot(2,1,2);
 imagesc(mov_pred_full(:,:,idx));
 colormap gray
@@ -167,3 +167,20 @@ colorbar
 pause
 
 end
+
+%% DOUBTFUL
+wellFittedStixIdx = 1:16;%[2,3,6,7,10,11,12,14,15,16];
+v=zeros(size(mov_recons_full,3),1);
+u=zeros(size(mov_recons_full,3),1);
+for iLen = 1:length(wellFittedStixIdx)
+v=v+squeeze(mov_recons_full(sig_pix(wellFittedStixIdx(iLen),1),sig_pix(wellFittedStixIdx(iLen),2),:));
+u=u+squeeze(mov_pred_full(sig_pix(wellFittedStixIdx(iLen),1),sig_pix(wellFittedStixIdx(iLen),2),:));
+end
+
+figure;
+stairs(v,'b');
+hold on
+stairs(u,'r')
+legend('Original','Reconstructed');
+
+
