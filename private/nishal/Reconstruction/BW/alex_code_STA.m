@@ -117,6 +117,8 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 matlab_ids=find(datarun.cell_ids==ref_vision_id);
 sta=datarun.stas.stas{matlab_ids(1)};
 [sig_stixels, params, rf_strength_out] = significant_stixels(sta)
+[sig_row,sig_col]=find(sig_stixels==1);
+sig_pix=[sig_row,sig_col];
 %%
 mdf_file='/Volumes/Analysis/movie-xml/BW-20-5-0.48-11111-30x30-60.35.xml';
 
@@ -141,7 +143,7 @@ distinctImagesbetweenTriggers=round(mean(abs(diff(triggers)))*1000/refresh);
 
 fr=[];
 for itrig=1:length(triggers)
-fr=[fr,triggers(itrig)*1000+(refresh/subdivideRefresh)*[0:distinctImagesbetweenTriggers*subdivideRefresh]];
+fr=[fr,triggers(itrig)*1000+(refresh/subdivideRefresh)*[0:distinctImagesbetweenTriggers*subdivideRefresh-1]];
 end
 fr=fr';
 % fr are times in ms, when a new bin should start. At times when the movie
@@ -150,9 +152,10 @@ fr=fr';
 
 frMov=[];
 for itrig=1:length(triggers)
-frMov=[frMov,triggers(itrig)*1000+(refresh)*[0:distinctImagesbetweenTriggers]];
+frMov=[frMov,triggers(itrig)*1000+(refresh)*[0:distinctImagesbetweenTriggers-1]];
 end
 frMov=frMov';
+
 
 % frMov are times when the frames change. frMov should times
 % should be every subdivideRefresh-th of fr times.
@@ -202,9 +205,9 @@ end
 
 % Play movie ? 
 figure
-for ibin=1:10
+for ibin=1:20
 imagesc(mov(:,:,:,ibin));
 title(sprintf('%d',ibin));
-pause(1/120)
+pause
 end
 
