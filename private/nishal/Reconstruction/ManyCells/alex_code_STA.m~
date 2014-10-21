@@ -83,10 +83,14 @@ OnParasol_vis_id=datarun.cell_types{1}.cell_ids;
 neuronPairsRefVsNew = crossIdentifyNeuronIDs('/Volumes/Analysis/2012-08-09-3/data002', '/Volumes/Analysis/2012-08-09-3/data000',OnParasol_vis_id);
 ref_on_parasol_cells=neuronPairsRefVsNew(:,2);
 
-%% Select one cell
-vision_id=4052;
-ref_cell_idx=find(neuronPairsRefVsNew(:,1)==vision_id);
-ref_vision_id=neuronPairsRefVsNew(ref_cell_idx,2);
+% %% Select one cell
+% vision_id=4052;
+% ref_cell_idx=find(neuronPairsRefVsNew(:,1)==vision_id);
+% ref_vision_id=neuronPairsRefVsNew(ref_cell_idx,2);
+% 
+% 
+% matlab_ids=find(datarun.cell_ids==vision_id);
+% sta_data002=datarun.stas.stas{matlab_ids(1)};
 
 
 %%
@@ -113,10 +117,23 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 % for icell=1:length(ref_on_parasol_cells)
 % matlab_ids(icell)=find(datarun.cell_ids==ref_on_parasol_cells(icell));
 % end
+ref_on_parasol_cells=unique(ref_on_parasol_cells);
+matlab_ids=zeros(length(ref_on_parasol_cells),1);
+noCells=length(ref_on_parasol_cells);
 
-matlab_ids=find(datarun.cell_ids==ref_vision_id);
-sta=datarun.stas.stas{matlab_ids(1)};
+for icell=1:length(ref_on_parasol_cells)
+matlab_ids(icell)=find(datarun.cell_ids==ref_on_parasol_cells(icell));
+end
+
+sta_data=struct('sta',[]);
+
+for icell=1:noCells
+sta_data(icell).sta=datarun.stas.stas{matlab_ids(icell)};
+end
+
 [sig_stixels, params, rf_strength_out] = significant_stixels(sta)
+[sig_row,sig_col]=find(sig_stixels==1);
+sig_pix=[sig_row,sig_col];
 %%
 mdf_file='/Volumes/Analysis/movie-xml/BW-20-5-0.48-11111-30x30-60.35.xml';
 
@@ -203,9 +220,9 @@ end
 
 % Play movie ? 
 figure
-for ibin=1:10
+for ibin=1:20
 imagesc(mov(:,:,:,ibin));
 title(sprintf('%d',ibin));
-pause(1/120)
+pause
 end
 
