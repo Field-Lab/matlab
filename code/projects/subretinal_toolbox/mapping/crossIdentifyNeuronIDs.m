@@ -1,33 +1,25 @@
-function neuronPairsRefVsNew = crossIdentifyNeuronIDs(dataFolderRef, dataFolderNew,...
+function neuronPairsRefVsNew = crossIdentifyNeuronIDs(dataFolderRef,dataFolderNew,...
                                 refNeuronIDs, newNeuronIDs)
 % crossIdentifyNeuronIDs(dataFolderRef,dataFolderNew,...
-%                        refNeuronIDs,newNeuronIDs)
+%                        newNeuronIDs,refNeuronIDs)
 %
 % This function compares the neurons in a data set (the one in
 % dataFolderNew) with the neurons in a reference data set contained in
 % dataFolderRef. 
 % It returns a nNeurons*2 matrix, where nNeurons is the number of neurons
 % in the reference dataset.  The first column in this matrix corresponds to
-% the neuronIDs of neurons in the reference dataset, and the second column
-% corresponds to the neurons in the new dataset that looks the most
-% like the reference neurons. 
-% Those matches are the argmin of the l2 norm of the difference between 
-% the reference neuron EI and EIs of neurons in the new dataset.
+% the neuronID of a neuron in the new dataset, and the second column
+% corresponds to the neuron in the reference dataset that looks the most
+% like it.  
+% Similarities between neurons are measured using the l2 norm of the
+% difference between EIs, the smaller this quantity is the better. 
 %
 % Parameters:
 %    - dataFolderRef: reference dataset, we want to find out which neurons
 %    in the new dataset correspond to which neurons in this dataset (these
-%    reference neurons will be in the first column of the output).
-%    dataFolderRef should be a path to a folder containing both an EI and
-%    a neurons file (neurons-raw files will be ignored).
-%    - dataFolderNew: new dataset, we want to match its neurons with those 
-%    of the reference dataset. dataFolderNew should be a path to a folder
-%    containing both an EI and a neurons file (neurons-raw files will be 
-%    ignored).
-%
-% Optional:
-%    - refNeuronsIDs, newNeuronIDs: if those two lists are specified, only
-%    the neurons in this list will be considered for pairing.
+%    neurons will be the first column of the output).
+%    - dataFolderNew: new dataset, we want to find its neuron in the
+%    reference dataset (first column of the output)
 %
 % Returns:
 %    - neuronPairsRefVsNew: a nNeurons*2 matrix representing the most
@@ -38,9 +30,7 @@ function neuronPairsRefVsNew = crossIdentifyNeuronIDs(dataFolderRef, dataFolderN
 
 %% Parameters
 
-% If you want to output more than one match candidate for each neuron,
-% you can increase nSim
-nSim = 1; 
+nSim = 3;
 
 if dataFolderRef(end:end)~=filesep
     dataFolderRef = [dataFolderRef filesep];

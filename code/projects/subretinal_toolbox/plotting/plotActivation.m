@@ -13,13 +13,9 @@ function allThresholds = plotActivation(statsFolder,figuresFolder,thresholdsFold
 % Optional value/parameters combinations:
 %   - plotType: see description of the variable in the code. For irradiance
 %   thresholds, use 1 (default value).
-%   - fitCurve: by default true, fits a sigmoid to 
-%   - findThreshold: by default true, will then try to find thresholds for 
-%   activation (0.5 spike/trial). If set to true the thresholds will be 
-%   saved to a text file.
-%   - imageFormat: by default png
-%   - idList: optional, if specified plots only the intersection of the 
-%   set of ids specified, and the set of ids for which statistics exist.
+%   - fitCurve
+%   - findThreshold
+%   - imageFormat
 %
 % Returns:
 %    - allThresholds: matrix of all the thresholds found. First column is
@@ -46,7 +42,7 @@ findThreshold = true;
 savePlots = true;
 % displayPlots = true;        % Unused for now
 saveThresholds = true;
-idList = [];                  % If not IDs specified plot all neurons
+
 maxFigsAuthorized = 1;
 imageFormat = 'png';
 
@@ -73,11 +69,8 @@ for kk=1:(nbin/2)
             fitCurve = varargin{kk*2};
         case 'findthreshold'
             findThreshold = varargin{kk*2};
-            saveThresholds = varargin{kk*2};
         case 'imageformat'
             imageFormat = varargin{kk*2};
-        case 'idlist'
-            idList = varargin{kk*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -111,18 +104,8 @@ nNeurons = 0;
 
 for kk=1:length(contentsStatsFolder)
     if strfind(contentsStatsFolder(kk).name,'.mat')
-        cNeuronID = str2num(contentsStatsFolder(kk).name(7:end-8));
-        if isempty(idList)
-            nNeurons = nNeurons + 1;
-            neuronNames(nNeurons).name = contentsStatsFolder(kk).name;
-            neuronNames(nNeurons).id = cNeuronID;
-        else
-            if nnz(idList==cNeuronID)>0
-                nNeurons = nNeurons + 1;
-                neuronNames(nNeurons).name = contentsStatsFolder(kk).name;
-                neuronNames(nNeurons).id = cNeuronID;
-            end
-        end
+        nNeurons = nNeurons + 1;
+        neuronNames(nNeurons).name = contentsStatsFolder(kk).name;
     end
 end
 
@@ -136,17 +119,12 @@ load([statsFolder neuronNames(1).name]);
 allThresholds = NaN*zeros(nNeurons,nCombinations+1);
 
 
-% Temp stuff under
-allYs = [];
-allEs = [];
-% End temp
-
 %% Getting the plot with error bars
 for kk=1:nNeurons
     %% Getting the experimental data
     load([statsFolder neuronNames(kk).name]);
-    display(sprintf('Plotting data for neuron %d', neuronNames(kk).id))
-    allThresholds(kk,1) = neuronNames(kk).id;
+    display(['Plotting data for neuron ' neuronNames(kk).name(7:end-8)])
+    allThresholds(kk,1) = str2double(neuronNames(kk).name(7:end-8));
     
     % Defining the points of interest
     [plotData, nCombinations] = formatData(plotType,activationData);
@@ -168,11 +146,6 @@ for kk=1:nNeurons
         y = plotData(ll).stimData; 
         x = plotData(ll).varyingParam;
         e = plotData(ll).errorData;
-        
-        % Temp stuff under
-        allYs = [allYs y];
-        allEs = [allEs e];
-        % End temp
 
         errorbar(x,y,sqrt(e),'MarkerFaceColor',[0 0 0],'Marker','square',...
             'LineStyle','none',...

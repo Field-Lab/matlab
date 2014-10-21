@@ -32,9 +32,7 @@ function createFigures(statsFolder,figuresFolder,varargin)
 %   neuron IDs.
 %   - combineStim: by default true, if true the script will try to match
 %   parameters together when creating the plots, otherwise it will create
-%   one plot per stimulus.
-%   - logfileType: either 'matlab' or 'labview', depending on what was used
-%   to generate the logfile.
+%   one plot per stimulus
 %
 % Returns: []
 
@@ -51,7 +49,6 @@ logFilePath = '';
 useNeuronList = false;
 powerToIrradianceFactor = 1;
 combineStim = true;
-logfiletype = 'matlab';
 
 % Checking the optional parameters
 nbin = length(varargin);
@@ -81,8 +78,6 @@ for kk=1:(nbin/2)
             powerToIrradianceFactor = varargin{kk*2};
         case 'combinestim'
             combineStim = varargin{kk*2};
-        case 'logfiletype'
-            logfiletype = varargin{kk*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -99,44 +94,20 @@ end
 
 %% Reading the log file, if it was specified
 
-% Logfile looks different depending on whether Labview or Matlab generated
-% it, eventhough in the end the data in it is pretty much the same.
-switch logfiletype
-    case 'matlab'
-        [M, paramNames] = readLogFile(logFilePath);
-        
-            % Cleaning up M: removing parameters we don't care about, such as
-            % dataset and stimulus number, or number of pulses
-            irrelevantParams = {'Experiment duration','Stimulus',...
-                'Start Time','Number of pulses','Image projected'};
-            for kk=1:length(irrelevantParams)
-                pos = find(ismember(paramNames, irrelevantParams{kk})==1);
-                M(:,pos) = [];
-                paramNames(pos) = [];
-            end
-        M(:,ismember(paramNames,'Power')) = M(:,ismember...
-            (paramNames,'Power'))*powerToIrradianceFactor;
-        
-     case 'labview'
-        M = readLogFileLabview(logFilePath);
-        paramNames = {'Pulse Duration','Power','Frequency'};
-        
-        if size(M.pulse_durations,1)<size(M.pulse_durations,2)
-            M.pulse_durations = M.pulse_durations.';
-        end
-        if size(M.power,1)<size(M.power,2)
-            M.power = M.power.';
-        end
-        if size(M.frequency,1)<size(M.frequency,2)
-            M.frequency = M.frequency.';
-        end
-        
-        M = [M.pulse_durations, M.power, M.frequency];
-        
-    otherwise
-        err = MException('MATLAB:InvArgIn',...
-                'Invalid logfile type.');
-        throw(err);
+if ~isempty(logFilePath)
+    [M,paramNames] = readLogFile(logFilePath);
+    
+    % Cleaning up M: removing parameters we don't care about, such as
+    % dataset and stimulus number, or number of pulses
+    irrelevantParams = {'Experiment duration','Stimulus','Start Time','Number of pulses','Image projected'};
+    for kk=1:length(irrelevantParams)
+        pos = find(ismember(paramNames, irrelevantParams{kk})==1);
+        M(:,pos) = [];
+        paramNames(pos) = [];
+    end
+    
+    M(:,ismember(paramNames,'Power')) = M(:,ismember...
+        (paramNames,'Power'))*powerToIrradianceFactor;
 end
 
 clear irrelevantParams kk pos

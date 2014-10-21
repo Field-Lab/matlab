@@ -1,8 +1,6 @@
 function stimNeuronList = computeAmplitudeModulation(psthStatsFolder, ...
     alternationLogfilePath, outputFolderStatistics, varargin)
 %
-% Computes the amplitude of the modulation response to reversing gratings.
-%
 % Parameters:
 %
 % Returns:
