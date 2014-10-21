@@ -64,15 +64,18 @@ hDeleteCone=uicontrol('style','pushbutton','Units','normalized','position',[0.6 
 hDeleteCell=uicontrol('style','pushbutton','Units','normalized','position',[0.4 0.5 0.12 0.03],...
     'string','delete cell','fontsize',16,'callback','delete_cell');
 
-%% still do!
-hAdjust=uicontrol('style','pushbutton','Units','normalized','position',[0.1 0.52 0.12 0.03],...
-    'string','adjust','fontsize',16,'callback','adjust_cones');
 
-hFillUp=uicontrol('style','pushbutton','Units','normalized','position',[0.40 0.35 0.12 0.03],...
-    'string','fill up','fontsize',16,'callback','fill_up');
+hAdjust=uicontrol('style','pushbutton','Units','normalized','position',[0.1 0.52 0.12 0.03],...
+    'string','adjust','fontsize',16,'callback','adjust_cones(frame)');
+
+
+%% still do!
+
+hCheckOtherCells=uicontrol('style','pushbutton','Units','normalized','position',[0.67 0.52 0.12 0.03],...
+    'string','check others','fontsize',16,'callback','check_other_cells(frame)');
 
 hSave=uicontrol('style','pushbutton','Units','normalized','position',[0.40 0.3 0.12 0.03],...
-    'string','save','fontsize',16,'callback','delete_cell');
+    'string','save','fontsize',16,'callback','save_stim');
 
 
 
