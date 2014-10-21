@@ -2,26 +2,30 @@
 % stimulation patterns. A folder for each pattern is created, and data 
 % surrounding current pulses for all repetitions are saved in a new file
 % for each movie chunk / amplitude
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-system = 'stim512'; %'stim64'; %stim512 or stim64
+system = 'stim512';  %stim512 or stim64
 %system = 'stim64';
 
-% rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
-rawDataDir = '/Volumes/Data/2014-09-10-0';
+rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
+% rawDataDir = '/Volumes/Data/2014-09-10-0';
 if ~strcmp(rawDataDir(end),filesep)
     rawDataDir = [rawDataDir filesep];
 end
-% cd(rawDataDir);
 
 % Points to the directory of the output.
-% WritePathBase = uigeDtdir('/Volumes/Analysis', 'Select your output directory'); 
-WritePathBase = '/Volumes/Analysis/2014-09-10-0-temp/';
+WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
+% WritePathBase = '/Volumes/Analysis/2014-09-10-0-temp/';
 if ~strcmp(WritePathBase(end),filesep)
     WritePathBase = [WritePathBase filesep];
 end
 
 % Appends this number to 'data ---'
-fileNos = [4];
+fileNos = [3];
+
+% length of trace to save after each pulse (in samples)
+% At 20 samples/millisecond, 100 samples = 5 milliseconds
+traceLength = 100; %changed from 70 on 2010-03-10
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch system
@@ -62,12 +66,7 @@ for i = fileNos
         mkdir([WritePath filesep 'status_files'])
         disp(['Created new directory: ' WritePath filesep 'status_files'])
     end
-
-    % length of trace to save after each pulse (in samples)
-    % At 20 samples/millisecond, 100 samples = 5 milliseconds
-    traceLength = 100; %changed from 70 on 2010-03-10
-
-    
+ 
     %%%%%% standard %%%%%%
 %     All repetitions of a particular pattern, at a particular amplitude, inside a particular movie chunk.
 %     For example: Not appropriate for moving bar.

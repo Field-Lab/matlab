@@ -121,7 +121,8 @@ for nn = 1:length(neuronId);
     
     
     if printElecs
-        h = load('/Users/grosberg/matlab/array_matrix_id510'); % Find a more general location for this or call a different text file.
+        h = load(['/Users/grosberg/Lab/matlab/code/projects/'...
+            'electrical_stim/resources/array_matrix_id510']); %
         electrodeMatrix = h.array_matrix_id510; clear h;
         
         for x = 1:size(electrodeMatrix,2)
