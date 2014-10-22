@@ -125,7 +125,7 @@ filter_collection(pixX,pixY).cell_list=cell_list;
     end
 end
 
-save('/Volumes/Analysis/nishal/recons_WN_whole_OFF.mat','filter_collection','sta_data')
+save('/Volumes/Analysis/nishal/recons_WN_whole_ON_nobias.mat','filter_collection','sta_data')
 
 %% 
 
@@ -183,9 +183,10 @@ title(sprintf('Pix %d %d',pixX,pixY));
 
 mov_pred_full(pixX,pixY,:)=mov_pred;
 mov_recons_full(pixX,pixY,:)=mov_recons;
-% pause(0.5)
+%pause(0.5)
 end
 end
+save('/Volumes/Analysis/nishal/recons_WN_whole_ON_nobias.mat','filter_collection','sta_data','mov_recons_full','mov_pred_full');
 
 %% 
 figure
