@@ -1,3 +1,7 @@
+%this script of malcolm's generates all the figures for his presentation
+% need the load_data function 
+
+% addpath('/Users/vision/Desktop/GitHub code repository/code/lab');
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 run_opt.data_set = '2007-03-27-1';

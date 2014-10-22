@@ -1,4 +1,5 @@
 function short_name = short_name_from_names(names)
+
 % short_name_from_names     generate short name for a dataset from the short name
 %
 % usage:  short_name = short_name_from_names(names)

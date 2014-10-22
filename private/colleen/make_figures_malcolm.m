@@ -161,7 +161,7 @@ if load_results
     
 end
 
-cd('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/malcolm');
+cd('/Users/vision/Desktop/GitHub code repository/private/colleen');
 if make_nearest_neighbor_histogram
     load_data_malcolm(1);
     for i = 1:4
@@ -224,7 +224,7 @@ if load_results_downsample
     results = dataset([],[],[],[],[],[],[],'VarNames',...
     {'Experiment','Run','Speed','Config','CellType','MeanEstimate','MADEstimate'});
 
-    cd('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/malcolm/results/2007-03-27-1')
+    cd('/Users/vision/Desktop/GitHub code repository/private/colleen/results/2007-03-27-1')
     nbins = 20;
     for my_run = 14:19
 
@@ -260,7 +260,7 @@ if load_results_downsample
 
     end
 
-    cd('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/malcolm/results/2007-08-24-4')
+    cd('/Users/vision/Desktop/GitHub code repository/private/colleen/results/2007-08-24-4')
     for my_run = 4:11
 
         if(my_run==5 || my_run==10) 
