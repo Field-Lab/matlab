@@ -124,6 +124,7 @@ filter_collection(pixX,pixY).cell_list=cell_list;
     end
 end
 
+save(/)
 
 %% 
 
@@ -187,7 +188,7 @@ end
 %% 
 figure
 for idx=recons_idx(100:end-100)
-subplot(2,2,1);
+subplot(3,2,1);
 imagesc(mov_recons_full(:,:,idx));
 colormap gray
 axis image
@@ -195,7 +196,7 @@ caxis([-0.5,0.5]);
 colorbar
 %title('Spatial')
 
-subplot(2,2,2);
+subplot(3,2,2);
 imagesc(mov_pred_full(:,:,idx));
 colormap gray
 caxis([-0.5,0.5]);
@@ -204,10 +205,30 @@ axis image
 
 image_filter=[1/9,1/9,1/9;
              1/9,1/9,1/9;
-              1/9,0.2,0];
+              1/9,1/9,1/9];
 
-subplot(2,2,3);
-imagesc(imfilter(mov_recons_full(:,:,idx),image_filter,'same').*(mov_recons_full(:,:,idx)~=0));
+subplot(3,2,3);
+ppxx=imfilter(mov_recons_full(:,:,idx),image_filter,'same').*(mov_recons_full(:,:,idx)~=0);
+imagesc(ppxx);
+colormap gray
+axis image
+caxis([-0.5,0.5]);
+colorbar
+
+subplot(3,2,4);
+imagesc(0.5*double(mov_pred_full(:,:,idx)>0) - 0.5*double(mov_pred_full(:,:,idx)<-0) );
+colormap gray
+caxis([-0.5,0.5]);
+colorbar
+axis image
+
+image_filter=[1/9,1/9,1/9;
+             1/9,1/9,1/9;
+              1/9,1/9,1/9];
+
+subplot(3,2,6);
+ppxx=imfilter(mov_recons_full(:,:,idx),image_filter,'same').*(mov_recons_full(:,:,idx)~=0);
+imagesc(0.5*double(ppxx>0) - 0.5*double(ppxx<-0));
 colormap gray
 axis image
 caxis([-0.5,0.5]);

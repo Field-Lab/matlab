@@ -12,7 +12,7 @@ datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
 
 %% 
-vision_id=2101;
+vision_id=1471;
 idx=[1:length(datarun.cell_ids)];
 matlab_id=idx(datarun.cell_ids==vision_id);
 cell_ei=datarun.ei.eis{matlab_id};
@@ -58,11 +58,11 @@ dataTrials=cell(9,1);
 allElecData=cell(9,1);
 trialStartIndices=cell(9,1);
 
-for imov=[3]
-    imov
+
+imov=input('imov? .. data ??');
 %dataTrials{imov}=getTrialData(sprintf('/Volumes/Data/2014-08-20-0/data00%d',imov),center_elec,330,30);
 [dataTrials{imov},allElecData{imov},trialStartIndices{imov}]=getTrialDataMultipleElectrodes(sprintf('/Volumes/Data/2012-08-09-3/data00%d',imov),center_elec,1.5*60*60,1,elecList);
-end
+
 
   %%
   figure;
