@@ -77,10 +77,14 @@ datarun=load_data(datafile,opt)
 datarun=load_sta(datarun)
 datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
-cellTypeId=input('What cell Type to use?'); % 1 for On Parasols, 2 for Off parasols
-OnParasol_vis_id=datarun.cell_types{cellTypeId}.cell_ids;
+cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
+InterestingCell_vis_id=[];
+for icellType=cellTypeId
+    icellType
+InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
+end
 
-neuronPairsRefVsNew = crossIdentifyNeuronIDs('/Volumes/Analysis/2012-08-09-3/data002', '/Volumes/Analysis/2012-08-09-3/data000',OnParasol_vis_id);
+neuronPairsRefVsNew = crossIdentifyNeuronIDs('/Volumes/Analysis/2012-08-09-3/data002', '/Volumes/Analysis/2012-08-09-3/data000',InterestingCell_vis_id);
 ref__cells=neuronPairsRefVsNew(:,2);
 
 % %% Select one cell
@@ -225,6 +229,6 @@ figure
 for ibin=1:20
 imagesc(mov(:,:,:,ibin));
 title(sprintf('%d',ibin));
-pause
+pause(1/120)
 end
 

@@ -5,7 +5,7 @@ disp('Running startup file Tennessee...');
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
 
 % matlab code paths
-addpath(genpath('~/Dropbox/Lab/Development/matlab/code'));
+addpath(genpath('~/Nishal/matlab/code'));
 addpath(genpath('../plotSpikeRaster_v1'));
 
 addpath(genpath('../create_act_2/'));

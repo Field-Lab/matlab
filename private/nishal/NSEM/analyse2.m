@@ -84,7 +84,7 @@ save('/Volumes/Analysis/nishal/nsem_data.mat','data','dt','-v7.3');
 cd '/Volumes/Analysis/nishal/CBPSpikesortDemo-master/spikesort_demo/'
 [waveforms{imov},spike_times{imov},spike_amps{imov},recon_snippets{imov}]=nsemSpikeSort('nsem_data',no_cells,noise); % need to give number of potential cells and noise amount .. 
 % Store spike sorting result ? 
-cd ('~/Dropbox/Lab/Development/matlab-standard/private/nishal/NSEM');
+cd ('~/Nishal/matlab/private/nishal/NSEM');
 save(sprintf('/Volumes/Analysis/nishal/NSEM_cell%d_data00%d.mat',vision_id,imov),'waveforms','spike_times','spike_amps','recon_snippets');
 save(sprintf('/Volumes/Analysis/nishal/NSEM_cell%d_data00%dlong2.mat',vision_id,imov),'-v7.3');
 

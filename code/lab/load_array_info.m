@@ -166,7 +166,7 @@ elseif (array_id >= 500) && (array_id < 1500) % 512 array
     T_array_to_array_image = maketform('affine',[-1288.75 -951.25; -1288.75 966.25 ; 1276.6552734375 966.25 ],[1 1;768 1;768 1027]);
     T_array_to_vision_ei = maketform('affine',[0 1;0 0;1 0],[0 -1;0 0;-1 0]); % 180 deg rotation
 
-elseif array_id == 1530 || array_id == 1501 || array_id == 1504 % 519, 30 �m array
+elseif array_id == 1530 || array_id == 1501 || array_id == 1504 % 519, 30 ???m array
 
 %    fprintf('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
 %    fprintf('!!!!!!!!   WARNING: array IDs have not been set yet for values > 1500   !!!!!!!!!!!!\n')
@@ -187,7 +187,7 @@ elseif array_id == 1530 || array_id == 1501 || array_id == 1504 % 519, 30 �m a
 
     T_array_to_vision_ei = maketform('affine',[0 1;0 0;1 0],[0 -1;0 0;-1 0]); % 180 deg rotation
 
-elseif array_id == 1512  % 519, 120 �m array
+elseif array_id == 1512  % 519, 120 ???m array
 
 %    fprintf('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
 %    fprintf('!!!!!!!!   WARNING: array IDs have not been set yet for values > 1500   !!!!!!!!!!!!\n')
@@ -253,12 +253,12 @@ end
 
 % SCALE IF NEEDED
 if vision_version < 7002000 % Pitch has been corrected from 7.2.0 forward
-    if array_id == 1530 || array_id == 1501 % 519, 30 �m array
+    if array_id == 1530 || array_id == 1501 % 519, 30 ???m array
         positions = positions / 2;  % IS THIS RIGHT????
         x_bounds = x_bounds / 2;
         y_bounds = y_bounds / 2;
         
-    elseif array_id == 1512  % 519, 120 �m array
+    elseif array_id == 1512  % 519, 120 ???m array
         positions = positions * 2;  % IS THIS RIGHT????
         x_bounds = x_bounds * 2;
         y_bounds = y_bounds * 2;
