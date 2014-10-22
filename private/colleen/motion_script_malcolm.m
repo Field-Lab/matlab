@@ -1,7 +1,3 @@
-%this script of malcolm's generates all the figures for his presentation
-% need the load_data function 
-
-% addpath('/Users/vision/Desktop/GitHub code repository/code/lab');
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 run_opt.data_set = '2007-03-27-1';
@@ -19,9 +15,9 @@ run_opt.trial_estimate_start = 120;
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
-run_opt.downsample_spikes = true;
+run_opt.downsample_spikes = false;
 run_opt.raster = false; % T/F
-run_opt.trial_estimate = true; % T/F
+run_opt.trial_estimate = false; % T/F
 
 
 tic;

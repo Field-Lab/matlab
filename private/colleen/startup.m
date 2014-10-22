@@ -7,7 +7,17 @@ javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java
 
 % matlab code paths 
 addpath(genpath('/Users/vision/Desktop/GitHub code repository/code'));
-% addpath(genpath('~/matlab'));
+addpath(genpath('~/matlab'));
+
+% Add utilities so that you have genpath2.m available
+addpath(genpath('/Users/vision/Desktop/GitHub code repository/utilities'))
+
+% Use genpath2 to recursively add everything in matlab-standard to your path, but exclude .svn directories
+addpath(genpath2(['../../../code'], {'.svn'}));
+
+% Local Java builds: Vision, Cell-Finder
+% We'll have to fix vision_path_stable function to point to the right place on wharf-d
+visstable();
 
 % set some default plot stuff
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
