@@ -87,17 +87,18 @@ end
 
 m1= (mov_recons(recons_idx(1)+100:iLen));
 m2= (mov_pred(recons_idx(1)+100:iLen));
-figure;
-stairs(m1,'b');
-hold on
-stairs(m2,'r');
-%hold on;
-ylim([-1,1]);
-title(sprintf('Pix %d %d',pixX,pixY));
+% figure;
+% stairs(m1,'b');
+% hold on
+% stairs(m2,'r');
+% %hold on;
+% ylim([-1,1]);
+% title(sprintf('Pix %d %d',pixX,pixY));
 %stairs(double(mov_pred(recons_idx(1)+100:recons_idx(1)+200)>0)-0.5,'g');
 %xlim([1,100])
 % correlation 
 
+close all
 % figure;
 % %filter_bank{pixX,pixY,pixCol}.filter=filter_use;
 % %filter_bank{pixX,pixY,pixCol}.correlation=corr(mov_pred(recons_idx),mov_recons(binFrames(recons_idx)));
@@ -124,6 +125,7 @@ filter_collection(pixX,pixY).cell_list=cell_list;
     end
 end
 
+save('/Volumes/Analysis/nishal/recons_WN_whole_OFF.mat','filter_collection','sta_data')
 
 %% 
 
@@ -181,6 +183,7 @@ title(sprintf('Pix %d %d',pixX,pixY));
 
 mov_pred_full(pixX,pixY,:)=mov_pred;
 mov_recons_full(pixX,pixY,:)=mov_recons;
+% pause(0.5)
 end
 end
 

@@ -70,18 +70,18 @@ startup_null_analyse_tenessee
 %% 
 
 datafile = '2012-08-09-3/data002';
-type_name= cell(1,1);
-type_name{1}='On Parasol';
+
 
 opt=struct('load_all',true);
 datarun=load_data(datafile,opt)
 datarun=load_sta(datarun)
 datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
-OnParasol_vis_id=datarun.cell_types{1}.cell_ids;
+cellTypeId=input('What cell Type to use?'); % 1 for On Parasols, 2 for Off parasols
+OnParasol_vis_id=datarun.cell_types{cellTypeId}.cell_ids;
 
 neuronPairsRefVsNew = crossIdentifyNeuronIDs('/Volumes/Analysis/2012-08-09-3/data002', '/Volumes/Analysis/2012-08-09-3/data000',OnParasol_vis_id);
-ref_on_parasol_cells=neuronPairsRefVsNew(:,2);
+ref__cells=neuronPairsRefVsNew(:,2);
 
 % %% Select one cell
 % vision_id=4052;
@@ -117,12 +117,12 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 % for icell=1:length(ref_on_parasol_cells)
 % matlab_ids(icell)=find(datarun.cell_ids==ref_on_parasol_cells(icell));
 % end
-ref_on_parasol_cells=unique(ref_on_parasol_cells);
-matlab_ids=zeros(length(ref_on_parasol_cells),1);
-noCells=length(ref_on_parasol_cells);
+ref__cells=unique(ref__cells);
+matlab_ids=zeros(length(ref__cells),1);
+noCells=length(ref__cells);
 
-for icell=1:length(ref_on_parasol_cells)
-matlab_ids(icell)=find(datarun.cell_ids==ref_on_parasol_cells(icell));
+for icell=1:length(ref__cells)
+matlab_ids(icell)=find(datarun.cell_ids==ref__cells(icell));
 end
 
 sta_data=struct('sta',[]);
