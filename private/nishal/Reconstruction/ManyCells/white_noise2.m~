@@ -39,7 +39,7 @@ end
 
 
 mov_recons = squeeze(mov(pixX,pixY,pixCol,:))-0.5;
-vecLen=delay*sig_cells+1;
+vecLen=delay*sig_cells;
 q=zeros(vecLen,1);
 P=zeros(vecLen,vecLen);
 nSamples=trainsampleLen-delay;
@@ -48,7 +48,7 @@ b=zeros(nSamples,1);
 
 for iLen=1:1:nSamples%1800*120
     iLen;
-    a=[1];% add a constant
+    a=[];% add a constant
     for icell=cell_list'
         icell;
     a=[a;double(spk_coll{icell}(iLen:1:iLen+delay-1))];
@@ -75,7 +75,7 @@ mov_pred=0*mov_recons;
 recons_idx=trainsampleLen+1:finalLen-delay;%1:trainsampleLen%trainsampleLen+1:finalLen;%1:trainsampleLen%
 for iLen=recons_idx %1800*120
     iLen;
-    a=[1];
+    a=[];
     for icell=cell_list'
     a=[a;double(spk_coll{icell}(iLen:1:iLen+delay-1))];
     end
@@ -87,17 +87,18 @@ end
 
 m1= (mov_recons(recons_idx(1)+100:iLen));
 m2= (mov_pred(recons_idx(1)+100:iLen));
-figure;
-stairs(m1,'b');
-hold on
-stairs(m2,'r');
-%hold on;
-ylim([-1,1]);
-title(sprintf('Pix %d %d',pixX,pixY));
+% figure;
+% stairs(m1,'b');
+% hold on
+% stairs(m2,'r');
+% %hold on;
+% ylim([-1,1]);
+% title(sprintf('Pix %d %d',pixX,pixY));
 %stairs(double(mov_pred(recons_idx(1)+100:recons_idx(1)+200)>0)-0.5,'g');
 %xlim([1,100])
 % correlation 
 
+close all
 % figure;
 % %filter_bank{pixX,pixY,pixCol}.filter=filter_use;
 % %filter_bank{pixX,pixY,pixCol}.correlation=corr(mov_pred(recons_idx),mov_recons(binFrames(recons_idx)));
@@ -124,7 +125,7 @@ filter_collection(pixX,pixY).cell_list=cell_list;
     end
 end
 
-save(/)
+save('/Volumes/Analysis/nishal/recons_WN_whole_ON_nobias.mat','filter_collection','sta_data')
 
 %% 
 
@@ -155,7 +156,7 @@ cell_list=filter_collection(pixX,pixY).cell_list;
 recons_idx=trainsampleLen+1:finalLen-delay;%1:trainsampleLen%trainsampleLen+1:finalLen;%1:trainsampleLen%
 for iLen=recons_idx %1800*120
     iLen;
-    a=[1];
+    a=[];
     for icell=cell_list'
     a=[a;double(spk_coll{icell}(iLen:1:iLen+delay-1))];
     end
@@ -182,8 +183,10 @@ title(sprintf('Pix %d %d',pixX,pixY));
 
 mov_pred_full(pixX,pixY,:)=mov_pred;
 mov_recons_full(pixX,pixY,:)=mov_recons;
+%pause(0.5)
 end
 end
+save('/Volumes/Analysis/nishal/recons_WN_whole_ON_nobias.mat','filter_collection','sta_data','mov_recons_full','mov_pred_full');
 
 %% 
 figure

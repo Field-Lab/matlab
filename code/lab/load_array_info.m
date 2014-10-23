@@ -231,7 +231,7 @@ end
 
 % Get array image
 array_image_file = fullfile(matlab_code_path(), get_array_image(array_id));
-array_image = imread(array_image_file);
+%array_image = imread(array_image_file);
 
 
 % IDENTIFY DISCONNECTED ELECTRODES
@@ -309,7 +309,7 @@ array_info.y_bounds = y_bounds;
 array_info.corners = corners;
 array_info.corner_electrodes = corner_electrodes;
 array_info.image_file = array_image_file;
-array_info.image = array_image;
+%array_info.image = array_image;
 array_info.T_array_to_array_image = T_array_to_array_image;
 array_info.T_array_to_vision_ei = T_array_to_vision_ei;
 array_info.shape = shape;
