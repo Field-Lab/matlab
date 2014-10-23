@@ -111,7 +111,7 @@ hold off
 
 disp('Distance Time')
 %% victor distance
-cost=200;
+cost=5;
 cluster_dist_sim=zeros(trials);
 for i=1:trials
     spk1=sim1{i};
