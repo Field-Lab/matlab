@@ -111,7 +111,7 @@ hold off
 
 disp('Distance Time')
 %% victor distance
-cost=5;
+cost=200;
 cluster_dist_sim=zeros(trials);
 for i=1:trials
     spk1=sim1{i};
@@ -207,14 +207,17 @@ for i=1:trials
     disp(i)
 end
     
-    
-    
-    
-    
-    
-    
-    
-    
+dist{1}=cross_dist_sim;
+dist{2}=cluster_dist_sim;
+dist{3}=CBP_dist_sim;
+
+dist{4}=cross_dist_rec;
+dist{5}=cluster_dist_rec;
+dist{6}=CBP_dist_rec;
+
+save('~/Nora/dist.mat','dist')
+
+
     
     
 
