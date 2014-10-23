@@ -39,7 +39,7 @@ end
 
 
 mov_recons = squeeze(mov(pixX,pixY,pixCol,:))-0.5;
-vecLen=delay*sig_cells+1;
+vecLen=delay*sig_cells;
 q=zeros(vecLen,1);
 P=zeros(vecLen,vecLen);
 nSamples=trainsampleLen-delay;
@@ -48,7 +48,7 @@ b=zeros(nSamples,1);
 
 for iLen=1:1:nSamples%1800*120
     iLen;
-    a=[1];% add a constant
+    a=[];% add a constant
     for icell=cell_list'
         icell;
     a=[a;double(spk_coll{icell}(iLen:1:iLen+delay-1))];
@@ -75,7 +75,7 @@ mov_pred=0*mov_recons;
 recons_idx=trainsampleLen+1:finalLen-delay;%1:trainsampleLen%trainsampleLen+1:finalLen;%1:trainsampleLen%
 for iLen=recons_idx %1800*120
     iLen;
-    a=[1];
+    a=[];
     for icell=cell_list'
     a=[a;double(spk_coll{icell}(iLen:1:iLen+delay-1))];
     end
@@ -107,17 +107,17 @@ close all
 % [r,lags]=xcorr(m1,m2);
 % plot(lags,r);
 %% See filters
-figure
-  filter_len=length(q);
-cellFilter_len=(filter_len-1)/sig_cells;
-filter_coll=zeros(cellFilter_len,sig_cells);
-z=filter_use;
-for iF=1:sig_cells
-    z_cut=z((iF-1)*cellFilter_len+2:iF*cellFilter_len+1);
-filter_coll(:,iF)=z_cut;
-end
-plot(filter_coll)
-title(sprintf('Pix %d %d',pixX,pixY));
+% figure
+%   filter_len=length(q);
+% cellFilter_len=(filter_len-1)/sig_cells;
+% filter_coll=zeros(cellFilter_len,sig_cells);
+% z=filter_use;
+% for iF=1:sig_cells
+%     z_cut=z((iF-1)*cellFilter_len+2:iF*cellFilter_len+1);
+% filter_coll(:,iF)=z_cut;
+% end
+% plot(filter_coll)
+% title(sprintf('Pix %d %d',pixX,pixY));
 
 filter_collection(pixX,pixY).filter_use=filter_use;
 filter_collection(pixX,pixY).cell_list=cell_list;
@@ -125,7 +125,7 @@ filter_collection(pixX,pixY).cell_list=cell_list;
     end
 end
 
-save('/Volumes/Analysis/nishal/recons_WN_whole_ON_nobias.mat','filter_collection','sta_data')
+save('/Volumes/Analysis/nishal/recons_WN_whole_OnOFF_nobias.mat','filter_collection','sta_data')
 
 %% 
 
@@ -156,7 +156,7 @@ cell_list=filter_collection(pixX,pixY).cell_list;
 recons_idx=trainsampleLen+1:finalLen-delay;%1:trainsampleLen%trainsampleLen+1:finalLen;%1:trainsampleLen%
 for iLen=recons_idx %1800*120
     iLen;
-    a=[1];
+    a=[];
     for icell=cell_list'
     a=[a;double(spk_coll{icell}(iLen:1:iLen+delay-1))];
     end
@@ -186,7 +186,7 @@ mov_recons_full(pixX,pixY,:)=mov_recons;
 %pause(0.5)
 end
 end
-save('/Volumes/Analysis/nishal/recons_WN_whole_ON_nobias.mat','filter_collection','sta_data','mov_recons_full','mov_pred_full');
+save('/Volumes/Analysis/nishal/recons_WN_whole_OnOFF_nobias.mat','filter_collection','sta_data','mov_recons_full','mov_pred_full');
 
 %% 
 figure
