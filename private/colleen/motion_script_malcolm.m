@@ -1,9 +1,11 @@
 % DATA PARAMETERS
 run_opt.load = true; % T/F
-run_opt.data_set = '2007-03-27-1';
-%run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 14; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+% run_opt.data_set = '2007-03-27-1';
+run_opt.data_set = '2007-08-24-4';
+run_opt.data_run = 2; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.config_num = 1; % 1-4
+
+% Change this to change type of cell you are interested in
 run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = true; % T/F -- note: overwrites run_opt params
@@ -15,8 +17,8 @@ run_opt.trial_estimate_start = 120;
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
-run_opt.downsample_spikes = false;
-run_opt.raster = false; % T/F
+run_opt.downsample_spikes = false; % must run on bertha
+run_opt.raster = true; % T/F
 run_opt.trial_estimate = false; % T/F
 
 
@@ -32,7 +34,8 @@ end
 if run_opt.load
 
     clear datarun tr
-
+% datarun{1} has vision info (sta fits)
+% datarun{2} has cell_ids, spikes, triggers
     if strcmp(run_opt.data_set, '2007-03-27-1')
         datarun{1}.names.rrs_params_path='/Volumes/Analysis/2007-03-27-1/data011-nwpca/data011-nwpca.params';
         datarun{2}.names.rrs_neurons_path=sprintf('/Volumes/Analysis/2007-03-27-1/data%03d-from-data011-nwpca/data%03d-from-data011-nwpca.neurons', run_opt.data_run, run_opt.data_run);
@@ -51,24 +54,29 @@ if run_opt.load
     
 end
 
+% Gets the indicies used by vision of the particular cell type
 if run_opt.raster || run_opt.trial_estimate
     
+    
+    % ex. in vision, on midgets have IDs 17, 61, 110 etc
+    % cell_indicies1 is the index of the cell_ids array containing vision
+    % ids that corresponds to the on midget cells
     % Get indices for specified cell type and order by RF position
     cell_indices1=get_cell_indices(datarun{1},{run_opt.cell_type});
     cell_indices2=get_cell_indices(datarun{2},{run_opt.cell_type});
     
-    cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits);
-    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1));
+    cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % mean firing rate of all STA cells
+    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % mean firing rate of only on midget cells, indexes of how to sort
     
-    cell_indices1 = cell_indices1(cell_sort_idx);
+    %cell_indices sorted by their 2nd entry of sta mean 
+    cell_indices1 = cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
     cell_indices2 = cell_indices2(cell_sort_idx);
     
     % Find trial start and stop times
     start = 0;
     stop = mean(datarun{2}.triggers(2:2:end) - datarun{2}.triggers(1:2:end));
-
-    tr=datarun{2}.triggers(1:2:end); % triggers mark the beginning and end
-    t=find(datarun{2}.stimulus.trial_list==run_opt.config_num);
+    tr=datarun{2}.triggers(1:2:end); % all start triggers
+    t=find(datarun{2}.stimulus.trial_list==run_opt.config_num); %find the times when all the stimulus type 2 starts
     tr=tr(t);
     
 end
@@ -140,11 +148,20 @@ if run_opt.raster %raster
 
     while k
         if ~ishandle(hk)
-            break
+            break % script breaks until figure is closed
         end
         k=round(get(hk,'Value')); 
- 
+    % Takes in start and stop time (0-0.7274)
+    % Spikes of the cell with the lowest firing rate first
+    % start time of each stimulus type 2 trigger
+    % Finds the spikes that happened on a cell from stimulus onset to end
+    % Plot those spike times on the x axis versus the trial number on the y
+    % axis
+    % If tracking motion, the cell should respond to the bar at the same
+    % time on every trial
         psth_raster(start,stop,datarun{2}.spikes{cell_indices2(k)}',tr);
+        
+        % Title is the cell id according to vision and the mean firing rate
         title(sprintf('%d %.2f', datarun{2}.cell_ids(cell_indices2(k)), datarun{1}.vision.sta_fits{cell_indices1(k)}.mean(1) ))
 
         uiwait;
