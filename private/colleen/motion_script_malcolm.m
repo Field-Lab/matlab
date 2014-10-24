@@ -2,13 +2,17 @@
 run_opt.load = true; % T/F
 % run_opt.data_set = '2007-03-27-1';
 run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 2; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 1; % 1-4
+run_opt.data_run = 7; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 2; % 1-4 %Which type of stimulus to look at 
+%1: dark bar, x_delta = 8
+%2 dark bar, x_delta = -8
+%3 light bar, x_delta = 8
+%4 light bar, x_delta = -8
 
 % Change this to change type of cell you are interested in
 run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
-run_opt.auto_set = true; % T/F -- note: overwrites run_opt params
+run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
@@ -18,7 +22,8 @@ run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
-run_opt.raster = true; % T/F
+run_opt.raster = false; % T/F
+run_opt.rasterPerTrial = true; % T/F
 run_opt.trial_estimate = false; % T/F
 
 
@@ -55,7 +60,7 @@ if run_opt.load
 end
 
 % Gets the indicies used by vision of the particular cell type
-if run_opt.raster || run_opt.trial_estimate
+if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
     
     
     % ex. in vision, on midgets have IDs 17, 61, 110 etc
@@ -159,7 +164,7 @@ if run_opt.raster %raster
     % axis
     % If tracking motion, the cell should respond to the bar at the same
     % time on every trial
-        psth_raster(start,stop,datarun{2}.spikes{cell_indices2(k)}',tr);
+        psth_r = psth_raster(start,stop,datarun{2}.spikes{cell_indices2(k)}',tr);
         
         % Title is the cell id according to vision and the mean firing rate
         title(sprintf('%d %.2f', datarun{2}.cell_ids(cell_indices2(k)), datarun{1}.vision.sta_fits{cell_indices1(k)}.mean(1) ))
@@ -167,6 +172,60 @@ if run_opt.raster %raster
         uiwait;
     end
 end
+
+if run_opt.rasterPerTrial %raster
+    switch run_opt.config_num % 1-4 %Which type of stimulus to look at
+        case 1
+            strTit = 'Dark Bar Moving Left';
+        case 2
+            strTit = 'Dark Bar Moving Right';
+        case 3
+            strTit = 'Bright Bar Moving Left';
+        case 4
+            strTit = 'Bright Bar Moving Right';
+    end
+    
+                    
+
+
+    toPlot = cell(1,length(t));
+   
+    % Takes in start and stop time (0-0.7274)
+    % Spikes of the cell with the lowest firing rate first
+    % start time of each stimulus type 2 trigger
+    % Finds the spikes that happened on a cell from stimulus onset to end
+    % Plot those spike times on the x axis versus the trial number on the y
+    % axis
+    % If tracking motion, the cell should respond to the bar at the same
+    % time on every trial
+    for counter = 1:length(cell_indices2)
+        psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr);
+        
+        % Title is the cell id according to vision and the mean firing rate
+        for trialNum = 1:length(t)
+            [x,y] = find(psth_r == trialNum-1);
+            toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(datarun{2}.cell_ids(cell_indices2(counter)), length(x),1), repmat(datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1), length(x),1)]];
+        end
+    end
+    
+     k=1; kmin=1; kmax=length(t); hk=loop_slider(k,kmin,kmax);
+
+   while k
+        if ~ishandle(hk)
+            break % script breaks until figure is closed
+        end
+        k=round(get(hk,'Value')); 
+    plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);%, 'MarkerSize',10
+    
+    title({run_opt.cell_type, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],strTit, sprintf(' Trial Number %d',  k)})
+ xlabel('time (ms)');
+ ylabel('Centroid distance from reference');
+    uiwait;
+    end
+    
+end
+
+
 
 if run_opt.trial_estimate
     
