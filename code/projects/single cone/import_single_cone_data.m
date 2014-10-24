@@ -100,12 +100,20 @@ end
 if ~strcmp(path(1),'/') && ~strcmp(path(1), '~');
     
     path2data=datarun.names.rrs_prefix;
-    tmp=regexp(path2data,'data');
-    path2data=path2data(1:tmp(1)-1);
+    tmp=regexp(path2data,'/');
+    path2data=path2data(1:tmp(4));
     
     % assume it is in the expected folder
     file_prefix = [path2data path '/'];
-%     file_prefix = [single_cone_path path '/'];
+    
+    
+%     path2data=datarun.names.rrs_prefix;
+%     tmp=regexp(path2data,'data');
+%     path2data=path2data(1:tmp(1)-1);
+%     
+%     % assume it is in the expected folder
+%     file_prefix = [path2data path '/'];
+% %     file_prefix = [single_cone_path path '/'];
 else
     % otherwise, use the full path
     file_prefix = [path '/']; % add the trailing slash, just to be kind

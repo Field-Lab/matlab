@@ -1,0 +1,936 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"off",
+				"off"
+			],
+			[
+				"n",
+				"nPh"
+			],
+			[
+				"gfit",
+				"gfit"
+			],
+			[
+				"greedy",
+				"greedy-local"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/scratch_gratings.m",
+			"settings":
+			{
+				"buffer_size": 855,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "N = A f( K S ) \n\nN = (n x k) f ( (k x s) (s x t) ) + (n x k) (k x s) (s x t) = (n x t)\n\nfind K and A that maximize likelihood, minimize rank of A K\n\nY = C X\n\nY = (n x d) (d x t) = (n x t) (low rank)\n\nR = g(N + Y)\n\nfind A, K, Y to minimize\n\nL(R) - norm(Y)",
+			"settings":
+			{
+				"buffer_size": 254,
+				"line_ending": "Unix",
+				"name": "N = A f( K S )"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/getGratingFit.m",
+			"settings":
+			{
+				"buffer_size": 1506,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchGratings.m",
+			"settings":
+			{
+				"buffer_size": 3405,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Package Control Messages\n========================\n\nLaTeXTools:\n----------\n\n  LaTeXTools Plugin version 2013-03-07 changelog:\n  \n  NOTE: Unfortunately, I have been very busy lately, and expect to be for at least\n  another month or so. There are a lot of features I would like to add, plus the\n  parser needs more debugging. Oh, and I do need to port to ST3!\n  I'll get there. Please be patient, and thanks for your support! -- Marciano.\n  \n  New features:\n  \n  - The log parser now reports a warning, rather than an error, when it cannot correctly\n    detect file names. Therefore, unless there are TeX errors, the PDF file is shown and\n    the user can proceed as usual. Do please still report the parsing bug!\n  \n  Bugs fixed:\n  \n  - N/A\n    \n",
+			"settings":
+			{
+				"buffer_size": 744,
+				"line_ending": "Unix",
+				"name": "Package Control Messages",
+				"scratch": true
+			}
+		},
+		{
+			"file": "/Users/freeman/Desktop/notes",
+			"settings":
+			{
+				"buffer_size": 960,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 307,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotModel2d.m",
+			"settings":
+			{
+				"buffer_size": 8710,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchAnal.m",
+			"settings":
+			{
+				"buffer_size": 4196,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getEcc.m",
+			"settings":
+			{
+				"buffer_size": 2488,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/repeats/scratch_repeats_2.m",
+			"settings":
+			{
+				"buffer_size": 2250,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitABFG.m",
+			"settings":
+			{
+				"buffer_size": 1277,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitGreedy.m",
+			"settings":
+			{
+				"buffer_size": 2268,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 358.0,
+		"selected_items":
+		[
+			[
+				"packa",
+				"Package Control: Remove Package"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"install packa",
+				"Package Control: Install Package"
+			],
+			[
+				"brow",
+				"Preferences: Browse Packages"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"Packa",
+				"Package Control: Install Package"
+			],
+			[
+				"Pack",
+				"Package Control: Install Package"
+			],
+			[
+				"js",
+				"Format: Javascript"
+			],
+			[
+				"format",
+				"Format: Javascript"
+			],
+			[
+				"JSON",
+				"Pretty JSON: Reformat (Pretty Print) JSON"
+			],
+			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
+				"Package",
+				"Package Control: List Packages"
+			],
+			[
+				"Format",
+				"Format: Javascript"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"package control: Instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install package",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 575.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/syncing-notes.sh",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotSingleRetina.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotMultRetina.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getEcc.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotEcc.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchAnal.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitGreedyLocal.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/batchPlot.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotSubunitsLinesOvals.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/repeats/plotRepeat.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/repeats/getRepeat.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/repeats/scratch_repeats_2.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/repeats/repeatReliability.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitGreedy.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/masterList.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchRetinaSummary.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/loadFit.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/loadCellData.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/cone_preprocess/script_conepreprocess_wnm.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitABFG.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/loadData.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitF.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitG.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/scratch_gratings.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchGratings.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/getGratingFit.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/getGratingData.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/plotGratings.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/getGratingResp.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotPerformance.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/simulate/scratch_simulate.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchSimulate.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/shiftGratings.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/simulate/getTimeScaling.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/simulate/getSimulation.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getConeInds.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotNonLin.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotModel2d.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/do/doSubunit.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitExhaustive.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/simulate/plotSimulation.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/do/doSubunitPlot.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotTitles.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/evalFit.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitB.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/cone_preprocess/cone_preprocess_old.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/cone_preprocess/calc_cone_inputs.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/cone_preprocess/my_test_conepreprocess_script.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/cone_preprocess/test_movie_loading.m",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/SublimeREPL/SublimeREPL.sublime-settings",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/fitToJson.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/fitToJSON_load_cell.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getDefaultOpts.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getDefaultOpts",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/Default/Default (OSX).sublime-keymap",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getCellInds.m",
+		"/Users/freeman/Dropbox/Projects/retinaSubunits/code4/blur/fitGaussCones.m",
+		"/Users/freeman/subunits/css/subunits.css",
+		"/Users/freeman/subunits/v1/v1.html",
+		"/Users/freeman/subunits/v1/js/v1.js",
+		"/Users/freeman/subunits/v1/js/functions.js",
+		"/Users/freeman/subunits/v1/css/v1.css",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/Alignment/Base File.sublime-settings",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/User/Base File.sublime-settings",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/Alignment/Default (OSX).sublime-keymap",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/JsFormat/JsFormat.sublime-settings",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/JsFormat/Default (OSX).sublime-keymap",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/Abacus/Default (OSX).sublime-keymap",
+		"/Users/freeman/Library/Application Support/Sublime Text 2/Packages/SideBarEnhancements/messages/11.13.2012.1305.0.txt",
+		"/Users/freeman/subunits/v1/v1.css",
+		"/Users/freeman/subunits/v1/functions.js",
+		"/Users/freeman/subunits/v1/v1.js",
+		"/Users/freeman/subunits/v1/client/js/functions.js",
+		"/Users/freeman/subunits/v1/client/css/v1.css",
+		"/Users/freeman/subunits/v1/client/v1.html",
+		"/Users/freeman/subunits/v1/client/js/v1.js",
+		"/Users/freeman/subunits/v1/server/publish.js",
+		"/Users/freeman/subunits/v1/server/boostrap.js",
+		"/Users/freeman/subunits/v1/server/bootstrap.js",
+		"/Users/freeman/subunits/v1/client/js/fisheye.js",
+		"/Users/freeman/Dropbox/Homepage/v3/include/about.php",
+		"/Users/freeman/Dropbox/Resume/freemanPublications.bib"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"no cones",
+			"polarity",
+			"dat",
+			"r2ImproveThresh",
+			"data",
+			"sta",
+			"timeCourses",
+			"stim",
+			"gFit",
+			"color",
+			"ax_handle",
+			"equal",
+			"sub2ind",
+			"nonlin",
+			"cellIds",
+			"durs",
+			"dat",
+			"dat,",
+			"dat ",
+			"datarun",
+			"num_cells",
+			"mainGraphContainer",
+			"translate",
+			"redraw",
+			"style",
+			"text",
+			"exit",
+			"detailPaneContainer",
+			"groupPathDisplay"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"repeatrun"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/scratch_gratings.m",
+					"settings":
+					{
+						"buffer_size": 855,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								452,
+								452
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								254,
+								254
+							]
+						],
+						"settings":
+						{
+							"auto_name": "N = A f( K S )",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/gratings/getGratingFit.m",
+					"settings":
+					{
+						"buffer_size": 1506,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								481,
+								481
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchGratings.m",
+					"settings":
+					{
+						"buffer_size": 3405,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1254,
+								1254
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"settings":
+					{
+						"buffer_size": 744,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								744,
+								744
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/Users/freeman/Desktop/notes",
+					"settings":
+					{
+						"buffer_size": 960,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								382,
+								382
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/Users/freeman/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+					"settings":
+					{
+						"buffer_size": 307,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/plotting/plotModel2d.m",
+					"settings":
+					{
+						"buffer_size": 8710,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								104,
+								104
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/batch/batchAnal.m",
+					"settings":
+					{
+						"buffer_size": 4196,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2823,
+								2823
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/data/getEcc.m",
+					"settings":
+					{
+						"buffer_size": 2488,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								55,
+								55
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/repeats/scratch_repeats_2.m",
+					"settings":
+					{
+						"buffer_size": 2250,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1564,
+								904
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitABFG.m",
+					"settings":
+					{
+						"buffer_size": 1277,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								900,
+								900
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "/Users/freeman/Dropbox/Projects/retinaSubunits/code4/fitting/fitGreedy.m",
+					"settings":
+					{
+						"buffer_size": 2268,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 300.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 30.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"getecc",
+				"data/getEcc.m"
+			],
+			[
+				"plotsubunitlinesovals",
+				"plotting/plotSubunitsLinesOvals.m"
+			],
+			[
+				"batchretina",
+				"batch/batchRetinaSummary.m"
+			],
+			[
+				"plotsubunit",
+				"plotting/plotSubunitsLinesOvals.m"
+			],
+			[
+				"fitgree",
+				"fitting/fitGreedyLocal.m"
+			],
+			[
+				"loadfit",
+				"fitting/loadFit.m"
+			],
+			[
+				"loadcelldata",
+				"data/loadCellData.m"
+			],
+			[
+				"loaddata",
+				"data/loadData.m"
+			],
+			[
+				"loadcell",
+				"data/loadCellData.m"
+			],
+			[
+				"masterlist",
+				"data/masterList.m"
+			],
+			[
+				"getgratingresp",
+				"gratings/getGratingResp.m"
+			],
+			[
+				"plotgra",
+				"gratings/plotGratings.m"
+			],
+			[
+				"getconeinds",
+				"data/getConeInds.m"
+			],
+			[
+				"plotnon",
+				"plotting/plotNonLin.m"
+			],
+			[
+				"plotsubunitslinesovals",
+				"plotting/plotSubunitsLinesOvals.m"
+			],
+			[
+				"plot2d",
+				"plotting/plotModel2d.m"
+			],
+			[
+				"plotnonlin",
+				"plotting/plotNonLin.m"
+			],
+			[
+				"plotmo",
+				"plotting/plotModel2d.m"
+			],
+			[
+				"getsimulation",
+				"simulate/getSimulation.m"
+			],
+			[
+				"dosubunit",
+				"do/doSubunit.m"
+			],
+			[
+				"dosubunitplot",
+				"do/doSubunitPlot.m"
+			],
+			[
+				"dosubun",
+				"do/doSubunitPlot.m"
+			],
+			[
+				"plottitle",
+				"plotting/plotTitles.m"
+			],
+			[
+				"plotmodel2d",
+				"plotting/plotModel2d.m"
+			],
+			[
+				"fitgreedy",
+				"fitting/fitGreedy.m"
+			],
+			[
+				"evalfit",
+				"fitting/evalFit.m"
+			],
+			[
+				"fitgre",
+				"fitting/fitGreedy.m"
+			],
+			[
+				"fitb",
+				"fitting/fitB.m"
+			],
+			[
+				"fitab",
+				"fitting/fitABFG.m"
+			],
+			[
+				"load",
+				"data/loadData.m"
+			],
+			[
+				"dosubu",
+				"do/doSubunit.m"
+			],
+			[
+				"batchplot",
+				"plotting/batchPlot.m"
+			],
+			[
+				"getcellinds",
+				"data/getCellInds.m"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"home",
+				"/Users/freeman/Dropbox/Homepage/v4/sublime/homepage.sublime-project"
+			],
+			[
+				"",
+				"/Users/freeman/Dropbox/Projects/aspect/sublime/aspect.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 205.0,
+	"status_bar_visible": true
+}

@@ -72,7 +72,7 @@ elseif isfield(datarun.names, 'rrs_movie_path') && isfield(datarun.names, 'rrs_g
     stimsource = '.movie and .globals files';
 end
 
-% load into datarun, and check for consistency
+% load into datarun, and check for consistency 
 datarun = sync_stimulus(datarun,the_stimulus,stimsource);
     
 % incorporate into datarun
