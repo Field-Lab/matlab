@@ -1,3 +1,4 @@
+clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 % run_opt.data_set = '2007-03-27-1';
@@ -187,7 +188,7 @@ if run_opt.rasterPerTrial %raster
     end
 
     toPlot = cell(1,length(t));
-    speed =2;
+    speed =0.09;
     % Takes in start and stop time (0-0.7274)
     % Spikes of the cell with the lowest firing rate first
     % start time of each stimulus type 2 trigger
@@ -198,11 +199,23 @@ if run_opt.rasterPerTrial %raster
     % time on every trial
     for counter = 1:length(cell_indices2)
         psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr);
+        posThisCell = datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1);
+
+        posFarthestCell = datarun{1}.vision.sta_fits{cell_indices1(1)}.mean(1);
+
         
+        cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
         % Title is the cell id according to vision and the mean firing rate
         for trialNum = 1:length(t)
             [x,y] = find(psth_r == trialNum-1);
-            toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1) - datarun{1}.vision.sta_fits{cell_indices1(1)}.mean(1), length(x),1)/speed, repmat(datarun{2}.cell_ids(cell_indices2(counter)), length(x),1), repmat(datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1), length(x),1)]];
+            if run_opt.config_num == 1 || run_opt.config_num == 3
+                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(posThisCell - posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+
+        else
+                       toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(-posThisCell + posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+
+            end
+        
         end
     end
     
@@ -213,6 +226,8 @@ if run_opt.rasterPerTrial %raster
             break % script breaks until figure is closed
         end
         k=round(get(hk,'Value'));
+        y_scale = 1;
+        Color = ['k', '.'];
         plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);%, 'MarkerSize',10
         
         title({run_opt.cell_type, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],strTit, sprintf(' Trial Number %d',  k)})
