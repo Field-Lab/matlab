@@ -2,16 +2,16 @@ clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 % run_opt.data_set = '2007-03-27-1';
-run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 7; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_set = '2007-03-27-1';
+run_opt.data_run = 18; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.config_num = 2; % 1-4 %Which type of stimulus to look at
-%1: dark bar, x_delta = 8
+%1: dark bar, x_delta= 8
 %2 dark bar, x_delta = -8
 %3 light bar, x_delta = 8
 %4 light bar, x_delta = -8
 
 % Change this to change type of cell you are interested in
-run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
@@ -27,6 +27,7 @@ run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = true; % T/F
 run_opt.trial_estimate = false; % T/F
 
+    speed =0.09;
 
 tic;
 
@@ -115,7 +116,7 @@ if run_opt.downsample_spikes
                 end
             else
                 run_opt.trial_estimate = false; % if no downsampling, don't calculate estimates
-            end
+            end                                                                                                                                          
         elseif n2>n1
             if strcmp(run_opt.cell_type, 'On midget')
                 for i=cell_indices2
@@ -166,6 +167,7 @@ if run_opt.raster %raster
         % axis
         % If tracking motion, the cell should respond to the bar at the same
         % time on every trial
+       
         psth_r = psth_raster(start,stop,datarun{2}.spikes{cell_indices2(k)}',tr);
         
         % Title is the cell id according to vision and the mean firing rate
@@ -188,7 +190,7 @@ if run_opt.rasterPerTrial %raster
     end
 
     toPlot = cell(1,length(t));
-    speed =0.09;
+
     % Takes in start and stop time (0-0.7274)
     % Spikes of the cell with the lowest firing rate first
     % start time of each stimulus type 2 trigger
@@ -206,13 +208,16 @@ if run_opt.rasterPerTrial %raster
         
         cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
         % Title is the cell id according to vision and the mean firing rate
+%          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
         for trialNum = 1:length(t)
             [x,y] = find(psth_r == trialNum-1);
             if run_opt.config_num == 1 || run_opt.config_num == 3
-                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(posThisCell - posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+%                         toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(posThisCell - posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
 
         else
-                       toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(-posThisCell + posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+%                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(-posThisCell + posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+                       toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
 
             end
         
@@ -257,7 +262,8 @@ if run_opt.trial_estimate
     delete(poolobj);
     
     % save estimates
-    save(sprintf('/home/vision/Dropbox/Lab/Development/matl ab-standard/private/malcolm/results/%s/downsample_%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+%     save('estimates10272014_03272007_18_1_onp','estimates');
+    save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 end
 
 % figure;
@@ -266,4 +272,9 @@ end
 % hold on
 % end
 
+
+% addpath('/Users/vision/Desktop/GitHub code repository/private/colleen/resultsColleen/2007-03-27-1')
+% load ('estimates10272014_03272007_18_1_onp.mat')
+% figure; histfit(estimates, 20)
+% title('Off parasol 3/27/07-1 Run 18 Stim 1')
 ElapsedTime=toc;

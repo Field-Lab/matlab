@@ -2,13 +2,13 @@ results = dataset([],[],[],[],[],[],[],'VarNames',...
     {'Experiment','Run','Speed','Config','CellType','MeanEstimate','MADEstimate'});
 cell_types = {'On parasol','Off parasol','On midget','Off midget'};
 % options to make various figures
-load_results = false; % this also produces a plot on midget vs on parasol median absolute deviation (MAD)
+load_results = true; % this also produces a plot on midget vs on parasol median absolute deviation (MAD)
 save_figures = false; % saves figures to file
-make_estimate_histogram = false;
+make_estimate_histogram = true;
 make_nearest_neighbor_histogram = false;
 make_firing_rate_plot = false; % need to have loaded data as in motion_script for this to work
 make_electrode_map = false;
-load_results_downsample = true; % also produces a plot of on midget vs on parasol MAD
+load_results_downsample = false; % also produces a plot of on midget vs on parasol MAD
 
 % load results from 2007-03-27-1 dataset
 if load_results
