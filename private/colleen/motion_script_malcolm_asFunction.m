@@ -1,10 +1,11 @@
+function motion_script_malcolm_asFunction(data_set, data_run, config_num, cell_type)
 clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
-run_opt.data_set = '2007-08-24-4';
+run_opt.data_set = data_set;
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 11; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = data_run; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = config_num; % 1-4 %Which type of stimulus to look at
 % stim categories not consistant
 %1: dark bar, x_delta= 8
 %2 dark bar, x_delta = -8
@@ -12,7 +13,7 @@ run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 %4 light bar, x_delta = -8
 
 % Change this to change type of cell you are interested in
-run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
+run_opt.cell_type = cell_type; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
@@ -264,7 +265,9 @@ if run_opt.trial_estimate
     
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
-    save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+
 end
 
 % figure;
