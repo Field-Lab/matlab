@@ -8,4 +8,5 @@ cell_type = {'Off midget'; 'Off parasol'; 'On midget'; 'On parasol'; 'Off midget
 
 for i = 1:length(config_num)
 motion_script_malcolm_asFunction(data_set{i}, data_run(i), config_num(i), cell_type{i})
+fprintf('Trial Number %d done\n',i )
 end
