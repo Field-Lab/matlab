@@ -1,17 +1,17 @@
 clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
-% run_opt.data_set = '2007-03-27-1';
 run_opt.data_set = '2007-03-27-1';
-run_opt.data_run = 17; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 2; % 1-4 %Which type of stimulus to look at
+% run_opt.data_set = '2007-03-27-1';
+run_opt.data_run = 11; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 %1: dark bar, x_delta= 8
 %2 dark bar, x_delta = -8
 %3 light bar, x_delta = 8
 %4 light bar, x_delta = -8
 
 % Change this to change type of cell you are interested in
-run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
@@ -24,7 +24,7 @@ run_opt.velocity_lim = 150; % >0
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
 run_opt.raster = false; % T/F
-run_opt.rasterPerTrial = true; % T/F
+run_opt.rasterPerTrial = false; % T/F
 run_opt.trial_estimate = false; % T/F
 
     speed =0.09;
@@ -71,7 +71,7 @@ if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
     % Get indices for specified cell type and order by RF position
     cell_indices1=get_cell_indices(datarun{1},{run_opt.cell_type});
     cell_indices2=get_cell_indices(datarun{2},{run_opt.cell_type});
-    
+    true
     cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
     [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % x axis position of only on midget cells, indexes of how to sort
     
@@ -149,7 +149,7 @@ if run_opt.downsample_spikes
         end
     end
 end
-
+true
 if run_opt.raster %raster
     
     k=1; kmin=1; kmax=length(cell_indices2); hk=loop_slider(k,kmin,kmax);
@@ -246,9 +246,8 @@ end
 
 
 if run_opt.trial_estimate
-    
-    % start parallel pool
-    poolobj = parpool;
+        % start parallel pool
+        poolobj = parpool;
     
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 30, 'LargeScale', 'off');
     estimates = zeros(size(tr));
@@ -263,7 +262,7 @@ if run_opt.trial_estimate
     
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
-    save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+    save(sprintft('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 end
 
 % figure;
