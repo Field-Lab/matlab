@@ -3,18 +3,23 @@
 % electrodes and for different stimulation amplitudes for 1-electrode stim
 % Dataset 2014-07-24-0
 %% Plot the artifact recorded using TTX
-datasets = [2:13 25]
-for dataset = datasets;
-	patts = [40 36 30 29 9 380 371 363 374 325 381 347];
-	colors = colormap(jet);
-	colors = colors(1:2:end,:);
-	colors=colors(round(linspace(1,size(colors,1),length(patts))),:)
-	saveFigs = 0;
-	saveFiles = 0;
+
+%Parameters
+datasets = [2:13 25]; 
+patts = [40 36 30 29 9 380 371 363 374 325 381 347];
+saveFigs = 0;
+saveFiles = 0;
+
+%define colormap
+colors = colormap(jet);
+colors = colors(1:2:end,:);
+colors=colors(round(linspace(1,size(colors,1),length(datasets))),:)
+
+for p = patts;
+
 	figure;
-	pcnt = 1; 
-	for p = patts;
-	%for p = 36;
+	dcnt = 1; 
+		for dataset = datasets;
 			%pathToAnalysisData = '/Volumes/Analysis/2014-07-24-0/data017/';
 			pathToAnalysisData = ['/Volumes/Analysis/2014-10-08/data' num2str(dataset,'%03d') '/'];
 			patternNo          = p;
@@ -28,7 +33,7 @@ for dataset = datasets;
 			%lastTraces = mean(squeeze(dataTraces(:,recordingElec,:)));
 			%figure;
 			%for m = 2:size(movieNos, 2)
-			for m = 1:size(movieNos, 2)
+			for m = 1:size(movieNos, 2); 
 					
 					dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
 							movieNos(m), 99999);
@@ -36,11 +41,11 @@ for dataset = datasets;
 
 					tracesToPlot = theseTraces; 
 					timepoints = linspace(0,size(tracesToPlot,2)/sampRate * 1000, size(tracesToPlot,2));
-					plot(timepoints, tracesToPlot','Color',colors(pcnt,:)); hold on; 
+					plot(timepoints, tracesToPlot','Color',colors(dcnt,:)); hold on; 
 					
 					%stimAmp = getStimAmps(pathToAnalysisData, patternNo, movieNos(m), 512);
 					stimAmp = getStimAmps(pathToAnalysisData, patternNo, movieNos(m));
-					text(5.1,textPositions(m),num2str(stimAmp),'Color',colors(pcnt,:));
+					text(5.1,textPositions(m),num2str(stimAmp),'Color',colors(dcnt,:));
 					xlim([0 6]); ylim([-1200 500]);
 					lastTraces = theseTraces; 
 			end
@@ -56,6 +61,6 @@ for dataset = datasets;
 					% savefig(savename,'eps');
 			end
 
-			pcnt=pcnt+1; 
+			dcnt=dcnt+1; 
 	end
 end
