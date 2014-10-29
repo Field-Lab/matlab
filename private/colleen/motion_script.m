@@ -191,33 +191,21 @@ if run_opt.load % load data fresh
     clear datarun tr
 
     if strcmp(run_opt.data_set, '2007-03-27-1')
-        if run_opt.remote 
-            datarun{1}.names.rrs_params_path='/snle/analysis/2007-03-27-1/data011-nwpca/data011-nwpca.params';
-            datarun{2}.names.rrs_neurons_path=sprintf('/snle/analysis/2007-03-27-1/data%03d-from-data011-nwpca/data%03d-from-data011-nwpca.neurons', run_opt.data_run, run_opt.data_run);
-            datarun{2}.names.stimulus_path=sprintf('/braid/snle/analysis-archive/Experiments/Array/Analysis/2007-03-27-1/stimuli/s%02d', run_opt.data_run);
-        else
-            datarun{1}.names.rrs_params_path='/Data/2007-03-27-1/data011-nwpca/data011-nwpca.params';
-            datarun{2}.names.rrs_neurons_path=sprintf('/Data/2007-03-27-1/data%03d-from-data011-nwpca/data%03d-from-data011-nwpca.neurons', run_opt.data_run, run_opt.data_run);
-            datarun{2}.names.stimulus_path=sprintf('/braid/snle/analysis-archive/Experiments/Array/Analysis/2007-03-27-1/stimuli/s%02d', run_opt.data_run);
-        end
+        datarun{1}.names.rrs_params_path='/Volumes/Analysis/2007-03-27-1/data011-nwpca/data011-nwpca.params';
+        datarun{2}.names.rrs_neurons_path=sprintf('/Volumes/Analysis/2007-03-27-1/data%03d-from-data011-nwpca/data%03d-from-data011-nwpca.neurons', run_opt.data_run, run_opt.data_run);
+        datarun{2}.names.stimulus_path=sprintf('/Volumes/Analysis/2007-03-27-1/stimuli/s%02d', run_opt.data_run);
     elseif strcmp(run_opt.data_set, '2007-08-24-4')
-        if run_opt.remote 
-            datarun{1}.names.rrs_params_path='/snle/analysis/2007-08-24-4/data001-nwpca/data001-nwpca.params';
-            datarun{2}.names.rrs_neurons_path=sprintf('/snle/analysis/2007-08-24-4/data%03d-from-data001-nwpca/data%03d-from-data001-nwpca.neurons', run_opt.data_run, run_opt.data_run);
-            datarun{2}.names.stimulus_path=sprintf('/braid/snle/analysis-archive/Experiments/Array/Analysis/2007-08-24-4/Stimuli/s%02d', run_opt.data_run);
-        else
-            datarun{1}.names.rrs_params_path='/Data/2007-08-24-4/data001-nwpca/data001-nwpca.params';
-            datarun{2}.names.rrs_neurons_path=sprintf('/Data/2007-08-24-4/data%03d-from-data001-nwpca/data%03d-from-data001-nwpca.neurons', run_opt.data_run, run_opt.data_run);
-            datarun{2}.names.stimulus_path=sprintf('/braid/snle/analysis-archive/Experiments/Array/Analysis/2007-08-24-4/Stimuli/s%02d', run_opt.data_run);
-        end
+        datarun{1}.names.rrs_params_path='/Volumes/Analysis/2007-08-24-4/data001-nwpca/data001-nwpca.params';
+        datarun{2}.names.rrs_neurons_path=sprintf('/Volumes/Analysis/2007-08-24-4/data%03d-from-data001-nwpca/data%03d-from-data001-nwpca.neurons', run_opt.data_run, run_opt.data_run);
+        datarun{2}.names.stimulus_path=sprintf('/Volumes/Analysis/2007-08-24-4/Stimuli/s%02d', run_opt.data_run);
+    elseif strcmp(run_opt.data_set, '2005-04-26-0')
+        datarun{1}.names.rrs_params_path='/Volumes/Analysis/2005-04-26-0/data';
     end
     opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
-
     datarun=load_data(datarun,opt);
-
-    datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true)); 
-
-    datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0); 
+    datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
+    datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0);
+    
 end
 
 tic;
@@ -388,14 +376,14 @@ if run_opt.auto_speed_tuning
 end
 
 if run_opt.pop_speed_tuning
-    if matlabpool('size') <= 0
-        matlabpool
-    end
+%     if matlabpool('size') <= 0
+%         matlabpool
+%     end
     
     v = linspace(1, run_opt.velocity_lim, 50);
     
     sig_str = zeros(size(v));
-    parfor i = 1:length(v)
+    for i = 1:length(v)
         sig_str(i) = pop_motion_signal(v(i), datarun{2}.spikes, cell_indices1, cell_indices2, cell_x_pos, tr(run_opt.trial_num), stop, run_opt.tau, run_opt.tol*.1);
         
         fprintf('*')
@@ -405,9 +393,9 @@ if run_opt.pop_speed_tuning
     xlabel('velocity')
     ylabel('net rightward motion signal')
     title(sprintf('motion signal strength  in trial number %d', run_opt.trial_num))
-    if run_opt.savefig
-        export_fig(sprintf('figs/%s/%s_data_run_%02d_config_%d_trial_%d', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num, run_opt.trial_num), '-png', '-r300', '-painters')
-    end
+%     if run_opt.savefig
+%         export_fig(sprintf('figs/%s/%s_data_run_%02d_config_%d_trial_%d', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num, run_opt.trial_num), '-png', '-r300', '-painters')
+%     end
 end
 
 if run_opt.trial_estimate

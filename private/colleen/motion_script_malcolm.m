@@ -3,7 +3,7 @@ clear toPlot
 run_opt.load = true; % T/F
 % run_opt.data_set = '2007-03-27-1';
 run_opt.data_set = '2007-03-27-1';
-run_opt.data_run = 18; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 17; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.config_num = 2; % 1-4 %Which type of stimulus to look at
 %1: dark bar, x_delta= 8
 %2 dark bar, x_delta = -8
