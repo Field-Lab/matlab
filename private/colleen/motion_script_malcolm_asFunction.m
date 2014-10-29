@@ -27,7 +27,7 @@ run_opt.velocity_lim = 150; % >0
 run_opt.downsample_spikes = false; % must run on bertha
 run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = false; % T/F
-run_opt.trial_estimate = false; % T/F
+run_opt.trial_estimate = true; % T/F
 
     speed =0.09;
 
