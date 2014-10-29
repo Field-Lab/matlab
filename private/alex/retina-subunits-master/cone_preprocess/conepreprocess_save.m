@@ -1,6 +1,7 @@
 function datarun = conepreprocess_save(inrun, varargin)
 
 opts = inputParser();
+opts.addParamValue('date',[]);
 opts.addParamValue('cone_data_ind', []);
 opts.addParamValue('cell_types', {1,2,3,4,5});
 opts.parse(varargin{:});
@@ -27,7 +28,7 @@ savepath = [conepreprocess_path parsed.piece_fullname];
 savepath =  [savepath '/subunits/' parsed.run_full_name];
 mkdir(savepath);
 if ischar(opts.cone_data_ind)
-    savepath = [savepath '/' opts.cone_data_ind];
+    savepath = [savepath '/' opts.cone_data_ind '/' opts.date '/' parsed.run_full_name];
     mkdir(savepath);
 end
 savepath =  [savepath '/conepreprocess.mat'];
