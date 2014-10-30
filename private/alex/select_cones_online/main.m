@@ -2,20 +2,22 @@
 clear
 close all
 clear
-global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle
-
+global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle stim
 cones={}; myCells=[];
 
-datarun = load_data(fullfile(server_path(), '2013-08-19-2/streamed/data001/data001'));
+path2load = fullfile(server_path(), '2013-08-19-2/streamed/data001/data001');
+path2save=fullfile(server_path(), '2013-08-19-2/stimuli/maps/');
 
+mapName = 'map_data001';
 cellType=4;
+nnd_scale=3;
+frame=5;
 
+
+datarun = load_data(path2load);
 datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
 datarun = set_polarities(datarun);
-
-nnd_scale=3;
-frame=5;
 
 
 cell_indices = get_cell_indices(datarun, {cellType});
@@ -69,13 +71,11 @@ hAdjust=uicontrol('style','pushbutton','Units','normalized','position',[0.1 0.52
     'string','adjust','fontsize',16,'callback','adjust_cones(frame)');
 
 
-%% still do!
-
 hCheckOtherCells=uicontrol('style','pushbutton','Units','normalized','position',[0.67 0.52 0.12 0.03],...
     'string','check others','fontsize',16,'callback','check_other_cells(frame)');
 
 hSave=uicontrol('style','pushbutton','Units','normalized','position',[0.40 0.3 0.12 0.03],...
-    'string','save','fontsize',16,'callback','save_stim');
+    'string','save','fontsize',16,'callback','save_cones(path2save, mapName)');
 
 
 

@@ -1,7 +1,9 @@
 function adjust_cones(frame)
 
-global datarun cones myCells
+global datarun cones myCells stim
 persistent myPlot
+
+stim=[];
 
 stixel=datarun.stimulus.stixel_height;
 
@@ -37,6 +39,8 @@ midStixel=size(all_resized,1)/2-0.5;
 
 stimarea=4;
 
+stim.stimarea=stimarea;
+
 if ishandle(myPlot)
     delete(myPlot)
 end
@@ -60,7 +64,10 @@ for i=1:length(myCones)
     a=[ypeak,xpeak]-midStixel;
     
     a(2)=myCones(i,1)*stixel - midStixel -2 + a(2);    
-    a(1)=myCones(i,2)*stixel - midStixel -2 + a(1);  
+    a(1)=myCones(i,2)*stixel - midStixel -2 + a(1);
+    
+    stim.coord(i,1)=a(2);
+    stim.coord(i,2)=a(1);    
 
 %     plot(a(2),a(1),'*r')
     plot([a(2)-stimarea a(2)+stimarea],[a(1)-stimarea a(1)-stimarea],col)
@@ -81,3 +88,4 @@ for i=1:length(myCones)
 end
 axis ij
 axis([0 stixel*datarun.stimulus.field_width 0 stixel*datarun.stimulus.field_height])
+
