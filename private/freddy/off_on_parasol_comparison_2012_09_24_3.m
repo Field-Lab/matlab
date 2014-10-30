@@ -137,60 +137,6 @@ for j = 1:1:size(neurons,2)         % For all ON parasol cells
 end
 
 
-%%
-act_max = 4;
-act_min = 0.5;
-
-tmp = figure;
-rgbVals = colormap(tmp,gray);
-rgbVals = flipud(rgbVals);
-rgbVals(end,:) = 0;
-close(tmp);
-
-% Overlay rf fits and IDs
-figure; set(gcf,'Color',[1 1 1]); hold on;
-for n = 1:1:size(on_parasol,2)
-    currentActThresh_single = activationThresh_singleElec_on(n,:);
-    [~,J,val] = find(currentActThresh_single);
-    minThresh = min(val);
-    bestStimElec = J(find(val == min(val)));
-    if ~isempty(minThresh)
-        rgbIndex = (minThresh - act_min)/(act_max-act_min); %scale between 0 and 1
-        rgbIndex = round(rgbIndex * size(rgbVals,1));
-        if rgbIndex<1; rgbIndex = 1; elseif rgbIndex>size(rgbVals,1); rgbIndex = size(rgbVals,1); end
-        
-        plot_rf_summaries(datarun, on_parasol(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color',rgbVals(rgbIndex,:));
-    else
-        plot_rf_summaries(datarun, on_parasol(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color','k');
-    end
-    
-    disp(['activation threshold for neuron ' num2str(on_parasol(n)) ' = ' num2str(minThresh) ' uA at electrode ' num2str(bestStimElec) ' (single electrode stim)']);
-end
-axis image; axis off;
-colorbar; colormap(rgbVals); caxis([act_min act_max]);
-title('ON parasol activation thresholds, single electrode stimulation');
-
-%figure; set(gcf,'Color',[1 1 1]); hold on;
-for n = 1:1:size(off_parasol,2)
-    currentActThresh_single = activationThresh_singleElec_off(n,:);
-    [~,J,val] = find(currentActThresh_single);
-    minThresh = min(val);
-    bestStimElec = J(find(val == min(val)));
-    if ~isempty(minThresh)
-        rgbIndex = (minThresh - act_min)/(act_max-act_min); %scale between 0 and 1
-        rgbIndex = round(rgbIndex * size(rgbVals,1));
-        if rgbIndex<1; rgbIndex = 1; elseif rgbIndex>size(rgbVals,1); rgbIndex = size(rgbVals,1); end
-        
-        plot_rf_summaries(datarun, off_parasol(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color',rgbVals(rgbIndex,:));
-    else
-        plot_rf_summaries(datarun, off_parasol(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color','k');
-    end
-    
-    disp(['activation threshold for neuron ' num2str(on_parasol(n)) ' = ' num2str(minThresh) ' uA at electrode ' num2str(bestStimElec) ' (single electrode stim)']);
-end
-axis image; axis off;
-colorbar; colormap(rgbVals); caxis([act_min act_max]);
-title('OFF parasol activation thresholds, single electrode stimulation');
 
 %%
 
@@ -210,53 +156,44 @@ data.activationThresh = activationThresh_singleElec;
 data.currentIndex = currentIndex;
 data.responseProbs = responseCurves(:,:,currentIndex);
 data.responseCurves = responseCurves;
+data.off_parasol = off_parasol;
+data.on_parasol = on_parasol;
 data.neurons = neurons;
 data.datarun = datarun;
 guidata(fig, data);
 for n = 1:1:size(neurons,2)
-    currentActThresh_single = activationThresh_singleElec(n,:);
     currentProb = responseProbs(n,:);
-    [~,J,val] = find(currentActThresh_single);
-    minThresh = min(val);
-    bestStimElec = J(find(val == min(val)));
     [~,~,val] = find(currentProb);
+    fit_color = 'k';
     if ~isempty(val)
         rgbIndex = max(val);
         rgbIndex = round(rgbIndex * size(rgbVals,1));
         if rgbIndex<1; rgbIndex = 1; elseif rgbIndex>size(rgbVals,1); rgbIndex = size(rgbVals,1); end
-        
-        plot_rf_summaries(datarun, neurons(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color',rgbVals(rgbIndex,:));
+        overlaps = [];
+        if ismember(neurons(n), off_parasol)
+            overlaps = getOverlappingNeurons(datarun, neurons(n), neurons);
+            overlaps = overlaps(overlaps ~= 0);
+        end
+        if ~isempty(overlaps)
+            for overlap = overlaps
+                index = find(neurons == overlap);
+                if abs(max(find(responseProbs(index,:))) - max(val)) < 0.1
+                  fit_color = 'r';
+                end
+            end
+        end
+        plot_rf_summaries(datarun, neurons(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', fit_color,'fill_color',rgbVals(rgbIndex,:));
     else
-        plot_rf_summaries(datarun, neurons(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color','k');
+        plot_rf_summaries(datarun, neurons(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', fit_color,'fill_color','k');
     end
     
-    disp(['activation threshold for neuron ' num2str(neurons(n)) ' = ' num2str(minThresh) ' uA at electrode ' num2str(bestStimElec) ' (single electrode stim)']);
 end
 axis image; axis off;
 colorbar; colormap(rgbVals); caxis([act_min act_max]);
-title('parasol response prob, single electrode stimulation');
+title('parasol response prob, bi-electrode stimulation');
+
+
+
 %%
-%figure; set(gcf,'Color',[1 1 1]); hold on;
-for n = 1:1:size(off_parasol,2)
-    currentActThresh_single = activationThresh_singleElec_off(n,:);
-    [~,J,val] = find(currentActThresh_single);
-    minThresh = min(val);
-    bestStimElec = J(find(val == min(val)));
-    if ~isempty(minThresh)
-        rgbIndex = (minThresh - act_min)/(act_max-act_min); %scale between 0 and 1
-        rgbIndex = round(rgbIndex * size(rgbVals,1));
-        if rgbIndex<1; rgbIndex = 1; elseif rgbIndex>size(rgbVals,1); rgbIndex = size(rgbVals,1); end
-        
-        plot_rf_summaries(datarun, off_parasol(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color',rgbVals(rgbIndex,:));
-    else
-        plot_rf_summaries(datarun, off_parasol(n), 'clear', false, 'label', true, 'label_color', 'g', 'plot_fits', true, 'fit_color', 'k','fill_color','k');
-    end
-    
-    disp(['activation threshold for neuron ' num2str(on_parasol(n)) ' = ' num2str(minThresh) ' uA at electrode ' num2str(bestStimElec) ' (single electrode stim)']);
-end
-axis image; axis off;
-colorbar; colormap(rgbVals); caxis([act_min act_max]);
-title('OFF parasol activation thresholds, single electrode stimulation');
 
-
-
+overlaps = getOverlappingNeurons(datarun, neurons);
