@@ -56,12 +56,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 run_opt.load = true; % T/F
-run_opt.data_set = '2007-03-27-1';
-%run_opt.data_set = '2007-08-24-4';
+% run_opt.data_set = '2007-03-27-1';
+run_opt.data_set = '2007-08-24-4';
 run_opt.remote = true; % T/F
-run_opt.data_run = 18; % 12-19
+run_opt.data_run = 7; % 12-19
 run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
-run_opt.config_num = 1; % 1-4
+run_opt.config_num = 3; % 1-4
 run_opt.raster = true; % T/F
 run_opt.trial_raster = true; % T/F
 run_opt.trial_raster_shift = true; % T/F
@@ -75,8 +75,8 @@ run_opt.savefig = true; % T/F
 run_opt.trial_num = 1; % > 0
 run_opt.trial_estimate = false; % T/F
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
-run_opt.trial_estimate_start = 120;
-run_opt.data_run_plots = true; % T/F
+run_opt.trial_estimate_start = 96;
+run_opt.data_run_plots = false; % T/F
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 
 % just some presets so I don't have to change every param each time I
