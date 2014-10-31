@@ -21,7 +21,8 @@ if ~strcmp(WritePathBase(end),filesep)
 end
 
 % Appends this number to 'data ---'
-fileNos = [1 2 3 4 5];
+%fileNos = [1 2 3 4 5];
+fileNos = [3 4 5];
 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds
@@ -73,7 +74,7 @@ for i = fileNos
 %     Generates the "p m" files (the pattern-movie files), the
 %     stimulus_files, and the status_files
 
-NS_SaveRespForMovieAllPatternsAllChannelsNew(rawDataPath,WritePath,NS_GlobalConstants,traceLength);
+NS_SaveRespForMovieAllPatternsAllChannelsNew_sasi(rawDataPath,WritePath,NS_GlobalConstants,traceLength);
     
     %%%%%% special %%%%%%%
     
