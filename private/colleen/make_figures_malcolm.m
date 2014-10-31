@@ -5,10 +5,10 @@ cell_types = {'On parasol','Off parasol','On midget','Off midget'};
 load_results = true; % this also produces a plot on midget vs on parasol median absolute deviation (MAD)
 save_figures = false; % saves figures to file
 make_estimate_histogram = true;
-make_nearest_neighbor_histogram = false;
-make_firing_rate_plot = false; % need to have loaded data as in motion_script for this to work
-make_electrode_map = false;
-load_results_downsample = false; % also produces a plot of on midget vs on parasol MAD
+make_nearest_neighbor_histogram = true;
+make_firing_rate_plot = true; % need to have loaded data as in motion_script for this to work
+make_electrode_map = true;
+load_results_downsample = true; % also produces a plot of on midget vs on parasol MAD
 
 % load results from 2007-03-27-1 dataset
 if load_results

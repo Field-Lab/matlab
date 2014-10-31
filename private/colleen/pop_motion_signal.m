@@ -56,6 +56,7 @@ for j = 1:length(pairs)
     spks_2 = spikes{indices2(pairs(2,j))};
     dx = x_pos(indices1(pairs(2,j))) - x_pos(indices1(pairs(1,j)));
     sig_str = sig_str + motion_signal(velocity, spks_1, spks_2, dx, trigger, trial_length, tau, tol);
+    
 end
 
 end

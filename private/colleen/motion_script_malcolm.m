@@ -2,10 +2,14 @@ clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 
+% run_opt.data_set = '2007-03-27-1';
 run_opt.data_set = '2007-08-24-4';
+
 % run_opt.data_set = '2007-08-24-4';
 run_opt.data_run = 7; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
+
+
 % stim categories not consistant
 %1: dark bar, x_delta= 8
 %2 dark bar, x_delta = -8
@@ -13,14 +17,18 @@ run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 %4 light bar, x_delta = -8
 
 % Change this to change type of cell you are interested in
-run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
+
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-3;
-run_opt.trial_estimate_start = 96;
+
+run_opt.trial_estimate_start = 195;
+
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
@@ -63,6 +71,8 @@ if run_opt.load
     
 end
 
+
+
 % Gets the indicies used by vision of the particular cell type
 if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
     
@@ -77,7 +87,7 @@ if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
     cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
     [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % x axis position of only on midget cells, indexes of how to sort
     
-    %cell_indices sorted by their 2nd entry of sta mean
+    %cell_indices sorted by their x coordinate of the RF from the STA
     cell_indices1 = cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
     cell_indices2 = cell_indices2(cell_sort_idx);
     
@@ -265,8 +275,10 @@ if run_opt.trial_estimate
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
 
-%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+
+    save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+% save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+
 
 
 end
@@ -282,4 +294,7 @@ end
 % load ('estimates10272014_03272007_18_1_onp.mat')
 % figure; histfit(estimates, 20)
 % title('Off parasol 3/27/07-1 Run 18 Stim 1')
+
+gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+
 ElapsedTime=toc
