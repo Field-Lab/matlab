@@ -11,7 +11,7 @@ javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar');
 %   directed to the file with the data000.bin, data000.neuron etc. These are
 %   in the Analysis drive. The function is set up so that you can just type
 %   'Date/data000'. This initializes the datarun structure. 
-datarun=load_data('2007-08-24-4/data000');
+datarun=load_data('2007-08-24-4/data001-nwpca');
 
 % Loading other information
 %   Other information you might want including STAs, params, ei, neurons
