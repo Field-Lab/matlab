@@ -4,8 +4,8 @@ run_opt.load = true; % T/F
 
 % run_opt.data_set = '2007-03-27-1';
 run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 2; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 9; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = 5; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 4; % 1-4 %Which type of stimulus to look at
 % stim categories not consistant
 %1: dark bar, x_delta= 8
 %2 dark bar, x_delta = -8
@@ -13,14 +13,14 @@ run_opt.config_num = 9; % 1-4 %Which type of stimulus to look at
 %4 light bar, x_delta = -8
 
 % Change this to change type of cell you are interested in
-run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-3;
-run_opt.trial_estimate_start = 96;
+run_opt.trial_estimate_start = 195;
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
@@ -62,12 +62,7 @@ if run_opt.load
     datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0);
     
 end
-datarun=load_data('2007-08-24-4/data002');
-datarun=load_sta(datarun);
-datarun=load_params(datarun);
-datarun=load_neurons(datarun);
-datarun=set_polarities(datarun);
-figure;plot_rf_summaries(datarun,{1},'plot_fits',1,'label',1)
+
 
 
 % Gets the indicies used by vision of the particular cell type
@@ -289,4 +284,6 @@ end
 % load ('estimates10272014_03272007_18_1_onp.mat')
 % figure; histfit(estimates, 20)
 % title('Off parasol 3/27/07-1 Run 18 Stim 1')
-ElapsedTime=toc;
+gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+
+ElapsedTime=toc

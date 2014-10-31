@@ -1,5 +1,6 @@
 % made a dummy email account to 
 function []=gmail(address,subject,message)
+
 % Define these variables appropriately:
 mail = 'crhoadesDA@gmail.com'; %Your GMail email address (DA = dummy account)
 password = 'dummyaccount'; %Your GMail password
@@ -15,5 +16,10 @@ props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFacto
 props.setProperty('mail.smtp.socketFactory.port','465');
 
 % Send the email
-sendmail(address,subject,message)
+if nargin == 3
+    sendmail(address,subject,message)
+elseif nargin == 2
+    sendmail(address,subject)
+end
+
 end
