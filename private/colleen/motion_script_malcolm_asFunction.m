@@ -267,7 +267,6 @@ if run_opt.trial_estimate
 %     save('estimates10272014_03272007_18_1_onp','estimates');
 %     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
 
 end
 
@@ -276,7 +275,8 @@ end
 
 % plot(datarun{1}.vision.sta_fits{i}.mean(1), datarun{1}.vision.sta_fits{i}.mean(2), 'ro')
 % hold on
-% end
+% endgmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+
 gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
 
 
