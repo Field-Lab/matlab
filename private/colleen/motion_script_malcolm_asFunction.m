@@ -1,4 +1,4 @@
-function motion_script_malcolm_asFunction(data_set, data_run, config_num, cell_type)
+function motion_script_malcolm_asFunction(data_set, data_run, config_num, cell_type, trial_estimate_start)
 clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
@@ -20,7 +20,7 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-3;
-run_opt.trial_estimate_start = 120;
+run_opt.trial_estimate_start = trial_estimate_start;
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
