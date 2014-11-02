@@ -2,7 +2,7 @@ startup_analyse_tenessee
 %%
 
 load('/Volumes/Analysis/nishal/CBPcells.mat');
-datafile = '2012-08-09-3/data006-from-data002/data006-from-data002';
+datafile = '2012-08-09-3/data005-from-data002/data005-from-data002';
 imov=input('Input DATAFILE');
 bin_datafile=sprintf('/Volumes/Data/2012-08-09-3/data00%d',imov);
 % type_name= cell(1,1);
@@ -14,7 +14,7 @@ datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
 
 %% 
-vision_id=1772;
+vision_id=1471;
 idx=[1:length(datarun.cell_ids)];
 matlab_id=idx(datarun.cell_ids==vision_id);
 cell_ei=datarun.ei.eis{matlab_id};
@@ -101,6 +101,6 @@ plot(init_waveform_all_channels');
 correct_cell=input('Correct cell ? ');
 spk_tm=spike_times{imov}{correct_cell};
 spk_amp=spike_amps{imov}{correct_cell};
-save(sprintf('/Volumes/Analysis/nishal/NSEM_cell_%d_long_share_Data006.mat',vision_id),'spk_tm','spk_amp');
+save(sprintf('/Volumes/Analysis/nishal/NSEM_cell_%d_long_share_Data00%d.mat',vision_id,imov),'spk_tm','spk_amp');
 
 

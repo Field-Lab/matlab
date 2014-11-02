@@ -77,7 +77,7 @@ datarun=load_data(datafile,opt)
 datarun=load_sta(datarun)
 datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
-cellTypeId=[1,2]; % 1 for On Parasols, 2 for Off parasols
+cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
 InterestingCell_vis_id=[];
 for icellType=cellTypeId
     icellType
@@ -224,6 +224,12 @@ for icell=1:nCells
    spk_coll{icell}=spk_coll{icell}(1:finalLen); 
 end
 
+%%
+mov_diff=diff(mov,1,4);
+
+
+
+%%
 % Play movie ? 
 figure
 for ibin=1:20
