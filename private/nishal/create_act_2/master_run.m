@@ -29,6 +29,7 @@ movies=cell(20,1);
 cell_params=struct();
 cell_params.type_name_inp='On Parasol';
 cell_params.cell_list=[]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=1;
 
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';
@@ -50,6 +51,8 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 cell_params=struct();
 cell_params.type_name_inp='userCellList';%'Off Parasol'
 cell_params.cell_list=[4864,1681,4141,4218,4817,4951,6856,4353,4351,4218]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=0;
+
 % TODO : Add region specific cell list
 
 mov_params=struct();
@@ -72,6 +75,7 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 cell_params=struct();
 cell_params.type_name_inp='On Parasol';%'Off Parasol'
 cell_params.cell_list=[]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=0;
 
 mov_params=struct();
 mov_params.mov_type='nsem';
@@ -95,6 +99,8 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 cell_params=struct();
 cell_params.type_name_inp='userCellList';%'Off Parasol'
 cell_params.cell_list=[2603,1758,2582,2375,2493,2627,2357,2552,1625,2374]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=1;
+
 % TODO : Add region specific cell list
 mov_params=struct();
 mov_params.mov_type='nsem';
@@ -141,6 +147,8 @@ end
 cell_params=struct();
 cell_params.type_name_inp='userCellList';%'Off Parasol'
 cell_params.cell_list=[4864,1681,4141,4218,4817,4951,6856,4353,4351,4218]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=1;
+
 % TODO : Add region specific cell list
 
 mov_params=struct();

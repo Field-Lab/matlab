@@ -8,6 +8,7 @@ javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java
 addpath(genpath('/home/vision/Nishal/matlab/code'));
 addpath(genpath('/home/vision/Nishal/matlab/private/nora'));
 addpath(genpath('/home/vision/Nishal/matlab/private/lauren/MATLAB_code')); 
-
+addpath(genpath('~/Nishal/matlab/code')); 
+addpath(genpath('~/Nishal/matlab/private/nishal/fwdfittingfunctions'));
 % set some default plot 
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
