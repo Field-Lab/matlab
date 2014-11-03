@@ -67,7 +67,7 @@ if(isfield(cell_params,'use_fits')==1)
     if(cell_params.use_fits==1)
     addpath(genpath('~/Nishal/matlab/code')); 
     addpath(genpath('~/Nishal/matlab/private/nishal/fwdfittingfunctions'));
-    
+    full_fit=cell(length(stas),1);
     fit_info=cell(length(stas),1);
     display('Starting STA fitting');
     parfor issta=1:length(stas)
@@ -75,22 +75,17 @@ if(isfield(cell_params,'use_fits')==1)
         fit_info{issta} = fit_sta(stas_new{issta});
     end
     
-    
-    full_fit=cell(1,1);
     cellSelected=zeros(length(stas),1);
-    icnt=0;
    for issta=1:length(stas)
    if(fit_info{issta}~=[])
-       icnt=icnt+1;
-      full_fit{icnt} = sta_fit_function(fit_info{issta}.initial_params);
+      full_fit{issta} = sta_fit_function(fit_info{issta}.initial_params);
   cellSelected(issta)=1;
    else
    cellSelected(issta)=0;
    display(sprintf('Cell Removed %d',issta));
    end
-    
+    stas=full_fit;
    end
-   stas=full_fit;
    
    display('Using STA fits')
 end

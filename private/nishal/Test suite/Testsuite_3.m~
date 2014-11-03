@@ -38,7 +38,7 @@ fit_info = fit_sta(ssta)
 params=fit_info.initial_params;
 full_fit = sta_fit_function(params);
 
-
+`````````````
 figure;
 for itime=27%30:-1:1
     itime
@@ -296,6 +296,6 @@ subplot(2,1,2)
  
 %%
 movie_idx=2 % 2 for BW , 5 for NSEM
-sta_null=1  % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
+sta_null=2  % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
 sta_test=1 % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
 null_compute_test
