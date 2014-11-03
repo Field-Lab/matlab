@@ -259,18 +259,18 @@ end
 
 if run_opt.trial_estimate
         % start parallel pool
-        poolobj = parpool;
+%         poolobj = parpool;
     
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 30, 'LargeScale', 'off');
     estimates = zeros(size(tr));
     spikes = datarun{2}.spikes;
-    parfor i = 1:length(tr)
+    for i = 1:length(tr)
         estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     
     % stop parallel pool
-    delete(poolobj);
+%     delete(poolobj);
     
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
