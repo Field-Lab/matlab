@@ -1,4 +1,4 @@
-function sig_str = pop_motion_signal_colleen(velocity, spikes, indices1, indices2, x_pos, trigger, trial_length, tau, tol, dx, pairs)
+function sig_str = pop_motion_signal_colleen(velocity, spikes, indices1, indices2, x_pos, trigger, trial_length, tau, tol)
 %POP_MOTION_SIGNAL calculates the cumulative motion signal for a given velocity between all pairs in population of neurons.
 %   sig_str = POP_MOTION_SIGNAL(velocity, spikes, indices1, indices2, x_pos, trigger, stop, tau)
 %   caluclates the signal strength for the given velocity where:
@@ -47,8 +47,13 @@ sig_str = 0;
   RelTol = tol;
     AbsTol = tol * .1;
     
+       t = linspace(0, trial_length, 100);
+%      valueAtEachT = zeros(length(t), length(indices2),2);
+          valueAtEachT = zeros(length(t), 1,2);
 
-for i = 1:length(indices2) % for every cell shift every other cell relative to it
+     
+
+for i = 1:1%length(indices2) % for every cell shift every other cell relative to it
         dx = x_pos(indices1) - x_pos(indices1(i));
 
 
@@ -67,40 +72,93 @@ for i = 1:length(indices2) % for every cell shift every other cell relative to i
     spks_2 = cellfun(@(y) y(y >= 0 & y <= trial_length), spks_2, 'UniformOutput', false);
 
     
-    % circularly shift spikes by dt
-    spks_1_shifted = spks_1 - dx(i) / velocity;
-    spks_1_shifted = sort(mod(spks_1_shifted, trial_length));
-    dx_cell = num2cell(dx);
-    spks_2_shifted = cellfun(@(z, c) z - c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
-    spks_2_shifted = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shifted, 'UniformOutput', false);
+%     if abs(dx / velocity) > trial_length / 2 ||isempty(spks_1) || isempty(spks_2)
+%     
+%         flt_rsp1 = @(t) 0;
+%         flt_rsp2 = @(t) 0;
+%         flt_rsp1_shiftedRight = @(t) 0;
+%         flt_rsp2_shiftedRight = @(t) 0;
+%         flt_rsp1_shiftedLeft = @(t) 0;
+%         flt_rsp2_shiftedLeft = @(t) 0;
+%         spks_1_shiftedRight = [];
+%         spks_2_shiftedRight = [];
+%         spks_1_shiftedLeft = [];
+%         spks_2_shiftedLeft = [];
+%     return
+%     end
+
     
+    % circularly shift spikes by dt
+    spks_1_shiftedRight = spks_1 - dx(i) / velocity;
+    spks_1_shiftedRight = sort(mod(spks_1_shiftedRight, trial_length));
+    
+    spks_1_shiftedLeft = spks_1 + dx(i) / velocity;
+    spks_1_shiftedLeft = sort(mod(spks_1_shiftedLeft, trial_length));
+    
+    dx_cell = num2cell(dx);
+    spks_2_shiftedRight = cellfun(@(z, c) z - c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
+    spks_2_shiftedRight = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedRight, 'UniformOutput', false);
+    spks_2_shiftedLeft = cellfun(@(z, c) z + c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
+    spks_2_shiftedLeft = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedLeft, 'UniformOutput', false);
     
     % replicate spikes before and after trial to minimize artifacts of spikes
     % shifting circularly across the border
-    spks_1_shifted = [spks_1_shifted(ceil(end/2):end) - trial_length; spks_1_shifted; spks_1_shifted(1:floor(end/2)) + trial_length];
-    spks_2_shifted = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shifted, 'UniformOutput', false);
+    idx=cellfun('isempty',spks_2_shiftedLeft);
+    spks_2_shiftedLeft(idx)={0}; %It replaces all empty cells with number 0
+      
+    idx=cellfun('isempty',spks_2_shiftedRight);
+    spks_2_shiftedRight(idx)={0}; %It replaces all empty cells with number 0
+    
+    idx=isempty(spks_1_shiftedLeft);
+    spks_1_shiftedLeft(idx)=0; %It replaces all empty cells with number 0idx=cellfun('isempty',spks_2_shiftedLeft);
+       
+    idx=isempty(spks_1_shiftedRight);
+    spks_1_shiftedRight(idx)=0; %It replaces all empty cells with number 0idx=cellfun('isempty',spks_2_shiftedLeft);
+       
+    spks_1_shiftedRight = [spks_1_shiftedRight(ceil(end/2):end) - trial_length; spks_1_shiftedRight; spks_1_shiftedRight(1:floor(end/2)) + trial_length];
+    spks_1_shiftedLeft = [spks_1_shiftedLeft(ceil(end/2):end) - trial_length; spks_1_shiftedLeft; spks_1_shiftedLeft(1:floor(end/2)) + trial_length];
+    
+
+
+    spks_2_shiftedRight = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shiftedRight, 'UniformOutput', false);
+    spks_2_shiftedLeft = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shiftedLeft, 'UniformOutput', false);
+    
     % filter responses
     flt_rsp1 = filtered_response(spks_1, tau);
     flt_rsp2 = cellfun(@(x) filtered_response(x, tau), spks_2, 'UniformOutput', false);
-    flt_rsp1_shifted = filtered_response(spks_1_shifted, tau);
-    flt_rsp2_shifted = cellfun(@(x) filtered_response(x, tau), spks_2_shifted, 'UniformOutput', false);
+    flt_rsp1_shiftedRight = filtered_response(spks_1_shiftedRight, tau);
+    flt_rsp2_shiftedRight = cellfun(@(x) filtered_response(x, tau), spks_2_shiftedRight, 'UniformOutput', false);
+      flt_rsp1_shiftedLeft = filtered_response(spks_1_shiftedLeft, tau);
+    flt_rsp2_shiftedLeft = cellfun(@(x) filtered_response(x, tau), spks_2_shiftedLeft, 'UniformOutput', false);
+     
+   
+    
+   
+ 
+    for c= 1:length(t)
+        time = t(c);
+        % First column is every cell aligned to cell 1
+        % First row is value of first pairing at t = 0
+        [right, left] = summedCellsAtT(time, flt_rsp1, flt_rsp2, flt_rsp1_shiftedRight, flt_rsp2_shiftedRight, flt_rsp1_shiftedLeft, flt_rsp2_shiftedLeft, indices1);
+        valueAtEachT(c,i,1) = right;
+        valueAtEachT(c,i,2) = left;
+    end
     
     
- time_cell = cell(size(indices1'));
- time_cell = cellfun(@(x) 0.5, time_cell, 'UniformOutput', false);
+    
 
 
-    everyCellAtT = cell2mat(cellfun(@(x,t) x(t), flt_rsp2_shifted,time_cell, 'UniformOutput', false));
     
-    summedCellsAtT = sum(everyCellAtT);
     
-%     str = integral(@(t) flt_rsp1(t) .* flt_rsp2_shifted(t) - flt_rsp2(t) .* flt_rsp1_shifted(t), 0, trial_length, ...
+    
+%         str = integral(@(t) summedCellsAtT(t, flt_rsp1, flt_rsp2, flt_rsp1_shifted, flt_rsp2_shifted, indices1)^2, 0, trial_length, ...
 %         'AbsTol', AbsTol, 'RelTol', RelTol);
     %str = 0;
     
-    sig_str = sig_str + str;
+    
 end
 
-    
+sig_str = sum(valueAtEachT(:,:,1).^2)-sum(valueAtEachT(2,:,:).^2);
+
 end
 
