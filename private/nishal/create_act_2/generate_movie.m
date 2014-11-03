@@ -15,7 +15,7 @@ icnt=0;
 for imov=start_image:no_mov+start_image-1
     imov
     icnt=icnt+1;
-movv=load(sprintf('/Volumes/Data/stimuli/movies/eye-movement/NS_brownian/matfiles/movie_chunk_%d',imov));
+movv=load(sprintf('/Volumes/Data/stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/movie_chunk_%d',imov));
 movv=movv.movie;
 movie_log(:,:,(icnt-1)*120+1:icnt*120)=movv;
 end
@@ -71,7 +71,7 @@ var64=64;
 mdf_file='/Volumes/Analysis/movie-xml/BW-10-1-0.48-11111.xml';
 
 mov=zeros(var64,32,movie_time);
-triggers=[0:100/120:movie_time]; % Or maybe, movie_time/120 ?? Doubt!
+triggers=[0:100/120:movie_time/120]; % Or maybe, movie_time/120 ?? Doubt!
 [mvi] = load_movie(mdf_file,triggers);
 [~,height,width,duration,refresh] = get_movie_ath(mdf_file,...
     triggers, 1,2);

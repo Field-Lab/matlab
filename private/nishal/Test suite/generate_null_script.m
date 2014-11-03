@@ -69,7 +69,14 @@ stas=cell(1,1);
 stas{1}=zeros(Filtdim1,Filtdim2,1,Filtlen);
 for itime=1:Filtlen
     itime;
-stas{1}(:,:,1,itime)=STA(:,:,itime); % TODO use B/W STA
+%stas{1}(:,:,1,itime)=STA(:,:,itime); % TODO use B/W STA
+    if(sta_null==1)
+    stas{1}(:,:,1,itime) = squeeze(STA(:,:,itime));
+    end
+    
+    if(sta_null==2)
+    stas{1}(:,:,1,itime) = squeeze(sum(full_fit(:,:,:,itime),3))';
+    end
 end
 
  [mov_orig2,mov_new2]=fourier_project_2(stas,mov2);

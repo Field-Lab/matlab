@@ -61,6 +61,8 @@ for icell=1:length(stas)
     stas_new{icell}=st_temp;
 end
 stas=stas_new;
+
+
 filt_len=size(stas{1},4);
 var64=64;
 filt_dim1=var64;
