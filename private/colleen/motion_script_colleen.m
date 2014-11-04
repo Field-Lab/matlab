@@ -6,7 +6,7 @@ run_opt.load = true; % T/F
 run_opt.data_set = '2007-08-24-4';
 
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 7; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 8; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 
 
@@ -35,7 +35,7 @@ run_opt.velocity_lim = 150; % >0
 run_opt.downsample_spikes = false; % must run on bertha
 run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = false; % T/F
-run_opt.trial_estimate = true; % T/F
+run_opt.trial_estimate = false; % T/F
 
 %     speed =0.09;
 
