@@ -20,8 +20,15 @@ for itime=1:Filtlen
     end
     
     if(sta_test==2)
-    stas{1}(:,:,1,itime) = squeeze(sum(full_fit(:,:,:,itime),3))';
+    stas{1}(:,:,1,itime) = squeeze(sum(full_fit(:,:,:,end-itime+1),3))';
     end
+     if(sta_test==3)
+    stas{1}(:,:,1,itime) = squeeze(clippedSTA(:,:,itime));
+     end
+    
+     if(sta_test==4)
+     stas{1}(:,:,1,itime)=squeeze(fastClipSTA(:,:,itime));
+     end
 end
 movieL=size(mov_modify_new,3);
 nTrials=50;
