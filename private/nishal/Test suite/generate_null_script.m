@@ -39,7 +39,7 @@ icnt=0;
 for imov=start_image:no_mov+start_image-1
     imov
     icnt=icnt+1;
-movv=load(sprintf('/Volumes/Data/stimuli/movies/eye-movement/NSbrownian_code/matfiles/movie_chunk_%d.mat',imov));
+movv=load(sprintf('//Volumes/Data/stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/movie_chunk_%d.mat',imov));
 movv=movv.movie;
 movie_log(:,:,(icnt-1)*120+1:icnt*120)=movv/255;
 end
@@ -75,7 +75,17 @@ for itime=1:Filtlen
     end
     
     if(sta_null==2)
-    stas{1}(:,:,1,itime) = squeeze(sum(full_fit(:,:,:,itime),3))';
+    stas{1}(:,:,1,itime) = squeeze(sum(full_fit(:,:,:,end-itime+1),3))';
+    end
+    
+    if(sta_null==3)
+    display('Using clipped STA for nullifying');
+    stas{1}(:,:,1,itime) = squeeze(clippedSTA(:,:,itime));
+    end
+    
+    if(sta_null==4)
+    display('Using fast clipped STA for nullifying');
+    stas{1}(:,:,1,itime)=squeeze(fastClipSTA(:,:,itime));
     end
 end
 

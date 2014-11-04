@@ -38,7 +38,6 @@ fit_info = fit_sta(ssta)
 params=fit_info.initial_params;
 full_fit = sta_fit_function(params);
 
-
 figure;
 for itime=27%30:-1:1
     itime
@@ -191,6 +190,7 @@ for iframe=30:movie_time
 STA=STA+mov(:,:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe);
 end
 STA=STA/sum(binnedResponses);
+STA=STA*max(full_fit(:))/max(STA(:)); % Normalize STA!! to have same max as fitted one..
 
 STA=squeeze(sum(STA,3));
 
@@ -294,8 +294,129 @@ plotSpikeRaster(logical(spksModi'),'PlotType','vertline');
 title('Null space movie spike Raster');
 subplot(2,1,2)
  
+
+%% Trim STA
+
+% calculate the distances of these points from the center of Gauss
+
+% calculate rotation matrix: couterclockwise rotation with respect to angle
+rotation_angle=fit_info.center_rotation_angle;
+rotation_matrix = [cos(rotation_angle), -1*sin(rotation_angle); sin(rotation_angle), cos(rotation_angle)];
+
+% define covariance matrix given the sd_scale and rotation matrix
+
+covariance_matrix = rotation_matrix * [1/fit_info.center_sd_x^2 0; 0 1/fit_info.center_sd_y^2] * rotation_matrix';
+
+% calculate the value of the Gaussian at each point in output_matrix
+clippedSTA=zeros(size(STA));
+norm_dist=zeros(fit_info.x_dim,fit_info.y_dim);
+
+for wd = 1:fit_info.x_dim
+    for ht = 1:fit_info.y_dim
+        pt = [fit_info.center_point_x - wd; fit_info.center_point_y - ht];
+       
+        norm_dist(wd,ht)= sqrt(pt' *inv( covariance_matrix) * pt);
+        if(norm_dist(wd,ht)<6)
+         
+            clippedSTA(wd,ht,:)=squeeze(STA(wd,ht,:));
+        end
+    end
+end
+figure;
+plot(squeeze(sum(sum(clippedSTA(:,:,:),1),2)));
+
+xlabel('STA frame');
+title('Clipped STA summation of pixel values in each frame (Temporal profile)');
+
+cutoff_after=input('Cutoff STA after what number? '); %14;
+clippedSTA(:,:,cutoff_after:end)=0;
+figure
+ for itime=1:Filtlen
+     subplot(3,1,1);
+ imagesc(squeeze((STA(:,:,itime)))');colormap gray
+ caxis([min(STA(:)),max(STA(:))]);
+ colorbar
+ axis image
+      subplot(3,1,2);
+ imagesc(squeeze((clippedSTA(:,:,itime)))');colormap gray
+ caxis([min(STA(:)),max(STA(:))]);
+ colorbar
+ axis image
+ 
+ subplot(3,1,3);
+ imagesc(squeeze(sum(full_fit(:,:,:,Filtlen-itime),3))')
+ colormap gray
+ caxis([min(STA(:)),max(STA(:))]);
+ colorbar
+ axis image
+ 
+ pause
+ 
+ end
+ 
+%% clipped STA but cheap computationally
+% 
+% xGrid=zeros(size(STA,1),size(STA,2));
+% yGrid=xGrid;
+% for ix=1:size(STA,1)
+%     for iy=size(STA,2)
+%     xGrid(ix,iy)=ix;
+%     yGrid(ix,iy)=iy;
+%     end
+% end
+% 
+% xCOM = sum(sum(xGrid.*STA(:,:,5))/sum(sum(STA(:,:,5))))
+% yCOM = sum(sum(yGrid.*STA(:,:,5))/sum(sum(STA(:,:,5))))
+
+dummySTA=zeros(size(STA,1),size(STA,2),3,size(STA,3));
+for itime=1:size(STA,3)
+dummySTA(:,:,1,itime)=STA(:,:,itime);
+dummySTA(:,:,2,itime)=STA(:,:,itime);
+dummySTA(:,:,3,itime)=STA(:,:,itime);
+end
+sig_stixels = significant_stixels(dummySTA);
+mask_rf=imdilate(logical(full(sig_stixels)),[1,1,1,1,1;1,1,1,1,1;1,1,1,1,1]);
+
+fastClipSTA=zeros(size(STA));
+for itime=1:size(STA,3)
+fastClipSTA(:,:,itime)=mask_rf.*STA(:,:,itime);
+end
+
+
+figure;
+plot(squeeze(sum(sum(fastClipSTA(:,:,:),1),2)));
+xlabel('STA frame');
+title('Clipped STA summation of pixel values in each frame (Temporal profile)');
+
+cutoff_after=input('Cutoff STA after what number? '); %14;
+fastClipSTA(:,:,cutoff_after:end)=0;
+
+figure
+ for itime=1:Filtlen
+     itime
+     subplot(3,1,1);
+ imagesc(squeeze((STA(:,:,itime)))');colormap gray
+ caxis([min(STA(:)),max(STA(:))]);
+ colorbar
+ axis image
+      subplot(3,1,2);
+ imagesc(squeeze((fastClipSTA(:,:,itime)))');colormap gray
+ caxis([min(STA(:)),max(STA(:))]);
+ colorbar
+ axis image
+ 
+ subplot(3,1,3);
+ imagesc(squeeze(sum(full_fit(:,:,:,Filtlen-itime),3))')
+ colormap gray
+ caxis([min(STA(:)),max(STA(:))]);
+ colorbar
+ axis image
+ 
+ pause
+ 
+ end
 %%
 movie_idx=2 % 2 for BW , 5 for NSEM
-sta_null=2  % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
-sta_test=1 % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
+sta_null=4 % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
+sta_test=4 % 1 for STA calculated in simulation, 2 for original fitted STA , 3 (not done yet) for original STA in data
 null_compute_test

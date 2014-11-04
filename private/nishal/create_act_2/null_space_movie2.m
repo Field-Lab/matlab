@@ -48,7 +48,7 @@ else
 matlab_cell_ids=get_cell_indices(datarun,type_name);
 end
 stas=datarun.stas.stas(matlab_cell_ids);
-n_cell=length(stas);
+
 
 % Load STAs
 
@@ -94,7 +94,7 @@ if(isfield(cell_params,'use_fits')==1)
    
    display('Using STA fits')
 end
-
+n_cell=length(stas);
 filt_len=size(stas{1},4);
 var64=64;
 filt_dim1=var64;
