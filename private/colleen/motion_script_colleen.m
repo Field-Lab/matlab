@@ -6,8 +6,8 @@ run_opt.load = true; % T/F
 run_opt.data_set = '2007-08-24-4';
 
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 5; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 4; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = 7; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 
 
 % stim categories not consistant
@@ -18,7 +18,7 @@ run_opt.config_num = 4; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
