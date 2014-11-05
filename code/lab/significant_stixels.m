@@ -414,7 +414,7 @@ switch params.select
         
 end
 
-
+params.noise_sigmas=noise_sigmas;
 % ensure sparse!
 sig_stixels = sparse(sig_stixels);
 
