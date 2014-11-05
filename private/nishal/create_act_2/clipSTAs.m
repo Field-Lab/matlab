@@ -1,4 +1,4 @@
-function new_stas=clipSTAs(stas)
+function new_stas=clipSTAs(stas,cell_params)
 
 nCells=length(stas);
 CellNoiseSigmas=[];
@@ -73,11 +73,11 @@ end
 % xlabel('STA frame');
 % title('Clipped STA summation of pixel values in each frame (Temporal profile)');
 
-cutoff_after=14%input('Cutoff STA after what number? '); %14;
+cutoff_after=cell_params.STAlen;%input('Cutoff STA after what number? '); %14;
 fastClipSTA(:,:,:,cutoff_after:end)=0;
 
 CellNoiseSigmas(icell)=params.noise_sigmas;
-CellMaxSTA(icell)=max(abs(fastClipSTA(:)));
+CellMaxSTA(icell)=(max(abs(fastClipSTA(:))));
 
 clippedSTAs{icell}=fastClipSTA;
 

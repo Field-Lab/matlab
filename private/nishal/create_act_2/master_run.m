@@ -7,13 +7,13 @@ startup_bertha
 
 startup_rooster
 
-datafile='nishal/2014-10-3-0/data000/data000';%'nishal/2014-08-20-2/data001/data001';
+datafile='2013-10-10-0/data000/data000';%'nishal/2014-08-20-2/data001/data001';
 
 % type_name_inp = 'userCellList' for a list of cells.
 
 no_images_per_movie=10;
 start_image=10;
-tag='test_stim2014-10-03-0';
+tag='test_stim';
 destination_mat=['/Volumes/Analysis/nishal/',tag];
 if(~exist(destination_mat,'dir'))
 mkdir(destination_mat);
@@ -30,6 +30,7 @@ cell_params=struct();
 cell_params.type_name_inp='On Parasol';
 cell_params.cell_list=[]; % if type_name_inp = 'userCellList' 
 cell_params.use_fits=2;
+cell_params.STAlen=14;
 
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';
@@ -50,9 +51,9 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 %% BW - 10 sec user List
 cell_params=struct();
 cell_params.type_name_inp='userCellList';%'Off Parasol'
-cell_params.cell_list=[4864,1681,4141,4218,4817,4951,6856,4353,4351,4218]; % if type_name_inp = 'userCellList' 
+cell_params.cell_list=[301,1816,3604,3933]; % if type_name_inp = 'userCellList' 
 cell_params.use_fits=2;
-
+cell_params.STAlen=14;
 % TODO : Add region specific cell list
 
 mov_params=struct();
@@ -73,9 +74,10 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 %% NSEM - 10 sec cell type
 
 cell_params=struct();
-cell_params.type_name_inp='On Parasol';%'Off Parasol'
+cell_params.type_name_inp='Off Parasol';%'Off Parasol'
 cell_params.cell_list=[]; % if type_name_inp = 'userCellList' 
-cell_params.use_fits=0;
+cell_params.use_fits=2;
+cell_params.STAlen=14;
 
 mov_params=struct();
 mov_params.mov_type='nsem';
@@ -98,8 +100,9 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 %% NSEM - 10 sec - user List
 cell_params=struct();
 cell_params.type_name_inp='userCellList';%'Off Parasol'
-cell_params.cell_list=[2603,1758,2582,2375,2493,2627,2357,2552,1625,2374]; % if type_name_inp = 'userCellList' 
-cell_params.use_fits=1;
+cell_params.cell_list=[1218,2342,1880,3633,5689,6363,6784]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
 
 % TODO : Add region specific cell list
 mov_params=struct();
@@ -132,6 +135,7 @@ icnt=icnt+1;
 end
 mov_idx=18;
 write_movie_idx(destination_mat,movie_full,mov_idx);
+display(sprintf('Movie Length %d',size(movie_full,3)));
 
 figure;
 for itime=1:10:size(movie_full,3)
