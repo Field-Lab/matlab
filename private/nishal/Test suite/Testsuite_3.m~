@@ -392,7 +392,7 @@ tostop=0;
 while tostop==0
 tostop=1;
 for istix=1:size(sig_list,1)
-    if(~(ismember(sig_list(istix,1),list(:,1)) & ismember(sig_list(istix,2),list(:,2))))
+    if ~(sum((sig_list(istix,1)==list(:,1)) .* (sig_list(istix,2)==list(:,2)))==1)
         for ilist_elem=1:size(list,1)
             if(abs(sig_list(istix,1)-list(ilist_elem,1)) + abs(sig_list(istix,2)-list(ilist_elem,2))<=2)
             list=[list;sig_list(istix,1),sig_list(istix,2)];
@@ -411,7 +411,7 @@ mask_rf=zeros(size(sig_stixels));
 for ielem=1:size(list,1)
 mask_rf(list(ielem,1),list(ielem,2))=1;
 end
-figure;
+figure;nCells
 imagesc(mask_rf)
 %mask_rf=imdilate(logical(full(sig_stixels)),[1,1,1,1,1;1,1,1,1,1;1,1,1,1,1]);
 

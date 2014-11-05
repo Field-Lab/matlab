@@ -29,7 +29,7 @@ movies=cell(20,1);
 cell_params=struct();
 cell_params.type_name_inp='On Parasol';
 cell_params.cell_list=[]; % if type_name_inp = 'userCellList' 
-cell_params.use_fits=1;
+cell_params.use_fits=2;
 
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';
@@ -51,7 +51,7 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 cell_params=struct();
 cell_params.type_name_inp='userCellList';%'Off Parasol'
 cell_params.cell_list=[4864,1681,4141,4218,4817,4951,6856,4353,4351,4218]; % if type_name_inp = 'userCellList' 
-cell_params.use_fits=0;
+cell_params.use_fits=2;
 
 % TODO : Add region specific cell list
 

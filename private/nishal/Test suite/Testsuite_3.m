@@ -411,7 +411,7 @@ mask_rf=zeros(size(sig_stixels));
 for ielem=1:size(list,1)
 mask_rf(list(ielem,1),list(ielem,2))=1;
 end
-figure;
+figure;nCells
 imagesc(mask_rf)
 %mask_rf=imdilate(logical(full(sig_stixels)),[1,1,1,1,1;1,1,1,1,1;1,1,1,1,1]);
 
