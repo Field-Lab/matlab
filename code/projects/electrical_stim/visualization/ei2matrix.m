@@ -13,7 +13,7 @@ function [EIm, EImView] = ei2matrix(oneEI)
 % L Grosberg Jan 2014
 
 % Load electrode positions as matrix 
-fname = fullfile(fileparts(mfilename('fullpath')),'../../resources/array_matrix_id510'); 
+fname = fullfile(fileparts(mfilename('fullpath')),'../resources/array_matrix_id510'); 
 h = load(fname); 
 electrodeMatrix = h.array_matrix_id510; clear h; 
 
