@@ -12,6 +12,7 @@ if ~isfield(inrun, 'cell_types')
     inrun = load_params(inrun);
 end
 
+
 % Jeremy wants RFs for sure
 if all(cellfun(@isempty, inrun.stas.rfs))
     inrun = get_sta_summaries(inrun, opts.cell_types, 'keep_stas', false, 'marks_params', struct('robust_std_method', 6));

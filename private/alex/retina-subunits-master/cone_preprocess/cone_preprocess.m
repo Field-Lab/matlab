@@ -65,11 +65,14 @@ if isempty(opts.conepath)
 %     tmp=datarun.names.rrs_prefix(1:tmp-1);
     
     opts.conepath = datarun.names.cones;
+    opts.conepath = fullfile(tmp, opts.conepath);
 end
 % opts.conepath = fullfile(single_cone_path(), opts.conepath);
-opts.conepath = fullfile(tmp, opts.conepath);
-load(fullfile(opts.conepath, 'Wc.mat'));
 
+if ~exist('Wc','var')
+    load(fullfile(opts.conepath, 'Wc.mat'));
+end
+ 
 % Preprocess Wc for efficiency if desired
 if isfield(datarun.stimulus, 'wc_preprocess') && ~isempty(datarun.stimulus.wc_preprocess)
     Wc = datarun.stimulus.wc_preprocess(Wc, datarun.stimulus);

@@ -27,6 +27,6 @@ for ss = 1:length(stimindices)
     % get new frame
     new_frame = get_movie_frame(stimobject, this_stim);
     
-    % convert to cone space
+    % convert to cone space 
     cone_inputs(ss,:) = single((Wc' * new_frame) - 0.5);
 end

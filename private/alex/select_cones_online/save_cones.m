@@ -1,20 +1,80 @@
 function save_cones(path2save, mapName)
 
-global datarun stim cellType myCells
+global datarun stim cellType myCells mean_nnd
 
 height = datarun.stimulus.stixel_height * datarun.stimulus.field_height;
 width = datarun.stimulus.stixel_width * datarun.stimulus.field_width;
+stixel = datarun.stimulus.stixel_width;
 
-myMap=zeros(height,width);
+
+coord=stim.coord*stixel;
+
+R=floor(mean_nnd*stixel/2-1);% radius
+
+tmp=gcf;
 
 
-for i=1:length(stim.coord)
-    myMap(stim.coord(i,1) - stim.stimarea:stim.coord(i,1) + stim.stimarea, ...
-        stim.coord(i,2) - stim.stimarea:stim.coord(i,2) + stim.stimarea) = i;
+hnew=figure;
+set(hnew,'Name','Select Radius','Position',[ -888   489   700   800],'ToolBar','Figure')
+hplot=subplot('position',[0.1 0.1 0.7 0.7]);
+
+hText=uicontrol('style','text','Units','normalized','position',[0.1 0.9 0.2 0.03],...
+    'string','enter radius','fontsize',24);
+
+hText=uicontrol('style','text','Units','normalized','position',[0.5 0.9 0.2 0.03],...
+    'string','to finish enter 0','fontsize',16);
+
+hEditRadius=uicontrol('style','edit','Units','normalized','position',[0.2 0.82 0.1 0.05],...
+    'string',int2str(R),'fontsize',24);
+
+flag=1;
+while ~strcmp(get(hEditRadius, 'String'), '0')
+    R=str2num(get(hEditRadius,'String'));
+    myMap=zeros(height,width);
+    for kone=1:length(coord)
+        
+        C = coord(kone,:);
+        
+        t = linspace(0, 2*pi, 100);
+        x = round(R*cos(t) + C(1));
+        y = round(R*sin(t) + C(2));
+        %     figure
+        %     plot(x,y)
+        cc=zeros((max(x)-min(x)+1)*(max(y)-min(y)+1),2);
+        cnt=1;
+        for i=min(x):max(x)
+            for j=min(y):max(y)
+                cc(cnt,:)=[i,j];
+                cnt=cnt+1;
+            end
+        end
+        IN = inpolygon(cc(:,1),cc(:,2),x,y);
+        myMask=cc(IN,:);
+        for i=1:length(myMask)
+            myMap(myMask(i,1),myMask(i,2))=kone;
+        end
+        
+    end
+    myMap=myMap';
+    
+    xx=get(gca, 'XLim');
+    yy=get(gca, 'YLim');
+    imagesc(myMap)
+    set(gca, 'DataAspectRatio',[1 1 1]);
+    if flag
+        axis tight
+        flag=0;
+    else
+        axis([xx yy]);
+    end
+    
+    waitfor(hEditRadius,'string')
 end
 
-figure
-imagesc(myMap);
+
+stim.radius=R;
+stim.stixel=stixel;
+
 
 if ~exist(path2save,'dir')
     mkdir(path2save)
@@ -27,6 +87,17 @@ info.cells = myCells;
 
 dlmwrite([path2save mapName, '.txt'], myMap, 'delimiter', '\t', 'newline', 'pc');
 save([path2save mapName '_info'],'stim', 'info')
+
+close(hnew)
+
+figure(tmp);
+
+hSavedInfo=uicontrol('style','text', 'Units', 'Normalized','position',[0.32 0.08 0.32 0.1],...
+    'string',{'saved to', path2save, ['file: ' mapName '.txt'], [mapName '_info.mat']},'fontsize',16, 'fontweight', 'bold','foregroundcolor','b');
+
+
+
+
 
 
 

@@ -224,26 +224,22 @@ figure; imagesc(cm); hold on; voronoi(datarun.cones.centers(:,1) .* datarun.cone
 
 
 
-% dirName = detect(find_cone_data(datarun), @(cd) (regexp(cd, magic_number)));
-% dirName = [path2data(1:end-15) dirName,'/maps/'];
-% dlmwrite([dirName '/map-0000.txt'], cm, 'delimiter', '\t', 'newline', 'pc');
-
-tmp=regexp(path2data, piece);
-dirName = [path2data(1:tmp+12) 'stimuli/maps/'];
+dirName = detect(find_cone_data(datarun), @(cd) (regexp(cd, magic_number)));
+dirName = [path2data(1:end-15) dirName,'/maps/'];
 
 mkdir(dirName);
-dlmwrite([dirName 'map-0000.txt'], cm, 'delimiter', '\t', 'newline', 'pc');
+dlmwrite([dirName '/map-0000.txt'], cm, 'delimiter', '\t', 'newline', 'pc');
 coneIndices=indices;
 cells=offM{:};
 coneCenters=datarun.cones.centers;
 voronoiMasksScale=datarun.cones.mosaic.voronoi_masks_scale;
-save([dirName 'index_info'],'coneIndices','cells','cm','coneCenters','voronoiMasksScale')
+save([dirName '/index_info'],'coneIndices','cells','cm','coneCenters','voronoiMasksScale')
 
 % check saved info
-load('/Volumes/Analysis/2011-10-25-5/stimuli/maps/index_info.mat')
+load('/Volumes/Analysis/2014-04-10-2/2014-04-10-2_data000_data000-bayes-msf_20.00-all_BW-2-8/maps/index_info.mat')
 figure; imagesc(cm); hold on; voronoi(coneCenters(:,1) .*voronoiMasksScale, coneCenters(:,2) .* voronoiMasksScale);
 
 % read saved map and plot it 
-loaded_map = dlmread('/Volumes/Analysis/2011-10-25-5/stimuli/maps/map-0000.txt');
+loaded_map = dlmread('/Volumes/Analysis/2014-04-10-2/2014-04-10-2_data000_data000-bayes-msf_20.00-all_BW-2-8/maps/map-0000.txt');
 imagesc(loaded_map);
 max(loaded_map(:)) % total number of cones to stimulate
