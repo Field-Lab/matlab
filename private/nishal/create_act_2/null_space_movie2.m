@@ -96,7 +96,7 @@ if(isfield(cell_params,'use_fits')==1)
     end
     
     if(cell_params.use_fits==2)
-    stas= clipSTAs(stas);
+    stas= clipSTAs(stas,cell_params);
     end
     
 n_cell=length(stas);
