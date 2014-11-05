@@ -103,7 +103,7 @@ for icell=1:nCells
         totalMaskAccept=totalMaskAccept+CellMasks{icell};
     else
         display(sprintf('Cell %d discarded',icell));
-        totalMaskReject=totalMaskAccept+CellMasks{icell};
+        totalMaskReject=totalMaskReject+CellMasks{icell};
     end
     
 end
@@ -117,5 +117,5 @@ imagesc(totalMaskAccept);
 title('Accepted RFs');
 
 new_stas=newSTAs;
-
+pause(1)
 end
