@@ -1,4 +1,4 @@
-function [summedCellsR, summedCellsL] = summedCellsAtT(time, flt_rsp1, flt_rsp2, flt_rsp1_shiftedRight, flt_rsp2_shiftedRight, flt_rsp1_shiftedLeft, flt_rsp2_shiftedLeft, indices1)
+function [summedCellsR, summedCellsL] = summedCellsAtT(time, flt_rsp2, flt_rsp2_shiftedRight, flt_rsp2_shiftedLeft, indices1)
             time = num2cell((repmat(time, size(indices1,2),1))) ;
             time_cell = cell(size(indices1'));
             time_cell = cellfun(@(x,t) t, time_cell, time, 'UniformOutput', false);

@@ -1,6 +1,5 @@
 clear toPlot
 % DATA PARAMETERS
-global savedVariables
 run_opt.load = true; % T/F
 
 run_opt.data_set = '2007-03-27-1';
@@ -26,7 +25,7 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter %0.1 next best
-run_opt.tol = 1e-8;
+run_opt.tol = 1e-4;
 
 run_opt.trial_estimate_start = 195;
 
@@ -259,11 +258,10 @@ end
 
 
 if run_opt.trial_estimate
-        % start parallel pool
-%         poolobj = parpool;
+
 %     
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
-    estimates = zeros(size(tr));
+%     estimates = zeros(1,25);
     spikes = datarun{2}.spikes;
     
 %     pairs = zeros(2, length(cell_indices2) * (length(cell_indices2) - 1) / 2,'int16');
@@ -279,27 +277,47 @@ if run_opt.trial_estimate
 %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
 %     end
 
+
+velocity= [5:1:250];
+% velocity = [110:0.4:130];
+strsig1 = zeros(1,length(velocity));
+strsig2 = zeros(1,length(velocity));
+
+poolobj = parpool;
+% get general error function to optimize initialization
+% maybe get two and average them
+parfor j = 1:length(velocity)
+    v = velocity(j);
+    strsig1(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), stop, run_opt.tau, run_opt.tol*.1);
+end
+
+parfor j = 1:length(velocity)
+    v = velocity(j);
+    strsig2(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(2), stop, run_opt.tau, run_opt.tol*.1);
+end
+
+%     figure; plot(velocity, strsig)
+[x1,y1] = min(strsig1);
+[x2,y2] = min(strsig2);
+        % start parallel pool
+        
+        
+run_opt.trial_estimate_start = 0.5*(velocity(y1)+velocity(y2));
+parfor i = 1:length(tr)
     
-    
-%     for i = 1:1%length(tr)
-velocity= [115:0.1:120]
-    for i = 1:length(velocity)
-        v = velocity(i)
-        estimates(i) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), stop, run_opt.tau, run_opt.tol*.1);
-%         estimates(i) = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
-        fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
-    end
-%     figure; plot(savedVariables(:,1), savedVariables(:,2), 'o', 'markerfacecolor', 'b')
-    figure; plot(velocity, estimates)
-    % stop parallel pool
-%     delete(poolobj);
+    [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
+    fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
+end
+%     figure; plot(velocity, estimates)
+% stop parallel pool
+    delete(poolobj);
     
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
 
 
-%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_darkright_newmethod_diffseed.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-% save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_darkright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_brightright_newmethod2.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 
 
 
