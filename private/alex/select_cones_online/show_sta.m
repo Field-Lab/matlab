@@ -7,7 +7,7 @@ function show_sta(cellInd, varargin)
 % scale:        scale factor to show RF fit in units of max radius
 % frame:        frame of sta - button to change
 
-global datarun myCells myLimits cell_indices coord_tform ctr rad fit_angle
+global datarun myCells myLimits cell_indices coord_tform ctr rad fit_angle STAplotPosition
 persistent hPlot
 
 p = inputParser;
@@ -22,15 +22,15 @@ p.parse(cellInd, varargin{:});
 % get params struct
 params = p.Results;
 
-hPlot=findobj('position',[0.4 0.62 0.3 0.3]);
+hPlot=findobj('position',STAplotPosition);
 
 if cellInd>0 % if not 0, show sta
 
     if ~isempty(hPlot)
         delete(hPlot)
     end
-    hPlot=subplot('position',[0.4 0.62 0.3 0.3]);
-    set(hPlot,'DataAspectRatio',[1 1 1]);
+    hPlot=subplot('position',STAplotPosition);
+%     set(hPlot,'DataAspectRatio',[1 1 1]);
     axis ij
     
     

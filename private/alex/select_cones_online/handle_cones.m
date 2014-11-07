@@ -5,7 +5,7 @@ function handle_cones(flag, cellInd, varargin)
 %               datarun_id - index of cell in datarun (1 to N total cells)
 %               cell_type - ord. index of cell in a cell_type array
 
-global datarun myCells cones
+global datarun myCells cones STAplotPosition
 
 p = inputParser;
 p.addRequired('flag', @isnumeric);
@@ -35,7 +35,7 @@ end
 myInd=find(myCells==datarun.cell_ids(datInd));
 
 % find subplot
-hPlot=findobj('position',[0.4 0.62 0.3 0.3]);
+hPlot=findobj('position',STAplotPosition);
 subplot(hPlot)
 
 if flag==0 % find cones automatically

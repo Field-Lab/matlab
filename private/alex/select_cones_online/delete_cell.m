@@ -1,9 +1,9 @@
 function delete_cell
 
-global myCells cones myLimits ctr rad fit_angle coord_tform datarun
+global myCells cones myLimits ctr rad fit_angle coord_tform datarun STAplotPosition allConesPlot
 
 % delete all cones form the STA plot
-hPlot=findobj('position',[0.4 0.62 0.3 0.3]);
+hPlot=findobj('position',STAplotPosition);
 subplot(hPlot)
 for i=1:length(cones{end})
     children = get(gca, 'children');
@@ -15,7 +15,7 @@ end
 axis(myLimits)
 
 % recolor rf fit
-hPlot=findobj('position',[0.01 0.62 0.3 0.3]);
+hPlot=findobj('position',allConesPlot);
 subplot(hPlot)
 datInd=find(datarun.cell_ids==myCells(end));
 [X, Y] = drawEllipse([ctr(datInd,:) rad(datInd,:) fit_angle(datInd)]);

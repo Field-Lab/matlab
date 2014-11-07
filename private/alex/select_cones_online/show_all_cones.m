@@ -1,15 +1,16 @@
 function show_all_cones
 
-global datarun cones myCells
+global datarun cones myCells allConesPlot
 persistent myPlot
 
+allConesPlot=[0 0.05 0.35 0.35];
 
 if ishandle(myPlot)
     delete(myPlot);
 end
 
 
-myPlot=subplot('position',[0.05 0.2 0.3 0.3]);
+myPlot=subplot('position',allConesPlot);
 set(gca,'DataAspectRatio',[1 1 1])
 hold on
 

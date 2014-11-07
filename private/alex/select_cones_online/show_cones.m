@@ -16,7 +16,7 @@ p.parse(flag, cellInd, varargin{:});
 params = p.Results;
 
 
-global datarun myCells myLimits cones
+global datarun myCells myLimits cones STAplotPosition
 persistent hConeInfo
 
 
@@ -36,7 +36,7 @@ end
 myInd=find(myCells==datarun.cell_ids(datInd));
 
 % find subplot
-hPlot=findobj('position',[0.4 0.62 0.3 0.3]);
+hPlot=findobj('position',STAplotPosition);
 subplot(hPlot)
 hold on
 
@@ -92,7 +92,7 @@ if ishandle(hConeInfo)
     delete(hConeInfo)
 end
 
-hConeInfo=uicontrol('style','text', 'Units', 'Normalized','position',[0.75 0.8 0.2 0.15],...
+hConeInfo=uicontrol('style','text', 'Units', 'Normalized','position',[0.32 0.16 0.16 0.1],...
     'string',{['Cell ',int2str(myCells(myInd)), ': ', int2str(size(cones{myInd},1)),' cones'],'',...
     ['Largest nnd: ', num2str(max(all_cones),1)],'', cell_stat ,'',},...
     'fontsize',16, 'fontweight', 'bold');
