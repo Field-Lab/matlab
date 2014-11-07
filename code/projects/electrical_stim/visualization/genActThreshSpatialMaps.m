@@ -121,10 +121,9 @@ for nn = 1:length(neuronId);
     
     
     if printElecs
-        h = load(['/Users/grosberg/Lab/matlab/code/projects/'...
-            'electrical_stim/resources/array_matrix_id510']); %
+        fname = fullfile(fileparts(mfilename('fullpath')),'../../resources/array_matrix_id510');
+        h = load(fname);
         electrodeMatrix = h.array_matrix_id510; clear h;
-        
         for x = 1:size(electrodeMatrix,2)
             for y = 1:size(electrodeMatrix,1)
                 if y/2 == round(y/2)
