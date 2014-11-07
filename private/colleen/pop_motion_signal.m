@@ -33,7 +33,7 @@ function sig_str = pop_motion_signal(velocity, spikes, indices1, indices2, x_pos
 %
 % Modified for speed by Malcolm Campbell 2014
 % malcolmc@stanford.edu
-
+global savedVariables
 if nargin < 9
     tol = 1e-3;
 end
@@ -58,5 +58,5 @@ for j = 1:length(pairs)
     sig_str = sig_str + motion_signal(velocity, spks_1, spks_2, dx, trigger, trial_length, tau, tol);
     
 end
-
+savedVariables = [savedVariables; velocity, sig_str];
 end

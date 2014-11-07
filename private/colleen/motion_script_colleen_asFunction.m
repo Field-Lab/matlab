@@ -1,4 +1,4 @@
-function motion_script_colleen_asFunction(data_set, data_run, config_num, cell_type, trial_estimate_start)
+function motion_script_colleen_asFunction(data_set, data_run, config_num, cell_type)
 clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
@@ -19,8 +19,8 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
-run_opt.tol = 1e-3;
-run_opt.trial_estimate_start = trial_estimate_start;
+run_opt.tol = 1e-4;
+% run_opt.trial_estimate_start = trial_estimate_start;
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
@@ -251,7 +251,7 @@ if run_opt.trial_estimate
         % start parallel pool
         poolobj = parpool;
     
-    options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 30, 'LargeScale', 'off');
+    options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
     estimates = zeros(size(tr));
     spikes = datarun{2}.spikes;
     
@@ -268,6 +268,36 @@ if run_opt.trial_estimate
 %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
 %     end
 
+
+velocity= [5:1:250];
+% velocity = [110:0.4:130];
+strsig1 = zeros(1,length(velocity));
+strsig2 = zeros(1,length(velocity));
+
+
+% get general error function to optimize initialization
+% maybe get two and average them
+
+%slice for parfor
+tr1 = tr(1);
+tr2 = tr(2);
+parfor j = 1:length(velocity)
+    v = velocity(j);
+    strsig1(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr1, stop, run_opt.tau, run_opt.tol*.1);
+end
+
+parfor j = 1:length(velocity)
+    v = velocity(j);
+    strsig2(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr2, stop, run_opt.tau, run_opt.tol*.1);
+end
+
+%     figure; plot(velocity, strsig)
+[x1,y1] = min(strsig1);
+[x2,y2] = min(strsig2);
+        
+        
+run_opt.trial_estimate_start = 0.5*(velocity(y1)+velocity(y2));
+
     
     
     parfor i = 1:length(tr)
@@ -283,7 +313,7 @@ if run_opt.trial_estimate
 
 
 %     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_darkright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 
 
 
