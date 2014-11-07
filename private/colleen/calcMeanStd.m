@@ -1,5 +1,9 @@
-% meanE = mean(estimates)
-% stdE = std(estimates)
+meanE = mean(estimates)
+stdE = std(estimates)
+
+%%
+
+
 clear 
 clc
 
