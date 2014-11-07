@@ -1,12 +1,13 @@
 clear toPlot
 % DATA PARAMETERS
+global savedVariables
 run_opt.load = true; % T/F
 
-% run_opt.data_set = '2007-03-27-1';
-run_opt.data_set = '2007-08-24-4';
+run_opt.data_set = '2007-03-27-1';
+% run_opt.data_set = '2007-08-24-4';
 
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 8; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 15; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 
 
@@ -18,24 +19,24 @@ run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
-run_opt.tau = .01; % tuning parameter
-run_opt.tol = 1e-3;
+run_opt.tau = .01; % tuning parameter %0.1 next best
+run_opt.tol = 1e-8;
 
 run_opt.trial_estimate_start = 195;
 
-run_opt.velocity_lim = 150; % >0
+run_opt.velocity_lim = 300; % >0
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
 run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = false; % T/F
-run_opt.trial_estimate = false; % T/F
+run_opt.trial_estimate = true; % T/F
 
 %     speed =0.09;
 
@@ -259,9 +260,9 @@ end
 
 if run_opt.trial_estimate
         % start parallel pool
-        poolobj = parpool;
-    
-    options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 30, 'LargeScale', 'off');
+%         poolobj = parpool;
+%     
+    options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
     estimates = zeros(size(tr));
     spikes = datarun{2}.spikes;
     
@@ -280,20 +281,25 @@ if run_opt.trial_estimate
 
     
     
-    parfor i = 1:length(tr)
-        estimates(i) = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
+%     for i = 1:1%length(tr)
+velocity= [115:0.1:120]
+    for i = 1:length(velocity)
+        v = velocity(i)
+        estimates(i) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), stop, run_opt.tau, run_opt.tol*.1);
+%         estimates(i) = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
-    
+%     figure; plot(savedVariables(:,1), savedVariables(:,2), 'o', 'markerfacecolor', 'b')
+    figure; plot(velocity, estimates)
     % stop parallel pool
-    delete(poolobj);
+%     delete(poolobj);
     
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
 
 
-%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_darkright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_darkright_newmethod_diffseed.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+% save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_darkright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 
 
 

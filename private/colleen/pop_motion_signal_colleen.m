@@ -36,7 +36,7 @@ function sig_str = pop_motion_signal_colleen(velocity, spikes, indices1, indices
 % 
 % Modified for even more speed by Colleen Rhoades 2014
 % rhoades@stanford.edu
-
+global savedVariables
 if nargin < 9
     tol = 1e-3;
 end
@@ -53,8 +53,8 @@ sig_str = 0;
 
      
 
-for i = 1:1%length(indices2) % for every cell shift every other cell relative to it
-        dx = x_pos(indices1) - x_pos(indices1(i));
+for i = 10%1:1%length(indices2) % for every cell shift every other cell relative to it
+        dx = x_pos(indices1) - 10%x_pos(indices1(i));
 
 
   
@@ -140,8 +140,8 @@ for i = 1:1%length(indices2) % for every cell shift every other cell relative to
         % First column is every cell aligned to cell 1
         % First row is value of first pairing at t = 0
         [right, left] = summedCellsAtT(time, flt_rsp1, flt_rsp2, flt_rsp1_shiftedRight, flt_rsp2_shiftedRight, flt_rsp1_shiftedLeft, flt_rsp2_shiftedLeft, indices1);
-        valueAtEachT(c,i,1) = right;
-        valueAtEachT(c,i,2) = left;
+        valueAtEachT(c,1,1) = right;
+        valueAtEachT(c,1,2) = left;
     end
     
     
@@ -160,5 +160,7 @@ end
 
 sig_str = sum(valueAtEachT(:,:,1).^2)-sum(valueAtEachT(2,:,:).^2);
 
+
+savedVariables = [savedVariables; velocity, sig_str];
 end
 
