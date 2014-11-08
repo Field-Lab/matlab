@@ -1,3 +1,13 @@
+%%
+% branch: reconstruction
+% commit ff110453db2175c8258a68b51358b9c2806e976d
+% Author: Vision <vision@bertha.stanford.edu>
+% Date:   Sat Nov 8 13:01:18 2014 -0800
+% 
+%     Commit after the experiment. This is the final version for running scripts generated during the experiment.
+%%
+
+
 % Nishal P. Shah , September 2014
 
 % Have a dataset ready with cells you want to nullify grouped under a
@@ -66,11 +76,11 @@ mov_params.scaling_loss=0.02; % a number in [0,1], fraction of values that is ch
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
-movies{1}=mov_orignial;
-movies{2}=mov_modify_new;
-mov_idx=1;
+movies{3}=mov_orignial;
+movies{4}=mov_modify_new;
+mov_idx=3;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
-mov_idx=2;
+mov_idx=4;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 
 
@@ -95,11 +105,11 @@ mov_params.scaling_loss=0.02; % a number in [0,1], fraction of values that is ch
 
 solver=3; 
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
-movies{7}=mov_orignial;
-movies{8}=mov_modify_new;
-mov_idx=7;
+movies{5}=mov_orignial;
+movies{6}=mov_modify_new;
+mov_idx=5;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
-mov_idx=8;
+mov_idx=6;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
 
 

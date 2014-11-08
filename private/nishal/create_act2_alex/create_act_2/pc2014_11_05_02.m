@@ -1,3 +1,13 @@
+%%
+% branch: reconstruction
+% commit ff110453db2175c8258a68b51358b9c2806e976d
+% Author: Vision <vision@bertha.stanford.edu>
+% Date:   Sat Nov 8 13:01:18 2014 -0800
+% 
+%     Commit after the experiment. This is the final version for running scripts generated during the experiment.
+
+
+%%
 % Nishal P. Shah , September 2014
 
 % Have a dataset ready with cells you want to nullify grouped under a
