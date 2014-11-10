@@ -76,7 +76,7 @@ datarun=load_params(datarun)
  InterestingCell_vis_id=[3692,6061,1382,3782,6421,1627,2181];
 
 
- for ref_cell_number=1:7;
+ for ref_cell_number=1:10;
  plot_raster_script;
  pause
  end
