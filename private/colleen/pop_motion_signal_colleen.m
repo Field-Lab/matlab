@@ -37,6 +37,7 @@ function [sig_str] = pop_motion_signal_colleen(velocity, spikes, indices1, indic
 % Modified for even more speed by Colleen Rhoades 2014
 % rhoades@stanford.edu
 
+global savedVariables
 if nargin < 9
     tol = 1e-3;
 end
@@ -49,11 +50,11 @@ sig_str = 0;
     
        t = linspace(0, trial_length, 100);
 %      valueAtEachT = zeros(length(t), length(indices2),2);
-          valueAtEachT = zeros(length(t), 1,2);
+          valueAtEachT = zeros(length(t),2);
 
      
 %1:1%length(indices2) % for every cell shift every other cell relative to it
-        dx = x_pos(indices1);%x_pos(indices1(i)); set the ref to 0
+        dx = x_pos(indices1)-10;%x_pos(indices1(i)); set the ref to 0
 
 
   
@@ -62,28 +63,10 @@ sig_str = 0;
     % trial start @ t=0
    
         spks_2=cellfun(@(x) x-trigger, spks_2,'UniformOutput',false);
-%     spks_2{c} = spks_2{c} - trigger;
     
     % only consider spikes that occured in the trial
     spks_2 = cellfun(@(y) y(y >= 0 & y <= trial_length), spks_2, 'UniformOutput', false);
-
-    
-%     if abs(dx / velocity) > trial_length / 2 ||isempty(spks_1) || isempty(spks_2)
-%     
-%         flt_rsp1 = @(t) 0;
-%         flt_rsp2 = @(t) 0;
-%         flt_rsp1_shiftedRight = @(t) 0;
-%         flt_rsp2_shiftedRight = @(t) 0;
-%         flt_rsp1_shiftedLeft = @(t) 0;
-%         flt_rsp2_shiftedLeft = @(t) 0;
-%         spks_1_shiftedRight = [];
-%         spks_2_shiftedRight = [];
-%         spks_1_shiftedLeft = [];
-%         spks_2_shiftedLeft = [];
-%     return
-%     end
-
-    
+   
     % circularly shift spikes by dt
 
     dx_cell = num2cell(dx);
@@ -100,9 +83,6 @@ sig_str = 0;
     idx=cellfun('isempty',spks_2_shiftedRight);
     spks_2_shiftedRight(idx)={0}; %It replaces all empty cells with number 0
     
-
-
-
     spks_2_shiftedRight = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shiftedRight, 'UniformOutput', false);
     spks_2_shiftedLeft = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shiftedLeft, 'UniformOutput', false);
     
@@ -119,9 +99,9 @@ sig_str = 0;
         time = t(c);
         % First column is every cell aligned to cell 1
         % First row is value of first pairing at t = 0
-        [right, left] = summedCellsAtT(time, flt_rsp2,  flt_rsp2_shiftedRight,  flt_rsp2_shiftedLeft, indices1);
-        valueAtEachT(c,1,1) = right;
-        valueAtEachT(c,1,2) = left;
+        [right, left] = summedCellsAtT(time, flt_rsp2,  flt_rsp2_shiftedRight,  flt_rsp2_shiftedLeft, indices1,spks_2);
+        valueAtEachT(c,1) = right;
+        valueAtEachT(c,2) = left;
     end
     
     
@@ -138,8 +118,8 @@ sig_str = 0;
     
 
 
-sig_str = sum(valueAtEachT(:,:,1).^2)-sum(valueAtEachT(2,:,:).^2);
-
+sig_str = sum(valueAtEachT(:,1).^2)-sum(valueAtEachT(:,2).^2);
+savedVariables = [savedVariables; velocity, sig_str];
 
 
 end

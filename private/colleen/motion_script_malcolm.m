@@ -1,14 +1,16 @@
 clear toPlot
 % DATA PARAMETERS
+clear
 global savedVariables
+
 run_opt.load = true; % T/F
 
 run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 15; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = 18; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
 
 
 % stim categories not consistant
@@ -19,7 +21,7 @@ run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
@@ -260,25 +262,25 @@ end
 
 if run_opt.trial_estimate
         % start parallel pool
-%         poolobj = parpool;
+        poolobj = parpool;
     
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
     estimates = zeros(size(tr));
     spikes = datarun{2}.spikes;
 %    for i = 1:1%length(tr)
 
-velocity = [80:1.5:150];
-for i =1:length(velocity)
-        v = velocity(i)
-                estimates(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(2), stop, run_opt.tau, run_opt.tol*.1);
+velocity = [50:1:170];
+parfor i =1:length(velocity)
+        v = velocity(i);
+                estimates(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(17), stop, run_opt.tau, run_opt.tol*.1);
 
 %         estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
-        fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
+        fprintf('for trial %d, the estimated speed was %d\n', i, estimates(i))
 end
     figure; plot(velocity, estimates)
 %     figure; plot(savedVariables(:,1), savedVariables(:,2), 'o', 'markerfacecolor', 'b')
     % stop parallel pool
-%     delete(poolobj);
+    delete(poolobj);
     
     % save estimates
 %     save('estimates10272014_03272007_18_1_onp','estimates');
