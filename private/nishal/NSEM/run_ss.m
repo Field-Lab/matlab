@@ -1,20 +1,17 @@
-startup_analyse_tenessee
+
 %%
 
-load('/Volumes/Analysis/nishal/CBPcells.mat');
-datafile = '2012-08-09-3/data006-from-data002/data006-from-data002';
-imov=input('Input DATAFILE');
-bin_datafile=sprintf('/Volumes/Data/2012-08-09-3/data00%d',imov);
+
 % type_name= cell(1,1);
 % type_name{1}='On Parasol';
 
-datarun=load_data(datafile)
+datarun=load_data(analysis_datafile)
 %datarun=load_sta(datarun)
 datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
 
 %% 
-vision_id=1471;
+
 idx=[1:length(datarun.cell_ids)];
 matlab_id=idx(datarun.cell_ids==vision_id);
 cell_ei=datarun.ei.eis{matlab_id};
@@ -74,8 +71,7 @@ waveforms=cell(9,1);
 spike_times=cell(9,1);
 spike_amps=cell(9,1);
 recon_snippets=cell(9,1);
-no_cells=input('Number of cells');
-noise=input('Noise Thresold');
+
 data=allElecData{imov};
 dt=1/20000;
 samplingRate=20000;
@@ -85,22 +81,6 @@ cd '/Volumes/Analysis/nishal/CBPSpikesortDemo-master/spikesort_demo/'
 [waveforms{imov},spike_times{imov},spike_amps{imov},recon_snippets{imov}]=nsemSpikeSort('nsem_data',no_cells,noise); % need to give number of potential cells and noise amount .. 
 % Store spike sorting result ? 
 cd ('~/Nishal/matlab/private/nishal/NSEM');
-save(sprintf('/Volumes/Analysis/nishal/NSEM_cell%d_data00%d.mat',vision_id,imov),'waveforms','spike_times','spike_amps','recon_snippets');
-save(sprintf('/Volumes/Analysis/nishal/NSEM_cell%d_data00%dlong2.mat',vision_id,imov),'-v7.3');
-
-%% 
-figure;
-for icell=1:no_cells
-subplot(3,2,icell);
-plot(waveforms{imov}{icell});
-end
-
-subplot(3,2,6);
-plot(init_waveform_all_channels');
-
-correct_cell=input('Correct cell ? ');
-spk_tm=spike_times{imov}{correct_cell};
-spk_amp=spike_amps{imov}{correct_cell};
-save(sprintf('/Volumes/Analysis/niNSEM_cell_%d_long_share_Data006.mat',vision_id),'spk_tm','spk_amp');
-
+save(sprintf('/Volumes/Analysis/nishal/NSEM_SS/NSEM_dataset_%s_cell%d_data00%d_a.mat',dataset,vision_id,imov),'waveforms','spike_times','spike_amps','recon_snippets','init_waveform_all_channels','imov','dataset','analysis_datafile','bin_datafile','vision_id');
+save(sprintf('/Volumes/Analysis/nishal/NSEM_SS/NSEM_dataset_%s_cell%d_data00%d_b.mat',dataset,vision_id,imov),'-v7.3');
 
