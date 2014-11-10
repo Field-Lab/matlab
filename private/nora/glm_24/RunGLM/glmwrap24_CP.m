@@ -88,6 +88,7 @@ for i_exp = exptests
     expnumber = i_exp;
     [exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
     [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
+    cells={1772, 1471}
     
     % NBCoupling 06-12-14
     if GLMType.CouplingFilters==true
