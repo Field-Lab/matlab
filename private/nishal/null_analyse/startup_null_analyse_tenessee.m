@@ -5,15 +5,13 @@ disp('Running startup file Tennessee...');
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
 
 % matlab code paths
-addpath(genpath('~Nishal/matlab/code'));
+addpath(genpath('~/GITs/matlab/code'));
 
-addpath(genpath('~/Nishal/matlab/private/lauren/MATLAB_code')); 
+addpath(genpath('~/GITs/matlab/private/lauren/MATLAB_code')); 
 
-addpath(genpath('~/Nishal/matlab/private/nishal/Reconstruction'));
 
-addpath(genpath('../plotSpikeRaster_v1'));
 
-addpath(genpath('../create_act_2/'));
+addpath(genpath('~/GITs/matlab/private/nishal/plotSpikeRaster_v1'));
 
 % set some default plot 
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
