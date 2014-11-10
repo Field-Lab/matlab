@@ -30,8 +30,7 @@ colorScale = p.Results.colorScale;
 circleSize = p.Results.circleSize; 
 
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-temp = load('../resources/arrayPositions512.mat'); % 
-positions = temp.positions;
+positions = loadElecPositions512();
 
 if ~strcmp(pathToAnalysisData(end),filesep)
     pathToAnalysisData = [pathToAnalysisData filesep];
