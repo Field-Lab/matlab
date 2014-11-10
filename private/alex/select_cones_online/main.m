@@ -89,7 +89,7 @@ hCheckOtherCells=uicontrol('style','pushbutton','Units','normalized','position',
     'string','check others','fontsize',16,'callback','check_other_cells(frﬂame)');
 
 hSave=uicontrol('style','pushbutton','Units','normalized','position',[0.40 0.3 0.09 0.03],...
-    'string','save','fontsize',16,'calﬂlback','save_cones(path2save, mapName)');
+    'string','save','fontsize',16,'callback','save_cones(path2save, mapName)');
 
 
 hTemplate(1) = uibuttongroup('visible','on','Position',[0.32 0.3 0.07 0.1]);
