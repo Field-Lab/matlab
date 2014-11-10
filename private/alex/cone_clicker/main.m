@@ -1,7 +1,9 @@
-global myPicture cone_list
+global myPicture cone_list h i
+global new_cone_list
+h=[]; i=[];
 cone_list=[];
 myPicture=imread('/Volumes/Data/Auxiliary/2014-04-10-2/spot/Image1_edited.jpg');
-myPicture=myPicture(:,:,1);
+myPicture=fliplr(myPicture(:,:,1));
 
 hf=figure;
 set(hf,'Toolbar','figure')
@@ -12,46 +14,89 @@ imagesc(myPicture)
 
 % crop and find all electrodes positions, scale figure
 
-hcrop=uicontrol('style','pushbutton','Units','normalized','position',[0.78 0.945 0.05 0.03],'string','crop','fontsize',16,...
-    'callback','crop(sbh)');
+hcrop=uicontrol('style','pushbutton','Units','normalized','position',[0.73 0.945 0.12 0.03],'string','map electrodes','fontsize',16,...
+    'callback','map_electrodes');
 
 hclick=uicontrol('style','pushbutton','Units','normalized','position',[0.6 0.945 0.05 0.03],'string','cones','fontsize',16,...
-    'callback','click_cones(sbh,hclick)');
+    'callback','click_cones');
+
+hdelete=uicontrol('style','pushbutton','Units','normalized','position',[0.5 0.945 0.05 0.03],'string','delete','fontsize',16,...
+    'callback','delete_cones');
+
+hcoord=uicontrol('style','pushbutton','Units','normalized','position',[0.3 0.945 0.12 0.03],'string','recalc coord','fontsize',16,...
+    'callback','recalc_coord(cone_list)');
+
+
+%%
+
+
+magic_number = '10.00';
+inclusion_radius = 1.5;
+
+piece = '2014-06-04-7';
+run = 'data002';
+path2data=['/Volumes/Analysis/' piece '/' run '/' run];
+
+datarun = load_data(path2data);
+
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',false,'load_ei',false);
+datarun=load_data(datarun,opt);
+datarun = load_params(datarun,struct('verbose',1));  
+datarun = set_polarities(datarun);
+datarun = load_sta(datarun,'load_sta',[]);
+
+datarun.cones.centers=new_cone_list;
+
+datarun = make_mosaic_struct(datarun);
+datarun = make_voronoi_masks(datarun);
+masks = datarun.cones.mosaic.voronoi_masks;
+
+excludes = [];
+
+indexes = 1:length(masks);
+indexes = setdiff(indexes, excludes);
+cone_map = index_masks(masks, num2cell(indexes));
+
+
+min_neighbor_dist = 2;
+max_self_dist     = 3.5;
+spaced = space_voronoi_masks(datarun, min_neighbor_dist, max_self_dist);
+cone_map = index_masks(spaced, num2cell(indexes));
+%dlmwrite('/snle/acquisition/maps/2011-07-05-2_f01_voronoicones/map-0000.txt', cone_map, 'delimiter', '\t', 'newline', 'pc')
+
+
+%% Visualize % for use - not necessary
+figure; imagesc(cone_map); hold on; voronoi(datarun.cones.centers(:,1) .* datarun.cones.mosaic.voronoi_masks_scale, datarun.cones.centers(:,2) .* datarun.cones.mosaic.voronoi_masks_scale); axis equal tight
+figure; imagesc(cone_map); hold on; voronoi(datarun.cones.centers(:,1) .* datarun.cones.mosaic.voronoi_masks_scale, datarun.cones.centers(:,2) .* datarun.cones.mosaic.voronoi_masks_scale); colormap gray; axis equal
+figure; imagesc(cone_map > 0); hold on; voronoi(datarun.cones.centers(:,1) .* datarun.cones.mosaic.voronoi_masks_scale, datarun.cones.centers(:,2) .* datarun.cones.mosaic.voronoi_masks_scale); colormap gray; axis equal
 
 
 
+indices=cell(1,size(new_cone_list,1));
 
-%% ui controls
-% get cell from fit
-hPickType=uicontrol('style','edit','Units','normalized','position',[0.78 0.945 0.05 0.03],'string','4','fontsize',16,...
-    'callback','plot_fits(myFits,datarunA,{str2num(get(hPickType,''String''))}, 9,''r'',true, corX,corY);');
-hPickTypeText=uicontrol('style','text','Units','normalized','position',[0.78 0.975 0.05 0.02],'string','cell type','fontsize',12,'background',get(gcf,'color'));
+for i=1:size(new_cone_list,1)
+    indices{i}=i;
+end
 
-
-hEnterCell=uicontrol('style','edit','Units','normalized','position',[0.85 0.945 0.05 0.03],'string','0','fontsize',16,...
-    'callback','prepare_sta(datarunA,mapHandle,coneHandle,staHandle,hEnterCell,hEnterCell2);');
-hEnterCellText=uicontrol('style','text','Units','normalized','position',[0.85 0.975 0.05 0.02],'string','cell ID 1','fontsize',12,'background',get(gcf,'color'));
+cm = index_masks(spaced, indices);
+figure; imagesc(cm); hold on; voronoi(datarun.cones.centers(:,1) .* datarun.cones.mosaic.voronoi_masks_scale, datarun.cones.centers(:,2) .* datarun.cones.mosaic.voronoi_masks_scale);
 
 
-hEnterCell2=uicontrol('style','edit','Units','normalized','position',[0.91 0.945 0.05 0.03],'string','0','fontsize',16,...
-    'callback','prepare_sta(datarunA,mapHandle,coneHandle,staHandle,hEnterCell,hEnterCell2);');
-hEnterCell2Text=uicontrol('style','text','Units','normalized','position',[0.91 0.975 0.05 0.02],'string','cell ID 2','fontsize',12,'background',get(gcf,'color'));
+dirName = detect(find_cone_data(datarun), @(cd) (regexp(cd, magic_number)));
+dirName = [path2data(1:end-15) dirName,'/maps/'];
 
+mkdir(dirName);
+dlmwrite([dirName '/map-0000.txt'], cm, 'delimiter', '\t', 'newline', 'pc');
+coneIndices=indices;
+coneCenters=datarun.cones.centers;
+voronoiMasksScale=datarun.cones.mosaic.voronoi_masks_scale;
+save([dirName '/index_info'],'coneIndices','cm','coneCenters','voronoiMasksScale')
 
+% check saved info
+load('/Volumes/Analysis/2014-04-10-2/2014-04-10-2_data000_data000-bayes-msf_20.00-all_BW-2-8/maps/index_info.mat')
+figure; imagesc(cm); hold on; voronoi(coneCenters(:,1) .*voronoiMasksScale, coneCenters(:,2) .* voronoiMasksScale);
 
-% color sliders
-hr=uicontrol('style','slider','Units','normalized','position',[0.05 0.7 0.01 0.2],'min',0,'max',2,'value',1,...
-    'SliderStep',[0.1,0.2],'callback','redraw(myMap,mapHandle,get(hr,''Value''),get(hg,''Value''),get(hb,''Value''))');
-hrText=uicontrol('style','text','Units','normalized','position',[0.07 0.8 0.02 0.02],'string','R','fontsize',12,'background',get(gcf,'color'));
-
-
-hg=uicontrol('style','slider','Units','normalized','position',[0.05 0.45 0.01 0.2],'min',0,'max',2,'value',1,...
-    'SliderStep',[0.1,0.2],'callback','redraw(myMap,mapHandle,get(hr,''Value''),get(hg,''Value''),get(hb,''Value''))');
-hgText=uicontrol('style','text','Units','normalized','position',[0.07 0.55 0.02 0.02],'string','G','fontsize',12,'background',get(gcf,'color'));
-
-hb=uicontrol('style','slider','Units','normalized','position',[0.05 0.2 0.01 0.2],'min',0,'max',2,'value',1,...
-    'SliderStep',[0.1,0.2],'callback','redraw(myMap,mapHandle,get(hr,''Value''),get(hg,''Value''),get(hb,''Value''))');
-hbText=uicontrol('style','text','Units','normalized','position',[0.07 0.3 0.02 0.02],'string','B','fontsize',12,'background',get(gcf,'color'));
-
-
-
+% read saved map and plot it 
+loaded_map = dlmread('/Volumes/Analysis/2014-04-10-2/2014-04-10-2_data000_data000-bayes-msf_20.00-all_BW-2-8/maps/map-0000.txt');
+imagesc(loaded_map);
+max(loaded_map(:)) % total number of cones to stimulate

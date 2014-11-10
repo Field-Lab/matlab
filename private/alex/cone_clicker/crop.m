@@ -5,7 +5,13 @@ global myPicture
 
 myEl=round(ginput(2));
 
-pdist(myEl)
+maxDist=pdist(myEl);
+
+singleDist=maxDist/27;
+hold on
+plot(repmat(mean(myEl(:,1)),1,27),myEl(1,2):singleDist:myEl(2,2),'xr')
+
+
 
 figure
 hist(double(myPicture(:)),50);
