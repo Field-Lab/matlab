@@ -60,7 +60,7 @@ allElecData=cell(9,1);
 
     imov
 %dataTrials{imov}=getTrialData(sprintf('/Volumes/Data/2014-08-20-0/data00%d',imov),center_elec,330,30);
-[allElecData{imov}]=getTrialDataMultipleElectrodesOnly(bin_datafile,center_elec,elecList);
+[allElecData{imov}]=getTrialDataMultipleElectrodesOnly(bin_datafile,center_elec,data_time*60,elecList);
 
 
 
