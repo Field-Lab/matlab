@@ -21,7 +21,7 @@ run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
@@ -280,7 +280,7 @@ if run_opt.trial_estimate
     %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
     %     end
     
-    velocity= [80:1:150];
+    velocity= [10:10:240];
     % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     strsig2 = zeros(1,length(velocity));
@@ -288,18 +288,20 @@ if run_opt.trial_estimate
     poolobj = parpool;
     % get general error function to optimize initialization
     % maybe get two and average them
-    for i =49%1:50
+    for i =1:50
         parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1);
-            j
+            
         end
-        figure; plot(velocity, strsig1)
-        title(['trial ' num2str(i)]);
+%         figure; plot(velocity, strsig1)
+%         title(['trial ' num2str(i)]);
         i
+        [x1,y1] = min(strsig1);
+
+        run_opt.trial_estimate_start(i) = velocity(y1);
     end
     
-    delete(poolobj);
     
     % for j = 1:length(velocity)
     %     v = velocity(j);
@@ -312,27 +314,27 @@ if run_opt.trial_estimate
     
     
     
-    [x1,y1] = min(strsig1);
+%     [x1,y1] = min(strsig1);
     % [x2,y2] = min(strsig2);
     % start parallel pool
     
     
-    run_opt.trial_estimate_start = velocity(y1);%0.5*(velocity(y1)+velocity(y2));
-    for i = 28:28%length(tr)
+    %0.5*(velocity(y1)+velocity(y2));
+    parfor i = 1:length(tr)
         
-        %     [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
+            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
-    savedVaribles
+    
     %     figure; plot(velocity, estimates)
     % stop parallel pool
-    %     delete(poolobj);
+        delete(poolobj);
     
     % save estimates
     %     save('estimates10272014_03272007_18_1_onp','estimates');
     
     
-    %     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_brightright_newmethod2.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/BrightRight/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     
     
