@@ -96,6 +96,7 @@ for icellType=cellTypeId
     icellType
 InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end
+cellTypeUsed==cellTypeId*ones(length(InterestingCell_vis_id));
 
  for ref_cell_number=1:10;
  plot_raster_script;
@@ -109,10 +110,12 @@ datarun=load_data(datafile)
 datarun=load_params(datarun)
 
  InterestingCell_vis_id=[3692,6061,1382,3782,6421,1627,2181,2631];
-
-
- for ref_cell_number=1:8
+ cellTypeUsed=[2,2,2,2,2,1,1,1];
+ 
+ for ref_cell_number=5
  plot_raster_script;
+ testsuite_prediction
+ % re_sta
  pause
  end
 

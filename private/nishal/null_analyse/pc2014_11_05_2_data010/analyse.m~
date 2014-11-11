@@ -109,10 +109,11 @@ datarun=load_data(datafile)
 datarun=load_params(datarun)
 
  InterestingCell_vis_id=[3692,6061,1382,3782,6421,1627,2181,2631];
-
-
- for ref_cell_number=1:8
+ cellTypeUsed=[2,2,]
+ for ref_cell_number=5
  plot_raster_script;
+ testsuite_prediction
+ 
  pause
  end
 
