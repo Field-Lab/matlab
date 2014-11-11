@@ -1,10 +1,11 @@
-function [allElecData]=getTrialDataMultipleElectrodes(raw_data_path,center_elec,time,elecList)
+function [allElecData]=getTrialDataMultipleElectrodes(raw_data_path,center_elec,elecList)
 
 samplingRate=20000;
 rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(raw_data_path);
 display('Analysing Data');
 
-
+header=rawFile.getHeader();
+time=header.getNumberOfSamples()/20000;
 % get Rawdata for center electrode
 
 data=zeros(time*samplingRate,1);
