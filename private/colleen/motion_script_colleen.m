@@ -2,6 +2,7 @@ clear toPlot
 % DATA PARAMETERS
 clear
 global savedVariables
+savedVariables = [];
 run_opt.load = true; % T/F
 
 run_opt.data_set = '2007-03-27-1';
@@ -27,7 +28,7 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter %0.1 next best
-run_opt.tol = 1e-4;
+run_opt.tol = 1e-3;
 
 run_opt.trial_estimate_start = 195;
 
@@ -99,7 +100,7 @@ if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
     tr=datarun{2}.triggers(1:2:end); % all start triggers
     t=find(datarun{2}.stimulus.trial_list==run_opt.config_num); %find the times when all the stimulus type 2 starts
     tr=tr(t);
-
+    
     
 end
 
@@ -130,7 +131,7 @@ if run_opt.downsample_spikes
                 end
             else
                 run_opt.trial_estimate = false; % if no downsampling, don't calculate estimates
-            end                                                                                                                                          
+            end
         elseif n2>n1
             if strcmp(run_opt.cell_type, 'On midget')
                 for i=cell_indices2
@@ -181,7 +182,7 @@ if run_opt.raster %raster
         % axis
         % If tracking motion, the cell should respond to the bar at the same
         % time on every trial
-       
+        
         psth_r = psth_raster(start,stop,datarun{2}.spikes{cell_indices2(k)}',tr);
         
         % Title is the cell id according to vision and the mean firing rate
@@ -202,9 +203,9 @@ if run_opt.rasterPerTrial %raster
         case 4
             strTit = 'Bright Bar Moving Left';
     end
-
+    
     toPlot = cell(1,length(t));
-
+    
     % Takes in start and stop time (0-0.7274)
     % Spikes of the cell with the lowest firing rate first
     % start time of each stimulus type 2 trigger
@@ -216,25 +217,25 @@ if run_opt.rasterPerTrial %raster
     for counter = 1:length(cell_indices2)
         psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr);
         posThisCell = datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1);
-
+        
         posFarthestCell = datarun{1}.vision.sta_fits{cell_indices1(1)}.mean(1);
-
+        
         
         cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
         % Title is the cell id according to vision and the mean firing rate
-%          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
+        %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
         for trialNum = 1:length(t)
             [x,y] = find(psth_r == trialNum-1);
             if run_opt.config_num == 1 || run_opt.config_num == 3
-%                         toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(posThisCell - posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
-                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
-
-        else
-%                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(-posThisCell + posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
-                       toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
-
+                %                         toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(posThisCell - posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+                toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+                
+            else
+                %                        toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1)-repmat(-posThisCell + posFarthestCell, length(x),1)/speed, repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+                toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+                
             end
-        
+            
         end
     end
     
@@ -260,83 +261,82 @@ end
 
 
 if run_opt.trial_estimate
-
-%     
+    
+    %
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
-%     estimates = zeros(1,25);
+    %     estimates = zeros(1,25);
     spikes = datarun{2}.spikes;
     
-%     pairs = zeros(2, length(cell_indices2) * (length(cell_indices2) - 1) / 2,'int16');
-%     counter = 1;
-%     for i = 2:length(cell_indices2)
-%         for j = 1:i-1
-%             pairs(:,counter) = [i; j];
-%             counter = counter + 1;
-%         end
-%     end
-% dx = zeros(1,length(pairs));
-%     for j = 1:length(pairs)
-%         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
-%     end
-
-
-velocity= [90:0.5:170];
-% velocity = [110:0.4:130];
-strsig1 = zeros(1,length(velocity));
-strsig2 = zeros(1,length(velocity));
-
-poolobj = parpool;
-% get general error function to optimize initialization
-% maybe get two and average them
-for i =49%1:50
-parfor j = 1:length(velocity)
-    v = velocity(j);
-    strsig1(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1);
-j
-end
-figure; plot(velocity, strsig1)
-title(['trial ' i]);
-i
-end
-
-delete(poolobj);
-
-% for j = 1:length(velocity)
-%     v = velocity(j);
-%     strsig2(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(), stop, run_opt.tau, run_opt.tol*.1);
-% end
-
-%     figure; plot(velocity, strsig)
-
-
-
-
-
-[x1,y1] = min(strsig1);
-% [x2,y2] = min(strsig2);
-        % start parallel pool
-        
-        
-run_opt.trial_estimate_start = velocity(y1);%0.5*(velocity(y1)+velocity(y2));
-for i = 28:28%length(tr)
+    %     pairs = zeros(2, length(cell_indices2) * (length(cell_indices2) - 1) / 2,'int16');
+    %     counter = 1;
+    %     for i = 2:length(cell_indices2)
+    %         for j = 1:i-1
+    %             pairs(:,counter) = [i; j];
+    %             counter = counter + 1;
+    %         end
+    %     end
+    % dx = zeros(1,length(pairs));
+    %     for j = 1:length(pairs)
+    %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
+    %     end
     
-    [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
-    fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
-end
-savedVaribles
-%     figure; plot(velocity, estimates)
-% stop parallel pool
-%     delete(poolobj);
+    velocity= [80:1:150];
+    % velocity = [110:0.4:130];
+    strsig1 = zeros(1,length(velocity));
+    strsig2 = zeros(1,length(velocity));
+    
+    poolobj = parpool;
+    % get general error function to optimize initialization
+    % maybe get two and average them
+    for i =49%1:50
+        parfor j = 1:length(velocity)
+            v = velocity(j);
+            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1);
+            j
+        end
+        figure; plot(velocity, strsig1)
+        title(['trial ' num2str(i)]);
+        i
+    end
+    
+    delete(poolobj);
+    
+    % for j = 1:length(velocity)
+    %     v = velocity(j);
+    %     strsig2(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(), stop, run_opt.tau, run_opt.tol*.1);
+    % end
+    
+    %     figure; plot(velocity, strsig)
+    
+    
+    
+    
+    
+    [x1,y1] = min(strsig1);
+    % [x2,y2] = min(strsig2);
+    % start parallel pool
+    
+    
+    run_opt.trial_estimate_start = velocity(y1);%0.5*(velocity(y1)+velocity(y2));
+    for i = 28:28%length(tr)
+        
+        %     [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
+        fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
+    end
+    savedVaribles
+    %     figure; plot(velocity, estimates)
+    % stop parallel pool
+    %     delete(poolobj);
     
     % save estimates
-%     save('estimates10272014_03272007_18_1_onp','estimates');
-
-
-%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_brightright_newmethod2.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-% save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-
-
-
+    %     save('estimates10272014_03272007_18_1_onp','estimates');
+    
+    
+    %     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d_brightright_newmethod2.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+    % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+    
+    
+    
 end
 
 % figure;

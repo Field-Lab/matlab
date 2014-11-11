@@ -47,14 +47,15 @@ sig_str = 0;
 % create a list of all possible pairs between the neurons
   RelTol = tol;
     AbsTol = tol * .1;
-    
-       t = linspace(0, trial_length, 100);
+    numberOfT = 100; % determined to be good enough
+       t = linspace(0, trial_length, numberOfT);
 %      valueAtEachT = zeros(length(t), length(indices2),2);
           valueAtEachT = zeros(length(t),2);
+% indices1 = indices1(66:70);
+% indices2 = indices2(66:70);
 
-     
 %1:1%length(indices2) % for every cell shift every other cell relative to it
-        dx = x_pos(indices1)-10;%x_pos(indices1(i)); set the ref to 0
+        dx = x_pos(indices1)+0;%x_pos(indices1(i)); set the ref to 0
 
 
   
@@ -83,8 +84,8 @@ sig_str = 0;
     idx=cellfun('isempty',spks_2_shiftedRight);
     spks_2_shiftedRight(idx)={0}; %It replaces all empty cells with number 0
     
-    spks_2_shiftedRight = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shiftedRight, 'UniformOutput', false);
-    spks_2_shiftedLeft = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:floor(end/2)) + trial_length], spks_2_shiftedLeft, 'UniformOutput', false);
+    spks_2_shiftedRight = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:ceil(end/2)) + trial_length], spks_2_shiftedRight, 'UniformOutput', false);
+    spks_2_shiftedLeft = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:ceil(end/2)) + trial_length], spks_2_shiftedLeft, 'UniformOutput', false);
     
     % filter responses
     flt_rsp2 = cellfun(@(x) filtered_response(x, tau), spks_2, 'UniformOutput', false);
@@ -116,10 +117,10 @@ sig_str = 0;
     %str = 0;
     
     
-
-
-sig_str = sum(valueAtEachT(:,1).^2)-sum(valueAtEachT(:,2).^2);
-savedVariables = [savedVariables; velocity, sig_str];
+% figure; plot(t, valueAtEachT(:,1)); hold on; plot(t, valueAtEachT(:,2),'g')
+% sum from 2:end because first and last value are identical!
+sig_str = sum(valueAtEachT(2:end,1).^2)-sum(valueAtEachT(2:end,2).^2);
+savedVariables = [savedVariables; right, left];
 
 
 end

@@ -1,4 +1,4 @@
-clear toPlot
+% clear toPlot
 % DATA PARAMETERS
 clear
 global savedVariables
@@ -28,7 +28,7 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
-run_opt.tol = 1e-8;
+run_opt.tol = 1e-3;
 
 run_opt.trial_estimate_start = 195;
 
@@ -262,22 +262,23 @@ end
 
 if run_opt.trial_estimate
         % start parallel pool
-        poolobj = parpool;
+       
     
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
     estimates = zeros(size(tr));
     spikes = datarun{2}.spikes;
 %    for i = 1:1%length(tr)
 
-velocity = [50:1:170];
+velocity = [80:1:150];
+poolobj = parpool;
 parfor i =1:length(velocity)
         v = velocity(i);
-                estimates(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(17), stop, run_opt.tau, run_opt.tol*.1);
-
+        sig_str(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(49), stop, run_opt.tau, run_opt.tol*.1);
+i
 %         estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
-        fprintf('for trial %d, the estimated speed was %d\n', i, estimates(i))
+%         fprintf('for trial %d, the estimated speed was %d\n', i, estimates(i))
 end
-    figure; plot(velocity, estimates)
+    figure; plot(velocity, sig_str)
 %     figure; plot(savedVariables(:,1), savedVariables(:,2), 'o', 'markerfacecolor', 'b')
     % stop parallel pool
     delete(poolobj);
