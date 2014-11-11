@@ -67,8 +67,8 @@ spks_2_shifted = spks_2 - dx / velocity;
 spks_2_shifted = sort(mod(spks_2_shifted, trial_length));
 % replicate spikes before and after trial to minimize artifacts of spikes
 % shifting circularly across the border
-spks_1_shifted = [spks_1_shifted(ceil(end/2):end) - trial_length; spks_1_shifted; spks_1_shifted(1:floor(end/2)) + trial_length];
-spks_2_shifted = [spks_2_shifted(ceil(end/2):end) - trial_length; spks_2_shifted; spks_2_shifted(1:floor(end/2)) + trial_length];
+spks_1_shifted = [spks_1_shifted(ceil(end/2):end) - trial_length; spks_1_shifted; spks_1_shifted(1:ceil(end/2)) + trial_length];
+spks_2_shifted = [spks_2_shifted(ceil(end/2):end) - trial_length; spks_2_shifted; spks_2_shifted(1:ceil(end/2)) + trial_length];
 % filter responses
 flt_rsp1 = filtered_response(spks_1, tau);
 flt_rsp2 = filtered_response(spks_2, tau);
