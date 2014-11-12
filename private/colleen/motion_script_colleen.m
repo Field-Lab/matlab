@@ -21,7 +21,7 @@ run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
@@ -280,15 +280,15 @@ if run_opt.trial_estimate
     %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
     %     end
     
-    velocity= [10:10:240];
+    velocity= [80:1:140];
     % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     strsig2 = zeros(1,length(velocity));
     
-    poolobj = parpool;
+%     poolobj = parpool;
     % get general error function to optimize initialization
     % maybe get two and average them
-    for i =1:50
+    for i =1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1);
