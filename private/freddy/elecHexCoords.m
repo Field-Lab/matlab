@@ -2,7 +2,7 @@
 function hexCoords = elecHexCoords()
 hexCoords = zeros(512, 2);
 try
-temp = load('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/freddy/512elecpositions.mat'); % Find a more general location for this or call a different text file.
+temp = load([matlab_code_path() '/private/freddy/512elecpositions.mat']); % Find a more general location for this or call a different text file.
 catch
     temp = load('~Development/matlab-standard/private/freddy/512elecpositions.mat'); 
 end
