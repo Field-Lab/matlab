@@ -22,9 +22,11 @@ sampling_rate=20000;
 
 % let users pick some channels to look at if they want
 user_channels=input('Enter any channels you want to look at as an array or hit enter \n');
-if max(user_channels)>number_of_channels || any(floor(user_channels)~=user_channels)
-    user_channels(user_channels>number_of_channels)=[];
-    user_channels(floor(user_channels)~=user_channels)=[];
+if ~isempty(user_channels)
+    if max(user_channels)>number_of_channels || any(floor(user_channels)~=user_channels)
+        user_channels(user_channels>number_of_channels)=[];
+        user_channels(floor(user_channels)~=user_channels)=[];
+    end
 end
 n_user_channels=length(user_channels);
 

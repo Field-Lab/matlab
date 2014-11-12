@@ -117,7 +117,7 @@ for i_trial = 1:trials
     rec1 = time(find(rec_rast(i_trial,:)));
     
     
-    
+    disp(i_trial)
     plot(rec1, i_trial, 'k.')
     
     if length(sim1) < 4*length(rec1) 
