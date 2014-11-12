@@ -44,11 +44,11 @@ GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.CBP=false;
 
-%GLMType.stimfilter_mode = 'rk1';
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.stimfilter_mode = 'rk1';
+%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
-GLMType.CONVEX = true;
+GLMType.CONVEX = false;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -87,12 +87,6 @@ for i_exp = exptests
     %%
     expnumber = i_exp;
     [exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
-    if GLMType.CBP
-        cells={1772}
-    else
-      cells;
-    end
-    cells={1772};
     [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
     
     % NBCoupling 06-12-14
@@ -150,11 +144,7 @@ for i_exp = exptests
     DirPars.WN_STAdir   = NSEM_secondaryDirectories('WN_STA', inputs);
     inputs.stim_type    = GLMType.fit_type;
 
-    if GLMType.CBP
-        DirPars.organizedspikesdir='/Volumes/Analysis/nora/NSEM/CBPBlockedSpikes/2012-08-09-3/NSEM_mapPRJ'
-    else
-        DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
-    end
+    DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
     clear inputs
     
     for i_cell = 1:length(cells)
