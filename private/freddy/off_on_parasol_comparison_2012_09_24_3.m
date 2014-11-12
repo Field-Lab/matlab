@@ -12,6 +12,9 @@ dirInfo = dir(elecStimPath);
 
 elecsByPattern = full(getElecsFromPatternFiles([elecStimPath 'pattern_files/'])); %load the matrix that gives electrode numbers indexed by pattern
 
+temp = load('~/git_code/matlab/private/lauren/MATLAB_code/analysis/dataset-specific/axonBundleThresholds_byPattern_2012_09_24_3_data008.mat');
+axonBundleThresholds = temp.axonBundleThresholds_byPattern_2012_09_24_3_data008;
+
 %%
 
 currentThresh = 4;
@@ -26,21 +29,6 @@ off_parasol = [212 421 903 5568 6605 7052 7639 7532];
 
 neurons = [on_parasol off_parasol];
 
-somaStimThreshs_bielec1_on = zeros(size(on_parasol,2),6);
-somaStimThreshs_singleelec_on = zeros(size(on_parasol,2),6);
-
-activationThresh_bielec1_on    = zeros(size(on_parasol,2),512);
-activationThresh_bielec2_on    = zeros(size(on_parasol,2),512);
-activationThresh_singleElec_on = zeros(size(on_parasol,2),512);
-
-responseProb_on = zeros(size(on_parasol,2), 6);
-
-somaStimThreshs_bielec1_off = zeros(size(off_parasol,2),6);
-somaStimThreshs_singleelec_off = zeros(size(off_parasol,2),6);
-
-activationThresh_bielec1_off    = zeros(size(off_parasol,2),512);
-activationThresh_bielec2_off    = zeros(size(off_parasol,2),512);
-activationThresh_singleElec_off = zeros(size(off_parasol,2),512);
 
 responseProb_off = zeros(size(off_parasol,2), 6);
 
@@ -51,6 +39,11 @@ activationThresh_singleElec = zeros(size(neurons,2),512);
 somaStimThreshs_bielec1 = zeros(size(neurons,2),6);
 somaStimThreshs_singleElec = zeros(size(neurons,2),6);
 responseProbs = zeros(size(neurons,2), 6);
+
+patternNos_bielec1 = zeros(size(neurons,2),6);
+patternNos_singleelec = zeros(size(neurons,2),6);
+thresholdDiff_bielec1 = zeros(size(neurons,2),6); %4 was highest number of patterns per neuron -- empirical
+thresholdDiff_singleelec = zeros(size(neurons,2),6);
 
 for j = 1:1:size(neurons,2)         % For all ON parasol cells
     neuron  = neurons(j);           % gets the id number of the ith neuron
@@ -109,7 +102,8 @@ for j = 1:1:size(neurons,2)         % For all ON parasol cells
                     switch stimType
                         case 'bielectrode_P1'
                             activationThresh_bielec1(j,leftElectrode) = threshVoltage;
-                            %                             bielecDiff(x) = threshVoltage-axonBundleThresholds(elecResp.stimInfo.patternNo);
+                                                        thresholdDiff_bielec1(j,a) = threshVoltage-axonBundleThresholds(elecResp.stimInfo.patternNo);
+                            patternNos_bielec1(j,a) = elecResp.stimInfo.patternNo;
                             responseProbs(j,a) = y(currentIndex);
                             if size(y, 1) < 60
                                 y = kron(y, ones([2 1]));
@@ -124,7 +118,8 @@ for j = 1:1:size(neurons,2)         % For all ON parasol cells
                             activationThresh_bielec2(j,leftElectrode) = threshVoltage;
                         case 'singleElectrode'
                             activationThresh_singleElec(j,elecResp.stimInfo.electrodes) = threshVoltage;
-                            %                             singleelecDiff(z) = threshVoltage-axonBundleThresholds(elecResp.stimInfo.patternNo);
+                            thresholdDiff_singleelec(j,b) = threshVoltage-axonBundleThresholds(elecResp.stimInfo.patternNo);
+                            patternNos_singleelec(j,b) = elecResp.stimInfo.patternNo;
                             somaStimThreshs_singleElec(j, b) = threshVoltage;
                             b = b + 1 ;
                             %                             z = z + 1;
@@ -177,7 +172,7 @@ for n = 1:1:size(neurons,2)
         if ~isempty(overlaps)
             for overlap = overlaps
                 index = find(neurons == overlap);
-                if abs(max(find(responseProbs(index,:))) - max(val)) < 0.1
+                if abs(find(responseProbs(index,:), 1, 'last' ) - max(val)) < 0.1
                   fit_color = 'r';
                 end
             end
@@ -196,4 +191,44 @@ title('parasol response prob, bi-electrode stimulation');
 
 %%
 
-overlaps = getOverlappingNeurons(datarun, neurons);
+thresholdDiff_singleelec(thresholdDiff_singleelec==0) = NaN;
+thresholdDiff_bielec1(thresholdDiff_bielec1==0)       = NaN;
+
+somaStimThreshs_singleElec(somaStimThreshs_singleElec == 0) = NaN;
+somaStimThreshs_bielec1(somaStimThreshs_bielec1 == 0) = NaN;
+
+patternNos_bielec1(patternNos_bielec1==0) = NaN;
+patternNos_singleelec(patternNos_singleelec==0) = NaN;
+
+maxPatterns_bielec1 = NaN(size(neurons,2),1);
+maxPatterns_singleelec = NaN(size(neurons,2),1);
+
+maxThreshs_singleelec = NaN(size(neurons,2), 1);
+maxThreshs_bielec1 = NaN(size(neurons,2), 1);
+
+[singleelecvalues, singleelecindices] = min(thresholdDiff_singleelec,[],2);
+[bielec1values, bielec1indices] = min(thresholdDiff_bielec1,[],2);
+
+for i = 1:1:size(singleelecindices)
+    maxPatterns_bielec1(i) = patternNos_bielec1(i, bielec1indices(i));
+    maxThreshs_bielec1(i) = somaStimThreshs_bielec1(i, bielec1indices(i));
+    maxPatterns_singleelec(i) = patternNos_singleelec(i, singleelecindices(i));
+    maxThreshs_singleelec(i) = somaStimThreshs_singleElec(i, singleelecindices(i));
+end
+
+
+
+threshDiffs = cat(2,singleelecvalues,bielec1values);
+
+%%
+for n = 1:size(maxPatterns_bielec1, 1)
+    pattern = maxPatterns_bielec1(n);
+    neuron = neurons(n);
+    [row, ~] = find(patternNos_bielec1==pattern);
+    if (size(row, 1) > 1)
+        disp([num2str(neuron) ':' num2str(pattern)]);
+        for i = 1:size(row, 1)
+            disp(['    ' num2str(neurons(row(i)))]);
+        end
+    end
+end
