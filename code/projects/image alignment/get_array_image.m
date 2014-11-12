@@ -14,5 +14,4 @@ elseif (array_id >= 1500) && (array_id < 2500) % 519 array
 else
     error('array id %d not recognized.', array_id)
 end
-
-imagepath = fullfile('code/projects/image alignment/images', image_file);
+imagepath = fullfile( 'code/projects/image alignment/images' ,image_file);

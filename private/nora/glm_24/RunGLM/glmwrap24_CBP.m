@@ -42,13 +42,12 @@ GLMType.nullpoint = 'mean';
 GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
 GLMType.specialchange = false;
-GLMType.CBP=false;
 
-GLMType.stimfilter_mode = 'rk1';
-%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+%GLMType.stimfilter_mode = 'rk1';
+GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
-GLMType.CONVEX = false;
+GLMType.CONVEX = true;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -60,8 +59,9 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
-GLMType.CouplingFilters = true;
+GLMType.CouplingFilters = false;
 GLMType.Subunits = false;
+GLMType.CBP=true;
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
 GLMType.func_sname = 'glmwrap24_CP';
@@ -78,7 +78,7 @@ troubleshoot.name    = 'singleopt';
 %  LOOP THROUGH DATA SETS
 
 BD = NSEM_BaseDirectories;
-exptests = [4];
+exptests = [1];
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
@@ -87,7 +87,7 @@ for i_exp = exptests
     %%
     expnumber = i_exp;
     [exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
-    cells={5866}
+    cells={1471};
     [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
     
     % NBCoupling 06-12-14
@@ -145,15 +145,7 @@ for i_exp = exptests
     DirPars.WN_STAdir   = NSEM_secondaryDirectories('WN_STA', inputs);
     inputs.stim_type    = GLMType.fit_type;
 
-    if GLMType.CBP 
-  		if strcmp(GLMType.fit_type,'NSEM')
-        	DirPars.organizedspikesdir='/Volumes/Analysis/nora/NSEM/CBPBlockedSpikes/2012-08-09-3/NSEM_mapPRJ'
-        elseif strcmp(GLMType.fit_type,'WN')
-        	DirPars.organizedspikesdir='/Volumes/Analysis/nora/NSEM/CBPBlockedSpikes/2012-08-09-3/WN_mapPRJ'
-        end
-    else
-        DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
-    end
+    DirPars.organizedspikesdir=['/Volumes/Analysis/nora/NSEM/CBPBlockedSpikes/' inputs.exp_nm '/' GLMType.fit_type '_' GLMType.map_type];
     clear inputs
     
     for i_cell = 1:length(cells)
@@ -161,6 +153,7 @@ for i_exp = exptests
         cid = cells{i_cell};
         [celltype , cell_savename, ~]  = findcelltype(cid, datarun_mas.cell_types);
         
+        if ~exist(sprintf('%s/%s.mat', d_save,cell_savename))
             glm_cellinfo.cid           = cid;
             glm_cellinfo.exp_nm        = exp_nm;
             glm_cellinfo.celltype      = celltype;
@@ -213,19 +206,30 @@ for i_exp = exptests
             end
             % end NBCoupling
             
-
-        %% 
-        load('/Volumes/Analysis/nora/NSEM/GLM_Output/fixedSP_rk1_linear_MU_PS_CP_p8IDp8/standardparams/NSEM_mapPRJ/2013-10-10-0/ONPar_5866.mat')
-        fittedGLM_NSEM=fittedGLM;
-        load('/Volumes/Analysis/nora/NSEM/GLM_Output/fixedSP_rk1_linear_MU_PS_CP_p8IDp8/standardparams/WN_mapPRJ/2013-10-10-0/ONPar_5866.mat')
-        fittedGLM_WN=fittedGLM;
-                    % NBCoupling
-        xvalperformance_cross = eval_xvalperformance_NEW_CP(fittedGLM_WN, StimulusPars.slv, cell_organizedspikes,neighbor_organizedspikes,testmovie);
-        plotraster(xvalperformance_cross,fittedGLM_NSEM)
-        plotraster(fittedGLM_NSEM.xvalperformance,fittedGLM_NSEM)
-        plotraster(fittedGLM_WN.xvalperformance,fittedGLM_WN)
-
-
+            % Prepare the stim
+            % DO SOMETHING ABOUT COMPUTED TSTIM!!!
+            %% Execute the correct GLM
+            tic
+            if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
+                [fittedGLM] =    glm_execute_DoubleOpt_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo, troubleshoot);
+            else
+                [fittedGLM]     = glm_execute_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo);
+            end
+            toc
+            
+            % NBCoupling
+            xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, StimulusPars.slv, cell_organizedspikes,neighbor_organizedspikes,testmovie);
+            fittedGLM.xvalperformance  = xvalperformance;
+            fittedGLM.d_save           = d_save;
+            eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+            printname = sprintf('%s/DiagPlots_%s', d_save,fittedGLM.cellinfo.cell_savename);
+            printglmfit_CP(fittedGLM,datarun_mas,printname)
+            
+        % NB 06-11-2014
+        else
+            error('Previous results still in directory')
+            
+        end
         
     end
     
