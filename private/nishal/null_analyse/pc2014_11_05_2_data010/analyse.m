@@ -47,6 +47,13 @@ end
 % pixel values by a lot. And as I tolerate only 2% of pixels being clipped
 % off, the contrast had to decline!! 
 
+%%
+% Condition strings 
+cond_str=cell(4,1);
+cond_str{1}='Original';
+cond_str{2}='Null for On Parasol';
+cond_str{3}='Null for Off Parasol';
+cond_str{4}='Null for 4 cells'
 %% Load cells and STAs
 
 datafile = '2014-11-05-2/data009';
@@ -78,9 +85,12 @@ for icellType=cellTypeId
     icellType
 InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end
+cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id));
 
- for ref_cell_number=1:10;
+ for ref_cell_number=4%[10,5,9,3,4];
  plot_raster_script;
+  testsuite_prediction
+ psth_variability
  pause
  end
 %%
@@ -96,15 +106,18 @@ for icellType=cellTypeId
     icellType
 InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end
-cellTypeUsed==cellTypeId*ones(length(InterestingCell_vis_id));
+cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id));
 
- for ref_cell_number=1:10;
- plot_raster_script;
+ for ref_cell_number=6;
+ref_cell_number
+     plot_raster_script;
+  testsuite_prediction
+  psth_variability
  pause
  end
 
  %%
-% On parasol
+% Some cells
  datafile = '2014-11-05-2/data009';
 datarun=load_data(datafile)
 datarun=load_params(datarun)
@@ -115,6 +128,7 @@ datarun=load_params(datarun)
  for ref_cell_number=5
  plot_raster_script;
  testsuite_prediction
+ psth_variability
  % re_sta
  pause
  end
