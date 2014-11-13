@@ -184,11 +184,12 @@ title(sprintf('Data009 Vision ID: %d Avg Spk Rate: %f',InterestingCell_vis_id(re
 end
 
 %%
-
+nTrials1=30;
 figure;
 for icond=1:nConditions
 subplot(nConditions,1,icond);
 [xPoints, yPoints]=plotSpikeRaster(spkCondColl(icond).spksColl,'PlotType','vertline');
+
 plot(xPoints, yPoints+nTrials1, 'k');
 spkCondColl(icond).xPoints=xPoints;
 spkCondColl(icond).yPoints=yPoints;
@@ -198,7 +199,7 @@ hold on
 plot(xPoints, yPoints, 'r');
 spkCondCollModel(icond).xPoints=xPoints;
 spkCondCollModel(icond).yPoints=yPoints;
-
+title(sprintf('%s',cond_str{icond}));
 end
 
 
@@ -215,4 +216,5 @@ xPoints=spkCondCollModel(icond).xPoints;
 yPoints=spkCondCollModel(icond).yPoints;
 plot(xPoints, yPoints+max(yPoints(:)), 'r');
 ylim([0,2*nTrials]);
+title(sprintf('%s: data0009 vis ID: %d ',cond_str{icond},InterestingCell_vis_id(ref_cell_number)));
 end
