@@ -87,9 +87,11 @@ InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cel
 end
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id));
 
- for ref_cell_number=3%[10,5,9,3,4];
+ for ref_cell_number=24%4%[10,5,9,3,4];
+     close all
  plot_raster_script;
-  testsuite_prediction
+ plot_mosaic
+ %testsuite_prediction
  psth_variability
  pause
  end
@@ -108,12 +110,16 @@ InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cel
 end
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id));
 
- for ref_cell_number=6;
-ref_cell_number
-     plot_raster_script;
-  testsuite_prediction
-  psth_variability
- pause
+ for ref_cell_number=14;
+     close all
+     
+ ref_cell_number
+ plot_raster_script;
+ plot_mosaic
+ %testsuite_prediction
+ psth_variability
+
+
  end
 
  %%
