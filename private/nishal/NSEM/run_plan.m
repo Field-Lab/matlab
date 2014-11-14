@@ -13,7 +13,7 @@ bin_datafile=sprintf('/Volumes/Data/%s/data0%d',dataset,imov);
 
 vision_id=1507;
 
-no_cells=4;
+no_cells=5;
 noise=0.25;
 
 run_ss
