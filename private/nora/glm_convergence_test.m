@@ -77,6 +77,19 @@ for i_debug=1:length(debug_blocks)
         [exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
         [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
         
+        % NBCoupling 06-12-14
+        if GLMType.CouplingFilters==true
+            CTYPE = {'On-Parasol','Off-Parasol'};
+            for n_ctype = 1:length(CTYPE)
+                [~, parasol_cp.ids{n_ctype}] = celltype_id_AH(CTYPE{n_ctype}, datarun_slv.cell_types);
+            end
+            parasol_cp.indices{1}=get_cell_indices(datarun_mas,parasol_cp.ids{1});
+            parasol_cp.indices{2}=get_cell_indices(datarun_mas,parasol_cp.ids{2});
+            parasol_cp.NumCells{1}=length(parasol_cp.ids{1});
+            parasol_cp.NumCells{2}=length(parasol_cp.ids{2});
+        end
+        % end NBCoupling
+        
         %%%%  Shorten Block count if using Debug
         if GLMType.debug
             try
@@ -221,3 +234,5 @@ for i_debug=1:length(debug_blocks)
 end
 
 end
+
+save('BPS-Convergence-Test.mat','BPS')
