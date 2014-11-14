@@ -20,7 +20,7 @@ spkColl=cell(nTrials,1);
 
 condDuration=12;
 samplesPerCondition=condDuration*20000;
-ConditionStartTimes=[0:4]*samplesPerCondition;
+ConditionStartTimes=[0:4]*samplesPerCondition+1;
 nConditions=4;
 
 
@@ -62,4 +62,31 @@ for icond=1:3%nConditions
 subplot(3,1,icond);
 plotSpikeRaster(spkCondColl(icond).spksColl,'PlotType','vertline');
 title(sprintf('%s: data0009 vis ID: %d Avg Spk Rate: %f',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(icond).avgSpkRate));
+end
+
+%%
+nConditions=3;
+nTrials1=30;
+figure;
+for icond=1:nConditions
+subplot(nConditions,1,icond);
+[xPoints, yPoints]=plotSpikeRaster(spkCondColl(icond).spksColl,'PlotType','vertline');
+
+plot(xPoints, yPoints+nTrials1, 'k');
+spkCondColl(icond).xPoints=xPoints;
+spkCondColl(icond).yPoints=yPoints;
+
+end
+
+col='mbkg';
+figure('Color','w');
+for icond=1:nConditions
+
+xPoints = spkCondColl(icond).xPoints;
+yPoints = spkCondColl(icond).yPoints;
+nTrials1=max(yPoints(:));
+plot(xPoints*120/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
+hold on
+ylim([0,nConditions*nTrials]);
+title(sprintf('%s: data0009 vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f) spks/sec',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(3).avgSpkRate));
 end
