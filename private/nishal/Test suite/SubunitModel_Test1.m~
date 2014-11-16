@@ -77,12 +77,12 @@ subunitWeights(4)=1%1.5;
 
 % sub-unit non-linearity
 
-f= @(x) double(x>0).*(x);
+f= @(x) double(x>0).*(1.6*x);
 %f=@(x) exp(0.6*x);
 % Ganglion cell non-linearity
 %N= @(x) exp(0.15*(x));
 %N= @(x) double(x>0)*(0.000005).*(30*x).^2;
-N = @(x) 2./(1+exp(-0.7*(x-5)));
+N = @(x) 15./(1+exp(-1.5*(x-5)));
 
 
 figure;
@@ -136,62 +136,19 @@ end
 
 mov2=zeros(Filtdim1 ,Filtdim2,movieLen+Filtlen-1);
 mov2(:,:,Filtlen:movieLen+Filtlen-1)=mov; % Append zeros before the movie
-
-cell_resp=zeros(movieLen,nSubunits);
-sz=max(size(mov2,3)-size(subunits{1},4) + 1, 0);
-for isubunit=1:nSubunits
-    isubunit
-cell_resp(:,isubunit)=reshape(convn(mov2,subunits{isubunit}(end:-1:1,end:-1:1,:),'valid'),[sz,1]);
-end
-
-figure;
-subplot(3,1,1);
-plot(cell_resp)
-title('Subunit Inputs')
-
-% 
-totalInput=0*cell_resp(:,1);
-for isubunit=1:nSubunits
-totalInput=totalInput+subunitWeights(isubunit)*f(cell_resp(:,isubunit));
-end
-
-totalOutput=N(totalInput);
-subplot(3,1,2);
-plot(totalOutput);
-title('Output of the model');
-
-dt=1/120; 
-%rateScale=2.5;
-rateScale=10;
-firingRate=rateScale*dt*totalOutput;
-binnedResponses = poissrnd(firingRate);
-
-subplot(3,1,3);
-plot(binnedResponses);
-title('Binned Number of spikes');
-
-
-figure;
-subplot(3,1,1);
-[E,C]=hist(cell_resp(:,1),100);
-plotyy(C,E,C,f(C));
-subplot(3,1,2);
-[E,C]=hist(totalInput,100);
-plotyy(C,E,C,N(C));
-subplot(3,1,3);
-hist(totalOutput);
-
+nTrials=100;
+SubUnit_Response_test_movie_script
 
  %% Calculate STA
 
 
 % My own STA code 
 STA=zeros(Filtdim1,Filtdim2,Filtlen);
-
+useTrial=1;
 for iframe=30:movieLen
-STA=STA+mov(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe);
+STA=STA+mov(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe(:,useTrial));
 end
-STA=STA/sum(binnedResponses);
+STA=STA/sum(binnedResponses(:,useTrial));
 
 
 figure
@@ -208,7 +165,7 @@ figure
 
 movieLen=120*30*60;
 mov_gen2=zeros(Filtdim1,Filtdim2,movieLen);
-movie_idx=3;
+movie_idx=2;
 
 
 if(movie_idx==1)
@@ -252,37 +209,38 @@ pause(0.01)
 end
 
 
-addpath('../create_act_2/');
+addpath(genpath('../create_act_2/'));
 
 mov2=zeros(Filtdim1,Filtdim2,movieLen+2*120);
 mov2(:,:,121:end-120)=mov_gen2;
+
 stas=cell(1,1);
 stas{1}=zeros(Filtdim1,Filtdim2,1,Filtlen);
 for itime=1:Filtlen
     itime
-stas{1}(:,:,1,itime)=mask*tf(1,1,1,itime);%STA(:,:,itime);
+stas{1}(:,:,1,itime)=STA(:,:,itime).*mask;% STA from WN run and masked by significant pixels. Assume I have correct mask from significant_stixles calculation%mask*tf(1,1,1,itime);%STA(:,:,itime);
 end
 
  [mov_orig2,mov_new2]=fourier_project_2(stas,mov2);
  
  % See movies
  figure;
- for itime=1000:1010
-  subplot(2,2,1);
+ for itime=1000:1020
+  subplot(3,2,1);
   imagesc(mov_orig2(:,:,itime));
   caxis([min(mov_orig2(:)),max(mov_orig2(:))]);
   colormap gray
   colorbar
   axis image
  
-  subplot(2,2,2);
+  subplot(3,2,2);
   imagesc(mov_new2(:,:,itime));
   caxis([min(mov_new2(:)),max(mov_new2(:))]);
   colormap gray
   colorbar
   axis image
   
-  subplot(2,2,3);
+  subplot(3,2,3);
   imagesc(mov_orig2(:,:,itime).*mask);
   caxis([min(mov_orig2(:)),max(mov_orig2(:))]);
   colormap gray
@@ -290,24 +248,43 @@ end
   axis image
  
   
-  subplot(2,2,4);
+  subplot(3,2,4);
+ 
   imagesc(mov_new2(:,:,itime).*mask);
   caxis([min(mov_new2(:)),max(mov_new2(:))]);
   colormap gray
   colorbar
   axis image
  
-  pause;
+  subplot(3,2,5);
+  imagesc((mov_new2(:,:,itime)-mov_orig2(:,:,itime)));
+  colormap gray
+  colorbar
+  axis image
+  
+  pause(1/120)
  end
  
  % Movie histograms 
- [C,X]=hist(mov_gen2(:),100);
- [C2,X2]=hist(mov_new2(:),100);
+  
+  mov_gen2_masked=mov_gen2.*repmat(mask,[1,1,size(mov_gen2,3)]);
+  mov_new2_center=mov_new2(:,:,121:end-120);
+  mov_new2_masked = mov_new2_center.*repmat(mask,[1,1,size(mov_new2_center,3)]);
+  
+ [C,X]=hist(mov_gen2_masked(mov_gen2_masked~=0),100);
+ [C2,X2]=hist(mov_new2_masked(mov_gen2_masked~=0),100);
  figure;
+ subplot(2,1,1);
  plotyy(X,C,X2,C2);
- legend('Original','Null space');
- title('Movie pixel histograms');
  
+ legend('Original','Null space');
+ title('Movie pixel histograms in mask');
+ 
+subplot(2,1,2);
+
+difference =  mov_gen2_masked - mov_new2_masked;
+hist(difference(mov_gen2_masked~=0),20);
+title('Pixel value difference in mask');
  
 %% Generate responses to null movie
 
@@ -320,68 +297,61 @@ end
 movie_new_len=size(mov_new2,3);
 mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
 mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_new2; % Append zeros before the movie
+nTrials=1;
+SubUnit_Response_test_movie_script
+binnedResponseNull=binnedResponses;
+psth_null=psth_resp;
+time_log_null=timeLog;
 
-cell_resp=zeros(movie_new_len,nSubunits);
-sz=max(size(mov2,3)-size(subunits{1},4) + 1, 0);
-for isubunit=1:nSubunits
-    isubunit
-cell_resp(:,isubunit)=reshape(convn(mov2,subunits{isubunit}(end:-1:1,end:-1:1,:),'valid'),[sz,1]);
-end
+movie_new_len=size(mov_orig2,3);
+mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
+mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
+nTrials=1;
+SubUnit_Response_test_movie_script
+binnedResponseOrig=binnedResponses;
+psth_orig=psth_resp;
+time_log_orig = timeLog;
 
-figure;
-subplot(3,1,1);
-plot(cell_resp)
-title('Subunit Inputs')
-
-% 
-totalInput=0*cell_resp(:,1);
-for isubunit=1:nSubunits
-totalInput=totalInput+subunitWeights(isubunit)*f(cell_resp(:,isubunit));
-end
-
-totalOutput=N(totalInput);
-subplot(3,1,2);
-plot(totalOutput);
-title('Output of the model');
-
-dt=1/120; 
-%rateScale=2.5;
-rateScale=10;
-firingRate=rateScale*dt*totalOutput;
-binnedResponses = poissrnd(firingRate);
-
-subplot(3,1,3);
-plot(binnedResponses);
-title('Binned Number of spikes');
-
+[x1,y1]=plotSpikeRaster(binnedResponseNull'>0,'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
 
 figure;
-subplot(3,1,1);
-[E,C]=hist(cell_resp(:,1),100);
-plotyy(C,E,C,f(C));
-subplot(3,1,2);
-[E,C]=hist(totalInput,100);
-plotyy(C,E,C,N(C));
-subplot(3,1,3);
-hist(totalOutput);
+subplot(2,1,1);
+plot(x1,y1,'r');
+hold on
+plot(x2,y2+max(y2),'k');
+xlim([0 max(time_log_orig)]);
+ylim([0,2*max(y2)]);
+
+subplot(2,1,2);
+plot(time_log_null,psth_null,'k');
+hold on
+plot(time_log_orig,psth_orig,'r');
+xlim([0,max(time_log_null)]);
+legend('Null','Original');
 
 
 %% Re-STA
 step=30;
-
+nTrials=1;
 % My own STA code 
 reSTA=zeros(Filtdim1,Filtdim2,Filtlen);
-
+icnt=0;
+for itrial=1:nTrials
 for iframe=59:step:movie_new_len
-reSTA=reSTA+mov_new2(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe);
+    if(binnedResponseNull(iframe,itrial)>0)
+reSTA=reSTA+mov_new2(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponseNull(iframe,itrial);
+icnt=icnt+binnedResponseNull(iframe,itrial);
+    end
 end
-reSTA=reSTA/sum(binnedResponses);
+end
+reSTA=reSTA/icnt;
 
 
 figure
  for itime=1:Filtlen
  imagesc(squeeze(reSTA(:,:,itime)));colormap gray
- caxis([min(STA(:)),max(STA(:))]);
+ caxis([min(reSTA(:)),max(reSTA(:))]);
  colorbar
  pause
  end
@@ -404,12 +374,20 @@ figure
  %% Re- STC
  
 % My own STA code 
+
+
+
 reSTC=zeros(Filtdim1*Filtdim2*Filtlen);
-indx=[59:step:movie_new_len];
+indx=[59:1:movie_new_len];
+iTrial=1;
+binnedResponses=binnedResponseNull(:,iTrial);
+
+
+
 framesValid = indx(binnedResponses(indx)>0);
 
 for iframe=framesValid
-    iframe
+    iframe;
   xx=  reshape(mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
   
 reSTC=reSTC+ xx*xx'*binnedResponses(iframe);
@@ -418,9 +396,9 @@ yy=reshape(reSTA,[Filtdim1*Filtdim2*Filtlen,1]);
 reSTC=reSTC / (sum(binnedResponses)-1) - yy*yy'* (sum(binnedResponses))/(sum(binnedResponses)-1);
 
 [u,s,v]=svds(reSTC,100);
+figure;
 plot(diag(s),'*')
 %%
- uSq=reshape(u(:,1),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
  
 figure;
 for isubunit=1:nSubunits
@@ -430,13 +408,23 @@ colormap gray
 colorbar
 end
 
+uSq=cell(4,1); 
+for isub=1:4
+uSq{isub}=reshape(u(:,isub),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
+end
+
+
  figure
+ 
  for itime=4%1:Filtlen
- imagesc(squeeze(uSq(:,:,itime)));
+ for isub=1:4
+     subplot(2,2,isub);
+     imagesc(squeeze(uSq{isub}(:,:,itime)));
  colormap gray
- caxis([min(uSq(:)),max(uSq(:))])
+ caxis([min(uSq{isub}(:)),max(uSq{isub}(:))])
  colorbar
  %pause
+ end
  end
  
 %  figure
