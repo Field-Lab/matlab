@@ -81,8 +81,8 @@ f= @(x) double(x>0).*(1.6*x);
 %f=@(x) exp(0.6*x);
 % Ganglion cell non-linearity
 %N= @(x) exp(0.15*(x));
-%N= @(x) double(x>0)*(0.000005).*(30*x).^2;
-N = @(x) 15./(1+exp(-1.5*(x-5)));
+N=@(x) double(x>0)*(0.02).*(3.4*x).^2;
+%N = @(x) 15./(1+exp(-1.5*(x-5)));
 
 
 figure;
@@ -103,7 +103,7 @@ end
 %% Generate white noise movie
 movieLen=120*30*60;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
-movie_idx=2;
+movie_idx=2; 
 if(movie_idx==1)
 mov(319-310,158-150,:)=0.5; % Stimulate a sub-unit
 mov(320-310,160-150,:)=0.5;
@@ -118,7 +118,7 @@ mov(:,:,1:30)=0;
 
 figure;
 for itime=40:50
-    itime
+   
 imagesc(mov(:,:,itime));
 colormap gray
 colorbar
@@ -163,7 +163,7 @@ figure
  %% Calculate null space stimulus
 
 
-movieLen=120*60*60;
+movieLen=120*30*60;
 mov_gen2=zeros(Filtdim1,Filtdim2,movieLen);
 movie_idx=2;
 
@@ -332,6 +332,8 @@ legend('Null','Original');
 
 
 %% Re-STA
+binnedResponses=binnedResponseOrig;
+
 step=30;
 nTrials=1;
 % My own STA code 
@@ -339,9 +341,9 @@ reSTA=zeros(Filtdim1,Filtdim2,Filtlen);
 icnt=0;
 for itrial=1:nTrials
 for iframe=59:step:movie_new_len
-    if(binnedResponseNull(iframe,itrial)>0)
-reSTA=reSTA+mov_new2(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponseNull(iframe,itrial);
-icnt=icnt+binnedResponseNull(iframe,itrial);
+    if(binnedResponses(iframe,itrial)>0)
+reSTA=reSTA+mov_new2(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe,itrial);
+icnt=icnt+binnedResponses(iframe,itrial);
     end
 end
 end
@@ -380,7 +382,7 @@ figure
 reSTC=zeros(Filtdim1*Filtdim2*Filtlen);
 indx=[59:1:movie_new_len];
 iTrial=1;
-binnedResponses=binnedResponseNull(:,iTrial);
+binnedResponses=binnedResponseOrig(:,iTrial);
 
 
 
