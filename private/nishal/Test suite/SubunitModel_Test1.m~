@@ -81,8 +81,8 @@ f= @(x) double(x>0).*(1.6*x);
 %f=@(x) exp(0.6*x);
 % Ganglion cell non-linearity
 %N= @(x) exp(0.15*(x));
-%N= @(x) double(x>0)*(0.000005).*(30*x).^2;
-N = @(x) 15./(1+exp(-1.5*(x-5)));
+N=@(x) double(x>0)*(0.02).*(3.4*x).^2;
+%N = @(x) 15./(1+exp(-1.5*(x-5)));
 
 
 figure;
@@ -103,7 +103,7 @@ end
 %% Generate white noise movie
 movieLen=120*30*60;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
-movie_idx=2;
+movie_idx=2; 
 if(movie_idx==1)
 mov(319-310,158-150,:)=0.5; % Stimulate a sub-unit
 mov(320-310,160-150,:)=0.5;
@@ -118,7 +118,7 @@ mov(:,:,1:30)=0;
 
 figure;
 for itime=40:50
-    itime
+   
 imagesc(mov(:,:,itime));
 colormap gray
 colorbar
@@ -332,6 +332,8 @@ legend('Null','Original');
 
 
 %% Re-STA
+binnedResponses=binnedResponseNull;
+
 step=30;
 nTrials=1;
 % My own STA code 
@@ -380,7 +382,7 @@ figure
 reSTC=zeros(Filtdim1*Filtdim2*Filtlen);
 indx=[59:1:movie_new_len];
 iTrial=1;
-binnedResponses=binnedResponseNull(:,iTrial);
+binnedResponses=binnedResponseOrig(:,iTrial);
 
 
 
