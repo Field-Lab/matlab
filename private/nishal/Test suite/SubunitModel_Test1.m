@@ -212,6 +212,14 @@ plot(time_log_orig,psth_orig,'r');
 xlim([0,max(time_log_null)]);
 legend('Null','Original');
 
+% 
+% figure;
+% scatter(psth_orig',psth_null');
+% title('Scatter between Original PSTH and null PSTH');
+
+% figure;
+% scatter(binnedResponseOrig,binnedResponseNull);
+% title('Scatter between Original and Null response');
 
 % Re-STA
 binnedResponses=binnedResponseOrig;
@@ -225,7 +233,7 @@ reSTANull=reSTA;
 reSTCNull=reSTC;
 
 %
-[V,D]=eigs(reSTCOrig,reSTCNull,10,'lm');
+[V,D]=eigs(reSTCNull,reSTCOrig,10,'lm');
 figure;
 plot(diag(abs(D)),'*');
 title('Eigen Values');

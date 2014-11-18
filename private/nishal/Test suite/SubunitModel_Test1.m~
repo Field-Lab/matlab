@@ -160,133 +160,15 @@ figure
  end
  
  
- %% Calculate null space stimulus
+ %% Experiment 1
+ 
+% Calculate null space stimulus
 
 
 movieLen=120*30*60;
-mov_gen2=zeros(Filtdim1,Filtdim2,movieLen);
-movie_idx=2;
-
-
-if(movie_idx==1)
-mov_gen2(319-310,158-150,:)=0.5; % Stimulate a sub-unit
-mov_gen2(320-310,160-150,:)=0.5;
-mov_gen2=mov_gen2+rand(Filtdim1,Filtdim2,movieLen)*0.3;
-end
-
-if(movie_idx==2)
-mov_gen2=double(rand(Filtdim1,Filtdim2,movieLen)>0.5)-0.5;
-end
-if(movie_idx==3)
-    latency=30;
-mov_short=double(rand(Filtdim1,Filtdim2,ceil(movieLen/latency)+2)>0.5)-0.5;
-mov_gen2=zeros(Filtdim1,Filtdim2,movieLen);
-    for iframe=1:movieLen
-        mov_gen2(:,:,iframe)=mov_short(:,:,floor(iframe/latency)+1);
-    end
-end
-if(movie_idx==4)
-    latency=20;
-mov_short=double(rand(Filtdim1,Filtdim2,ceil(movieLen/latency)+2));
-mov_gen2=zeros(Filtdim1,Filtdim2,movieLen);
-    for iframe=1:movieLen
-        mov_gen2(:,:,iframe)=mov_short(:,:,floor(iframe/latency)+1);
-    end
-end
-
-mov_gen2(:,:,1:30)=0;
-
-figure;
-for itime=40:50
-    itime
-imagesc(mov_gen2(:,:,itime));
-colormap gray
-colorbar
-axis image
-caxis([-0.5,0.5]);
-pause(0.01)
-
-end
-
-
-addpath(genpath('../create_act_2/'));
-
-mov2=zeros(Filtdim1,Filtdim2,movieLen+2*120);
-mov2(:,:,121:end-120)=mov_gen2;
-
-stas=cell(1,1);
-stas{1}=zeros(Filtdim1,Filtdim2,1,Filtlen);
-for itime=1:Filtlen
-    itime
-stas{1}(:,:,1,itime)=STA(:,:,itime).*mask;% STA from WN run and masked by significant pixels. Assume I have correct mask from significant_stixles calculation%mask*tf(1,1,1,itime);%STA(:,:,itime);
-end
-
- [mov_orig2,mov_new2]=fourier_project_2(stas,mov2);
+null_compute_subUnit_test
  
- % See movies
- figure;
- for itime=1000:1020
-  subplot(3,2,1);
-  imagesc(mov_orig2(:,:,itime));
-  caxis([min(mov_orig2(:)),max(mov_orig2(:))]);
-  colormap gray
-  colorbar
-  axis image
- 
-  subplot(3,2,2);
-  imagesc(mov_new2(:,:,itime));
-  caxis([min(mov_new2(:)),max(mov_new2(:))]);
-  colormap gray
-  colorbar
-  axis image
-  
-  subplot(3,2,3);
-  imagesc(mov_orig2(:,:,itime).*mask);
-  caxis([min(mov_orig2(:)),max(mov_orig2(:))]);
-  colormap gray
-  colorbar
-  axis image
- 
-  
-  subplot(3,2,4);
- 
-  imagesc(mov_new2(:,:,itime).*mask);
-  caxis([min(mov_new2(:)),max(mov_new2(:))]);
-  colormap gray
-  colorbar
-  axis image
- 
-  subplot(3,2,5);
-  imagesc((mov_new2(:,:,itime)-mov_orig2(:,:,itime)));
-  colormap gray
-  colorbar
-  axis image
-  
-  pause(1/120)
- end
- 
- % Movie histograms 
-  
-  mov_gen2_masked=mov_gen2.*repmat(mask,[1,1,size(mov_gen2,3)]);
-  mov_new2_center=mov_new2(:,:,121:end-120);
-  mov_new2_masked = mov_new2_center.*repmat(mask,[1,1,size(mov_new2_center,3)]);
-  
- [C,X]=hist(mov_gen2_masked(mov_gen2_masked~=0),100);
- [C2,X2]=hist(mov_new2_masked(mov_gen2_masked~=0),100);
- figure;
- subplot(2,1,1);
- plotyy(X,C,X2,C2);
- 
- legend('Original','Null space');
- title('Movie pixel histograms in mask');
- 
-subplot(2,1,2);
-
-difference =  mov_gen2_masked - mov_new2_masked;
-hist(difference(mov_gen2_masked~=0),20);
-title('Pixel value difference in mask');
- 
-%% Generate responses to null movie
+% Generate responses to null movie
 
 
 % Calculate filter output for each sub-unit for each frame and calculate
@@ -330,8 +212,16 @@ plot(time_log_orig,psth_orig,'r');
 xlim([0,max(time_log_null)]);
 legend('Null','Original');
 
+% 
+% figure;
+% scatter(psth_orig',psth_null');
+% title('Scatter between Original PSTH and null PSTH');
 
-%% Re-STA
+figure;
+scatter(binnedResponseOrig,binnedResponseNull);
+title('Scatter between Original and Null resp')
+
+% Re-STA
 binnedResponses=binnedResponseOrig;
 reSTC_SubUnit
 reSTAOrig=reSTA;
@@ -342,8 +232,11 @@ reSTC_SubUnit
 reSTANull=reSTA;
 reSTCNull=reSTC;
 
-%%
-[V,D]=eigs(reSTCOrig,reSTCNull,10,'sm');
+%
+[V,D]=eigs(reSTCNull,reSTCOrig,10,'lm');
+figure;
+plot(diag(abs(D)),'*');
+title('Eigen Values');
 
 uSq=cell(size(V,2),1);
 isel=1;
@@ -354,8 +247,97 @@ imagesc(squeeze(uSq{isel}(:,:,itime)));
  colormap gray
  caxis([min(uSq{isel}(:)),max(uSq{isel}(:))])
  hold on
-pause
+pause(1)
 end
+
+
+
+%% Experiment 2
+ 
+% Calculate null space stimulus
+
+
+movieLen=120*15;
+null_compute_subUnit_test
+ 
+% Generate responses to null movie
+
+
+% Calculate filter output for each sub-unit for each frame and calculate
+% number of spikes for each frame-bin (binned response) .. So that would be
+% used for STA calculation ? 
+
+
+movie_new_len=size(mov_new2,3);
+mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
+mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_new2; % Append zeros before the movie
+nTrials=100;
+SubUnit_Response_test_movie_script
+binnedResponseNull=binnedResponses;
+psth_null=psth_resp;
+time_log_null=timeLog;
+
+movie_new_len=size(mov_orig2,3);
+mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
+mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
+nTrials=100;
+SubUnit_Response_test_movie_script
+binnedResponseOrig=binnedResponses;
+psth_orig=psth_resp;
+time_log_orig = timeLog;
+
+[x1,y1]=plotSpikeRaster(binnedResponseNull'>0,'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
+
+figure;
+subplot(2,1,1);
+plot(x1,y1,'r');
+hold on
+plot(x2,y2+max(y2),'k');
+xlim([0 max(time_log_orig)]);
+ylim([0,2*max(y2)]);
+
+subplot(2,1,2);
+plot(time_log_null,psth_null,'k');
+hold on
+plot(time_log_orig,psth_orig,'r');
+xlim([0,max(time_log_null)]);
+legend('Null','Original');
+
+
+% Re-STA
+binnedResponses=binnedResponseOrig;
+reSTC_SubUnit
+reSTAOrig=reSTA;
+reSTCOrig=reSTC;
+
+binnedResponses=binnedResponseNull;
+reSTC_SubUnit
+reSTANull=reSTA;
+reSTCNull=reSTC;
+
+%
+[V,D]=eigs(reSTCOrig,reSTCNull,10,'lm');
+
+figure;
+plot(diag(abs(D)),'*');
+title('Eigen Values');
+
+
+uSq=cell(size(V,2),1);
+isel=1;
+uSq{isel}=reshape(V(:,isel),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
+figure; 
+for itime=1:30
+imagesc(squeeze(uSq{isel}(:,:,itime)));
+ colormap gray
+ caxis([min(uSq{isel}(:)),max(uSq{isel}(:))])
+ hold on
+pause(1)
+end
+
+
+
 %%
 % % addpath('../code_stc');
 % % 
