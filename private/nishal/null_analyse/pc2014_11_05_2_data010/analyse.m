@@ -30,7 +30,7 @@ end
 figure('Color','w');
 for icondi=2:3
     subplot(2,1,icondi-1);
-    aaa=condMovies{icondi}(121:1440-121,:,:)-condMovies{1}(121:1440-121,:,:);
+    aaa=condMovies{icondi}(240:1440-240,:,:)-condMovies{1}(240:1440-240,:,:);
     hist(aaa(:),50);
     
 end
