@@ -136,7 +136,7 @@ end
 
 mov2=zeros(Filtdim1 ,Filtdim2,movieLen+Filtlen-1);
 mov2(:,:,Filtlen:movieLen+Filtlen-1)=mov; % Append zeros before the movie
-nTrials=100;
+nTrials=1;
 SubUnit_Response_test_movie_script
 
  %% Calculate STA
@@ -320,12 +320,12 @@ reSTCNull=reSTC;
 [V,D]=eigs(reSTCOrig,reSTCNull,10,'lm');
 
 figure;
-plot(diag(abs(D)),'*');
+plot(diag(abs(D(2:end,2:end))),'*');
 title('Eigen Values');
 
 
 uSq=cell(size(V,2),1);
-isel=1;
+isel=2;
 uSq{isel}=reshape(V(:,isel),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
 figure; 
 for itime=1:30

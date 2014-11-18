@@ -74,9 +74,5 @@ title(sprintf('Output of the second layer neuron,Avg spike rate: %0.02f spks/sec
 
 figure;
 for isub=1:nSubunits
-subplot(nSubunits,1,isub);
-[E,C]=hist(cell_resp(:,isub),100);
-plotyy(C,E,C,f(C));
-xlim([min(cell_resp(:)),max(cell_resp(:))]);
-title(sprintf('Input to sub-unit %d and its non-linearity',isub));
+
 end

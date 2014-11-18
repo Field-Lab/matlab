@@ -53,8 +53,10 @@ stas{1}=zeros(Filtdim1,Filtdim2,1,Filtlen);
 for itime=1:Filtlen
     itime
 stas{1}(:,:,1,itime)=STA(:,:,itime).*mask;% STA from WN run and masked by significant pixels. Assume I have correct mask from significant_stixles calculation%mask*tf(1,1,1,itime);%STA(:,:,itime);
-end
 
+end
+% Clip STA
+stas{1}(:,:,:,15:end)=0;
  [mov_orig2,mov_new2]=fourier_project_2(stas,mov2);
  
  % See movies

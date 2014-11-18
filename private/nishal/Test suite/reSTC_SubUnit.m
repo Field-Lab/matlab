@@ -7,7 +7,7 @@ icnt=0;
 for itrial=1:nTrials
 for iframe=59:step:movie_new_len
     if(binnedResponses(iframe,itrial)>0)
-reSTA=reSTA+mov_new2(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe,itrial);
+reSTA=reSTA+repmat(mask,[1,1,30]).*mov_new2(:,:,iframe:-1:iframe-Filtlen+1)*binnedResponses(iframe,itrial);
 icnt=icnt+binnedResponses(iframe,itrial);
     end
 end
@@ -56,7 +56,7 @@ framesValid = indx(binnedResponsesTrial(indx)>0);
 
 for iframe=framesValid
     iframe
-  xx=  reshape(mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
+  xx=  reshape(repmat(mask,[1,1,30]).*mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
   
 reSTC=reSTC+ xx*xx'*binnedResponsesTrial(iframe);
 end
