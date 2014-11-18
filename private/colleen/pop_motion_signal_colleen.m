@@ -51,8 +51,8 @@ sig_str = 0;
        t = linspace(0, trial_length, numberOfT);
 %      valueAtEachT = zeros(length(t), length(indices2),2);
           valueAtEachT = zeros(length(t),2);
-% indices1 = indices1(66:70);
-% indices2 = indices2(66:70);
+% indices1 = indices1(1:100);
+% indices2 = indices2(1:100);
 
 %1:1%length(indices2) % for every cell shift every other cell relative to it
         dx = x_pos(indices1)+0;%x_pos(indices1(i)); set the ref to 0

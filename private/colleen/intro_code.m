@@ -11,7 +11,7 @@ javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar');
 %   directed to the file with the data000.bin, data000.neuron etc. These are
 %   in the Analysis drive. The function is set up so that you can just type
 %   'Date/data000'. This initializes the datarun structure. 
-datarun=load_data('2007-08-24-4/data001-nwpca');
+datarun=load_data('2007-03-27-1/data011-nwpca');
 
 % Loading other information
 %   Other information you might want including STAs, params, ei, neurons
@@ -24,7 +24,7 @@ datarun=set_polarities(datarun);
 % Let's look at the data! This is a classification run.
 
 % Plot the mosaic for a cell type, in this case on parasols
-figure;plot_rf_summaries(datarun,{1},'plot_fits',1,'label',1)
+figure;plot_rf_summaries(datarun,{4},'plot_fits',1,'label',0)
 
 % Plot the STAs for one cell type, in this case on parasols
 % plot_rf_portraits(datarun,{1},'plot_radius',5);

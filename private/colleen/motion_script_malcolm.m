@@ -5,12 +5,12 @@ global savedVariables
 
 run_opt.load = true; % T/F
 
-run_opt.data_set = '2007-03-27-1';
-% run_opt.data_set = '2007-08-24-4';
+% run_opt.data_set = '2007-03-27-1';
+run_opt.data_set = '2007-08-24-4';
 
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 18; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = 10; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 2; % 1-4 %Which type of stimulus to look at
 
 
 % stim categories not consistant
@@ -21,7 +21,7 @@ run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
@@ -30,15 +30,15 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-3;
 
-run_opt.trial_estimate_start = 195;
+run_opt.trial_estimate_start = 150;
 
 run_opt.velocity_lim = 150; % >0
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
-run_opt.raster = false; % T/F
-run_opt.rasterPerTrial = false; % T/F
-run_opt.trial_estimate = true; % T/F
+run_opt.raster = true; % T/F
+run_opt.rasterPerTrial = true; % T/F
+run_opt.trial_estimate = false; % T/F
 
     speed =0.09;
 
@@ -174,6 +174,7 @@ if run_opt.raster %raster
             break % script breaks until figure is closed
         end
         k=round(get(hk,'Value'));
+        
         % Takes in start and stop time (0-0.7274)
         % Spikes of the cell with the lowest firing rate first
         % start time of each stimulus type 2 trigger
@@ -195,13 +196,13 @@ end
 if run_opt.rasterPerTrial %raster
     switch run_opt.config_num % 1-4 %Which type of stimulus to look at
         case 1
-            strTit = 'Dark Bar Moving Right';
+            strTit = 'Bright Bar Moving Right';
         case 2
-            strTit = 'Dark Bar Moving Left';
+            strTit = 'Bright Bar Moving Right';
         case 3
             strTit = 'Bright Bar Moving Right';
         case 4
-            strTit = 'Bright Bar Moving Left';
+            strTit = 'Bright Bar Moving Right';
     end
 
     toPlot = cell(1,length(t));
@@ -249,7 +250,7 @@ if run_opt.rasterPerTrial %raster
         y_scale = 1;
         Color = ['k', '.'];
         plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);%, 'MarkerSize',10
-        
+        xlim([0 1500])
         title({run_opt.cell_type, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],strTit, sprintf(' Trial Number %d',  k)})
         xlabel('time (ms)');
         ylabel('Cell''s centroid distance from reference');
@@ -262,7 +263,7 @@ end
 
 if run_opt.trial_estimate
         % start parallel pool
-        poolobj = parpool;
+%         poolobj = parpool;
 
        
     
@@ -271,26 +272,26 @@ if run_opt.trial_estimate
     spikes = datarun{2}.spikes;
 %    for i = 1:1%length(tr)
 
-velocity = [80:1:150];
-
-parfor i =1:length(velocity)
-        v = velocity(i)
-       strsig(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(23), stop, run_opt.tau, run_opt.tol*.1);
-
-%         estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
-        fprintf('for trial %d, the estimated speed was %d', i, strsig(i))
-end
-    figure; plot(velocity, strsig)
+% velocity = [80:7:150];
+% 
+% parfor i =1:length(velocity)
+%         v = velocity(i)
+%        strsig(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), stop, run_opt.tau, run_opt.tol*.1);
+% 
+% %         estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
+%         fprintf('for trial %d, the estimated speed was %d', i, strsig(i))
+% end
+%     figure; plot(velocity, strsig)
 
 poolobj = parpool;
-parfor i =1:length(velocity)
-        v = velocity(i);
-        sig_str(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(49), stop, run_opt.tau, run_opt.tol*.1);
+parfor i =1:length(tr)
+%         v = velocity(i);
+%         sig_str(i) = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(49), stop, run_opt.tau, run_opt.tol*.1);
 i
-%         estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
+        estimates(i) = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1), run_opt.trial_estimate_start, options);
 %         fprintf('for trial %d, the estimated speed was %d\n', i, estimates(i))
 end
-    figure; plot(velocity, sig_str)
+%     figure; plot(velocity, sig_str)
 %     figure; plot(savedVariables(:,1), savedVariables(:,2), 'o', 'markerfacecolor', 'b')
     % stop parallel pool
     delete(poolobj);
@@ -299,7 +300,7 @@ end
 %     save('estimates10272014_03272007_18_1_onp','estimates');
 
 
-%     save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+    save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/BrightRight/%s_data_run_%02d_config_%d_malcolm.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 
 

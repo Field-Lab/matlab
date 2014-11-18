@@ -268,7 +268,7 @@ if run_opt.trial_estimate
     %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
     %     end
     
-    velocity= [10:10:260];
+    velocity= [10:10:600];
     % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     
@@ -315,7 +315,7 @@ i
     
     %     figure; plot(velocity, estimates)
     % stop parallel pool
-        delete(poolobj);
+%         delete(poolobj);
     
     % save estimates
     %     save('estimates10272014_03272007_18_1_onp','estimates');

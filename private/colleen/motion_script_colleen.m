@@ -1,6 +1,6 @@
 clear toPlot
 % DATA PARAMETERS
-clear
+% clearvars -except estimates
 global savedVariables
 savedVariables = [];
 run_opt.load = true; % T/F
@@ -9,8 +9,8 @@ run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
 % run_opt.data_set = '2007-08-24-4';
-run_opt.data_run = 18; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = 16; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num = 4; % 1-4 %Which type of stimulus to look at
 
 
 % stim categories not consistant
@@ -21,7 +21,7 @@ run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
 
 % Change this to change type of cell you are interested in
 
-run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
@@ -280,7 +280,7 @@ if run_opt.trial_estimate
     %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
     %     end
     
-    velocity= [80:1:140];
+    velocity= [100:10:300];
     % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     strsig2 = zeros(1,length(velocity));
@@ -328,7 +328,6 @@ if run_opt.trial_estimate
     
     %     figure; plot(velocity, estimates)
     % stop parallel pool
-        delete(poolobj);
     
     % save estimates
     %     save('estimates10272014_03272007_18_1_onp','estimates');
@@ -337,7 +336,8 @@ if run_opt.trial_estimate
         save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/%s/BrightRight/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     
-    
+%             delete(poolobj);
+
     
 end
 
