@@ -3,22 +3,6 @@ load('/Volumes/Analysis/nishal/CBPcells.mat');
 startup_analyse_tenessee
 
 
-%%
-dataset='2014-11-05-2';
-
-analysis_datafile = sprintf('%s/data009',dataset);
-%analysis_datafile = sprintf('%s/data002/data002',dataset);
-imov=10;
-bin_datafile=sprintf('/Volumes/Data/%s/data0%d',dataset,imov);
-
-vision_id=1507;
-
-no_cells=5;
-noise=0.25;
-
-run_ss
-
-
 
 %%
 % 
@@ -53,24 +37,24 @@ run_ss
 % run_ss
 % 
 % clear all
-% %%
-% 
-% % 
-% % dataset='2013-10-10-0';
-% % 
-% % analysis_datafile = sprintf('%s/data001-from-data000/data001-from-data000',dataset);
-% % %analysis_datafile = sprintf('%s/data000/data000',dataset);
-% % imov=1;
-% % bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
-% % 
-% % vision_id=346;
-% % 
-% % no_cells=5;
-% % noise=0.25;
-% % 
-% % run_ss
-% % 
-% % clear all
+%%
+
+
+dataset='2013-10-10-0';
+
+%analysis_datafile = sprintf('%s/data001-from-data000/data001-from-data000',dataset);
+analysis_datafile = sprintf('%s/data000/data000',dataset);
+imov=1;
+bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
+
+vision_id=346;
+
+no_cells=5;
+noise=0.25;
+
+run_ss
+
+clear all
 % %%
 % dataset='2013-10-10-0';
 % 
@@ -87,19 +71,80 @@ run_ss
 % run_ss
 % 
 % clear all
-% %%
-% % dataset='2013-10-10-0';
-% % 
-% % %analysis_datafile = sprintf('%s/data001-from-data000/data001-from-data000',dataset);
-% % analysis_datafile = sprintf('%s/data000/data000',dataset);
-% % imov=1;
-% % bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
-% % 
-% % vision_id=32;
-% % 
-% % no_cells=5;
-% % noise=0.25;
-% % 
-% % run_ss
-% % 
-% % clear all
+%%
+dataset='2013-10-10-0';
+
+%analysis_datafile = sprintf('%s/data001-from-data000/data001-from-data000',dataset);
+analysis_datafile = sprintf('%s/data000/data000',dataset);
+imov=1;
+bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
+
+vision_id=32;
+
+no_cells=5;
+noise=0.25;
+
+run_ss
+
+clear all
+
+%%
+dataset='2013-08-19-6';
+
+analysis_datafile = sprintf('%s/data000/data000',dataset);
+%analysis_datafile = sprintf('%s/data002/data002',dataset);
+imov=1;
+bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
+
+vision_id=1328;
+
+no_cells=5;
+noise=0.25;
+
+run_ss
+
+
+%%
+dataset='2013-08-19-6';
+
+analysis_datafile = sprintf('%s/data000/data000',dataset);
+%analysis_datafile = sprintf('%s/data002/data002',dataset);
+imov=3;
+bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
+
+vision_id=1328;
+
+no_cells=5;
+noise=0.25;
+
+run_ss
+
+%%
+dataset='2013-08-19-6';
+
+analysis_datafile = sprintf('%s/data000/data000',dataset);
+%analysis_datafile = sprintf('%s/data002/data002',dataset);
+imov=1;
+bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
+
+vision_id=3167;
+
+no_cells=5;
+noise=0.25;
+
+run_ss
+
+%%
+dataset='2013-08-19-6';
+
+analysis_datafile = sprintf('%s/data000/data000',dataset);
+%analysis_datafile = sprintf('%s/data002/data002',dataset);
+imov=3;
+bin_datafile=sprintf('/Volumes/Data/%s/data00%d',dataset,imov);
+
+vision_id=3167;
+
+no_cells=5;
+noise=0.25;
+
+run_ss
