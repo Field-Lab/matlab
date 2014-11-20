@@ -44,12 +44,21 @@ GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.CBP=false;
 
+<<<<<<< HEAD
 GLMType.stimfilter_mode = 'rk1';
 %GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = true;
 GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
 %GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
 GLMType.CONVEX = false;
+=======
+%GLMType.stimfilter_mode = 'rk1';
+GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.input_pt_nonlinearity      = false;
+GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
+GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
+GLMType.CONVEX = true;
+>>>>>>> aca1272c9364911acce4b6adfbe472bfe0a7354a
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -61,8 +70,15 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
+<<<<<<< HEAD
 GLMType.CouplingFilters = false;
 GLMType.Subunits = true;
+=======
+GLMType.CouplingFilters = true;
+GLMType.Subunits = false;
+GLMType.Saccades=true;
+
+>>>>>>> aca1272c9364911acce4b6adfbe472bfe0a7354a
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
 GLMType.func_sname = 'glmwrap24_CP';
@@ -79,7 +95,11 @@ troubleshoot.name    = 'singleopt';
 %  LOOP THROUGH DATA SETS
 
 BD = NSEM_BaseDirectories;
+<<<<<<< HEAD
 exptests = [2 3];
+=======
+exptests = [1 2];
+>>>>>>> aca1272c9364911acce4b6adfbe472bfe0a7354a
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
@@ -200,9 +220,17 @@ for i_exp = exptests
                     neighborspikes.home{j} = concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
                     neighbor_organizedspikes{j}=organizedspikes;
                 end
+                if GLMType.Saccades
+                   neighborspikes.home{n_couplings+1}=(0:1:(size(concat_fitmovie,3)/120))';
+                   neighbor_organizedspikes{n_couplings+1}.block.t_sp_withinblock=repmat({0:StimulusPars.slv.seconds_perstaticblock;0:StimulusPars.slv.seconds_perstaticblock},StimulusPars.slv.n_rep,1);
+                end
             else
-                % if there's no coupling, just set this to zero
-                neighborspikes=0;neighbor_organizedspikes=0;
+                if GLMType.Saccades
+                    neighborspikes.home{1}=(0:1:(size(concat_fitmovie,3)/120))';
+                    neighbor_organizedspikes{1}.block.t_sp_withinblock=repmat({0:StimulusPars.slv.seconds_perstaticblock;0:StimulusPars.slv.seconds_perstaticblock},StimulusPars.slv.n_rep,1);
+                else
+                    neighborspikes=0;neighbor_organizedspikes=0;
+                end
             end
             % end NBCoupling
             
