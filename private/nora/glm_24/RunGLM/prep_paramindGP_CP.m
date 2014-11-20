@@ -20,7 +20,7 @@ if GLMType.PostSpikeFilter
 end
 
 % NBCoupling 05-28-14
-if GLMType.CouplingFilters
+if n_couplings>0
     for j_params=1:n_couplings
         CPstart = numParams + 1;  CPend = numParams + GLMPars.spikefilters.cp.filternumber;
         paramind.CP{j_params} = [CPstart  : CPend]; %paramind.CP has numbers for each coupled cell
