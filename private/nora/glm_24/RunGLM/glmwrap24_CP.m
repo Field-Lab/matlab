@@ -70,15 +70,10 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
-<<<<<<< HEAD
-GLMType.CouplingFilters = false;
-GLMType.Subunits = true;
-=======
 GLMType.CouplingFilters = true;
 GLMType.Subunits = false;
 GLMType.Saccades=true;
 
->>>>>>> aca1272c9364911acce4b6adfbe472bfe0a7354a
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
 GLMType.func_sname = 'glmwrap24_CP';
@@ -95,11 +90,8 @@ troubleshoot.name    = 'singleopt';
 %  LOOP THROUGH DATA SETS
 
 BD = NSEM_BaseDirectories;
-<<<<<<< HEAD
-exptests = [2 3];
-=======
+
 exptests = [1 2];
->>>>>>> aca1272c9364911acce4b6adfbe472bfe0a7354a
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
