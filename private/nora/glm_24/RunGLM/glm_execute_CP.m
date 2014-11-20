@@ -61,6 +61,9 @@ end
 % NBCoupling 05-28-14
 if GLMType.CouplingFilters;
     n_couplings=length(glm_cellinfo.pairs);
+    if GLMType.Saccades
+         n_couplings=n_couplings+1;
+    end
     basis = cp_basis';
     for j_pair=1:n_couplings
         %spikes of neighbor neurons NB
@@ -69,7 +72,16 @@ if GLMType.CouplingFilters;
         neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
         CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
     end
-else n_couplings=0;
+else
+    if GLMType.Saccades
+        n_couplings=1;
+        neighbor_sptimes = neighborspikes.home{1}';
+        neighbor_spbins  = ceil(neighbor_sptimes / t_bin);
+        neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
+        CP_bin{1}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
+    else
+         n_couplings=0;
+    end
 end
 % end NBCoupling
 
