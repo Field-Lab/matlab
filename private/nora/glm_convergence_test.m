@@ -65,8 +65,7 @@ troubleshoot.name    = 'singleopt';
 BD = NSEM_BaseDirectories;
 troubleshoot.plotdir = BD.GLM_troubleshootplots;
 
-for i_type=1:2
-GLMType.fit_type = fit_type{i_type}; 
+GLMType.fit_type = 'NSEM'; 
 GLMType.fitname  = GLM_fitname(GLMType);  
 %%
 for i_debug=1:length(debug_blocks)
@@ -219,7 +218,7 @@ for i_debug=1:length(debug_blocks)
                 printglmfit_CP(fittedGLM,datarun_mas,printname)
                 
                 
-                BPS{i_type,i_cell,debug_blocks(i_debug)}=fittedGLM.xvalperformance.glm_normedbits;
+ %               BPS{i_type,i_cell,debug_blocks(i_debug)}=fittedGLM.xvalperformance.glm_normedbits;
                 
                 % NB 06-11-2014
             else
@@ -231,8 +230,6 @@ for i_debug=1:length(debug_blocks)
         
     end
     
-end
-
 end
 
 save('BPS-Convergence-Test.mat','BPS')
