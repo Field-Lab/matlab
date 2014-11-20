@@ -60,7 +60,7 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
-GLMType.CouplingFilters = false;
+GLMType.CouplingFilters = true;
 GLMType.Subunits = false;
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
@@ -78,8 +78,8 @@ troubleshoot.name    = 'singleopt';
 %  LOOP THROUGH DATA SETS
 
 BD = NSEM_BaseDirectories;
-exptests = [1 2 3 4];
-cellselectiontype = 'debug';
+exptests = [1];
+cellselectiontype = 'all';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
 
