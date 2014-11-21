@@ -21,3 +21,5 @@ visstable();
 
 % set some default plot stuff
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
+
+addpath(genpath('/Users/vision/Desktop/GitHub code repository/private/colleen'));
