@@ -1,4 +1,4 @@
-function mov = generate_movie_ts(mov_params)
+function mov_params = generate_movie_ts(mov_params)
 
 if(mov_params.type=='bw')
 
@@ -20,6 +20,7 @@ end
 end
 
 mov=mov2;
+mov_params.mov=mov;
 end
 
 
