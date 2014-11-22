@@ -4,8 +4,11 @@ if(mov_params.type=='bw')
 
 movie_spec=mov_params.movie_spec;%'/Volumes/Analysis/movie-xml/RGB-8-1-0.48-11111.xml' 
 mdf_file=movie_spec;%'/Volumes/Analysis/deprecated/movie-xml2/RGB-8-1-0.48-11111.xml';
-triggers=datarun.triggers;
-frames=30*60*120; % 10 minutes
+mov_time = mov_params.movie_len;
+refresh=mov_params.refresh; % in ms
+triggers=[0:100*refresh/1000:mov_time];
+
+frames =ceil(mov_time*1000/refresh); % 10 minutes
 [mov,height,width,duration,refresh] = get_movie(mdf_file, triggers,frames);
 mov=(mov-0.5);
 mov2=zeros(size(mov,2),size(mov,1),size(mov,3),size(mov,4));

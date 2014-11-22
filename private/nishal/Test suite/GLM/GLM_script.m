@@ -6,8 +6,8 @@ addpath(genpath('../'));
 startup_null_analyse_tenessee
 startup_null_bhaishahster
 %% Load GLM dataset.
-load('~/Box Files Backup (not synced)/Chichilnisky Lab/ONPar_5866.mat');
-
+%load('~/Box Files Backup (not synced)/Chichilnisky Lab/ONPar_5866.mat');
+load('/Volumes/Analysis/nishal/GLM_cells/ONPar_5866.mat');
 
 %% Get k, and temporal filters 
 k=fittedGLM.linearfilters.Stimulus.Filter;
@@ -35,7 +35,9 @@ tonicDrive = fittedGLM.linearfilters.TonicDrive.Filter;
 
 %% Get Stimulus
 mov_params.type='bw';
-mov_params.movie_spec = '/Volumes/Analysis/movie-xml/RGB-8-1-0.48-11111.xml';
+mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-1-0.48-11111.xml';
+mov_params.movie_len = 30*60; % in seconds
+mov_params.refresh=1000/120;
 mov = generate_movie_ts(mov_params);
 
 
