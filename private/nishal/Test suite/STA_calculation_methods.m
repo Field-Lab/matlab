@@ -6,7 +6,7 @@ N= @(x) 1./(1+exp(-5*x)) -0.5;
 xGrid = [-0.5:0.01:0.5];
 yGrid = [-0.5:0.01:0.5];
 
-xWts=(1/sqrt(2*pi))*exp(-0.5*(xGrid).^2/(0.5)^2);
+xWts=(1/sqrt(2*pi))*exp(-0.5*(xGrid).^2/(0.15)^2);
 yWts=xWts;
 
 X_pts = zeros(length(xGrid),length(yGrid));
@@ -73,7 +73,7 @@ plot([0,scale*STAx,-scale*STAx],[0,scale*STAy,-scale*STAy],'*')
 
 
 hold on;
-thresh=1.95
+thresh=1.9
 sampleBool=logical(zeros(len,len));
 sampleBool(round(thresh*len/2):end,:)=1;
 STAx=mean(mean(X_pts(sampleBool).*Z_pts(sampleBool).*Wt_pts(sampleBool)))
@@ -88,10 +88,13 @@ plot([0,scale*STAx,-scale*STAx],[0,scale*STAy,-scale*STAy],'*')
 axis image
 % 
 % subplot(2,2,2);
-% imagesc(xGrid,yGrid,sampleBool)
+
 subplot(2,2,2);
 imagesc(xGrid,yGrid,Wt_pts)
 axis image
 colorbar
 
+
+figure;
+imagesc(xGrid,yGrid,sampleBool)
 
