@@ -1,24 +1,35 @@
-function response = calculate_sta_ts(mov_params,response,sta_params)
+function response = calculate_sta_ts(mov_params,response,sta_params,cell_params)
 
 spksGen=response.spksGen;
 binsLen = length(spksGen);
 bin_to_frame=response.mov_frame_number;
 mov=mov_params.mov;
 Filtlen=sta_params.Filtlen;
-
+useTrial= sta_params.useTrial;
+binsPerFrame= cell_params.binsPerFrame;
 Filtdim1=size(mov,1);
 Filtdim2=size(mov,2);
 
 binnedResponses = spksGen;
 % My own STA code 
 STA=zeros(Filtdim1,Filtdim2,3,Filtlen);
+binnedFramesResponse=zeros(max(bin_to_frame),1);
+ibin=1;
+for iframe=1:max(bin_to_frame)
+    
+binnedFramesResponse(iframe)=sum(binnedResponses(useTrial,ibin:ibin+binsPerFrame-1));
 
-for iframe=30:max(bin_to_frame)
-    iframe
-STA=STA+mov(:,:,:,iframe:-1:iframe-Filtlen+1)*sum(binnedResponses(bin_to_frame==iframe));
+ibin=ibin+binsPerFrame;
 end
 
-STA=STA/sum(binnedResponses);
+for iframe=Filtlen+1:max(bin_to_frame)
+   if(mod(iframe,1000)==1)
+       iframe
+   end
+STA=STA+mov(:,:,:,iframe:-1:iframe-Filtlen+1)*binnedFramesResponse(iframe);
+end
+
+STA=STA/sum(binnedResponses(useTrial,:));
 
 
 STA=squeeze(sum(STA,3));

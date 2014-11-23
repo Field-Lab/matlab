@@ -4,9 +4,9 @@
 
 addpath(genpath('../'));
 
-startup_tennessee
+%startup_tennessee
 
-%startup_bertha
+startup_bertha
 %startup_bhaishahster
 
 %% Load GLM dataset.
@@ -14,36 +14,53 @@ startup_tennessee
 load('/Volumes/Analysis/nishal/GLM_cells/ONPar_5866.mat');
 
 %% Get k, and temporal filters 
+WN_sta=cell(1,1);
+WN_STA = double(fittedGLM.cellinfo.WN_STA - 0.5);
+cell_params{1}.STAlen=30;
+for itime=1:size(WN_STA,3)
+WN_sta{1}(:,:,1,itime)=WN_STA (:,:,itime);
+WN_sta{1}(:,:,2,itime)=WN_STA (:,:,itime);
+WN_sta{1}(:,:,3,itime)=WN_STA (:,:,itime);
+end
+WN_sta=clipSTAs(WN_sta,cell_params{1});
+sig_stix = sum(sum(WN_sta{1},4),3)~=0;
+sig_stix=sig_stix';
+
 k=fittedGLM.linearfilters.Stimulus.Filter;
 xcoords=fittedGLM.linearfilters.Stimulus.y_coord;
 ycoords=fittedGLM.linearfilters.Stimulus.x_coord;
+sig_stix=sig_stix(xcoords,ycoords);
 
-
-Filtdim1=size(fittedGLM.cellinfo.WN_STA,2);
-Filtdim2=size(fittedGLM.cellinfo.WN_STA,1);
-Filtlen = size(fittedGLM.cellinfo.WN_STA,3);
+Filtdim1=size(k,1)+3;
+Filtdim2=size(k,2)+3;
+Filtlen = size(k,3);
 
 stas=cell(1,1);
 stas{1}=zeros(Filtdim1,Filtdim2,3,Filtlen);
 
 % TODO : Figure out how to make 1-D STA in time into 3-D!
 for itime=1:Filtlen
-stas{1}(xcoords,ycoords,1,itime)=k(:,:,itime)'/3;
-stas{1}(xcoords,ycoords,2,itime)=k(:,:,itime)'/3;
-stas{1}(xcoords,ycoords,3,itime)=k(:,:,itime)'/3;
+stas{1}(1:13,1:13,1,itime)=k(:,:,itime)'; % TODO doubt - not k/3 ??
+stas{1}(1:13,1:13,2,itime)=k(:,:,itime)';
+stas{1}(1:13,1:13,3,itime)=k(:,:,itime)';
+
+stas{1}(1:13,1:13,1,itime)=stas{1}(1:13,1:13,1,itime).*sig_stix';
+stas{1}(1:13,1:13,2,itime)=stas{1}(1:13,1:13,2,itime).*sig_stix';
+stas{1}(1:13,1:13,3,itime)=stas{1}(1:13,1:13,3,itime).*sig_stix';
 end
-cell_params{1}.STAlen=30;
-stas=clipSTAs(stas,cell_params{1});
+
+
 
 
 postSpikeFilter = fittedGLM.linearfilters.PostSpike.Filter;
 tonicDrive = fittedGLM.linearfilters.TonicDrive.Filter;
-
+stas{1}(:,:,:,16:end)=0;
 cell_params=cell(1,1);
 cell_params{1}.stas=stas{1};
 cell_params{1}.postSpikeFilter=postSpikeFilter;
 cell_params{1}.tonicDrive=tonicDrive;
 cell_params{1}.binsPerFrame=10;
+
 
 % figures
 figure;
@@ -57,11 +74,12 @@ end
 
 %% Get Stimulus
 mov_params.type='bw';
-mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-1-0.48-11111.xml';
-mov_params.movie_len = 30*15; % in seconds
+mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
+mov_params.movie_len =15; % in seconds
 mov_params.refresh=1000/120;
 mov_params = generate_movie_ts(mov_params);
 
+mov_params.mov=mov_params.mov(1:Filtdim1,1:Filtdim2,:,:);
 figure;
 for itime=1:10
 imagesc(mov_params.mov(:,:,itime));
@@ -69,11 +87,49 @@ pause
 end
 
 %% Generate response to stimulus - use k, temporal filters and movie
+mov_params.nTrials=50;
 response=generate_response_ts(mov_params,cell_params);
-
+figure;    
+plotSpikeRaster(logical(response.spksGen),'PlotType','vertline');
+title('Raster');
 %% Calculate STA, use response and stimulus
-sta_params.Filtlen=30;
-response = calculate_sta_ts(mov_params,response,sta_params)
+sta_params.Filtlen=40;
+sta_params.useTrial=1;
+response = calculate_sta_ts(mov_params,response,sta_params,cell_params{1})
 %% Generate null stimulus - use STA and movie ? 
 
+null_mov_params.movie_idx=2;
+null_mov_params.movie_len=15; % in seconds;
+null_mov_params.deviation=0.36;
+null_mov_params.scaling_loss=0.03;
+null_mov_params.mov_type='bw';
+
+null_cell_params.STA=(mean(cell_params{1}.stas,3));
+null_cell_params.Filtdim1=size(null_cell_params.STA,1);
+null_cell_params.Filtdim2=size(null_cell_params.STA,2);
+null_cell_params.Filtlen=size(null_cell_params.STA,4);
+null_cell_params.sta_type=5;
+
+[mov_orig,mov_modify_new]= generate_null_movie_ts(null_mov_params,null_cell_params);
 %% Generate response to null stimulus
+
+mov_params_orig.nTrials=50;
+mov_params_orig.mov = mov3Dto4D(mov_orig);
+mov_params_orig.movie_len = size(mov_orig,3);
+mov_params_orig.refresh = mov_params.refresh;
+response_orig=generate_response_ts(mov_params_orig,cell_params);
+
+mov_params_null.nTrials=50;
+mov_params_null.mov =  mov3Dto4D(mov_modify_new);
+mov_params_null.movie_len = size(mov_modify_new,3);
+mov_params_null.refresh = mov_params.refresh;
+response_null=generate_response_ts(mov_params_null,cell_params);
+
+
+figure;    
+plotSpikeRaster(logical(response_orig.spksGen),'PlotType','vertline');
+title('Raster Original');
+figure;
+plotSpikeRaster(logical(response_null.spksGen),'PlotType','vertline');
+title('Raster Null');
+
