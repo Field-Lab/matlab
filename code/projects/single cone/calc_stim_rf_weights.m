@@ -8,6 +8,7 @@ function weights = calc_stim_rf_weights(datarun, cellid, stimmaps, varargin)
 opts = inputParser();
 opts.addParamValue('rfopts', {});
 opts.addParamValue('mapindices', []);
+opts.addParamValue('sumStrongest', []);
 opts.parse(varargin{:});
 opts = opts.Results;
 
@@ -36,7 +37,16 @@ for i = 1:length(stimmaps)
     weights{i} = zeros(length(opts.mapindices),1);
     for mapindex = opts.mapindices(:)'
         masked = rf(stimmap == mapindex);
-        weights{i}(mapindex) = sum(masked(:));
+        if ~isempty(opts.sumStrongest)
+            tmp=sort(masked(:),'descend');
+            if opts.sumStrongest>numel(tmp)
+                weights{i}(mapindex) = sum(tmp);
+            else
+                weights{i}(mapindex) = sum(tmp(1:opts.sumStrongest));
+            end
+        else
+            weights{i}(mapindex) = sum(masked(:));
+        end
     end
 end
 

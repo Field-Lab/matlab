@@ -1,6 +1,6 @@
 function adjust_cones(frame, hTemplate)
 
-global datarun cones myCells stim
+global datarun cones myCells stim mean_nnd
 persistent myPlot
 
 
@@ -9,8 +9,6 @@ tmp = get(hTemplate(1), 'SelectedObject');
 stim=[];
 stixel=datarun.stimulus.stixel_height;
 stimarea=1;
-stim.stimarea=stimarea;
-
 
 
 myCones=cell2mat(cones');
@@ -31,7 +29,8 @@ end
 if ishandle(myPlot)
     delete(myPlot)
 end
-myPlot=subplot('position',[0.6 0.2 0.3 0.3]);
+
+myPlot=subplot('position',[0.6 0.05 0.35 0.35]);
 set(gca,'DataAspectRatio',[1 1 1])
 hold on
 mycolors='rbkgmcykkkkkk';
@@ -110,20 +109,24 @@ if tmp==hTemplate(2) % gauss
     w=squareform(pdist(stim.coord));
     w(w==0)=max(w(:));
     p=min(w);
-    if ~isempty(find(p<1, 1)) % doubled cone
-        p=find(p<1);
-        i=1;
+    dist_threshold=max(mean_nnd/2,1); %mean_nnd
+    if ~isempty(find(p<dist_threshold, 1)) % doubled cone
+        p=find(p<dist_threshold);
         while length(p)>1
             q=find(w(:,p(1))==min(w(:,p(1))));
-            [~,n]=max(stim.weight([p(1) q]));
-            if n==1
-                y=[p(1),q];
-            else y=[q,p(1)];
+            % find mean weighted position
+            ptmp=stim.coord(p(1),:);
+            qtmp=stim.coord(q,:);
+            weighted_position=(stim.weight(p(1))*ptmp+stim.weight(q)*qtmp)/(sum(stim.weight([p(1) q])));
+            
+            stim.coord([p(1) q],:)=repmat(weighted_position,2,1);
+            if stim.weight(p(1))>stim.weight(q)
+                stim.templateNumber(q)=stim.templateNumber(p(1));
+            else
+                stim.templateNumber(p(1))=stim.templateNumber(q);
             end
-            stim.coord(y(2),:)=stim.coord(y(1),:);
-            stim.templateNumber(y(2))=stim.templateNumber(y(1));
-            p(p==q)=[];
-            i=i+1;
+            
+            p(1)=[];
         end
     end
     

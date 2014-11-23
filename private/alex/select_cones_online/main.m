@@ -2,7 +2,8 @@
 clear
 close all
 clear
-global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle stim STAplotPosition
+global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle
+global stim STAplotPosition RFfitsPlotPosition
 cones={}; myCells=[];
 
 date='2013-08-19-2';
@@ -20,10 +21,43 @@ path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
 
 
-mapName = 'map_data008-0';
-cellType=4;
-nnd_scale=3;
+date = '2012-09-13-2';
+run = 'data009';
+path2load = fullfile(server_path(), [date, '/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
 frame=5;
+
+date = '2013-10-10-5';
+run = 'data002';
+path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=6;
+
+date = '2010-03-05-2';
+run = 'data001';
+path2load = fullfile(server_path(), [date, '/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
+
+date = '2013-08-19-4';
+run = 'data001';
+path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
+
+
+
+date = '2013-08-19-5';
+run = 'data001';
+path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
+
+
+mapName = ['map_', run];
+cellType=5;
+nnd_scale=3;
+
 
 
 datarun = load_data(path2load);
@@ -54,7 +88,9 @@ end
 hmain=figure;
 set(hmain,'Name','Main Window','Position',[1601 177 1280 929],'ToolBar','Figure')
 
-hplot=subplot('position',[0.01 0.46 0.45 0.45]);
+RFfitsPlotPosition=[0.01 0.46 0.45 0.45];
+
+hplot=subplot('position',RFfitsPlotPosition);
 plot_rf_summaries(datarun, {cellType}, 'clear', false, 'label', true, 'label_color', 'k', 'plot_fits', true, 'fit_color', 'k')
 
 STAplotPosition=[0.5 0.46 0.45 0.45];
@@ -74,9 +110,13 @@ hAddManual=uicontrol('style','pushbutton','Units','normalized','position',[0.45 
 hDeleteCone=uicontrol('style','pushbutton','Units','normalized','position',[0.6 0.95 0.12 0.03],...
     'string','delete cone','fontsize',16,'callback','handle_cones(2,length(myCells))');
 
-
 hDeleteCell=uicontrol('style','pushbutton','Units','normalized','position',[0.75 0.95 0.12 0.03],...
-    'string','delete cell','fontsize',16,'callback','delete_cell');
+    'string','delete cell','fontsize',16,'callback','delete_cell(1)');
+
+hDeleteAllCones=uicontrol('style','pushbutton','Units','normalized','position',[0.89 0.95 0.1 0.03],...
+    'string','delete all cones','fontsize',16,'callback','handle_cones(4,length(myCells))');
+
+
 
 
 hAdjust=uicontrol('style','pushbutton','Units','normalized','position',[0.1 0.4 0.12 0.03],...
@@ -86,7 +126,7 @@ hSubunits=uicontrol('style','pushbutton','Units','normalized','position',[0.40 0
     'string','subunits','fontsize',16,'callback','subunits(datarun, path2load, date)');
 
 hCheckOtherCells=uicontrol('style','pushbutton','Units','normalized','position',[0.4 0.34 0.09 0.03],...
-    'string','check others','fontsize',16,'callback','check_other_cells(frﬂame)');
+    'string','check others','fontsize',16,'callback','check_other_cells(frame)');
 
 hSave=uicontrol('style','pushbutton','Units','normalized','position',[0.40 0.3 0.09 0.03],...
     'string','save','fontsize',16,'callback','save_cones(path2save, mapName)');

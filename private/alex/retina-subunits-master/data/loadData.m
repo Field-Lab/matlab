@@ -33,20 +33,23 @@ switch computer
     mainAnalPath = '/Users/alexth/Desktop/Freeman/anal/';
     mainFigurePath = '/Users/alexth/Desktop/Freeman/figure/';
   case 'bertha'
-	  tmp = regexp(dataSet,'/');
-		mainPath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/'];
-		mainDataPath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/data/'];
-		mainAnalPath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/anal/'];
-		mainFigurePath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/figure/'];   
+      tmp = regexp(dataSet,'/');
+      mainPath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/'];
+      mainDataPath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/'];
+      mainAnalPath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/anal/'];
+      mainFigurePath = ['/Volumes/Analysis/',dataSet(1:tmp),'subunits',dataSet(tmp:end),'/figure/'];
   otherwise
     dat = [];
     fprintf('(loadData) invalid location specified \n');
     return
 end
 
-dataPath = strcat(mainDataPath,dataSet);
-analPath = strcat(mainAnalPath,dataSet);
-figurePath = strcat(mainFigurePath,dataSet);
+dataPath = mainDataPath;
+analPath = mainAnalPath;
+figurePath = mainFigurePath;
+% dataPath = strcat(mainDataPath,dataSet);
+% analPath = strcat(mainAnalPath,dataSet);
+% figurePath = strcat(mainFigurePath,dataSet);
 
 if ~isdir(analPath); mkdir(analPath); end
 if ~isdir(figurePath); mkdir(figurePath); end

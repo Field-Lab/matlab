@@ -48,7 +48,7 @@ if flag==1 % plot cones
             plot(cones{k}(:,1),cones{k}(:,2),'y+') % other cells
         else
             children = get(gca, 'children');
-            for m=1:length(cones{k})
+            for m=1:size(cones{k},1)
                 myPoint=findobj('XData',cones{k}(m,1),'YData',cones{k}(m,2), 'color','r');
                 if isempty(myPoint)
                     plot(cones{k}(m,1),cones{k}(m,2),'rx') % current cell - loop to make each datapoint deletable
@@ -63,18 +63,38 @@ elseif flag==2 % delete cone
     myPoint=findobj('XData',cones{myInd}(params.killCone,1),'YData',cones{myInd}(params.killCone,2), 'color','r');
     delete(children(children==myPoint));
     cones{myInd}(params.killCone,:)=[];
-        
+    
+elseif flag==4 % delete all cones
+    
+    for i=1:params.killCone
+        children = get(gca, 'children');
+        myPoint=findobj('XData',cones{myInd}(i,1),'YData',cones{myInd}(i,2), 'color','r');
+        delete(children(children==myPoint));
+    end    
+    cones{myInd}=[];        
 end
     
 %calculate new axis limits and adjust
-new_x_min = min(myLimits(1), min(cones{myInd}(:,1))-5);
-new_x_max = max(myLimits(2),max(cones{myInd}(:,1))+5);
-new_y_min = min(myLimits(3),min(cones{myInd}(:,2))-5);
-new_y_max = max(myLimits(4),max(cones{myInd}(:,2))+5);
+if flag~=4
+    new_x_min = min(myLimits(1), min(cones{myInd}(:,1))-5);
+    new_x_max = max(myLimits(2),max(cones{myInd}(:,1))+5);
+    new_y_min = min(myLimits(3),min(cones{myInd}(:,2))-5);
+    new_y_max = max(myLimits(4),max(cones{myInd}(:,2))+5);
+else
+    new_x_min = myLimits(1);
+    new_x_max = myLimits(2);
+    new_y_min = myLimits(3);
+    new_y_max = myLimits(4);
+end
 
 axis([new_x_min new_x_max new_y_min new_y_max]);
 
-% find largest ndd of cones
+% delete old cone info handle if exists
+if ishandle(hConeInfo)
+    delete(hConeInfo)
+end
+
+% print new cone info if there are 2+ cones
 if size(cones{myInd},1)>1
     
     all_cones=cones{myInd};
@@ -84,18 +104,13 @@ if size(cones{myInd},1)>1
     mean_dist=mean(all_cones);
     std_dist=std(all_cones);
     cell_stat=['Mean nnd: ', num2str(mean_dist,2) ,' +/- ', num2str(std_dist,2)];
-end
-
-
-% print cell info
-if ishandle(hConeInfo)
-    delete(hConeInfo)
-end
-
-hConeInfo=uicontrol('style','text', 'Units', 'Normalized','position',[0.32 0.16 0.16 0.1],...
+    
+    hConeInfo=uicontrol('style','text', 'Units', 'Normalized','position',[0.32 0.16 0.16 0.1],...
     'string',{['Cell ',int2str(myCells(myInd)), ': ', int2str(size(cones{myInd},1)),' cones'],'',...
     ['Largest nnd: ', num2str(max(all_cones),1)],'', cell_stat ,'',},...
     'fontsize',16, 'fontweight', 'bold');
+end
+
 
 
 % update overall cone info

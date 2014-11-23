@@ -21,7 +21,7 @@ function batchAnal(computer,dataSet,cellType,analType,doAnal,doPlot,percent,cell
     celldat.loadType = loadType;  
     celldat.percent = 0.2;
     celldat = getDefaultOpts(celldat);
-    
+     
     [train test celldat] = loadCellData(dat,celldat,0);
     if ~isempty(train) && ~isempty(test)
       if size(train.X_ct,1) > 1 && size(train.X_ct,1) < 100

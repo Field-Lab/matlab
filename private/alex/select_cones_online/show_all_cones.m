@@ -16,7 +16,9 @@ hold on
 
 plot_rf_summaries(datarun, myCells, 'clear', false, 'label', false,'plot_fits', true, 'fit_color', 'k')
 
-for i=1:length(cones)    
-    plot(cones{i}(:,1),cones{i}(:,2),'*','color','r','markersize',5)
+for i=1:length(cones)
+    if ~isempty(cones{i})
+        plot(cones{i}(:,1),cones{i}(:,2),'*','color','r','markersize',5)
+    end
 end
 

@@ -1,6 +1,6 @@
 function save_cones(path2save, mapName)
 
-global datarun stim cellType myCells mean_nnd
+global datarun stim cellType myCells mean_nnd cones
 
 height = datarun.stimulus.stixel_height * datarun.stimulus.field_height;
 width = datarun.stimulus.stixel_width * datarun.stimulus.field_width;
@@ -50,6 +50,9 @@ while ~strcmp(get(hEditRadius, 'String'), '0')
         end
         IN = inpolygon(cc(:,1),cc(:,2),x,y);
         myMask=cc(IN,:);
+        myMask(myMask<1)=1;
+        myMask(myMask(:,1)>size(myMap,1),1)=size(myMap,1);        
+        myMask(myMask(:,2)>size(myMap,2),2)=size(myMap,2);
         for i=1:length(myMask)
             myMap(myMask(i,1),myMask(i,2))=kone;
         end
@@ -86,7 +89,7 @@ info.cellType = cellType;
 info.cells = myCells;
 
 dlmwrite([path2save mapName, '.txt'], myMap, 'delimiter', '\t', 'newline', 'pc');
-save([path2save mapName '_info'],'stim', 'info')
+save([path2save mapName '_info'],'stim', 'info', 'cones')
 
 close(hnew)
 

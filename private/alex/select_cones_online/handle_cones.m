@@ -92,6 +92,9 @@ if flag==0 % find cones automatically
                 cones{myInd}=[cones{myInd}; [col, row]];
             end
         end
+        
+        delete_cell(0); % check if this cone is on deleted list; remove and correct display
+        
     else % automatically add cones (1 by 1)
         
         sta=squeeze(datarun.stas.stas{datInd});
@@ -174,6 +177,10 @@ elseif flag==3 % delete automatically, last cone in the current cell
     ind=length(cones{myInd});
     
     show_cones(2,myInd,'index_type','myCells','killCone',ind)
+    
+elseif flag==4 % delete all cones in this cell, but don't delete the cell
+    
+        show_cones(4,myInd,'index_type','myCells','killCone',length(cones{myInd}))
     
 end
 

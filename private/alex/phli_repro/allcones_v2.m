@@ -37,7 +37,7 @@ d10cm.mapd06s = map_ei(d06s, d10cm);
 pieces(piece) = struct('d06s', d06s, 'd09cm', d09cm, 'd10cm', d10cm);
 leave(keep_vars{:});
 
-%% DOESN'T WORK!
+%% DOESN'T WORK! ATH
 %% Load 2012-08-21-2
 piece = '2012-08-21-2';
 d01s = load_data([piece '/streamed/data001/data001'], staopts);
@@ -112,6 +112,7 @@ leave(keep_vars{:});
 
 
 %% Allcones, 6 cone off midget 2011-12-13-2 id5162
+figure
 piece = pieces('2011-12-13-2');
 conerun = piece.d08s;
 conerun.rgcs = 5162;
@@ -129,6 +130,7 @@ leave(keep_vars{:});
 
 
 %% Allcone, 16 (11) cone off midget 2011-12-13-2 id1351
+figure
 piece = pieces('2011-12-13-2');
 conerun = piece.d08s;
 conerun.rgcs = 1351;
@@ -148,6 +150,7 @@ leave(keep_vars{:});
 
 %% Allcone, 8 (7) cone off midget 2011-12-13-2 id2586
 % Needs to have one region removed
+figure
 piece = pieces('2011-12-13-2');
 conerun = piece.d08s;
 conerun.rgcs = 3586;
@@ -187,6 +190,7 @@ leave(keep_vars{:});
 
 %% Allcones, 13 (10) cone off midget 2012-09-21-2 id5086
 % Stability not great
+figure
 piece = pieces('2012-09-21-2');
 conerun = piece.d09;
 conerun.rgcs = 5086;
@@ -225,6 +229,7 @@ leave(keep_vars{:});
 
 %% Allcones, 18 (14) cone off midget 2012-09-21-2 id6406
 % Pretty good
+figure
 piece = pieces('2012-09-21-2');
 conerun = piece.d09;
 conerun.rgcs = 6406;
@@ -259,8 +264,9 @@ leave(keep_vars{:});
 
 % leave(keep_vars{:});
 
-
+%% DOESN'T WORK!! ATH
 %% Allcones, 4 cone off midget 2012-08-21-2 id7682
+figure
 piece = pieces('2012-08-21-2');
 conerun = piece.d01s;
 conerun.rgcs = 7682;
@@ -358,6 +364,7 @@ leave(keep_vars{:});
 sepfigs = false;
 if ~sepfigs, figure; end
 
+figure
 startind = 0;
 piece = pieces('2011-12-13-2');
 rgcs        = [1321 1351  2251 3586          4576 5162];
@@ -381,7 +388,9 @@ for i = 1:length(rgcs)
     drawnow
 end
 
+% cell 1 is not included - ath
 % 2536 xscale fitting not great
+figure
 startind = 6;
 piece = pieces('2012-04-13-1');
 rgcs       = [2536 6136];
@@ -403,7 +412,9 @@ for i = length(rgcs)
     drawnow
 end
 
+% DOESN'T WORK!! ATH
 % 887 could be cut for stability...
+figure
 startind = 8;
 piece = pieces('2012-08-21-2');
 rgcs       = [391 887 2266 2828 5447 7682];
@@ -421,12 +432,13 @@ for i = [1 3:length(rgcs)]
     localmask = stimmasklocal(conerun, conerun.rgcs, rasterrun.stimulus.mapims{1}, 'az_pad_factor', padfactor);
     localmap = localmask.*rasterrun.stimulus.mapims{1};
     if sepfigs, figure; end
-    [axs rfweights{i+startind} crweights{i+startind} f{i+startind} gof(i+startind)] = allcones_plot(conerun, rasterrun, localmap, padfactor, 'stablerun', stablerun);        
+    [axs rfweights{i+startind} crweights{i+startind} f{i+startind} gof(i+startind)] = allcones_plot(conerun, rasterrun, localmap, padfactor, 'stablerun', stablerun);
     drawnow
 end
 
 % 904 stability issues
 % 7022 minor stability issues but nice
+figure
 startind = 14;
 piece = pieces('2012-09-06-0');
 rgcs       = [904 5103 5746 6031 6317 7022];
@@ -451,6 +463,7 @@ end
 % 5086 some stability issues but nice
 % 5491 stability a bit suspect
 % 7006 xscale fit not great
+figure
 startind = 20;
 piece = pieces('2012-09-21-2');
 rgcs        = [5086 5491 6346 6406 7006 7696];

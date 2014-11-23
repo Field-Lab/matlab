@@ -71,7 +71,7 @@ ub = Inf(1,n+2);
 % Run fit
 [p resnorm residual] = lsqcurvefit(opts.fitfunc, opts.p0, crsx, crs, lb, ub, optimopts);
 
-
+ 
 % Plot?
 if opts.plot
     oldhold = ishold();
@@ -89,6 +89,7 @@ if opts.plot
         
     for i = 1:n
         x = crsx(i,:) .* p(i);
+%         h(i) = plot(x, crs(i,:), '.', 'Color', opts.colors, 'MarkerSize', opts.MarkerSize);
         h(i) = plot(x, crs(i,:), '.', 'Color', opts.colors(i,:), 'MarkerSize', opts.MarkerSize);
     end
     

@@ -57,18 +57,39 @@ batchAnal('bertha','2011-06-30-0/data003','off midget','subunit',0,1,0.33)
 %%
 %2012-09-24-1/data003
 
-workstation='stanford';
+% workstation='stanford';
+workstation='bertha';
 % dataset='2013-08-19-2/data001';
-dataset='2011-10-25-5/data001-0';
+% dataset='2011-10-25-5/data001-0';
+
+dataset='2012-09-21-2/data009';
+rgcs=[5086  6346 6406 7696]; % cellType 8, 'OFF sparse picks'
+cellTypeName='OFF sparse picks';
+
+dataset='2011-12-13-2/data008-0';
+rgcs=[1321 1351 2251 3586 4576 5162]; %cellType 4, 'OFF midget'
+cellTypeName='OFF midget';
+
+dataset='2012-04-13-1/data006'; % cellType 4, 'OFF midget'
+rgcs=6136;
+cellTypeName='OFF midget';
+
+dataset='2012-09-06-0/data004'; %cellType 10,  'OFF sparsepicks'
+rgcs=[5103 5746 6031 6317 7022];
+cellTypeName='OFF sparsepicks';
+
+dataset='2012-08-21-2/data001'; %cellType 4,  'OFF midget'
+rgcs=[391 2266 2828 5447 7682];
+cellTypeName='OFF midget';
+
 
 dat = loadData(workstation,dataset);
 disp('now running stc')
-batchAnal(workstation,dataset,'off midget','stc',1,0,0.33);
+batchAnal(workstation,dataset,cellTypeName,'stc',1,0,0.33, rgcs);
 disp('now running subunits')
 tic
-batchAnal(workstation,dataset,'off midget','subunit-local',1,0,0.33)
+batchAnal(workstation,dataset,cellTypeName,'subunit-local',1,0,0.33, rgcs)
 toc
 disp('now running figures')
-batchAnal(workstation,dataset,'off midget','subunit-local',0,1,0.33)
-
+batchAnal(workstation,dataset,cellTypeName,'subunit-local',0,1,0.33, rgcs)
 

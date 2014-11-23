@@ -73,7 +73,7 @@ end
 
 
 % apply color transform if specified
-if ~isempty(params.color_transform);
+if ~isempty(params.color_transform)
     [num_rows, num_cols, num_pages] = size(rf);
     reshaped_rf = reshape(rf, [], num_pages);
     transformed_rf = reshaped_rf * params.color_transform;

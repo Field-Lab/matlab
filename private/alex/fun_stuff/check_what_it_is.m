@@ -31,7 +31,7 @@ datarunB=load_data(datarunB,opt);
 datarunB = load_params(datarunB,struct('verbose',1));  
 datarunB = load_sta(datarunB,'load_sta',[]);
 datarunB = set_polarities(datarunB);
-datarunB = load_cones(datarunB,'bayes');
+datarunB = load_cones(datarunB,'bayes-msf_5.0');
 datarunB = make_mosaic_struct(datarunB);
 datarunB = get_sta_fits_from_vision(datarunB);  
 datarunB = make_voronoi_masks(datarunB);
@@ -94,7 +94,7 @@ datarunF=load_data(datarunF,opt);
 datarunF = load_params(datarunF,struct('verbose',1));  
 datarunF = load_sta(datarunF,'load_sta',[]);
 datarunF = set_polarities(datarunF);
-datarunF = load_cones(datarunF);
+datarunF = load_cones(datarunF, 'fit');
 datarunF = make_mosaic_struct(datarunF);
 datarunF = get_sta_fits_from_vision(datarunF);  
 datarunF = make_voronoi_masks(datarunF);
@@ -1175,7 +1175,7 @@ end
 
 %% weight vs uneven binned distance
 
-datarun=datarunE; % H A B C D E F work, G has too few cells
+datarun=datarunH; % H A B C D E F work, G has too few cells
 figure
 sigmas=10; % how many sigmas of RF fit to take (defines the distance from the cell center to consider)
 threshCS=5; % how many sigmas of noise to cut off 'noisy cones', to define 'cell center' location

@@ -45,7 +45,7 @@ opts = opts.Results;
 if ~isfield(datarun, 'triggers') || ~isfield(datarun, 'spikes') || ~isfield(datarun, 'duration')
     datarun = load_neurons(datarun);
 end
-
+ 
 % Calculate the desired stim frames
 start_stim = floor(1+opts.start_time/datarun.stimulus.refresh_time);
 end_stim = floor(1+opts.end_time/datarun.stimulus.refresh_time);
@@ -57,15 +57,14 @@ if isempty(opts.conepath)
         datarun = load_cones(datarun, opts.cone_data_ind);
     end
     
-    path2data=datarun.names.rrs_prefix;
-    tmp=regexp(path2data,'/');
-    tmp=path2data(1:tmp(4));    
-    
-%     tmp=regexp(datarun.names.rrs_prefix,'data');
-%     tmp=datarun.names.rrs_prefix(1:tmp-1);
-    
     opts.conepath = datarun.names.cones;
-    opts.conepath = fullfile(tmp, opts.conepath);
+    
+    if isempty(regexp(opts.conepath, 'Volumes', 'once'))
+        path2data=datarun.names.rrs_prefix;
+        tmp=regexp(path2data,'/');
+        tmp=path2data(1:tmp(4));
+        opts.conepath = fullfile(tmp, opts.conepath);
+    end
 end
 % opts.conepath = fullfile(single_cone_path(), opts.conepath);
 
