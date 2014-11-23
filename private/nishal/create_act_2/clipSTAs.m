@@ -76,7 +76,7 @@ end
 cutoff_after=cell_params.STAlen;%input('Cutoff STA after what number? '); %14;
 fastClipSTA(:,:,:,cutoff_after:end)=0;
 
-CellNoiseSigmas(icell)=params.noise_sigmas;
+CellNoiseSigmas(icell)=params.noise_sigmas(1); % TODO nishal
 CellMaxSTA(icell)=(max(abs(fastClipSTA(:))));
 
 clippedSTAs{icell}=fastClipSTA;
