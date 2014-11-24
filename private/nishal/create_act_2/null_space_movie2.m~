@@ -91,9 +91,8 @@ if(isfield(cell_params,'use_fits')==1)
     
    end
    stas=full_fit;
-   mov_params.totalMaskAccept=ones(size(stas{1},1),size(stas{1},2));
-   display('Using STA fits')
    
+   display('Using STA fits')
     end
     
     if(cell_params.use_fits==2)
@@ -167,7 +166,7 @@ if(solver==3)
 end
 
 %% see_movie
-% see_movie2
+see_movie2
 %% Correct means ,etc ?? Movie correction left ? 
 [mov_orig,mov_modify_new]=movie_post_process(mov_orig,mov_modify_new,mov_params);
 see_movie2

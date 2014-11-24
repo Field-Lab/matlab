@@ -68,7 +68,7 @@ end
 if(strcmp(movie_params.mov_type,'bw-precomputed'))
 movie_time=movie_params.movie_time;
 var64=64;
-mdf_file='/Volumes/Analysis/movie-xml/BW-10-1-0.48-11111.xml';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111.xml';
 
 mov=zeros(var64,32,movie_time);
 triggers=[0:100/120:movie_time/120]; % Or maybe, movie_time/120 ?? Doubt!

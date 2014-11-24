@@ -17,7 +17,7 @@ startup_bertha
 
 startup_rooster
 
-datafile='nishal/2014-11-05-9/data001/data001';%'nishal/2014-08-20-2/data001/data001';
+datafile='2014-11-05-9/data001/data001';%'nishal/2014-08-20-2/data001/data001';
 
 % type_name_inp = 'userCellList' for a list of cells.
 
