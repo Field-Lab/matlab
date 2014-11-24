@@ -1,4 +1,4 @@
-function new_stas=clipSTAs(stas,cell_params)
+function [new_stas,totalMaskAccept]=clipSTAs(stas,cell_params)
 
 nCells=length(stas);
 CellNoiseSigmas=[];
@@ -117,5 +117,6 @@ imagesc(totalMaskAccept);
 title('Accepted RFs');
 
 new_stas=newSTAs;
+totalMaskAccept=double(totalMaskAccept~=0);
 pause(1)
 end

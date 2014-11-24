@@ -12,7 +12,7 @@ sta_null=cell_params.sta_type;
 
 
 if(movie_idx==2)
-mov_gen2=(double(rand(Filtdim1,Filtdim2,movieLen)>0.5)-0.5)*(0.48/0.50);
+mov_gen2=(double(rand(Filtdim1,Filtdim2,movieLen)>0.5)-0.5)*(mov_params.deviation/(0.50*255));
 end
 
 if(movie_idx==3)
@@ -133,25 +133,27 @@ end
  legend('Original','Null space');
  title('Movie pixel histograms');
  
- % Discretize the movie 
+ % scale up movie to post process.
+mov_orig2=mov_orig2*127.5/0.5;
 
+mov_new2=mov_new2*127.5/0.5;
 
 [mov_orig,mov_modify_new]=movie_post_process(mov_orig2,mov_new2,mov_params);
  % Movie histograms 
 
  % Discretize ???? 
 dum_mov=mov_modify_new;
-dum_mov = double(uint8((dum_mov)*(127.5/0.5)+127.5));
+dum_mov = double(uint8((dum_mov)));
 dum_mov(dum_mov>255)=255;
 dum_mov(dum_mov<0)=0;
-dum_mov=(dum_mov-127.5)*(0.5/127.5);
+dum_mov=(dum_mov-mean(dum_mov(:)))*(0.5/127.5);
 mov_modify_new=dum_mov;
 
 dum_mov=mov_orig;
-dum_mov = double(uint8((dum_mov)*(127.5/0.5)+127.5));
+dum_mov = double(uint8((dum_mov)));
 dum_mov(dum_mov>255)=255;
 dum_mov(dum_mov<0)=0;
-dum_mov=(dum_mov-127.5)*(0.5/127.5);
+dum_mov=(dum_mov-mean(dum_mov(:)))*(0.5/127.5);
 mov_orig=dum_mov;
 
 figure;

@@ -27,8 +27,26 @@ for itime=1:100:movie_time
 end
 
 %%
-cell_resp_orig=Ax(stas,mov_orig,movie_time,n_cell);
-cell_resp_null=Ax(stas,mov_modify_new,movie_time,n_cell);
+
+
+ % Discretize ???? 
+dum_mov=mov_modify_new;
+dum_mov = double(uint8((dum_mov)+127.5));
+dum_mov(dum_mov>255)=255;
+dum_mov(dum_mov<0)=0;
+dum_mov=(dum_mov-mov_params.mean);
+mov_modify_new2=dum_mov;
+
+dum_mov=mov_orig;
+dum_mov = double(uint8((dum_mov)+127.5));
+dum_mov(dum_mov>255)=255;
+dum_mov(dum_mov<0)=0;
+dum_mov=(dum_mov-mov_params.mean);
+mov_orig2=dum_mov;
+
+
+cell_resp_orig=Ax(stas,mov_orig2,movie_time,n_cell);
+cell_resp_null=Ax(stas,mov_modify_new2,movie_time,n_cell);
 
 
 figure
@@ -64,9 +82,11 @@ title('Variance of null response ');
 clear hist
 figure;
 subplot(2,1,1);
-hist(mov_orig(:),20);
+hist(mov_orig(:),100);
+xlim([0,255]);
 title('Pixel histogram: Original movie');
 
 subplot(2,1,2);
-hist(mov_modify_new(:),20);
+hist(mov_modify_new(:),100);
+xlim([0,255]);
 title('Pixel histogram: Modified movie');

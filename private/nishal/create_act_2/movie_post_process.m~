@@ -8,7 +8,7 @@ scale=mov_params.deviation/quantile(abs(mov_modify_new_masked(:)),1-mov_params.s
 mov_modify_new=mov_modify_new*scale;
 
 % match modes of original and modified, change original
-[h,x]=hist(abs(mov_modify_new_masked(mov_modify_new_masked>20)),100);
+[h,x]=hist(abs(mov_modify_new_masked(:)),100);
 [maxfraq,maxvalue]=max(h);
 mode_new = x(maxvalue);
 
