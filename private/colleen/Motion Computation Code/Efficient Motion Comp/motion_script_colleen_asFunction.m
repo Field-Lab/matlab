@@ -268,7 +268,7 @@ if run_opt.trial_estimate
     %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
     %     end
     
-    velocity= [140:20:240];
+    velocity= [70:10:120];
     % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     
