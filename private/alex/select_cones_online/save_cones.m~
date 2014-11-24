@@ -2,7 +2,6 @@ function save_cones(path2save, mapName)
 
 global datarun stim cellType myCells mean_nnd cones myMap conesSavePosition
 global myCluster
-myCluster=[];
 
 height = datarun.stimulus.stixel_height * datarun.stimulus.field_height;
 width = datarun.stimulus.stixel_width * datarun.stimulus.field_width;
@@ -54,7 +53,7 @@ while ~strcmp(get(hEditRadius, 'String'), '0')
         IN = inpolygon(cc(:,1),cc(:,2),x,y);
         myMask=cc(IN,:);
         myMask(myMask<1)=1;
-        myMask(myMask(:,1)>size(myMap,1),1)=size(myMap,1);
+        myMask(myMask(:,1)>size(myMap,1),1)=size(myMap,1);        
         myMask(myMask(:,2)>size(myMap,2),2)=size(myMap,2);
         for i=1:length(myMask)
             myMap(myMask(i,1),myMask(i,2))=kone;
@@ -87,67 +86,14 @@ hTemplate = uicontrol('Style','pushbutton','Units','normalized','Position',[0.6 
 hTemplate1 = uicontrol('Style','checkbox','Units','normalized','Position',[0.6 0.85 0.15 0.05],...
     'String','Independent','visible','on');
 
-hSave=uicontrol('style','togglebutton','Units','normalized','position',[0.8 0.85 0.15 0.05],...
+hSave=uicontrol('style','pushbutton','Units','normalized','position',[0.8 0.85 0.15 0.05],...
     'string','save','fontsize',16);
 
 waitfor(hSave,'Value',1)
 
-if ~isempty(myCluster)
-    i=1;
-    while ~isempty(myCluster{i})
-        i=i+1;
-    end
-    if i>1
-        myCluster=myCluster(1:i-1);
-        
-        if get(hTemplate1,'Value') % independent stimulation
-            
-            for i=1:length(myCluster)
-                for j=1:length(myCluster{i})
-                    myMap(myMap==myCluster{i}(j))=-j;
-                end
-            end
-            
-        else % all cones in cluster flash simultaneously
-            for i=1:length(myCluster)
-                for j=1:length(myCluster{i})
-                    myMap(myMap==myCluster{i}(j))=-i;
-                end
-            end
-        end
-        
-        % delete unclustered cones
-        myMap(myMap>0)=0;
-        
-        % make clustered cones positive
-        myMap=-myMap;
-    end
-end
+save_all(datarun,cones,myMap, path2save, mapName, stim, myCluster)
 
-if ~exist(path2save,'dir')
-    mkdir(path2save)
-end
 
-info.name = datarun.names.rrs_prefix;
-info.cellType = cellType;
-info.cells = myCells;
-
-dlmwrite([path2save mapName, '.txt'], myMap, 'delimiter', '\t', 'newline', 'pc');
-save([path2save mapName '_info'],'stim', 'info', 'cones')
-
-close(hnew)
-
-figure(tmp);
-
-% hSavedInfo=uicontrol('style','text', 'Units', 'Normalized','position',[0.32 0.08 0.32 0.1],...
-%     'string',{'saved to', path2save, ['file: ' mapName '.txt'], [mapName '_info.mat']},'fontsize',16, 'fontweight', 'bold','foregroundcolor','b');
-
-tit=[path2save, mapName '.txt'];
-savedMap=dlmread([path2save,'map_data001.txt']);
-figure
-imagesc(savedMap)
-title(tit,'Interpreter','None','fontsize',16, 'fontweight', 'bold')
-disp(tit)
 
 
 

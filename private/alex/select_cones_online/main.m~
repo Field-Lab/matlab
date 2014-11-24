@@ -68,8 +68,8 @@ datarun = set_polarities(datarun);
 figure
 plot_rf_summaries(datarun, {1}, 'clear', false,  'plot_fits', true, 'fit_color', 'r')
 plot_rf_summaries(datarun, {2}, 'clear', false,  'plot_fits', true, 'fit_color', 'b')
-plot_rf_summaries(datarun, {3}, 'clear', false,  'plot_fits', true, 'fit_color', [0 0.6 0])
-plot_rf_summaries(datarun, {4}, 'clear', false,  'plot_fits', true, 'fit_color', [0 0.8 0.8])
+plot_rf_summaries(datarun, {3}, 'clear', false,  'plot_fits', true, 'fit_color', 'g')
+plot_rf_summaries(datarun, {4}, 'clear', false,  'plot_fits', true, 'fit_color', 'c')
 
 
 cell_indices = get_cell_indices(datarun, {cellType});
