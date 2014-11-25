@@ -25,6 +25,7 @@ end
 
 %% Load cells and STAs
 global_vars
+% global_vars2
 %datafile = '2013-10-10-0/data000';
 type_name= cell(1,1);
 type_name{1}=cell_params.type_name_inp;
@@ -103,7 +104,7 @@ if(isfield(cell_params,'use_fits')==1)
     
 n_cell=length(stas);
 filt_len=size(stas{1},4);
-var64=64;
+ var64=64;
 filt_dim1=var64;
 filt_dim2=32;
 %% Get /Generate Original movie

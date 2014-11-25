@@ -1,5 +1,6 @@
 function [mov_new_ft_re_iftime, mov_new_ft_im_iftime]= proj_null_fourier(sta_mov_ft_iftime,n_cell,mov_ft_re_iftime,mov_ft_im_iftime)
 
+
    A=zeros(2*n_cell,numel(sta_mov_ft_iftime(:,:,1,1))*2);
    s_re=zeros((64*2-1)*(32*2-1),2*n_cell);
    s_im=zeros((64*2-1)*(32*2-1),2*n_cell);
