@@ -25,6 +25,8 @@ movies=cell(20,1);
 % 'solver' .. 1 for LSQR, 2 for CRAIG, 3 for Fourier 
 
 %% BW - 10 sec movie cell type
+global_vars2
+var64=64;
 
 cell_params=struct();
 cell_params.type_name_inp='On Parasol';

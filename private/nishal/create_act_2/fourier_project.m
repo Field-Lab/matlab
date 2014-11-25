@@ -1,5 +1,8 @@
 function [mov_orig2,mov_new2]=fourier_project(stas,mov)
+
 display('Starting Fourier Computation');
+
+
 movie_time=size(mov,3);
 filt_len=size(stas{1},4);
 movie_len=movie_time+3*filt_len;
@@ -10,7 +13,7 @@ shift_mat=zeros(2*64-1,2*32-1,movie_len);
 for ix=1:64*2-1
     for iy=1:32*2-1
         for itime=1:movie_len
-            shift_mat(ix,iy,itime) = exp(sqrt(-1)*( (2*pi*(ix-1)*63/(2*64-1)) +(2*pi*(iy-1)*31/(2*32-1)) ) ); 
+            shift_mat(ix,iy,itime) = exp(sqrt(-1)*( (2*pi*(ix-1)*(64-1)/(2*64-1)) +(2*pi*(iy-1)*31/(2*32-1)) ) ); 
         end
     end
 end
@@ -34,7 +37,7 @@ toc;
 
 mov_orig = zeros(64*2-1,32*2-1,movie_len);
 mov_orig (64:end,32:end,end-movie_time+1:end)= mov;
-mov_orig(1:63,1:31,:)=0; % make sure its 0 where STAs there ?
+mov_orig(1:64-1,1:31,:)=0; % make sure its 0 where STAs there ?
 
 mov_orig(:,:,1:30)=0;
 mov_orig(:,:,end-50:end)=0;

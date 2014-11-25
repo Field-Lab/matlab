@@ -26,6 +26,8 @@ movies=cell(20,1);
 % 'solver' .. 1 for LSQR, 2 for CRAIG, 3 for Fourier 
 
 %% BW - 10 sec movie cell type
+% global_vars2
+% var64=64;
 
 cell_params=struct();
 cell_params.type_name_inp='userCellList';
@@ -39,6 +41,100 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
+
+solver=3;
+[mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+movies{1}=mov_orignial;
+movies{2}=mov_modify_new;
+mov_idx=1;
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
+mov_idx=2;
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
+
+%%
+
+cell_params=struct();
+cell_params.type_name_inp='nc3';%'userCellList';
+cell_params.cell_list=[]%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
+
+mov_params=struct();
+mov_params.mov_type='bw-precomputed';
+mov_params.movie_time=120*10;
+mov_params.mean=0.5*255;
+mov_params.deviation=0.48*255;
+mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
+
+
+solver=3;
+[mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+%%
+cell_params=struct();
+cell_params.type_name_inp='userCellList';
+cell_params.cell_list=[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
+
+mov_params=struct();
+mov_params.mov_type='bw-precomputed';
+mov_params.movie_time=120*10;
+mov_params.mean=0.5*255;
+mov_params.deviation=0.48*255;
+mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
+
+
+solver=3;
+[mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+%%
+cell_params=struct();
+cell_params.type_name_inp='userCellList';
+cell_params.cell_list=[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
+
+mov_params=struct();
+mov_params.mov_type='bw-precomputed';
+mov_params.movie_time=120*10;
+mov_params.mean=0.5*255;
+mov_params.deviation=0.48*255;
+mov_params.scaling_loss=0.005;
+
+solver=3;
+[mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+%%
+cell_params=struct();
+cell_params.type_name_inp='userCellList';
+cell_params.cell_list=[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
+
+mov_params=struct();
+mov_params.mov_type='bw-precomputed';
+mov_params.movie_time=120*10;
+mov_params.mean=0.5*255;
+mov_params.deviation=0.48*255;
+mov_params.scaling_loss=0.00;
+
+solver=3;
+[mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+%%
+
+
+cell_params=struct();
+cell_params.type_name_inp='userCellList';
+cell_params.cell_list=[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
+
+mov_params=struct();
+mov_params.mov_type='nsem';
+mov_params.start_image=50;
+mov_params.no_images_per_movie=10;
+mov_params.mean=0.25*255; % mean on [0-255] scale.
+mov_params.deviation_plus=0.73*255;
+mov_params.deviation_minus=0.23*255;
+mov_params.scaling_loss=0.00; % a number in [0,1], fraction of values that is changed by scaling.
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
