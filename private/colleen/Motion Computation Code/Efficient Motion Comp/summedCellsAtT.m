@@ -1,4 +1,11 @@
-function [summedCellsR, summedCellsL] = summedCellsAtT(time, flt_rsp2, flt_rsp2_shiftedRight, flt_rsp2_shiftedLeft, indices1, spks_2)
+%This function computes the equation N = sum_t(sum_i(r_i(t-\Delta t))^2) -
+%sum_t(sum_i(r_i(t+\Delta t))^2) and returns each term in that equation
+%separately.
+% --------
+%Inputs:
+% time
+% flt_
+function [summedCellsR, summedCellsL] = summedCellsAtT(time, flt_rsp2_shiftedRight, flt_rsp2_shiftedLeft, indices1, spks_2)
             time = num2cell((repmat(time, size(indices1,2),1))) ;
             time_cell = cell(size(indices1'));
             time_cell = cellfun(@(x,t) t, time_cell, time, 'UniformOutput', false);
