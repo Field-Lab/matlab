@@ -105,7 +105,7 @@ end
         time = t(c);
         % First column is every cell aligned to cell 1
         % First row is value of first pairing at t = 0
-        [right, left] = summedCellsAtT(time, flt_rsp2,  flt_rsp2_shiftedRight,  flt_rsp2_shiftedLeft, indices1,spks_2);
+        [right, left] = summedCellsAtT(time, flt_rsp2_shiftedRight,  flt_rsp2_shiftedLeft, indices1,spks_2);
         valueAtEachT(c,1) = right;
         valueAtEachT(c,2) = left;
     end
