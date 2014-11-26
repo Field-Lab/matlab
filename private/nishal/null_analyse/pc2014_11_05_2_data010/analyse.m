@@ -127,7 +127,7 @@ for ref_cell_number=14;
     ref_cell_number
     plot_raster_script;
     plot_mosaic
-    %testsuite_prediction
+    testsuite_prediction
     psth_variability
     
     

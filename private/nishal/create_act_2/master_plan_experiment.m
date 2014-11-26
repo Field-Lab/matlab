@@ -134,7 +134,7 @@ mov_params.no_images_per_movie=10;
 mov_params.mean=0.25*255; % mean on [0-255] scale.
 mov_params.deviation_plus=0.73*255;
 mov_params.deviation_minus=0.23*255;
-mov_params.scaling_loss=0.00; % a number in [0,1], fraction of values that is changed by scaling.
+mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
