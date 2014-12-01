@@ -1,4 +1,4 @@
-function motion_script_colleen_asFunction(data_set, data_run, config_num, cell_type)
+function motion_script_colleen_asFunction(data_set, data_run, config_num, cell_type, vel)
 clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
@@ -17,11 +17,13 @@ run_opt.cell_type = cell_type; % on/off parasol, on/off midget
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
+direction = 'left'; % 'left' or 'right'
+
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-4;
 % run_opt.trial_estimate_start = trial_estimate_start;
-run_opt.velocity_lim = 150; % >0
+run_opt.velocity_lim = vel; % >0
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
@@ -29,7 +31,7 @@ run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = false; % T/F
 run_opt.trial_estimate = true; % T/F
 
-    speed =0.09;
+
 
 tic;
 
@@ -268,7 +270,9 @@ if run_opt.trial_estimate
     %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
     %     end
     
-    velocity= [40:20:140];
+%     velocity= [140:20:240];
+        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
+
     % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     
@@ -278,7 +282,7 @@ if run_opt.trial_estimate
     for i =1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun);
+            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, direction);
             
         end
 %         figure; plot(velocity, strsig1)
@@ -309,7 +313,7 @@ i
     %0.5*(velocity(y1)+velocity(y2));
     parfor i = 1:length(tr)
         
-            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun), run_opt.trial_estimate_start(i), options);
+            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     
@@ -321,7 +325,7 @@ i
     %     save('estimates10272014_03272007_18_1_onp','estimates');
     
     
-        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     
     

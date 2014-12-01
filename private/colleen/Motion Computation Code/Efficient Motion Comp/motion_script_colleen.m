@@ -2,16 +2,18 @@ clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 
-% run_opt.data_set = '2007-03-27-1';
-run_opt.data_set = '2007-08-24-4';
+run_opt.data_set = '2007-03-27-1';
+% run_opt.data_set = '2007-08-24-4';
 
-run_opt.data_run = 5; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 12; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 % CHANGE THIS
-run_opt.config_num = 4; % 1-4 %Which type of stimulus to look at
+run_opt.config_num = 16; % 1-4 %Which type of stimulus to look at
 
-run_opt.cell_type = 'Off parasol'; % on/off parasol, on/off midget
+direction = 'left'; % 'left' or 'right'
 
-run_opt.velocity_exp = 190;
+run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+
+run_opt.velocity_exp = 96;
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 
@@ -222,16 +224,16 @@ if run_opt.trial_estimate
 
     %Prior is +/-25% of expected value 
     velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
-
+% velocity = 100:5:400;
     strsig1 = zeros(1,length(velocity));
     
 % Run coarse error function to initialize velocity
     for i =1:length(tr)
-        parfor j = 1:length(velocity)
+        for j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun);           
+            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);           
         end
-%         figure; plot(velocity, strsig1)
+        figure; plot(velocity, strsig1)
         i
         [x1,y1] = min(strsig1);
         
@@ -241,7 +243,7 @@ if run_opt.trial_estimate
     
     % Find speed estimate
     parfor i =1:length(tr)       
-            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun), run_opt.trial_estimate_start(i), options);
+            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     
