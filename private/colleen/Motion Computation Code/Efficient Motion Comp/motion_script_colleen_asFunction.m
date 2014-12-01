@@ -23,7 +23,7 @@ direction = 'left'; % 'left' or 'right'
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-4;
 % run_opt.trial_estimate_start = trial_estimate_start;
-run_opt.velocity_lim = vel; % >0
+run_opt.velocity_exp = vel; % >0
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
@@ -283,7 +283,6 @@ if run_opt.trial_estimate
         parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, direction);
-            
         end
 %         figure; plot(velocity, strsig1)
 %         title(['trial ' num2str(i)]);
@@ -325,8 +324,8 @@ i
     %     save('estimates10272014_03272007_18_1_onp','estimates');
     
     
-        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-    % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+%         save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+    save(sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     
     
 
