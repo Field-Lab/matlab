@@ -24,8 +24,8 @@ run_opt.tol = 1e-4;
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
-run_opt.raster = true; % T/F
-run_opt.rasterPerTrial = false; % T/F
+run_opt.raster = false; % T/F
+run_opt.rasterPerTrial = true; % T/F
 run_opt.trial_estimate = false; % T/F
 
 tic;
@@ -85,10 +85,10 @@ if run_opt.raster %raster
     figure, set(gcf, 'Color','white')
     set(gca, 'nextplot','replacechildren', 'Visible','off');
     
-    nFrames = length(cell_indices2);
-    f = getframe(gca);
-[f,map] = rgb2ind(f.cdata, 256, 'nodither');
-mov = repmat(f, [1 1 1 nFrames]);
+writerObj = VideoWriter('Results/resultsColleen/raster_alltrials.avi');
+writerObj.FrameRate = 8;
+
+open(writerObj);
     for k = 1:length(cell_indices2)
         
         % Takes in start and stop time (0-0.7274)
@@ -104,42 +104,70 @@ mov = repmat(f, [1 1 1 nFrames]);
         Color = 'b.';
         y_scale =1;
         plot(psth_r(:,1),psth_r(:,2)*y_scale,Color);%, 'MarkerSize',10
+        xlim([200 800]);
+
         %     axis([mmin*1000 mmax*1000 0 length(tr)*y_scale]);
-        
+
         % Title is the cell id according to vision and the mean firing rate
         title(sprintf('%d %.2f', datarun{2}.cell_ids(cell_indices2(k)), datarun{1}.vision.sta_fits{cell_indices1(k)}.mean(1) ))
         
-        f = getframe(gca);
-    mov(:,:,1,k) = rgb2ind(f.cdata, map, 'nodither');
+        frame = getframe;
+   writeVideo(writerObj,frame);
+   
+
     end
     close(gcf)
-    
-    %# create GIF and open
-    imwrite(mov, map, 'myPeaks4.gif', 'DelayTime',0, 'LoopCount',inf)
-    winopen('myPeaks4.gif')
+    close(writerObj);
+
     
 end
 
+if run_opt.rasterPerTrial 
+    toPlot = cell(1,length(t));
+        figure, set(gcf, 'Color','white')
+    set(gca, 'nextplot','replacechildren', 'Visible','off');
+    
+writerObj = VideoWriter('Results/resultsColleen/raster_allcells.avi');
+writerObj.FrameRate = 8;
 
-% %# figure
-% figure, set(gcf, 'Color','white')
-% Z = peaks; surf(Z);  axis tight
-% set(gca, 'nextplot','replacechildren', 'Visible','off');
-% 
-% %# preallocate
-% nFrames = 20;
-% f = getframe(gca);
-% [f,map] = rgb2ind(f.cdata, 256, 'nodither');
-% mov = repmat(f, [1 1 1 nFrames]);
-% 
-% %# create movie
-% for k=1:nFrames
-%     surf(sin(2*pi*k/20)*Z, Z)
-%     f = getframe(gca);
-%     mov(:,:,1,k) = rgb2ind(f.cdata, map, 'nodither');
-% end
-% close(gcf)
-% 
-% %# create GIF and open
-% imwrite(mov, map, 'myPeaks4.gif', 'DelayTime',0, 'LoopCount',inf)
-% winopen('myPeaks4.gif')
+open(writerObj);
+    % Takes in start and stop time (0-0.7274)
+    % Spikes of the cell with the lowest firing rate first
+    % start time of each stimulus type 2 trigger
+    % Finds the spikes that happened on a cell from stimulus onset to end
+    % Plot those spike times on the x axis versus the trial number on the y
+    % axis
+    % If tracking motion, the cell should respond to the bar at the same
+    % time on every trial
+    for counter = 1:length(t)
+        psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr);
+        posThisCell = datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1);
+        
+        posFarthestCell = datarun{1}.vision.sta_fits{cell_indices1(1)}.mean(1);
+        
+        
+        cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
+        % Title is the cell id according to vision and the mean firing rate
+        %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
+        for trialNum = 1:length(t)
+            [x,y] = find(psth_r == trialNum-1);
+                toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+        end
+    end
+    
+    
+    for k = 1:length(t)
+        y_scale = 1;
+        Color = ['k', '.'];
+        plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);       
+        xlim([0 800])
+        title({run_opt.cell_type, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],'Bright Bars Moving Right', sprintf(' Trial Number %d',  k)})
+        xlabel('time (ms)');
+        ylabel('Cell''s centroid distance from reference');
+                frame = getframe;
+            writeVideo(writerObj,frame);
+    end
+        close(gcf)
+    close(writerObj);
+
+end
