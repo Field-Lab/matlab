@@ -5,9 +5,9 @@ run_opt.load = true; % T/F
 run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
-run_opt.data_run = 16; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 13; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 % CHANGE THIS
-run_opt.config_num =3; % 1-4 %Which type of stimulus to look at
+run_opt.config_num =10; % 1-4 %Which type of stimulus to look at
 
 direction = 'left'; % 'left' or 'right'
 
@@ -228,7 +228,7 @@ velocity = 100:5:400;
     strsig1 = zeros(1,length(velocity));
     
 % Run coarse error function to initialize velocity
-    for i =2%1:length(tr)
+    for i =31%1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);           
@@ -242,7 +242,7 @@ velocity = 100:5:400;
     end
     
     % Find speed estimate
-    parfor i =2%1:length(tr)       
+    parfor i =31%1:length(tr)       
             [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
