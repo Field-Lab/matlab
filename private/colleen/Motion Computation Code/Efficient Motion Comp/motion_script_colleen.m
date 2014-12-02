@@ -2,25 +2,25 @@ clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 
-run_opt.data_set = '2007-03-27-1';
-% run_opt.data_set = '2007-08-24-4';
+% run_opt.data_set = '2007-03-27-1';
+run_opt.data_set = '2007-08-24-4';
 
-run_opt.data_run = 12; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 4; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 % CHANGE THIS
-run_opt.config_num = 16; % 1-4 %Which type of stimulus to look at
+run_opt.config_num =2; % 1-4 %Which type of stimulus to look at
 
 direction = 'left'; % 'left' or 'right'
 
-run_opt.cell_type = 'On parasol'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
 
-run_opt.velocity_exp = 96;
+run_opt.velocity_exp = 192;
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
-run_opt.tau = .01; % tuning parameter %0.1 next best
+run_opt.tau = .1; % tuning parameter %0.1 next best
 run_opt.tol = 1e-4;
 
 % ANALYSES TO RUN
@@ -223,13 +223,13 @@ if run_opt.trial_estimate
     spikes = datarun{2}.spikes;
 
     %Prior is +/-25% of expected value 
-    velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
-% velocity = 100:5:400;
+%     velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
+velocity = 100:5:400;
     strsig1 = zeros(1,length(velocity));
     
 % Run coarse error function to initialize velocity
-    for i =1:length(tr)
-        for j = 1:length(velocity)
+    for i =39%1:length(tr)
+        parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);           
         end
@@ -242,12 +242,12 @@ if run_opt.trial_estimate
     end
     
     % Find speed estimate
-    parfor i =1:length(tr)       
+    parfor i =39%1:length(tr)       
             [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     
-        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/DarkRight/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 
 end
