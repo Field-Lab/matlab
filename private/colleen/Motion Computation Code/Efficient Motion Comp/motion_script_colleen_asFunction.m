@@ -325,7 +325,7 @@ i
     
     
 %         save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-    save(sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+    save(sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     
     
 
