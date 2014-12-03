@@ -13,6 +13,9 @@ function [fittedGLM] = glm_execute_CP(GLMType, spikes, neighborspikes, fitmovie,
 %% Get rid of all time,  put all inputs into bins
 
 fittedGLM.cellinfo = glm_cellinfo;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Load up GLMParams compute some universal params
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 GLMPars           = GLMParams;
 fittedGLM.GLMPars = GLMPars;
 fittedGLM.GLMType = GLMType;
@@ -23,20 +26,31 @@ if GLMType.debug, GLMPars.optimization.tolfun = 3;  end
 
 frames = size(fitmovie,3);
 bins   = frames * GLMPars.bins_per_frame;
-t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame;
+t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
 
+
+% Perhaps we should combine this! With convolving with spikes !
+bin_size      = t_bin;
 if GLMType.PostSpikeFilter
     basis_params  = GLMPars.spikefilters.ps;
-    ps_basis      = prep_spikefilterbasisGP(basis_params,t_bin);
+    ps_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
+end
+
+% NBCoupling
+if GLMType.CouplingFilters
+    basis_params  = GLMPars.spikefilters.cp;
+    cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
 end
 clear bin_size basis_params
 
 % Convolve Spike Times with appropriate basis
 % Think about flushing dt out to the wrapper
 % Take care of all timing in glm_execute or in glmwrap.
-home_spbins  = ceil(spikes / t_bin);
+t_bin        = t_bin;
+home_sptimes = spikes.home';
+home_spbins  = ceil(home_sptimes / t_bin);
 home_spbins = home_spbins(find(home_spbins < bins) );
 
 if GLMType.PostSpikeFilter
@@ -44,9 +58,26 @@ if GLMType.PostSpikeFilter
     PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
 end
 
+% NBCoupling 05-28-14
+if GLMType.CouplingFilters;
+    n_couplings=length(glm_cellinfo.pairs);
+    basis = cp_basis';
+    for j_pair=1:n_couplings
+        %spikes of neighbor neurons NB
+        neighbor_sptimes = neighborspikes.home{j_pair}';
+        neighbor_spbins  = ceil(neighbor_sptimes / t_bin);
+        neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
+        CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
+    end
+else n_couplings=0;
+end
+% end NBCoupling
+
 if GLMType.TonicDrive
     MU_bin = ones(1,bins);
 end
+
+
 
 % Find the correct stimulus related input term
 center_coord       = glm_cellinfo.slave_centercoord;
