@@ -65,6 +65,9 @@ set(main.gui, 'KeyPressFcn', @(h_obj, evt)keyCheck(h_obj, evt));
             [main, elecResp] = refreshAll(main);
         elseif strcmpi(eventdata.Key, 'l')
             lockAnalysis()
+            increaseMovieNo()
+            main.movieDirection = 'up';
+            [main, elecResp] = refreshAll(main);
         elseif strcmpi(eventdata.Key, 'g')
             reanalyze()
         elseif strcmpi(eventdata.Key, 'r')
