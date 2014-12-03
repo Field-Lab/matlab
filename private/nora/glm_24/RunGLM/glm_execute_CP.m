@@ -39,7 +39,7 @@ if GLMType.PostSpikeFilter
 end
 
 % NBCoupling
-if GLMType.CouplingFilters
+if GLMType.CouplingFilters || GLMType.Saccades
     basis_params  = GLMPars.spikefilters.cp;
     cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
 end
@@ -74,6 +74,7 @@ if GLMType.CouplingFilters;
     end
 else
     if GLMType.Saccades
+        basis = cp_basis';
         n_couplings=1;
         neighbor_sptimes = neighborspikes.home{1}';
         neighbor_spbins  = ceil(neighbor_sptimes / t_bin);

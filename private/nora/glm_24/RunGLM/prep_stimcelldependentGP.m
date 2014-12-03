@@ -76,7 +76,7 @@ if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
         newstim = newstim .^ (GLMPars.others.point_nonlinearity.scalar_raisedpower);
         newstim = newstim - min(newstim(:));
         newstim = newstim / max(newstim(:));
-        newstim = newstim - mean(newstim(:));
+        %newstim = newstim - mean(newstim(:));
     end
     
     if strcmp(GLMType.input_pt_nonlinearity_type, 'oddfunc_powerraise_aboutmean')

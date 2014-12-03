@@ -44,11 +44,13 @@ GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.CBP=false;
 
-%GLMType.stimfilter_mode = 'rk1';
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
-GLMType.input_pt_nonlinearity      = false;
-GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
-GLMType.CONVEX = true;
+GLMType.stimfilter_mode = 'rk1';
+%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.input_pt_nonlinearity      = true;
+%GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
+GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
+
+GLMType.CONVEX = false;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -60,9 +62,9 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
-GLMType.CouplingFilters = true;
-GLMType.Subunits = false;
-GLMType.Saccades=true;
+GLMType.CouplingFilters = false;
+GLMType.Subunits = true;
+GLMType.Saccades=false;
 
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
@@ -81,7 +83,7 @@ troubleshoot.name    = 'singleopt';
 
 BD = NSEM_BaseDirectories;
 
-exptests = [1 2];
+exptests = [3 4];
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
