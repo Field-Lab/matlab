@@ -6,7 +6,7 @@ startup_null_analyse_tenessee
 
 
 rawMovFrames=8640;
-[stim,height,width,header_size] = get_raw_movie('/Volumes/Analysis/nishal/pc2014_11_24_3_data012/18.rawMovie',rawMovFrames,1);
+[stim,height,width,header_size] = get_raw_movie('/Volumes/Analysis/nishal/pc2014_11_24_0_data000/18.rawMovie',rawMovFrames,1);
 subtract_movies{3}=mean(stim,1);
 subtract_movies{3}=mean(stim,1)*0+127.5;
 movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
@@ -71,9 +71,9 @@ cond_str{5}='Original';
 cond_str{6}='Null for few cells';
 %% Load cells and STAs
 
-WN_datafile = 'nishal/2014-11-24-3/data012/data012';
+WN_datafile = 'nishal/2014-11-24-0/data000/data000';
 
-imov=14;
+imov=04;
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
@@ -86,26 +86,23 @@ for icellType=cellTypeId
 end
 
 %%
-%InterestingCell_vis_id=[3692,6061,1382,3782,6421,1627,2181];
-
-
 
 % On parasol
-WN_datafile = 'nishal/2014-11-24-3/data012/data012';
-Null_datafile = '/Volumes/Analysis/2014-11-24-3/data014';
+WN_datafile = 'nishal/2014-11-24-0/data000/data000';
+Null_datafile = '/Volumes/Analysis/2014-11-24-0/data004';
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
 
-cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
+cellTypeId=[8]; % 1 for On Parasols, 2 for Off parasols
 InterestingCell_vis_id=[];
 for icellType=cellTypeId
     icellType 
     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
-WN_datafile_full = '/Volumes/Analysis/nishal/2014-11-24-3/data012';
-for ref_cell_number=20:length(InterestingCell_vis_id);
+WN_datafile_full = '/Volumes/Analysis/nishal/2014-11-24-0/data000';
+for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
     
     ref_cell_number
@@ -115,22 +112,5 @@ for ref_cell_number=20:length(InterestingCell_vis_id);
     %psth_variability
     pause
 end
-
-% %%
-% % Some cells
-% datafile = '2014-11-05-2/data009';
-% datarun=load_data(datafile)
-% datarun=load_params(datarun)
-% 
-% InterestingCell_vis_id=[3692,6061,1382,3782,6421,1627,2181,2631];
-% cellTypeUsed=[2,2,2,2,2,1,1,1];
-% 
-% for ref_cell_number=5
-%     plot_raster_script;
-%     testsuite_prediction
-%     psth_variability
-%     % re_sta
-%     pause
-% end
 
 
