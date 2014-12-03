@@ -94,7 +94,7 @@ datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
 
-cellTypeId=[8]; % 1 for On Parasols, 2 for Off parasols
+cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
 InterestingCell_vis_id=[];
 for icellType=cellTypeId
     icellType 
@@ -102,7 +102,7 @@ for icellType=cellTypeId
 end 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 WN_datafile_full = '/Volumes/Analysis/nishal/2014-11-24-0/data000';
-for ref_cell_number=1:length(InterestingCell_vis_id); %11
+for ref_cell_number=8%1:length(InterestingCell_vis_id); %11
     close all
     
     ref_cell_number

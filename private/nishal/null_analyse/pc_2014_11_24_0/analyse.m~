@@ -102,7 +102,7 @@ for icellType=cellTypeId
 end 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 WN_datafile_full = '/Volumes/Analysis/nishal/2014-11-24-0/data000';
-for ref_cell_number=4:length(InterestingCell_vis_id);
+for ref_cell_number=8%1:length(InterestingCell_vis_id); %11
     close all
     
     ref_cell_number
