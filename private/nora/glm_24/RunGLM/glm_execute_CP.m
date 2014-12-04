@@ -266,12 +266,16 @@ if ~GLMType.CONVEX
             spacefilter2 = pstar(paramind.space2);
             stimfilter  = spacefilter1 * timefilter1' + spacefilter2 * timefilter2';
         end
-        
-        stimfilter = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.time1)]);
-        linearfilters.Stimulus.Filter             = stimfilter;
         linearfilters.Stimulus.Filter_rank        = 1;
         linearfilters.Stimulus.time_rk1           = timefilter1;
-        linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length]);
+        if GLMType.color
+        	linearfilters.Stimulus.Filter             = stimfilter;
+        	linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length,3]);
+        else
+        	stimfilter = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.time1)]);
+        	linearfilters.Stimulus.Filter             = stimfilter;
+        	linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length]);
+        end
         linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
         linearfilters.Stimulus.y_coord            = ROIcoord.yvals;
         linearfilters.Stimulus.frame_shifts       = [0:1:(GLMPars.stimfilter.frames-1)];
