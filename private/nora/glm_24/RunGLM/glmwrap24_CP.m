@@ -39,18 +39,18 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.cone_model = '8pix_Model1_1e4_8pix'; GLMType.cone_sname = 'p8Mod1Max1e4p8';
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
 GLMType.nullpoint = 'mean'; 
-GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
-GLMType.debug = false;
+GLMType.fit_type = 'WN'; GLMType.map_type = 'mapPRJ';
+GLMType.debug = true;
 GLMType.specialchange = false;
 GLMType.CBP=false;
 
-GLMType.stimfilter_mode = 'rk1';
-%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
-GLMType.input_pt_nonlinearity      = true;
+%GLMType.stimfilter_mode = 'rk1';
+GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
 GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
 
-GLMType.CONVEX = false;
+GLMType.CONVEX = true;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -63,8 +63,9 @@ GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
 GLMType.CouplingFilters = false;
-GLMType.Subunits = true;
+GLMType.Subunits = false;
 GLMType.Saccades=false;
+GLMType.color=false;
 
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
@@ -83,7 +84,7 @@ troubleshoot.name    = 'singleopt';
 
 BD = NSEM_BaseDirectories;
 
-exptests = [3 4];
+exptests = [3];
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
