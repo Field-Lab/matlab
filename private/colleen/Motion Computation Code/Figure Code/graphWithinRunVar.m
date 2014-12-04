@@ -1,5 +1,5 @@
 %graph within run cell type variabilityfunc
-function graphWithinRunVar(stdOnP, stdOffP, stdOnM, tag)
+function graphWithinRunVar(stdOnP, stdOffP, stdOnM, stdOffM, tag)
 axes_lim = [0 0.2];
 hFig = figure;
 hold on

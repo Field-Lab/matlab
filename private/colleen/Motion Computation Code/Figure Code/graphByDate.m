@@ -1,4 +1,4 @@
-function graphByDate(stdOnP, stdOffP, stdOnM, date, tag)
+function graphByDate(stdOnP, stdOffP, stdOnM, stdOffM, date, tag)
 %Graph by experiment date
 
 
