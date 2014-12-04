@@ -91,7 +91,7 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 if exist('toubleshoot','var') && troubleshoot.doit
     [X_frame,X_bin]    = prep_stimcelldependentGP(GLMType, GLMPars, fitmovie, center_coord, WN_STA,troubleshoot);
 elseif GLMType.color
-    [X_frame,X_bin]    = y(GLMType, GLMPars, fitmovie, center_coord, WN_STA);
+    [X_frame,X_bin]    = prep_stimcelldependentGP_color(GLMType, GLMPars, fitmovie, center_coord, WN_STA);
 else
     [X_frame,X_bin]    = prep_stimcelldependentGP(GLMType, GLMPars, fitmovie, center_coord, WN_STA);
 end
@@ -214,7 +214,7 @@ WN_STA           = double(glm_cellinfo.WN_STA);
 
 if GLMType.color
     for i_filter=1:3
-        [STA_sp{i_filter},~]= spatialfilterfromSTA(squeeze(WN_STA(:,:,i_filter,:)),ROIcoord.xvals,ROIcoord.yvals);
+        [STA_sp{i_filter},~]= spatialfilterfromSTA(squeeze(WN_STA(:,:,i_filter,:)),ROIcoord.yvals,ROIcoord.xvals);
     end
 else
     [STA_sp,~]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);

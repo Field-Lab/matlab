@@ -1,3 +1,4 @@
+
 function unblocked_raster(datarun, cell, start_times, raster_length)
     spikes=datarun.spikes{cell};
     n_raster=length(start_times);

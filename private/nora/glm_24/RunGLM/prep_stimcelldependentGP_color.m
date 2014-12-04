@@ -130,7 +130,7 @@ if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     stimsize.height = size(stimulus,2); 
     ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
     for i_filter=1:3
-        spfilter{i_filter} = spatialfilterfromSTA(squeeze(STA(:,:,i_filter,:)),ROIcoord.xvals,ROIcoord.yvals)';
+        spfilter{i_filter} = spatialfilterfromSTA(squeeze(STA(:,:,i_filter,:)),ROIcoord.yvals,ROIcoord.xvals)';
     end
     %{
     if exist('troubleshoot','var') && troubleshoot.doit
