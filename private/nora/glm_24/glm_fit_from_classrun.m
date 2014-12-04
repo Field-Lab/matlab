@@ -9,6 +9,7 @@ testframes=5760;
 raw_file='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
 
 %% DICTATE GLMTYPE and Datasets and cells  EDITS DONE HERE! 
+GLMType.color=true;
 GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.cone_model = '8pix_Model1_1e4_8pix'; GLMType.cone_sname = 'p8Mod1Max1e4p8';
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
@@ -70,7 +71,7 @@ for i_cell = 1:length(cells)
     cid = cells{i_cell};
     %[celltype , cell_savename, ~]  = findcelltype(cid, datarun.cell_types);
     
-    if ~exist(sprintf('%s/%s.mat', d_save,cell_savename),'file')
+    if ~exist(sprintf('%s/%s.mat', d_save,num2str(cid)),'file')
         
         % Load cell info
         glm_cellinfo.cid           = cid;
@@ -85,16 +86,16 @@ for i_cell = 1:length(cells)
         slvdim.height      = StimulusPars.height; slvdim.width = StimulusPars.width;
         [center_coord,~]  = visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, StimulusPars, slvdim);
         glm_cellinfo.slave_centercoord = center_coord;
-        clear master_idx stafit_centercoord slvdim sd
+        clear stafit_centercoord slvdim sd
         
         % Spike loading
-        spikes=datarun.spikes{master_idx};
+        spikes.home=datarun.spikes{master_idx};
         glm_cellinfo.WN_STA = datarun.stas.stas{master_idx};
         clear cell_savename
         
         % Execute GLM
         tic
-        [fittedGLM]     = glm_execute_CP(GLMType, spikes, fitmovie, glm_cellinfo);
+        [fittedGLM]     = glm_execute_CP(GLMType, spikes,0, fitmovie, glm_cellinfo);
         toc
         
         %{
