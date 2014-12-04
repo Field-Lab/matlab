@@ -20,7 +20,9 @@ run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 direction = 'right'; % 'left' or 'right'
 
 % NUMERICAL PARAMETERS
+
 run_opt.tau = .003; % tuning parameter
+
 run_opt.tol = 1e-4;
 % run_opt.trial_estimate_start = trial_estimate_start;
 run_opt.velocity_exp = vel; % >0
@@ -325,8 +327,9 @@ i
     
     
 %         save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+
     save(sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/BrightRight/Tau0_003/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-    
+
     
 
 end
