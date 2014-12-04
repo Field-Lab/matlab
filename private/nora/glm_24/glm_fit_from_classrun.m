@@ -2,7 +2,7 @@ clear; close all;  clc
 
 dataset='2014-11-05-2/data009';
 cells={7742};
-d_save='/Users/Nora/Desktop/glmfits';
+d_save='/Volumes/Analysis/nora/colorglmfits';
 xml_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111-32x32.xml';
 fitframes=30*60*120; % 30 minutes * 60 seconds * 120 frames per second / interval of 2
 testframes=5760;
@@ -18,12 +18,12 @@ GLMType.fit_type = 'WN'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.CBP=false;
-%GLMType.stimfilter_mode = 'rk1';
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.stimfilter_mode = 'rk1';
+%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
 GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
-GLMType.CONVEX = true;
+GLMType.CONVEX = false;
 GLMType.DoubleOpt = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
@@ -63,7 +63,7 @@ for i=1:fitframes
     fitmovie(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/2));
 end
 clear temp_fitmovie height width i
-testmovie = get_rawmovie(raw_file, testframes);
+% testmovie = get_rawmovie(raw_file, testframes);
 
 %% Load Cell Specific Elements   Spikes and STA
 for i_cell = 1:length(cells)

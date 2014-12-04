@@ -25,7 +25,7 @@ end
 if GLMType.debug, GLMPars.optimization.tolfun = 3;  end
 
 if GLMType.color
-    frames = size(fitmovie, 4);
+    frames = size(fitmovie,4);
 else
     frames = size(fitmovie,3);
 end
