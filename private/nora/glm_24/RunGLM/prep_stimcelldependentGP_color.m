@@ -40,7 +40,7 @@ if GLMType.Subunits
 end
 %}
 
-stim            = stimulus(ROIcoord.yvals, ROIcoord.xvals, :,:);
+stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :,:);
 
 fitmoviestats.mean     =  double(mean(stimulus(:)));
 fitmoviestats.minval   =  double(min(stimulus(:)));
