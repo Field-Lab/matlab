@@ -1,5 +1,5 @@
-function graphSpeed(stdOnP, stdOffP, stdOnM, delta, tag)
-axes_lim = [0 0.2];
+function graphSpeed(stdOnP, stdOffP, stdOnM, stdOffM, delta, tag)
+axes_lim = [0 0.55];
 hFig = figure;
 % set(hFig, 'Position', [680 680 600*1.5 435*1.5])
 % 
@@ -72,11 +72,18 @@ plot(2.05*ones(size(stdOnP(delta==48))), stdOffP(delta==48), 'ko', 'MarkerFaceCo
 
 plot(1.05*ones(size(stdOnP(delta==48))), stdOnP(delta==48), 'ko', 'MarkerFaceColor','b')
 
+toKeep = stdOffM ~=0;
+stdOffM = stdOffM(toKeep);
+plot(4*ones(size(stdOffM(delta(toKeep)==96))), stdOffM(delta(toKeep)==96), 'ko', 'MarkerFaceColor','r')
+hold on
+plot(4.05*ones(size(stdOffM(delta(toKeep)==48))), stdOffM(delta(toKeep)==48), 'ko', 'MarkerFaceColor','b')
+plot(3.95*ones(size(stdOffM(delta(toKeep)==192))), stdOffM(delta(toKeep)==192), 'ko', 'MarkerFaceColor','g')
 
-xlim([0.5 3.5])
+
+xlim([0.5 4.5])
 ylim(axes_lim)
-set(gca, 'xtick', [1,2,3]);
-set(gca, 'xticklabel',{'ON Parasol', 'OFF Parasol', 'ON Midget'})
+set(gca, 'xtick', [1,2,3, 4]);
+set(gca, 'xticklabel',{'ON Parasol', 'OFF Parasol', 'ON Midget', 'OFF Midget'})
 
 ylabel('STD/Speed')
 set(gcf,'color','w');

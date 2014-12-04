@@ -1,4 +1,4 @@
-function graphStimWidths(stdOnP, stdOffP, stdOnM, filter, tag)
+function graphStimWidths(stdOnP, stdOffP, stdOnM, stdOffM, filter, tag)
 %Graph stim Widths
 
 axes_lim = [0 0.2];
