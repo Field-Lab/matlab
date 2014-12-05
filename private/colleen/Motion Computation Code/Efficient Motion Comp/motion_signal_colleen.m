@@ -1,4 +1,4 @@
-function [str, flt_rsp1, flt_rsp2, flt_rsp1_shifted, flt_rsp2_shifted, spks_1_shifted, spks_2_shifted] = motion_signal(velocity, spks_1, spks_2, dx, trigger, trial_length, tau, tol)
+function [str, flt_rsp1, flt_rsp2, flt_rsp1_shifted, flt_rsp2_shifted, spks_1_shifted, spks_2_shifted] = motion_signal_colleen(velocity, spks_1, spks_2, dx, trigger, trial_length, tau, tol)
 %MOTION_SIGNAL calculates the motion signal for a given velocity between two spike trains
 %   str = MOTION_SIGNAL(velocity, spks_1, spks_2, dx, trigger, trial_length, tau)
 %   calculates the motion signal strength for the given velocity where:
