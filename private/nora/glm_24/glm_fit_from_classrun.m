@@ -76,7 +76,7 @@ for i_cell = 1:length(cells)
         % Load cell info
         glm_cellinfo.cid           = cid;
         %glm_cellinfo.exp_nm        = exp_nm;
-        %glm_cellinfo.celltype      = celltype;nbrackbi
+        %glm_cellinfo.celltype      = celltype;
         glm_cellinfo.cell_savename = num2str(cid);
         glm_cellinfo.fitname       = GLMType.fitname;
         glm_cellinfo.computedtstim = StimulusPars.tstim;
@@ -97,13 +97,28 @@ for i_cell = 1:length(cells)
         clear RGB
         
         % Spike loading
-        spikes.home=datarun.spikes{master_idx};
+        spikes=datarun.spikes{master_idx};
         glm_cellinfo.WN_STA = datarun.stas.stas{master_idx};
         clear cell_savename
         
+        % Align the spikes and the movies;
+        t_frame = t_frame_interpAH(datarun.triggers);
+        spikes_adj=spikes;
+        n_block=0;
+        for i=1:(length(datarun.triggers)-1)
+            actual_t_start=datarun.triggers(i);
+            supposed_t_start=n_block*100/120;
+            idx=(spikes > actual_t_start .* spikes < datarun.triggers(i+1));
+            spikes_adj(idx)=spikes(idx)+supposed_t_start-actual_t_start;
+            n_block=n_block+1;
+        end
+        clear spikes
+        spike.home=spikes_adj;
+        clear spikes_adj;
+        
         % Execute GLM
         tic
-        [fittedGLM]     = glm_execute_CP(GLMType, spikes,0, fitmovie, glm_cellinfo);
+        [fittedGLM]     = glm_execute_CP(GLMType, spike,0, fitmovie, glm_cellinfo);
         toc
         
         %{
