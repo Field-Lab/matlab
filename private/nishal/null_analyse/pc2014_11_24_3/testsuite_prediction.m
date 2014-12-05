@@ -2,7 +2,7 @@
 
 %% Load STA
 opt=struct('load_all',true);
-datarun=load_data(datafile,opt)
+datarun=load_data(WN_datafile,opt)
 datarun=load_sta(datarun)
 datarun=load_params(datarun)
 datarun=load_ei(datarun,'all','array_type',519);
@@ -56,7 +56,7 @@ datarun = get_sta_summaries(datarun, datarun.cell_types{cellTypeUsed(ref_cell_nu
     'marks_params',struct( ...
         'strength','vector length', 'filter', fspecial('gauss',15,0.7), ...
         'thresh',5,'robust_std_method',1));
-movie_spec='/Volumes/Analysis/movie-xml/RGB-10-2-0.48-11111-32x32.xml' %RGB-8-1-0.48-11111.xml';%RGB-8-1-0.48-11111-80x40
+movie_spec=WN_mov; %RGB-8-1-0.48-11111.xml';%RGB-8-1-0.48-11111-80x40
 datarun = load_java_movie(datarun, movie_spec);
 %datarun = get_snls(datarun, datarun.cell_ids(get_cell_indices(datarun, datarun.cell_types{1}.name)),'frames',-18:0,'stimuli',[],'new',true);
 datarun = get_snls(datarun,vision_id,'frames',-18:0,'stimuli',[],'new',true);
@@ -114,12 +114,12 @@ plot(x,N(x),'r');
 
 %% Generate response to stimulus
 
-nTrials=30;
+
 
 spkCondCollModel=struct('spksColl',[]);
 spkCondCollModel(nConditions).spksColl=zeros(nTrials,size(condMovies{1},1));
 
-for icond=1:4
+for icond=1:nConditions
 % Format movie into right format
 mov_toformat=condMovies{icond};
 mov=zeros(size(mov_toformat,2),size(mov_toformat,3),3,size(mov_toformat,1));
@@ -184,7 +184,7 @@ title(sprintf('Data009 Vision ID: %d Avg Spk Rate: %f',InterestingCell_vis_id(re
 end
 
 %%
-nTrials1=30;
+nTrials1=nTrials;
 figure;
 for icond=1:nConditions
 subplot(nConditions,1,icond);
@@ -216,5 +216,5 @@ xPoints=spkCondCollModel(icond).xPoints;
 yPoints=spkCondCollModel(icond).yPoints;
 plot(xPoints, yPoints+max(yPoints(:)), 'r');
 ylim([0,2*nTrials]);
-title(sprintf('%s: data0009 vis ID: %d ',cond_str{icond},InterestingCell_vis_id(ref_cell_number)));
+title(sprintf('%s: data004 vis ID: %d ',cond_str{icond},InterestingCell_vis_id(ref_cell_number)));
 end

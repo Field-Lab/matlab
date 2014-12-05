@@ -1,9 +1,3 @@
-addpath(genpath('../null_analyse/'));
-addpath(genpath('../null_analyse/analyse_functions'));
-startup_null_analyse_tenessee
-%startup_null_analyse_bertha
-
-%%
 % Condition strings
 nConditions=6;
 condDuration=12;
@@ -14,7 +8,8 @@ cond_str{3}='Original';
 cond_str{4}='Null for Off Parasol';
 cond_str{5}='Original';
 cond_str{6}='Null for few cells';
-,interestingConditions=[1,2,4,6];
+interestingConditions=[1,2,4,6];
+
 %% Load Movies
 rawMovFrames=8640;
 [stim,height,width,header_size] = get_raw_movie('/Volumes/Analysis/nishal/pc2014_11_24_3_data012/18.rawMovie',rawMovFrames,1);
@@ -70,13 +65,15 @@ for icellType=cellTypeId
 end 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
-for ref_cell_number=1:length(InterestingCell_vis_id); %11
+for ref_cell_number=6:length(InterestingCell_vis_id); %11
     close all
      [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str);
      
     ref_cell_number
    
    plot_mosaic(datarun,InterestingCell_vis_id,ref_cell_number)
+   gen=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'clip',nConditions,cond_str);
+    gen=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'fit',nConditions,cond_str);
     %testsuite_prediction
   [timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
     pause

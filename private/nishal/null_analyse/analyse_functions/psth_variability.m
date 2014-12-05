@@ -1,9 +1,10 @@
-
+function [timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions)
 
 % RE FORMAT spkCondColl
+nTrials=length(spkCondColl(1).spksColl);
 movie_time=size(condMovies{1},1);
 spkCondCollformat(4).spksColl=[];
-for icond=1:4
+for icond=1:nConditions
     spksColl=zeros(movie_time,nTrials);
     
     for itrial=1:nTrials
@@ -23,7 +24,7 @@ end
 
 psthBinSize=10;
 psthSmoothen=5;
-for icond=1:4
+for icond=1:nConditions
 [timeLogData{icond},psthData{icond}]=  psth_calc(( spkCondCollformat(icond).spksColl),psthBinSize,'nonoverlap');
 psthData{icond}=conv(psthData{icond},(1/psthSmoothen)*ones(psthSmoothen,1),'same');
 
@@ -46,7 +47,7 @@ end
 
 %%
 % PSTH plots
-col='mbkg';
+col='rbrkrm';
 figure('Color','w');
 
 subplot(2,1,1);
@@ -59,15 +60,17 @@ plot(xPoints/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
 hold on
 ylim([0,nConditions*nTrials]);
 xlim([0,12]);
-title(sprintf('%s: data0009 vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f) spks/sec',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(3).avgSpkRate));
+title(sprintf('%s: data004 vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f,%0.02f) spks/sec',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(interestingConditions(1)).avgSpkRate,spkCondColl(interestingConditions(2)).avgSpkRate,spkCondColl(interestingConditions(3)).avgSpkRate,spkCondColl(interestingConditions(4)).avgSpkRate));
 end
 
 subplot(2,1,2);
-for icond=1:3
+for icond=1:nConditions
     plot(timeLogData{icond}/120,psthData{icond},col(icond));
     hold on
     ylim([0,1.2*max(psthData{1})])
 end
 xlabel('Time in Seconds');
 title(sprintf('PSTHs Cell %d',InterestingCell_vis_id(ref_cell_number)));
-legend('Original','Null for On Parasol','Null for Off Parasol','Location','best');
+%legend(cond_str{1},cond_str{2},cond_str{3},cond_str{4},cond_str{5},cond_str{6},'Location','best');
+
+end

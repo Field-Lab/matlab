@@ -1,5 +1,5 @@
 
-
+function plot_mosaic(datarun,InterestingCell_vis_id,ref_cell_number)
 figure('Color','w');
 
 
@@ -14,3 +14,5 @@ plot_rf_fit(datarun, cellID_use,'fill_color',[0,1,0],'alpha',0.3,'fill',true,'ed
 %ylim([0,Filtdim2]);
 
 title('Moasic (Blue: On Parasol, Red: Off Parasol)')
+
+end
