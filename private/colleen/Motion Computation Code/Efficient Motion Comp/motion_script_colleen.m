@@ -5,13 +5,13 @@ run_opt.load = true; % T/F
 run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
-run_opt.data_run = 16; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 19; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 % CHANGE THIS
-run_opt.config_num =4; % 1-4 %Which type of stimulus to look at
+run_opt.config_num =1; % 1-4 %Which type of stimulus to look at
 
 direction = 'right'; % 'left' or 'right'
 
-run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
+run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
 
 run_opt.velocity_exp = 192;
 
@@ -20,7 +20,7 @@ run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
-run_opt.tau = .005; % tuning parameter %0.1 next best
+run_opt.tau = .03; % tuning parameter %0.1 next best
 run_opt.tol = 1e-4;
 
 % ANALYSES TO RUN
@@ -224,11 +224,11 @@ if run_opt.trial_estimate
 
     %Prior is +/-25% of expected value 
 %     velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 50);
-velocity =200:20:500;
+velocity =60:0.25:70;
     strsig1 = zeros(1,length(velocity));
     
 % Run coarse error function to initialize velocity
-    for i =47%1:length(tr)
+    for i =32%1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);           
@@ -242,12 +242,12 @@ velocity =200:20:500;
     end
     
     % Find speed estimate
-    parfor i =47%1:length(tr)       
+    parfor i =32%1:length(tr)       
             [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     
-        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/Tau0_05/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
+        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/Tau0_03/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
 
 end

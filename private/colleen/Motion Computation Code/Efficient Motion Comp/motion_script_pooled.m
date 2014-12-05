@@ -5,9 +5,9 @@ run_opt.load = true; % T/F
 run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
-run_opt.data_run = 16; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_run = 12; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 % CHANGE THIS
-run_opt.config_num =4; % 1-4 %Which type of stimulus to look at
+run_opt.config_num =14; % 1-4 %Which type of stimulus to look at
 
 run_opt.direction = 'right'; % 'left' or 'right'
 
@@ -225,7 +225,7 @@ if run_opt.trial_estimate
     spikes = datarun{2}.spikes;
     
     %Prior is +/-25% of expected value
-        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 50);
+        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
 %     velocity =200:20:500;
     strsig1 = zeros(1,length(velocity));
     

@@ -1,6 +1,6 @@
 %graphs for presentation:
 close all
-request = 'ALL';
+request = 'tau';
 
 % Options: BBMR, DBMR, BBML, DBML, ALL, tau
 if strcmp('BBMR', request)
