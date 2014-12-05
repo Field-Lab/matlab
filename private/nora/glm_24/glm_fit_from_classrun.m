@@ -57,7 +57,8 @@ GLMType.d_save = d_save;
 %% Load Movie
 disp('Loading Stimulus Movies')
 [temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/2);
-fitmovie_color=zeros(height,width,3,fitframes);
+temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
+fitmovie_color=zeros(width,height,3,fitframes);
 for i=1:fitframes
     fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/2));
 end
