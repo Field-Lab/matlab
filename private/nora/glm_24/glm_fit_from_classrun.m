@@ -90,9 +90,9 @@ for i_cell = 1:length(cells)
         clear stafit_centercoord slvdim sd
         
         % Turn RGB movie into greyscale movie
-        fitmovie=RGB(1)*fitmovie_color(:,:,1,:)+ ...
+        fitmovie=squeeze(RGB(1)*fitmovie_color(:,:,1,:)+ ...
             RGB(2)*fitmovie_color(:,:,2,:)+ ...
-            RGB(3)*fitmovie_color(:,:,3,:);
+            RGB(3)*fitmovie_color(:,:,3,:));
         clear RGB
         
         % Spike loading
