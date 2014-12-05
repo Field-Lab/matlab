@@ -51,19 +51,11 @@ if ~GLMType.CONVEX
     if strcmp(GLMType.stimfilter_mode, 'rk1') 
         paramind.Xnote1 = 'Stim filter is outer product of space1 and time1';
         Xstart = convParams + 1;
-        if GLMType.color
-            Xend   = convParams + 3*(GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;
-            paramind.X      = [Xstart:Xend];
-            paramind.space1 = [Xstart: ((Xstart-1) + 3*(GLMPars.stimfilter.ROI_length^2))];
-            paramind.time1  = [(Xstart + 3*GLMPars.stimfilter.ROI_length^2) : Xend ];
-            numParams       = convParams  +  3*GLMPars.stimfilter.ROI_length^2 + GLMPars.stimfilter.frames;
-        else
-            Xend   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;
-            paramind.X      = [Xstart:Xend];
-            paramind.space1 = [Xstart: ((Xstart-1) + (GLMPars.stimfilter.ROI_length^2))];
-            paramind.time1  = [(Xstart + GLMPars.stimfilter.ROI_length^2) : Xend ];
-            numParams       = convParams  +  GLMPars.stimfilter.ROI_length^2 + GLMPars.stimfilter.frames;
-        end
+        Xend   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;
+        paramind.X      = [Xstart:Xend];
+        paramind.space1 = [Xstart: ((Xstart-1) + (GLMPars.stimfilter.ROI_length^2))];
+        paramind.time1  = [(Xstart + GLMPars.stimfilter.ROI_length^2) : Xend ];
+        numParams       = convParams  +  GLMPars.stimfilter.ROI_length^2 + GLMPars.stimfilter.frames;
     end
     if strcmp(GLMType.stimfilter_mode, 'rk2')
         paramind.Xnote1 = 'Stim filter is sum of outer products of (space1,time1) and (space2,time2)';
