@@ -1,39 +1,42 @@
+% This is a wrapper for motion_script_colleen that allows it to be called
+% as a function. 
+% The parameters data_set, data_run, config_num, cell_type, vel as set in
+% runMotionScriptColleen. 
+
+% Inputs:
+% data_set: Date for run
+% data_run: Run number
+% config_num: Which stimulus condition to run
+% cell_type: Which cell type to run
+% vel: true speed 
+
+% Saves a file containing the speed estimate for each trial to the specified
+% folder
+
 function motion_script_colleen_asFunction(data_set, data_run, config_num, cell_type, vel)
-clear toPlot
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 run_opt.data_set = data_set;
-% run_opt.data_set = '2007-08-24-4';
 run_opt.data_run = data_run; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = config_num; % 1-4 %Which type of stimulus to look at
-% stim categories not consistant
-%1: dark bar, x_delta= 8
-%2 dark bar, x_delta = -8
-%3 light bar, x_delta = 8
-%4 light bar, x_delta = -8
-
-% Change this to change type of cell you are interested in
+run_opt.config_num = config_num; 
 run_opt.cell_type = cell_type; % on/off parasol, on/off midget
+run_opt.velocity_exp = vel; % >0
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
-direction = 'right'; % 'left' or 'right'
+run_opt.direction = 'right'; % 'left' or 'right'
 
 % NUMERICAL PARAMETERS
 
-run_opt.tau = .003; % tuning parameter
-
+run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-4;
-% run_opt.trial_estimate_start = trial_estimate_start;
-run_opt.velocity_exp = vel; % >0
+
 
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
 run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = false; % T/F
 run_opt.trial_estimate = true; % T/F
-
-
 
 tic;
 
@@ -252,100 +255,42 @@ end
 
 
 if run_opt.trial_estimate
-        % start parallel pool
-    
-    %
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
-    %     estimates = zeros(1,25);
     spikes = datarun{2}.spikes;
-    
-    %     pairs = zeros(2, length(cell_indices2) * (length(cell_indices2) - 1) / 2,'int16');
-    %     counter = 1;
-    %     for i = 2:length(cell_indices2)
-    %         for j = 1:i-1
-    %             pairs(:,counter) = [i; j];
-    %             counter = counter + 1;s
-    %         end
-    %     end
-    % dx = zeros(1,length(pairs));
-    %     for j = 1:length(pairs)
-    %         dx(j) = cell_x_pos(cell_indices1(pairs(2,j))) - cell_x_pos(cell_indices1(pairs(1,j)));
-    %     end
-    
-%     velocity= [140:20:240];
-        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
+    % velocity range is set to 75% of true until 125% of true
+    velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6); 
 
-    % velocity = [110:0.4:130];
     strsig1 = zeros(1,length(velocity));
     
-%     poolobj = parpool;
-    % get general error function to optimize initialization
-    % maybe get two and average them
     for i =1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, direction);
+            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, run_opt.direction);
         end
-%         figure; plot(velocity, strsig1)
-%         title(['trial ' num2str(i)]);
-        
+%         figure; plot(velocity, strsig1)        
         [x1,y1] = min(strsig1);
-i
+        i
         run_opt.trial_estimate_start(i) = velocity(y1);
     end
-    
-    
-    % for j = 1:length(velocity)
-    %     v = velocity(j);
-    %     strsig2(j) = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(), stop, run_opt.tau, run_opt.tol*.1);
-    % end
-    
-    %     figure; plot(velocity, strsig)
-    
-    
-    
-    
-    
-%     [x1,y1] = min(strsig1);
-    % [x2,y2] = min(strsig2);
-    % start parallel pool
-    
-    
-    %0.5*(velocity(y1)+velocity(y2));
-    parfor i = 1:length(tr)
-        
-            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, direction), run_opt.trial_estimate_start(i), options);
+
+    parfor i = 1:length(tr)  
+        [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol*.1, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     
-    %     figure; plot(velocity, estimates)
-    % stop parallel pool
-%         delete(poolobj);
+    % Save estimates
+    % If folder doesn't exist, create it
+    foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP', run_opt.data_set);
+    filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
     
-    % save estimates
-    %     save('estimates10272014_03272007_18_1_onp','estimates');
-    
-    
-%         save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightLeft/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-
-    save(sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/BrightRight/Tau0_003/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-
-    
+    if exist(foldername)
+        save(filename, 'estimates', 'run_opt')
+    else
+        mkdir(foldername);
+        save(filename, 'estimates', 'run_opt')
+    end 
 
 end
-
-% figure;
-% for i = 1:441gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
-
-% plot(datarun {1}.vision.sta_fits{i}.mean(1), datarun{1}.vision.sta_fits{i}.mean(2), 'ro')
-% hold on
-% endgmail('crho ades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
-
+% Send email indicating one run is done
 % gmail('crhoades227@gmail.cdNew Folderelete(myCluster.Jobs)om', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
-
-
-% addpath('/Users/vision/Desktop/GitHub code repository/private/colleen/resultsColleen/2007-03-27-1')
-% load ('estimates10272014_03272007_18_1_onp.mat')
-% figure; histfit(estimates, 20)
-% title('Off parasol 3/27/07-1 Run 18 Stim 1')
 ElapsedTime=toc

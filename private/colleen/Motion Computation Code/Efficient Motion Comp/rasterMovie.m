@@ -1,13 +1,12 @@
-% make raster movie
-clear toPlot
+% make raster movie to show cell firing stability over time as well as
+% consistant rasters of the population over time
+
 % DATA PARAMETERS
 run_opt.load = true; % T/F
-
 % run_opt.data_set = '2007-03-27-1';
 run_opt.data_set = '2007-08-24-4';
 
 run_opt.data_run = 6; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-% CHANGE THIS
 run_opt.config_num = 3; % 1-4 %Which type of stimulus to look at
 
 run_opt.cell_type = 'Off parasol'; % on/off parasol, on/off midget
@@ -85,10 +84,12 @@ if run_opt.raster %raster
     figure, set(gcf, 'Color','white')
     set(gca, 'nextplot','replacechildren', 'Visible','off');
     
-writerObj = VideoWriter('Results/resultsColleen/raster_alltrials.avi');
-writerObj.FrameRate = 8;
-
-open(writerObj);
+    % File name for movie
+    writerObj = VideoWriter('Results/resultsColleen/raster_alltrials.avi');
+    % How fast the playback will be
+    writerObj.FrameRate = 8;
+    
+    open(writerObj);
     for k = 1:length(cell_indices2)
         
         % Takes in start and stop time (0-0.7274)
@@ -105,32 +106,35 @@ open(writerObj);
         y_scale =1;
         plot(psth_r(:,1),psth_r(:,2)*y_scale,Color);%, 'MarkerSize',10
         xlim([200 800]);
-
-        %     axis([mmin*1000 mmax*1000 0 length(tr)*y_scale]);
-
-        % Title is the cell id according to vision and the mean firing rate
+        
+        
+        % Title not actually shown on movie frames
         title(sprintf('%d %.2f', datarun{2}.cell_ids(cell_indices2(k)), datarun{1}.vision.sta_fits{cell_indices1(k)}.mean(1) ))
         
+        % If you have something open in front of matlab, that will be the
+        % frame...
         frame = getframe;
-   writeVideo(writerObj,frame);
-   
-
+        writeVideo(writerObj,frame);
+        
+        
     end
     close(gcf)
     close(writerObj);
-
+    
     
 end
 
-if run_opt.rasterPerTrial 
+if run_opt.rasterPerTrial
     toPlot = cell(1,length(t));
-        figure, set(gcf, 'Color','white')
+    figure, set(gcf, 'Color','white')
     set(gca, 'nextplot','replacechildren', 'Visible','off');
     
-writerObj = VideoWriter('Results/resultsColleen/raster_allcells.avi');
-writerObj.FrameRate = 8;
-
-open(writerObj);
+    % Generate movie in particular location
+    writerObj = VideoWriter('Results/resultsColleen/raster_allcells.avi');
+    % Playback speed
+    writerObj.FrameRate = 8;
+    
+    open(writerObj);
     % Takes in start and stop time (0-0.7274)
     % Spikes of the cell with the lowest firing rate first
     % start time of each stimulus type 2 trigger
@@ -147,11 +151,9 @@ open(writerObj);
         
         
         cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
-        % Title is the cell id according to vision and the mean firing rate
-        %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
         for trialNum = 1:length(t)
             [x,y] = find(psth_r == trialNum-1);
-                toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+            toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
         end
     end
     
@@ -159,15 +161,18 @@ open(writerObj);
     for k = 1:length(t)
         y_scale = 1;
         Color = ['k', '.'];
-        plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);       
+        plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);
         xlim([0 800])
+        % Title and labels not actually shown on the movie
         title({run_opt.cell_type, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],'Bright Bars Moving Right', sprintf(' Trial Number %d',  k)})
         xlabel('time (ms)');
         ylabel('Cell''s centroid distance from reference');
-                frame = getframe;
-            writeVideo(writerObj,frame);
+         % If you have something open in front of matlab, that will be the
+        % frame...
+        frame = getframe;
+        writeVideo(writerObj,frame);
     end
-        close(gcf)
+    close(gcf)
     close(writerObj);
-
+    
 end

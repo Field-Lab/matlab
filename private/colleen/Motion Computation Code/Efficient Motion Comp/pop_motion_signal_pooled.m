@@ -49,21 +49,19 @@ RelTol = tol;
 AbsTol = tol * .1;
 numberOfT = 100; % determined to be good enough
 t = linspace(0, trial_length, numberOfT);
-%      valueAtEachT = zeros(length(t), length(indices2),2);
 valueAtEachT = zeros(length(t),2);
-% indices1 = indices1(1:100);
-% indices2 = indices2(1:100);
 
+% Pool the cell types together
 indices1 = [indices1{1}, indices1{2}];
 indices2 = [indices2{1}, indices2{2}];
 x_pos = [x_pos{1}, x_pos{2}];
 
-%1:1%length(indices2) % for every cell shift every other cell relative to it
+% for every cell shift every other cell relative to it
 % account for different stixels
 if strfind(datarun{1,1}.names.rrs_params_path, '2007-03-27-1')
-    dx = x_pos(indices1)*0.8+0;%x_pos(indices1(i)); set the ref to 0
+    dx = x_pos(indices1)*0.8+0; % HARD CODED FOR 8 STIXEL STA DATA
 else
-    dx = x_pos(indices1)+0;%x_pos(indices1(i)); set the ref to 0
+    dx = x_pos(indices1)+0; % HARD CODED FOR 8 STIXEL STA DATA
 end
 
 
@@ -82,13 +80,13 @@ spks_2 = cellfun(@(y) y(y >= 0 & y <= trial_length), spks_2, 'UniformOutput', fa
 dx_cell = num2cell(dx);
 dx_cell = dx_cell';
 
-if strcmp(direction, 'right')
+if strcmp(direction, 'right') % bar moving right
 spks_2_shiftedRight = cellfun(@(z, c) z - c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
 spks_2_shiftedRight = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedRight, 'UniformOutput', false);
 spks_2_shiftedLeft = cellfun(@(z, c) z + c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
 spks_2_shiftedLeft = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedLeft, 'UniformOutput', false);
 
-else
+else % bar moving left
 spks_2_shiftedRight = cellfun(@(z, c) z + c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
 spks_2_shiftedRight = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedRight, 'UniformOutput', false);
 spks_2_shiftedLeft = cellfun(@(z, c) z - c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
@@ -103,6 +101,7 @@ spks_2_shiftedLeft(idx)={0}; %It replaces all empty cells with number 0
 idx=cellfun('isempty',spks_2_shiftedRight);
 spks_2_shiftedRight(idx)={0}; %It replaces all empty cells with number 0
 
+% replace a floor with ceil so that both sides are rounded up
 spks_2_shiftedRight = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:ceil(end/2)) + trial_length], spks_2_shiftedRight, 'UniformOutput', false);
 spks_2_shiftedLeft = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:ceil(end/2)) + trial_length], spks_2_shiftedLeft, 'UniformOutput', false);
 
@@ -110,9 +109,6 @@ spks_2_shiftedLeft = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:cei
 flt_rsp2 = cellfun(@(x) filtered_response(x, tau), spks_2, 'UniformOutput', false);
 flt_rsp2_shiftedRight = cellfun(@(x) filtered_response(x, tau), spks_2_shiftedRight, 'UniformOutput', false);
 flt_rsp2_shiftedLeft = cellfun(@(x) filtered_response(x, tau), spks_2_shiftedLeft, 'UniformOutput', false);
-
-
-
 
 
 for c= 1:length(t)
@@ -124,22 +120,8 @@ for c= 1:length(t)
     valueAtEachT(c,2) = left;
 end
 
-
-
-
-
-
-
-
-%         str = integral(@(t) summedCellsAtT(t, flt_rsp1, flt_rsp2, flt_rsp1_shifted, flt_rsp2_shifted, indices1)^2, 0, trial_length, ...
-%         'AbsTol', AbsTol, 'RelTol', RelTol);
-%str = 0;
-
-
-% figure; plot(t, valueAtEachT(:,1)); hold on; plot(t, valueAtEachT(:,2),'g')
 % sum from 2:end because first and last value are identical!
 sig_str = sum(valueAtEachT(2:end,1).^2)-sum(valueAtEachT(2:end,2).^2);
-savedVariables = [savedVariables; right, left];
 
 
 end

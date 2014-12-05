@@ -1,4 +1,11 @@
-clear toPlot
+% This program will compute two types of rasters as well as the speed
+% estimate from the population signal when two populations of cells are
+% grouped together (like ON and OFF parasol cells)
+% It can also downsample spikes but I haven't explored that part
+
+
+% Saves a file containing the speed estimate for each trial to the specified
+% folder
 % DATA PARAMETERS
 run_opt.load = true; % T/F
 
@@ -6,7 +13,6 @@ run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
 run_opt.data_run = 12; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-% CHANGE THIS
 run_opt.config_num =14; % 1-4 %Which type of stimulus to look at
 
 run_opt.direction = 'right'; % 'left' or 'right'
@@ -59,6 +65,8 @@ if run_opt.load
     datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
     datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0);
 end
+
+% Get indicies for each cell type 
 for type  = 1:2
     % Gets the indicies used by vision of the particular cell type
     if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
@@ -225,8 +233,7 @@ if run_opt.trial_estimate
     spikes = datarun{2}.spikes;
     
     %Prior is +/-25% of expected value
-        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
-%     velocity =200:20:500;
+    velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
     strsig1 = zeros(1,length(velocity));
     
     % Run coarse error function to initialize velocity
@@ -235,7 +242,7 @@ if run_opt.trial_estimate
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
         end
-%         figure; plot(velocity, strsig1)
+%       figure; plot(velocity, strsig1)
         i
         [x1,y1] = min(strsig1);
         
@@ -248,6 +255,7 @@ if run_opt.trial_estimate
         [estimates(i)] = fminunc(@(v) -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
+    %save results
     foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP', run_opt.data_set);
     filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
     if exist(foldername)
@@ -256,11 +264,10 @@ if run_opt.trial_estimate
         mkdir(foldername);
         save(filename, 'estimates', 'run_opt')
     end
-    
-    % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-    
+        
 end
 
+% send email when done
 % gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
 
 ElapsedTime=toc

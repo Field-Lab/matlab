@@ -1,6 +1,12 @@
-% made a dummy email account to
-% example usage: gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+% This function allows matlab to send an email when a job is done
+% Made a dummy email account for the account the email is sent from
+% Username: crhoadesDA@gmail.com
+% Password: dummyaccount 
+% Feel free to use this account
 
+% example usage: gmail('crhoades227@gmail.com', 'Job has finished'))
+
+% Colleen Rhoades 12/5/14 rhoades@stanford.edu
 function []=gmail(address,subject,message)
 
 % Define these variables appropriately:
