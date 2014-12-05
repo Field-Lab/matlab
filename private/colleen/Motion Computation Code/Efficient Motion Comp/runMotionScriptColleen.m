@@ -27,18 +27,7 @@ cell_type = {'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol
 % trial_start_estimate = [12;12;96;96;96;200;200;200;12;12;12];
 
 
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-=======
->>>>>>> 14949d8ff88fade8588008f0522f5297003d0ff3
-for i =1:24%length(config_num)
+for i =2:24%length(config_num)
 motion_script_colleen_asFunction(data_set{i}, data_run(i), config_num(i), cell_type{i}, velocity(i))
 fprintf('Trial Number %d done\nTau005',i )
 end
