@@ -1,6 +1,6 @@
 %graphs for presentation:
 close all
-request = 'tau';
+request = 'ALL';
 
 % Options: BBMR, DBMR, BBML, DBML, ALL, tau
 if strcmp('BBMR', request)
@@ -53,8 +53,18 @@ stdOffP = stdOffP./delta;
 stdOnM = stdOnM./delta;
 stdOffM = stdOffM./delta;
 
+meanOnP = meanOnP*5/225*10;
+meanOffP = meanOffP*5/225*10;
+meanOnM = meanOnM*5/225*10;
+meanOffM = meanOffM*5/225*10;
 
-graphSpeed(stdOnP, stdOffP, stdOnM, stdOffM, delta, tag)
+
+
+
+
+
+
+graphSpeed(meanOnP, meanOffP, meanOnM, meanOffM,stdOnP, stdOffP, stdOnM, stdOffM, delta, tag)
 graphByDate(stdOnP, stdOffP, stdOnM, stdOffM, date, tag)
 graphStimWidths(stdOnP, stdOffP, stdOnM, stdOffM, filter, tag)
 graphWithinRunVar(stdOnP, stdOffP, stdOnM, stdOffM, tag)
