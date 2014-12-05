@@ -21,8 +21,8 @@ dummySTA= stas{icell};
 
 
 % Find continous region
-max_val=max(rf_strength_out(sig_stixels));
-[row,col]=find(rf_strength_out.*double(sig_stixels)==max_val)
+max_val=double(max(rf_strength_out(sig_stixels)));
+[row,col]=find(double(rf_strength_out).*double(sig_stixels)==max_val)
 list=[row,col];
 
 [row,col]=find(sig_stixels==1);

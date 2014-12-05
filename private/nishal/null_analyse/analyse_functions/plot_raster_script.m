@@ -1,29 +1,27 @@
 
-
+function [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str)
 %%
 neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
 ref_cells=neuronPairsRefVsNew(:,2);
 %%
-neuronPath = [Null_datafile,sprintf('/data00%d.neurons',imov)];
+neuronPath = [Null_datafile,sprintf('/data%03d.neurons',imov)];
 neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronPath);
 CellSpkTimes=neuronFile.getSpikeTimes(ref_cells(ref_cell_number));
 TTL=double(neuronFile.getTTLTimes());
 
 spks=double(CellSpkTimes);
 
-
+rawMovFrames = nConditions*condDuration*120;
 TTLperTrial=floor(rawMovFrames/100)+1;
 
 nTrials=floor(length(TTL)/TTLperTrial);
 
 spkColl=cell(nTrials,1);
 
-condDuration=12;
+%condDuration=12;
+% nConditions=6;
 samplesPerCondition=condDuration*20000;
-ConditionStartTimes=[0:6]*samplesPerCondition+1;
-nConditions=6;
-
-
+ConditionStartTimes=[0:nConditions]*samplesPerCondition+1;
 
 spkCondColl=struct('spksColl',[]);
 spkCondColl(nConditions).spksColl=cell(1,nTrials);
@@ -71,8 +69,8 @@ title(sprintf('%s: data012 vis ID: %d Avg Spk Rate: %f',cond_str{icond},Interest
 end
 
 %%
-nConditions=6;
-nTrials1=50;
+%nConditions=6;
+nTrials1=nTrials;
 figure;
 for icond=1:nConditions
 subplot(nConditions,1,icond);
@@ -94,9 +92,10 @@ nTrials1=max(yPoints(:));
 plot(xPoints*120/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
 hold on
 ylim([0,nConditions*nTrials]);
-title(sprintf('%s: data0009 vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate));
+%title(sprintf('%s: data%03d vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},imov,InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate,spkCondColl(6).avgSpkRate));
 end
 
 %%
 figure;
 plotSpikeRaster(spkColl,'PlotType','vertline');
+end
