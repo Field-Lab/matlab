@@ -47,7 +47,7 @@ for itime=30:-1:1
     colorbar 
     caxis([min(ssta(:)), max(ssta(:))]);
  
-     pause;
+     pause(1/120);
     
 end
 end

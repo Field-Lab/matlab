@@ -108,7 +108,7 @@ for icell=1:nCells
     
 end
 
-figure;
+figure('Color','w');
 subplot(1,2,1)
 imagesc(totalMaskReject);
 title('Rejected RFs');
