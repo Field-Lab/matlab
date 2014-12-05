@@ -112,7 +112,7 @@ if exist('troubleshoot','var') && troubleshoot.doit
     eval(sprintf('print -dpdf %s/%s_prepstimcellGP_stimnorm.pdf', troubleshoot.plotdir, troubleshoot.name));
 end 
 %}
-stim = reshape(stim, 3*[ROI_length^2, stimsize.frames]);
+stim = reshape(stim, 3*ROI_length^2, stimsize.frames);
 
 clear stimsize ROIcoord ROI_length fitmoviestats 
 
