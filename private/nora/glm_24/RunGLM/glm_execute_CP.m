@@ -24,11 +24,8 @@ if GLMType.specialchange
 end
 if GLMType.debug, GLMPars.optimization.tolfun = 3;  end
 
-if GLMType.color
-    frames = size(fitmovie,4);
-else
-    frames = size(fitmovie,3);
-end
+
+frames = size(fitmovie,3);
 
 bins   = frames * GLMPars.bins_per_frame;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
@@ -90,8 +87,6 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 
 if exist('toubleshoot','var') && troubleshoot.doit
     [X_frame,X_bin]    = prep_stimcelldependentGP(GLMType, GLMPars, fitmovie, center_coord, WN_STA,troubleshoot);
-elseif GLMType.color
-    [X_frame,X_bin]    = prep_stimcelldependentGP_color(GLMType, GLMPars, fitmovie, center_coord, WN_STA);
 else
     [X_frame,X_bin]    = prep_stimcelldependentGP(GLMType, GLMPars, fitmovie, center_coord, WN_STA);
 end
@@ -212,35 +207,17 @@ rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
 WN_STA           = double(glm_cellinfo.WN_STA); 
 
-if GLMType.color
-    for i_filter=1:3
-        [STA_sp{i_filter},~]= spatialfilterfromSTA(squeeze(WN_STA(:,:,i_filter,:)),ROIcoord.yvals,ROIcoord.xvals);
-    end
-else
-    [STA_sp,~]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
-end
+[STA_sp,~]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
 
 if GLMType.CONVEX
     if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')    
         timefilter           = pstar(paramind.X);
-        if GLMType.color
-            stimfilter = zeros(ROI_length^2,length(paramind.X),3);
-            for i_filter=1:3
-                stimfilter(:,:,i_filter) = STA_sp{i_filter} * (timefilter');
-                linearfilters.Stimulus.space_rk1{i_filter}          = reshape(STA_sp{i_filter}, [ROI_length,ROI_length]);
-            end
-            stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X),3]);
-            rawfit.spatialfilter = STA_sp;
-            linearfilters.Stimulus.Filter             = stimfilter;
-            linearfilters.Stimulus.Filter_rank        = 1;
-        else
-            stimfilter           = STA_sp * (timefilter');
-            stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);
-            rawfit.spatialfilter = STA_sp;
-            linearfilters.Stimulus.Filter             = stimfilter;
-            linearfilters.Stimulus.Filter_rank        = 1;
-            linearfilters.Stimulus.space_rk1          = reshape(STA_sp, [ROI_length,ROI_length]);
-        end
+        stimfilter           = STA_sp * (timefilter');
+        stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);
+        rawfit.spatialfilter = STA_sp;
+        linearfilters.Stimulus.Filter             = stimfilter;
+        linearfilters.Stimulus.Filter_rank        = 1;
+        linearfilters.Stimulus.space_rk1          = reshape(STA_sp, [ROI_length,ROI_length]);
         linearfilters.Stimulus.time_rk1           = pstar(paramind.X);
         %linearfilters.Stimulus.WN_note            = 'use WN STA as a reference to compare to fitted filters'
         %linearfilters.Stimulus.WN_STA             = WN_STA;
@@ -268,14 +245,9 @@ if ~GLMType.CONVEX
         end
         linearfilters.Stimulus.Filter_rank        = 1;
         linearfilters.Stimulus.time_rk1           = timefilter1;
-        if GLMType.color
-        	linearfilters.Stimulus.Filter             = stimfilter;
-        	linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length,3]);
-        else
-        	stimfilter = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.time1)]);
-        	linearfilters.Stimulus.Filter             = stimfilter;
-        	linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length]);
-        end
+        stimfilter = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.time1)]);
+        linearfilters.Stimulus.Filter             = stimfilter;
+        linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length]);
         linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
         linearfilters.Stimulus.y_coord            = ROIcoord.yvals;
         linearfilters.Stimulus.frame_shifts       = [0:1:(GLMPars.stimfilter.frames-1)];
