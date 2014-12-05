@@ -207,10 +207,9 @@ rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
 WN_STA           = double(glm_cellinfo.WN_STA); 
 
-[STA_sp,~]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
-
 if GLMType.CONVEX
-    if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')    
+    if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')  
+        [STA_sp,~]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
         timefilter           = pstar(paramind.X);
         stimfilter           = STA_sp * (timefilter');
         stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);
