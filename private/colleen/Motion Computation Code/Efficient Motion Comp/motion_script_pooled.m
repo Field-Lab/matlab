@@ -9,9 +9,10 @@ run_opt.data_run = 16; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 20
 % CHANGE THIS
 run_opt.config_num =4; % 1-4 %Which type of stimulus to look at
 
-direction = 'right'; % 'left' or 'right'
+run_opt.direction = 'right'; % 'left' or 'right'
 
-run_opt.cell_type = 'Off midget'; % on/off parasol, on/off midget
+run_opt.cell_type{1} = 'On parasol'; % on/off parasol, on/off midget
+run_opt.cell_type{2} = 'Off parasol'; % on/off parasol, on/off midget
 
 run_opt.velocity_exp = 192;
 
@@ -20,7 +21,7 @@ run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
 % NUMERICAL PARAMETERS
-run_opt.tau = .005; % tuning parameter %0.1 next best
+run_opt.tau = .01; % tuning parameter %0.1 next best
 run_opt.tol = 1e-4;
 
 % ANALYSES TO RUN
@@ -58,26 +59,27 @@ if run_opt.load
     datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
     datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0);
 end
-
-% Gets the indicies used by vision of the particular cell type
-if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
-
-    % Get indices for specified cell type and order by RF position
-    cell_indices1=get_cell_indices(datarun{1},{run_opt.cell_type});
-    cell_indices2=get_cell_indices(datarun{2},{run_opt.cell_type});
-    cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
-    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
-    
-    %cell_indices sorted by their x coordinate of the RF from the STA
-    cell_indices1 = cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
-    cell_indices2 = cell_indices2(cell_sort_idx);
-    
-    % Find trial start and stop times
-    start = 0;
-    stop = mean(datarun{2}.triggers(2:2:end) - datarun{2}.triggers(1:2:end));
-    tr=datarun{2}.triggers(1:2:end); % all start triggers
-    t=find(datarun{2}.stimulus.trial_list==run_opt.config_num); %find the times when all the stimulus type 2 starts
-    tr=tr(t);    
+for type  = 1:2
+    % Gets the indicies used by vision of the particular cell type
+    if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
+        
+        % Get indices for specified cell type and order by RF position
+        cell_indices1{type}=get_cell_indices(datarun{1},{run_opt.cell_type{type}});
+        cell_indices2{type}=get_cell_indices(datarun{2},{run_opt.cell_type{type}});
+        cell_x_pos{type} = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
+        [~, cell_sort_idx{type}] = sort(cell_x_pos{type}(cell_indices1{type})); % indicies of how to sort
+        
+        %cell_indices sorted by their x coordinate of the RF from the STA
+        cell_indices1{type} = cell_indices1{type}(cell_sort_idx{type}); % cell_indices1 is now indexes in order from lowest to highest firing rate
+        cell_indices2{type} = cell_indices2{type}(cell_sort_idx{type});
+        
+        % Find trial start and stop times
+        start = 0;
+        stop = mean(datarun{2}.triggers(2:2:end) - datarun{2}.triggers(1:2:end));
+        tr=datarun{2}.triggers(1:2:end); % all start triggers
+        t=find(datarun{2}.stimulus.trial_list==run_opt.config_num); %find the times when all the stimulus type 2 starts
+        tr=tr(t);
+    end
 end
 
 % downsample spikes
@@ -100,7 +102,7 @@ if run_opt.downsample_spikes
     
     if strcmp(run_opt.data_set, '2007-03-27-1')
         if n1>n2
-            if strcmp(run_opt.cell_type, 'On parasol')
+            if strcmp(run_opt.cell_type{type}, 'On parasol')
                 for i=cell_indices2
                     % fractional downsampling:
                     datarun{2}.spikes{i}=datasample(datarun{2}.spikes{i},round(length(datarun{2}.spikes{i})*n2/n1),'Replace',false);
@@ -109,7 +111,7 @@ if run_opt.downsample_spikes
                 run_opt.trial_estimate = false; % if no downsampling, don't calculate estimates
             end
         elseif n2>n1
-            if strcmp(run_opt.cell_type, 'On midget')
+            if strcmp(run_opt.cell_type{type}, 'On midget')
                 for i=cell_indices2
                     % fractional downsampling
                     datarun{2}.spikes{i}=datasample(datarun{2}.spikes{i},round(length(datarun{2}.spikes{i})*n1/n2),'Replace',false);
@@ -120,7 +122,7 @@ if run_opt.downsample_spikes
         end
     elseif strcmp(run_opt.data_set, '2007-08-24-4')
         if n1>n2
-            if strcmp(run_opt.cell_type, 'On parasol')
+            if strcmp(run_opt.cell_type{type}, 'On parasol')
                 for i=cell_indices2
                     % fractional downsampling
                     datarun{2}.spikes{i}=datasample(datarun{2}.spikes{i},round(length(datarun{2}.spikes{i})*n2/n1),'Replace',false);
@@ -129,7 +131,7 @@ if run_opt.downsample_spikes
                 run_opt.trial_estimate = false; % if no downsampling, don't calculate estimates
             end
         elseif n2>n1
-            if strcmp(run_opt.cell_type, 'On midget')
+            if strcmp(run_opt.cell_type{type}, 'On midget')
                 for i=cell_indices2
                     % fractional downsampling
                     datarun{2}.spikes{i}=datasample(datarun{2}.spikes{i},round(length(datarun{2}.spikes{i})*n1/n2),'Replace',false);
@@ -171,7 +173,7 @@ end
 
 % Plot all cells on one trial
 % ONLY WORKS FOR RIGHT MOVING BAR
-if run_opt.rasterPerTrial 
+if run_opt.rasterPerTrial
     toPlot = cell(1,length(t));
     
     % Takes in start and stop time (0-0.7274)
@@ -194,7 +196,7 @@ if run_opt.rasterPerTrial
         %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
         for trialNum = 1:length(t)
             [x,y] = find(psth_r == trialNum-1);
-                toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+            toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
         end
     end
     
@@ -207,8 +209,8 @@ if run_opt.rasterPerTrial
         k=round(get(hk,'Value'));
         y_scale = 1;
         Color = ['k', '.'];
-        plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);       
-        title({run_opt.cell_type, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],strTit, sprintf(' Trial Number %d',  k)})
+        plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);
+        title({run_opt.cell_type{type}, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],strTit, sprintf(' Trial Number %d',  k)})
         xlabel('time (ms)');
         ylabel('Cell''s centroid distance from reference');
         uiwait;
@@ -221,19 +223,19 @@ end
 if run_opt.trial_estimate
     options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
     spikes = datarun{2}.spikes;
-
-    %Prior is +/-25% of expected value 
-%     velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 50);
-velocity =200:20:500;
+    
+    %Prior is +/-25% of expected value
+        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 50);
+%     velocity =200:20:500;
     strsig1 = zeros(1,length(velocity));
     
-% Run coarse error function to initialize velocity
-    for i =47%1:length(tr)
+    % Run coarse error function to initialize velocity
+    for i =1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);           
+            [strsig1(j)] = -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
         end
-        figure; plot(velocity, strsig1)
+%         figure; plot(velocity, strsig1)
         i
         [x1,y1] = min(strsig1);
         
@@ -242,14 +244,21 @@ velocity =200:20:500;
     end
     
     % Find speed estimate
-    parfor i =47%1:length(tr)       
-            [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction), run_opt.trial_estimate_start(i), options);
+    parfor i =1:length(tr)
+        [estimates(i)] = fminunc(@(v) -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
+    foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP', run_opt.data_set);
+    filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+    if exist(foldername)
+        save(filename, 'estimates', 'run_opt')
+    else
+        mkdir(foldername);
+        save(filename, 'estimates', 'run_opt')
+    end
     
-        save(sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/Tau0_05/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
     % save(sprintf('/home/vision/Colleen/matlab/private/colleen/colleenResults/%s/BrightRight%s_data_run_%02d_config_%d_brightright_newmethod.mat', run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num), 'estimates')
-
+    
 end
 
 % gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
