@@ -185,8 +185,7 @@ fitsd2=cell(4,1);
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
   
     ref_cell_number
-   close all
-  
+   
     try
     %genClip=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'clip',nConditions,cond_str);
     genFit=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'fit',nConditions,cond_str);

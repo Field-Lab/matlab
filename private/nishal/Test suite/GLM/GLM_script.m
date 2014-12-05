@@ -4,9 +4,9 @@
 
 addpath(genpath('../'));
 
-%startup_tennessee
+startup_tennessee
 
-startup_bertha
+%startup_bertha
 %startup_bhaishahster
 
 %% Load GLM dataset.
@@ -68,16 +68,34 @@ cell_params{1}.binsPerFrame=10;
 
 
 % figures
-figure;
+figure('Color','w');
 for itime=1:Filtlen
 imagesc(sum(stas{1}(:,:,:,itime),3));
 caxis([min(stas{1}(:)),max(stas{1}(:))])
 colorbar
 colormap gray
-pause
+pause(1/120)
 end
 
-%% Get Stimulus
+% Plot filters
+figure('Color','w');
+subplot(4,1,1);
+plot(cell_params{1}.postSpikeFilter);
+title('Post spike filter');
+
+subplot(4,1,2);
+plot(squeeze(cell_params{1}.stas(8,8,1,:)));
+title('STA temporal filter');
+
+subplot(4,1,[3,4]);
+imagesc(sum(cell_params{1}.stas(:,:,:,4),3));
+axis image
+colormap gray
+colorbar
+title('STA spatial filter');
+
+
+%% Generate small stimulus to generate rasters
 mov_params.type='bw';
 mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
 mov_params.movie_len =15; % in seconds
@@ -88,16 +106,38 @@ mov_params.mov=mov_params.mov(1:Filtdim1,1:Filtdim2,:,:);
 figure;
 for itime=1:10
 imagesc(mov_params.mov(:,:,itime));
-pause
+colormap gray
+pause(1/120)
 end
 
-%% Generate response to stimulus - use k, temporal filters and movie
+% Generate response to stimulus - use k, temporal filters and movie
+
 mov_params.nTrials=50;
 response=generate_response_ts(mov_params,cell_params);
-figure;    
+figure('Color','w');    
 plotSpikeRaster(logical(response.spksGen),'PlotType','vertline');
 title('Raster');
-%% Calculate STA, use response and stimulus
+
+%% Generate long stimulus to calculate STA.
+mov_params.type='bw';
+mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
+mov_params.movie_len =60*40; % in seconds
+mov_params.refresh=1000/120;
+mov_params = generate_movie_ts(mov_params);
+
+mov_params.mov=mov_params.mov(1:Filtdim1,1:Filtdim2,:,:);
+% figure;
+% for itime=1:10
+% imagesc(mov_params.mov(:,:,itime));
+% colormap gray
+% pause(1/120)
+% end
+
+% Generate response
+mov_params.nTrials=1;
+response=generate_response_ts(mov_params,cell_params);
+
+% Calculate STA
 sta_params.Filtlen=40;
 sta_params.useTrial=1;
 response = calculate_sta_ts(mov_params,response,sta_params,cell_params{1})
@@ -134,9 +174,10 @@ response_null=generate_response_ts(mov_params_null,cell_params);
 
 
 figure;    
+subplot(2,1,1);
 plotSpikeRaster(logical(response_orig.spksGen),'PlotType','vertline');
 title('Raster Original');
-figure;
+subplot(2,1,2);
 plotSpikeRaster(logical(response_null.spksGen),'PlotType','vertline');
 title('Raster Null');
 
