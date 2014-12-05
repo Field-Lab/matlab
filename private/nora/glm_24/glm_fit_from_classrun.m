@@ -58,9 +58,9 @@ GLMType.d_save = d_save;
 %% Load Movie
 disp('Loading Stimulus Movies')
 [temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/2);
-fitmovie=zeros(height,width,3,fitframes);
+fitmovie_color=zeros(height,width,3,fitframes);
 for i=1:fitframes
-    fitmovie(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/2));
+    fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/2));
 end
 clear temp_fitmovie height width i
 % testmovie = get_rawmovie(raw_file, testframes);
@@ -76,7 +76,7 @@ for i_cell = 1:length(cells)
         % Load cell info
         glm_cellinfo.cid           = cid;
         %glm_cellinfo.exp_nm        = exp_nm;
-        %glm_cellinfo.celltype      = celltype;
+        %glm_cellinfo.celltype      = celltype;nbrackbi
         glm_cellinfo.cell_savename = num2str(cid);
         glm_cellinfo.fitname       = GLMType.fitname;
         glm_cellinfo.computedtstim = StimulusPars.tstim;
@@ -86,7 +86,15 @@ for i_cell = 1:length(cells)
         slvdim.height      = StimulusPars.height; slvdim.width = StimulusPars.width;
         [center_coord,~]  = visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, StimulusPars, slvdim);
         glm_cellinfo.slave_centercoord = center_coord;
+        RGB=RGB_weights(datarun,master_idx);
+        glm_cellinfo.RGB=RGB;
         clear stafit_centercoord slvdim sd
+        
+        % Turn RGB movie into greyscale movie
+        fitmovie=RGB(1)*glm_cellinfo.RGBfitmovie_color(:,:,1,:)+ ...
+            RGB(2)*glm_cellinfo.RGBfitmovie_color(:,:,2,:)+ ...
+            RGB(3)*glm_cellinfo.RGBfitmovie_color(:,:,3,:);
+        clear RGB
         
         % Spike loading
         spikes.home=datarun.spikes{master_idx};
