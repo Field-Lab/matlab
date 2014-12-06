@@ -4,9 +4,8 @@
 
 addpath(genpath('../'));
 
-startup_tennessee
-
-%startup_bertha
+%startup_tennessee
+startup_bertha
 %startup_bhaishahster
 
 %% Load GLM dataset.
@@ -121,7 +120,7 @@ title('Raster');
 %% Generate long stimulus to calculate STA.
 mov_params.type='bw';
 mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
-mov_params.movie_len =60*40; % in seconds
+mov_params.movie_len =60*30; % in seconds
 mov_params.refresh=1000/120;
 mov_params = generate_movie_ts(mov_params);
 
@@ -141,6 +140,35 @@ response=generate_response_ts(mov_params,cell_params);
 sta_params.Filtlen=40;
 sta_params.useTrial=1;
 response = calculate_sta_ts(mov_params,response,sta_params,cell_params{1})
+%%
+   
+figure('Color','w');
+
+subplot(2,2,1);
+imagesc(response.analyse.STA(:,:,23));
+colormap gray
+axis image
+colorbar
+caxis([min(response.analyse.STA(:)),max(response.analyse.STA(:))]);
+title('Simulated Spatial WN STA');
+
+subplot(2,2,2)
+x=WN_STA(ycoords,xcoords,:);
+imagesc(x(end:-1:1,end:-1:1,5));
+colormap gray
+axis image
+colorbar
+caxis([min(x(:)),max(x(:))]);
+title('Actual Spatial WN STA');
+
+subplot(2,2,3)
+plot(squeeze(response.analyse.STA(8,8,:)));
+title('Simulated Temporal WN STA');
+
+subplot(2,2,4)
+plot(squeeze(x(8,8,:)));
+title('Actual Temporal WN STA');
+
 %% Generate null stimulus - use STA and movie ? 
 
 null_mov_params.movie_idx=2;

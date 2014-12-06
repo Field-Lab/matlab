@@ -7,7 +7,7 @@ javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java
 % matlab code paths
 addpath(genpath('~/Nishal/matlab/code'));
 
-addpath(genpath('~/Nishal/matlab/private/lauren/MATLAB_code')); 
+
 
 
 

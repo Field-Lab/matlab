@@ -1,6 +1,6 @@
 addpath(genpath('../null_analyse/'));
 addpath(genpath('../null_analyse/analyse_functions'));
-startup_null_analyse_tenessee
+startup_null_analyse_bertha
 
 %% Condition strings
 nConditions=4;
