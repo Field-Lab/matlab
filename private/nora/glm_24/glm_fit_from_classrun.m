@@ -102,14 +102,15 @@ for i_cell = 1:length(cells)
         clear cell_savename
         
         % Align the spikes and the movies;
-        t_frame = t_frame_interpAH(datarun.triggers);
+        % t_frame = t_frame_interpAH(datarun.triggers);
         spikes_adj=spikes;
         n_block=0;
         for i=1:(length(datarun.triggers)-1)
             actual_t_start=datarun.triggers(i);
             supposed_t_start=n_block*100/120;
-            idx=(spikes > actual_t_start .* spikes < datarun.triggers(i+1));
-            spikes_adj(idx)=spikes(idx)+supposed_t_start-actual_t_start;
+            idx1=spikes > actual_t_start;
+            idx2=spikes < datarun.triggers(i+1);
+            spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
             n_block=n_block+1;
         end
         clear spikes
