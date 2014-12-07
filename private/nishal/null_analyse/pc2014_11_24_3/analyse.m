@@ -134,8 +134,8 @@ end
 %% Plots
 figure('Color','w')
 
-for icond=2:4
-    subplot(2,2,icond);
+for icond=2:6
+    subplot(3,2,icond);
     
     plot(fitsd{1},fitsd{icond},'.r');
     hold on
@@ -227,4 +227,4 @@ for icond=2:6
     title(sprintf('Off Parasol Cond1 v/s %s',cond_str{icond}));
 end
 
-save('/Volumes/Analysis/nishal/Null/pc2014_11_24_3.mat');
+%save('/Volumes/Analysis/nishal/Null/pc2014_11_24_3.mat');
