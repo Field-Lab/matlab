@@ -110,7 +110,7 @@ for i_cell = 1:length(cells)
         slvdim.height      = StimulusPars.height; slvdim.width = StimulusPars.width;
         [center_coord,~]  = visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, StimulusPars, slvdim);
         glm_cellinfo.slave_centercoord = center_coord;
-        RGB=RGB_weights(datarun_cells,master_idx);
+        RGB=RGB_weights(datarun,master_idx);
         glm_cellinfo.RGB=RGB;
         clear stafit_centercoord slvdim sd
         
