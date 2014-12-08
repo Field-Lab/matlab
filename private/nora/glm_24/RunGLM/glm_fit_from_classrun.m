@@ -25,7 +25,7 @@ cells={7742,...
 
 d_save='/Volumes/Analysis/nora/colorglmfits';
 xml_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111-32x32.xml';
-fitframes=30*60*120; % 30 minutes * 60 seconds * 120 frames per second / interval of 2
+fitframes=30*60*120/2; % 30 minutes * 60 seconds * 120 frames per second / interval of 2
 testframes=5760;
 raw_file='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
 
