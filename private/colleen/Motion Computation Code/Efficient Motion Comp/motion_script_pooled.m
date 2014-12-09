@@ -7,25 +7,26 @@
 % Saves a file containing the speed estimate for each trial to the specified
 % folder
 % DATA PARAMETERS
+clear
 run_opt.load = true; % T/F
 
 run_opt.data_set = '2007-03-27-1';
 % run_opt.data_set = '2007-08-24-4';
 
-run_opt.data_run = 12; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num =14; % 1-4 %Which type of stimulus to look at
+run_opt.data_run = 15; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.config_num =3; % 1-4 %Which type of stimulus to look at
 
 run_opt.direction = 'right'; % 'left' or 'right'
 
 run_opt.cell_type{1} = 'On parasol'; % on/off parasol, on/off midget
-run_opt.cell_type{2} = 'Off parasol'; % on/off parasol, on/off midget
+run_opt.cell_type{2} = 'On midget'; % on/off parasol, on/off midget
 
-run_opt.velocity_exp = 192;
+run_opt.velocity_exp = 96;
 
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
-
+run_opt.courseIter = 6;
 % NUMERICAL PARAMETERS
 run_opt.tau = .01; % tuning parameter %0.1 next best
 run_opt.tol = 1e-4;
@@ -151,9 +152,18 @@ if run_opt.downsample_spikes
     end
 end
 
+
+
 % Plot one cell on all trials
 if run_opt.raster %raster
+    cell_indices1 = [cell_indices1{1}, cell_indices1{2}];
+    cell_indices2 = [cell_indices2{1}, cell_indices2{2}];
+    cell_x_pos = [cell_x_pos{1}, cell_x_pos{2}];
+    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
     
+    %cell_indices sorted by their x coordinate of the RF from the STA
+    cell_indices1= cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
+    cell_indices2 = cell_indices2(cell_sort_idx);
     k=1; kmin=1; kmax=length(cell_indices2); hk=loop_slider(k,kmin,kmax);
     
     while k
@@ -182,6 +192,7 @@ end
 % Plot all cells on one trial
 % ONLY WORKS FOR RIGHT MOVING BAR
 if run_opt.rasterPerTrial
+    
     toPlot = cell(1,length(t));
     
     % Takes in start and stop time (0-0.7274)
@@ -218,7 +229,7 @@ if run_opt.rasterPerTrial
         y_scale = 1;
         Color = ['k', '.'];
         plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);
-        title({run_opt.cell_type{type}, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],strTit, sprintf(' Trial Number %d',  k)})
+        title({run_opt.cell_type{type}, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],'Bright bar moving right', sprintf(' Trial Number %d',  k)})
         xlabel('time (ms)');
         ylabel('Cell''s centroid distance from reference');
         uiwait;
@@ -233,7 +244,7 @@ if run_opt.trial_estimate
     spikes = datarun{2}.spikes;
     
     %Prior is +/-25% of expected value
-    velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, 6);
+    velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, run_opt.courseIter);
     strsig1 = zeros(1,length(velocity));
     
     % Run coarse error function to initialize velocity
@@ -256,8 +267,8 @@ if run_opt.trial_estimate
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     %save results
-    foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP', run_opt.data_set);
-    filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnAndOffP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+    foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMandOnP', run_opt.data_set);
+    filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
     if exist(foldername)
         save(filename, 'estimates', 'run_opt')
     else
@@ -268,6 +279,6 @@ if run_opt.trial_estimate
 end
 
 % send email when done
-% gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
 
 ElapsedTime=toc
