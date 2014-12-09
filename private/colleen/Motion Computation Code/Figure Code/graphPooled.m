@@ -61,7 +61,10 @@ for k = 1:length(stdOnP)
     h(k) = plot(toPlot(:,1), toPlot(:,2), 'o-','Linewidth', 2,'color',colors(k), 'MarkerFaceColor', colors(k))
 end
 s = sprintf('%c', char(176));
-legend(h([9,3,1]),['Speed of 42.6' s '/sec'],['Speed of 21.3' s '/sec'], ['Speed of 10.7' s '/sec'], 'location', 'northeast')
+i48 = find(delta(:,1) == 48);
+i96 = find(delta(:,1) == 96);
+i192 = find(delta(:,1) == 192);
+legend(h([i192(1),i96(1),i48(1)]),['Speed of 42.6' s '/sec'],['Speed of 21.3' s '/sec'], ['Speed of 10.7' s '/sec'], 'location', 'northeast')
 
 xlim([0.5 2.5])
 ylim(axes_lim)
@@ -69,5 +72,12 @@ set(gca, 'xtick', [1,2]);
 set(gca, 'xticklabel',{'ON Parasol', 'Pooled with ON Midgets'})
 ylabel('STD/Speed')
 set(gcf,'color','w');
-H=sigstar({[1,2]}, 0.0452);
-title({'Benefit of Pooling ON Cell Types';tag{2};'paired T test: p = 0.0452'});
+% title({'Benefit of Pooling ON Cell Types';tag{2}});
+
+% BBMR
+% H=sigstar({[1,2]}, 0.0452);
+% title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.0452'});
+
+% BBML
+% H=sigstar({[1,2]}, 0.0452);
+title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.057'});
