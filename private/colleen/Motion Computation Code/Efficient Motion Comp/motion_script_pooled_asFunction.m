@@ -93,15 +93,16 @@ if run_opt.load
 end
 
 % Get indicies for each cell type 
-for type  = 1:2
+for type  = 1:size(run_opt.cell_type,2)
     % Gets the indicies used by vision of the particular cell type
     if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
         
+   
         % Get indices for specified cell type and order by RF position
         cell_indices1{type}=get_cell_indices(datarun{1},{run_opt.cell_type{type}});
         cell_indices2{type}=get_cell_indices(datarun{2},{run_opt.cell_type{type}});
-        cell_x_pos{type} = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
-        [~, cell_sort_idx{type}] = sort(cell_x_pos{type}(cell_indices1{type})); % indicies of how to sort
+        cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
+        [~, cell_sort_idx{type}] = sort(cell_x_pos(cell_indices1{type})); % indicies of how to sort
         
         %cell_indices sorted by their x coordinate of the RF from the STA
         cell_indices1{type} = cell_indices1{type}(cell_sort_idx{type}); % cell_indices1 is now indexes in order from lowest to highest firing rate
@@ -115,6 +116,26 @@ for type  = 1:2
         tr=tr(t);
     end
 end
+% Grouped pooled together
+if size(run_opt.cell_type,2) == 1
+    cell_indices1 = [cell_indices1{1}];
+    cell_indices2 = [cell_indices2{1}];
+%     cell_x_pos = [cell_x_pos{1}];
+    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
+
+else
+    
+    cell_indices1 = [cell_indices1{1}, cell_indices1{2}];
+    cell_indices2 = [cell_indices2{1}, cell_indices2{2}];
+%     cell_x_pos = [cell_x_pos{1}, cell_x_pos{2}];
+    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
+end
+
+    %cell_indices sorted by their x coordinate of the RF from the STA
+    cell_indices1= cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
+    cell_indices2 = cell_indices2(cell_sort_idx);
+    
+    
 
 % downsample spikes
 if run_opt.downsample_spikes
@@ -288,7 +309,11 @@ if run_opt.trial_estimate
     
     % Find speed estimate
     parfor i =1:length(tr)
+<<<<<<< HEAD
         [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleem(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
+=======
+        [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
+>>>>>>> f38989750b14f44ddabca9c2f4300a69b1fed42f
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     %save results
