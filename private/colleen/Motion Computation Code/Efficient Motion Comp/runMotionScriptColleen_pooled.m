@@ -11,10 +11,10 @@ config_num = [14;1;3;4;1;1;9;23;1;4;3;3;2;1];
 
 cell_type = {'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol'; 'On midget'; 'On parasol';'Off midget';'Off parasol'; 'On midget'; 'On parasol';'Off midget';  'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol'; 'On midget'; 'On parasol';'Off midget';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol'};
 velocity = [96;192;96;192;96;192;96;192;192;192;96;96;48;48];
-for i =1:length(config_num)
+for i =2:length(config_num)
     motion_script_pooled_asFunction(data_set{i}, data_run(i), config_num(i), velocity(i))
     fprintf('Trial Number %d done\n',i )
 end
 
 % Send email when complete
-gmail('crhoades227@gmail.com', 'my computer done')
+gmail('crhoades227@gmail.com', 'bertha done')
