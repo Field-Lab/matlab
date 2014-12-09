@@ -19,7 +19,7 @@ run_opt.config_num =3; % 1-4 %Which type of stimulus to look at
 run_opt.direction = 'right'; % 'left' or 'right'
 
 run_opt.cell_type{1} = 'On parasol'; % on/off parasol, on/off midget
-run_opt.cell_type{2} = 'On midget'; % on/off parasol, on/off midget
+% run_opt.cell_type{2} = 'On midget'; % on/off parasol, on/off midget
 
 run_opt.velocity_exp = 96;
 
@@ -68,15 +68,16 @@ if run_opt.load
 end
 
 % Get indicies for each cell type 
-for type  = 1:2
+for type  = 1:size(run_opt.cell_type,2)
     % Gets the indicies used by vision of the particular cell type
     if run_opt.raster || run_opt.trial_estimate || run_opt.rasterPerTrial
         
+   
         % Get indices for specified cell type and order by RF position
         cell_indices1{type}=get_cell_indices(datarun{1},{run_opt.cell_type{type}});
         cell_indices2{type}=get_cell_indices(datarun{2},{run_opt.cell_type{type}});
-        cell_x_pos{type} = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
-        [~, cell_sort_idx{type}] = sort(cell_x_pos{type}(cell_indices1{type})); % indicies of how to sort
+        cell_x_pos = cellfun( @(X) X.mean(1), datarun{1}.vision.sta_fits); % x axis position of all STA cells
+        [~, cell_sort_idx{type}] = sort(cell_x_pos(cell_indices1{type})); % indicies of how to sort
         
         %cell_indices sorted by their x coordinate of the RF from the STA
         cell_indices1{type} = cell_indices1{type}(cell_sort_idx{type}); % cell_indices1 is now indexes in order from lowest to highest firing rate
@@ -90,7 +91,26 @@ for type  = 1:2
         tr=tr(t);
     end
 end
+% Grouped pooled together
+if size(run_opt.cell_type,2) == 1
+    cell_indices1 = [cell_indices1{1}];
+    cell_indices2 = [cell_indices2{1}];
+%     cell_x_pos = [cell_x_pos{1}];
+    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
 
+else
+    
+    cell_indices1 = [cell_indices1{1}, cell_indices1{2}];
+    cell_indices2 = [cell_indices2{1}, cell_indices2{2}];
+%     cell_x_pos = [cell_x_pos{1}, cell_x_pos{2}];
+    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
+end
+
+    %cell_indices sorted by their x coordinate of the RF from the STA
+    cell_indices1= cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
+    cell_indices2 = cell_indices2(cell_sort_idx);
+    
+    
 % downsample spikes
 if run_opt.downsample_spikes
     
@@ -156,14 +176,7 @@ end
 
 % Plot one cell on all trials
 if run_opt.raster %raster
-    cell_indices1 = [cell_indices1{1}, cell_indices1{2}];
-    cell_indices2 = [cell_indices2{1}, cell_indices2{2}];
-    cell_x_pos = [cell_x_pos{1}, cell_x_pos{2}];
-    [~, cell_sort_idx] = sort(cell_x_pos(cell_indices1)); % indicies of how to sort
-    
-    %cell_indices sorted by their x coordinate of the RF from the STA
-    cell_indices1= cell_indices1(cell_sort_idx); % cell_indices1 is now indexes in order from lowest to highest firing rate
-    cell_indices2 = cell_indices2(cell_sort_idx);
+
     k=1; kmin=1; kmax=length(cell_indices2); hk=loop_slider(k,kmin,kmax);
     
     while k
@@ -251,7 +264,7 @@ if run_opt.trial_estimate
     for i =1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
+            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
         end
 %       figure; plot(velocity, strsig1)
         i
@@ -263,12 +276,12 @@ if run_opt.trial_estimate
     
     % Find speed estimate
     parfor i =1:length(tr)
-        [estimates(i)] = fminunc(@(v) -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
+        [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     %save results
-    foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMandOnP', run_opt.data_set);
-    filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+    foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/Tau0_01', run_opt.data_set);
+    filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/Tau0_01/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
     if exist(foldername)
         save(filename, 'estimates', 'run_opt')
     else
