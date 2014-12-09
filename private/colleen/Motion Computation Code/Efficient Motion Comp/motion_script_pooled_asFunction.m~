@@ -274,9 +274,9 @@ if run_opt.trial_estimate
     
     % Run coarse error function to initialize velocity
     for i =1:length(tr)
-        for j = 1:length(velocity)
+        parfor j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
+            [strsig1(j)] = -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
         end
 %       figure; plot(velocity, strsig1)
         i
@@ -288,14 +288,14 @@ if run_opt.trial_estimate
     
     % Find speed estimate
     parfor i =1:length(tr)
-        [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleem(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
+        [estimates(i)] = fminunc(@(v) -pop_motion_signal_pooled(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     %save results
 %     foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMandOnP', run_opt.data_set);
 %     filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
      foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/OnMandOnP', run_opt.data_set);
-    filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+    filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkRight/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
    
     if exist(foldername)
         save(filename, 'estimates', 'run_opt')
