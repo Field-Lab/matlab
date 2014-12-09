@@ -7,7 +7,7 @@ data_set = {'2007-03-27-1';'2007-03-27-1';'2007-03-27-1'; '2007-03-27-1';'2007-0
 data_run = [12;13;15;16;18;19;2;3;4;5;6;7;10;11];
 
 % for which stimulus to run
-config_num = [2;2;4;1;4;4;7;22;3;2;4;1;4;4];
+config_num = [5;7;1;2;3;3;17;2;4;1;2;2;1;3];
 
 cell_type = {'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol'; 'On midget'; 'On parasol';'Off midget';'Off parasol'; 'On midget'; 'On parasol';'Off midget';  'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol'; 'On midget'; 'On parasol';'Off midget'; 'Off parasol'; 'On midget'; 'On parasol';'Off midget';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol';'Off parasol'; 'On midget'; 'On parasol'};
 velocity = [96;192;96;192;96;192;96;192;192;192;96;96;48;48];
