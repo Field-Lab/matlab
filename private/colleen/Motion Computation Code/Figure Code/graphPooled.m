@@ -38,7 +38,7 @@ legend(['Speed of 42.6' s '/sec'],['Speed of 21.3' s '/sec'], ['Speed of 10.7' s
 
 % ON Parasol std improvement by including On Midgets
 
-axes_lim = [0 0.08];
+axes_lim = [0 0.2];
 hFig = figure;
 hold on
 % set(hFig, 'Position', [680 680 600*1.5 435*1.5])
@@ -80,4 +80,8 @@ set(gcf,'color','w');
 
 % BBML
 % H=sigstar({[1,2]}, 0.0452);
-title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.057'});
+% title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.057'});
+
+% DDBR
+H=sigstar({[1,2]}, 0.036);
+title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.036'});
