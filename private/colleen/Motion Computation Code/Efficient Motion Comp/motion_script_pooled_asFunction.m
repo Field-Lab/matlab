@@ -294,8 +294,8 @@ if run_opt.trial_estimate
     %save results
 %     foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMandOnP', run_opt.data_set);
 %     filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
-     foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/BrightRight/OnMandOnP', run_opt.data_set);
-    filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/BrightRight/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+     foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkRight/OnMandOnP', run_opt.data_set);
+    filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkRight/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
    
     if exist(foldername)
         save(filename, 'estimates', 'run_opt')
