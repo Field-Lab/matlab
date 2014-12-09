@@ -1,6 +1,6 @@
 %graphs for presentation:
 close all
-requests = {'BBML', 'BBMLpooled'};
+requests = {'DBMR', 'DBMRpooled'};
 
 for j = 1:size(requests, 2)
     request = requests{j};
@@ -19,13 +19,15 @@ for j = 1:size(requests, 2)
         tag = 'Bright Bar Moving Right';
     elseif strcmp('BBMRpooled', request);
         tag = {'Bright Bar Moving Right'; 'ON Parasol pooled with ON Midget'};
-            elseif strcmp('BBMLpooled', request);
+    elseif strcmp('BBMLpooled', request);
         tag = {'Bright Bar Moving Left'; 'ON Parasol pooled with ON Midget'};
+    elseif strcmp('DBMRpooled', request);
+        tag = {'Dark Bar Moving Right'; 'ON Parasol pooled with ON Midget'};
     end
     
     
     data  = getData(request);
-    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request);
+    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request)|| strcmp('DBMRpooled', request);
         meanOnPOnM = data(:,6);
         stdOnPOnM = data(:,7);
     else
@@ -61,7 +63,7 @@ for j = 1:size(requests, 2)
     
     
     %Normalize
-    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request);
+    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request);
         stdOnPOnM = stdOnPOnM./delta(:,j);
         meanOnPOnM = meanOnPOnM*5/225*10;
         
@@ -78,7 +80,7 @@ for j = 1:size(requests, 2)
         meanOffM(:,j) = meanOffM(:,j)*5/225*10;
         
     end
-    if ~(strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request))
+    if ~(strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request))
         graphSpeed(meanOnP(:,j), meanOffP(:,j), meanOnM(:,j), meanOffM(:,j),stdOnP(:,j), stdOffP(:,j), stdOnM(:,j), stdOffM(:,j), delta(:,j), tag)
         graphByDate(stdOnP(:,j), stdOffP(:,j), stdOnM(:,j), stdOffM(:,j), date(:,j), tag)
         graphStimWidths(stdOnP(:,j), stdOffP(:,j), stdOnM(:,j), stdOffM(:,j), filter(:,j), tag)
