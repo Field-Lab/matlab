@@ -56,7 +56,7 @@ for i = 1:length(stdOnP)
     
 end
 % colors = flipud(distinguishable_colors(length(stdOffP)));
-for k = 1:length(stdOnP)
+for k = length(stdOnP):-1:1
     toPlot = squeeze(line(:,:,k));
     h(k) = plot(toPlot(:,1), toPlot(:,2), 'o-','Linewidth', 2,'color',colors(k), 'MarkerFaceColor', colors(k))
 end
@@ -82,6 +82,14 @@ set(gcf,'color','w');
 % H=sigstar({[1,2]}, 0.0452);
 % title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.057'});
 
-% DDBR
-H=sigstar({[1,2]}, 0.036);
-title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.036'});
+% % DDBR
+% H=sigstar({[1,2]}, 0.036);
+% title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.036'});
+
+% DDBL
+% H=sigstar({[1,2]}, 0.0116);
+% title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p = 0.0116'});
+
+% ALL
+H=sigstar({[1,2]}, 0.0001);
+title({'Benefit of Pooling ON Cell Types';tag{1};tag{2};'paired T test: p < 0.0001'});
