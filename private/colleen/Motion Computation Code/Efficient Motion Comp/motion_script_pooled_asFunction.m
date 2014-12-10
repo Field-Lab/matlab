@@ -295,7 +295,7 @@ if run_opt.trial_estimate
     
     % Run coarse error function to initialize velocity
     for i =1:length(tr)
-        for j = 1:length(velocity)
+        parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
         end
@@ -309,11 +309,9 @@ if run_opt.trial_estimate
     
     % Find speed estimate
     parfor i =1:length(tr)
-<<<<<<< HEAD
-        [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleem(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
-=======
+
         [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
->>>>>>> f38989750b14f44ddabca9c2f4300a69b1fed42f
+
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
     %save results
