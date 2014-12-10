@@ -14,23 +14,23 @@ if ~strcmp(rawDataDir(end),filesep)
 end
 
 % Points to the directory of the output.
-<<<<<<< HEAD
 %WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
 WritePathBase = '/Volumes/Analysis/2014-10-29-0/';
-=======
-% WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
-WritePathBase = '/Volumes/Analysis/2014-11-05-3/';
->>>>>>> 318df93d00526437776b2bc97dd2f84eb1949e4a
 if ~strcmp(WritePathBase(end),filesep)
     WritePathBase = [WritePathBase filesep];
 end
 
 % Appends this number to 'data ---'
 <<<<<<< HEAD
+<<<<<<< HEAD
 fileNos = [1 2 3 4 5];
 =======
 fileNos = [5];
 >>>>>>> 318df93d00526437776b2bc97dd2f84eb1949e4a
+=======
+%fileNos = [1 2 3 4 5];
+fileNos = [3 4 5];
+>>>>>>> 64995e5f5a43ae2cdf5b2f9893c1989e3b510760
 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds
@@ -82,7 +82,7 @@ for i = fileNos
 %     Generates the "p m" files (the pattern-movie files), the
 %     stimulus_files, and the status_files
 
-NS_SaveRespForMovieAllPatternsAllChannelsNew(rawDataPath,WritePath,NS_GlobalConstants,traceLength);
+NS_SaveRespForMovieAllPatternsAllChannelsNew_sasi(rawDataPath,WritePath,NS_GlobalConstants,traceLength);
     
     %%%%%% special %%%%%%%
     
