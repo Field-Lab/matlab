@@ -161,6 +161,7 @@ myMaps=14:19; % starting from 0!
 
 % calculate responses (# spikes to each contrast for each cone stimulation)
 myMeanResponses=[];
+cellresp=cell(1, length(myMaps));
 for myCone=1:length(myMaps)
     myPresentations=find(stimulus.maps==myMaps(myCone));
     myContrasts=[];
@@ -168,20 +169,40 @@ for myCone=1:length(myMaps)
         myContrasts=[myContrasts stimulus.rgbs{myPresentations(i)}(:,1)];
     end
     
+    binnedR=zeros(4, 10);
     for myCntr=1:4
         a=[];
         myCurrentContrast=find(myContrasts==allContrasts(myCntr));
+        
         for i=1:length(myCurrentContrast)
             stimBegin=myPresentations(myCurrentContrast(i));
             tmp=tr(stimBegin);
-            myResponse=spikes(spikes>=(tmp+0.05)&spikes<=(tmp+0.25))-tmp+0.05;
+            %             myResponse=spikes(spikes>=(tmp+0.05)&spikes<=(tmp+0.25))-tmp+0.05;
+            myResponse=spikes(spikes>=(tmp-0.05)&spikes<=(tmp+0.45))-(tmp-0.05);
+            
+            for k=1:10
+                binnedR(myCntr,k)=binnedR(myCntr,k)+length(myResponse(myResponse>=0.05*(k-1)&myResponse<0.05*k));
+            end
             a(i)=length(myResponse);
         end
-        
+        binnedR(myCntr,:)= binnedR(myCntr,:)/length(myCurrentContrast);        
         myMeanResponses(myCone,myCntr)=mean(a);
+%         
+%         figure
+%         plot(myMeanResponses', '-x')
     end
+    cellresp{myCone}= binnedR;
 end
 
+figure
+for i=1:6
+    subplot(2,3,i)
+    plot(cellresp{i}')
+    title(num2str(sum(cellresp{i}')))
+    line([3,3], [0,2], 'color','k')
+    line([7,7], [0,2], 'color','k')
+    axis([1 10 0 2])
+end
 
 
 % cone map with cone strength derived from relative response strength (NOT scaling)

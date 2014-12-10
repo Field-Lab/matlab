@@ -18,9 +18,15 @@ if ~isempty(tmp); path2data=path2data(1:tmp(1)-1); end
 
 if isnumeric(cone_spec) || strcmp (cone_spec, piece)
     cone_data = dir([path2data,'*', piece, '*', run,'*']);    
+elseif ~isempty(regexp(path2data,piece))
+    cone_data = dir([path2data,'*', run,'*', cone_spec,'*']);
+    if isempty(cone_data)
+        cone_data = dir([path2data,'*', cone_spec,'*', run,'*']);
+    end
 else
     cone_data = dir([path2data,'*', piece, '*', run,'*', cone_spec,'*']);
 end
+
 
 if isempty(cone_data)
     disp('Cone data not found')

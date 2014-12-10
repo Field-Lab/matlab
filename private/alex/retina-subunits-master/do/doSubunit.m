@@ -1,4 +1,4 @@
-function doSubunit(celldat,train,test,mode,init_orig);
+function doSubunit(celldat,train,test,mode,init_orig)
 
 %%
 fit_SUB.error = 'loglik';

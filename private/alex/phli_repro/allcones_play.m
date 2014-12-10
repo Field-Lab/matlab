@@ -64,11 +64,40 @@ save([savepath, 'dataruns.mat'], 'd08s','d10');
 %% Load 2012-04-13-1
 piece = '2012-04-13-1';
 
+% d02s = load_data([piece '/streamed/data002/data002'], staopts);
+% d02s = load_cones_ath(d02s, 'acquisition');
+% d02s.names.rrs_movie_path='/Volumes/Analysis/2012-04-13-1/streamed/data002/data002.movie';
+% d02s = conepreprocess_wnm(d02s);
+% conepreprocess_save(d02s,'date', piece);
+
 % d06s = load_data([piece '/streamed/data006/data006'], staopts);
 % d06s = load_cones_ath(d06s, piece);
 % d06s.names.rrs_movie_path='/Volumes/Analysis/2012-04-13-1/streamed/data006/data006.movie';
 % d06s = conepreprocess_wnm(d06s);
 % conepreprocess_save(d06s,'date', piece);
+
+
+load(['/Volumes/Analysis/', piece, '/subunits/data002/conepreprocess.mat']);
+d02s = datarun;
+clear datarun myrgc
+
+rgc = 2389;
+for i=1:length(rgc)
+    myrgc(i)=find(d02s.cell_ids==rgc(i));
+end
+
+d02s.channels=d02s.channels(myrgc);
+d02s.cell_ids=d02s.cell_ids(myrgc);
+d02s.ei.eis=d02s.ei.eis(myrgc);
+d02s.ei.num_spikes=d02s.ei.num_spikes(myrgc);
+d02s.stas.rfs=d02s.stas.rfs(myrgc);
+d02s.stas.marks=d02s.stas.marks(myrgc);
+d02s.stas.rf_coms=d02s.stas.rf_coms(myrgc);
+d02s.stas.time_courses=d02s.stas.time_courses(myrgc);
+d02s.stas.fits=d02s.stas.fits(myrgc);
+d02s.stas.polarities=d02s.stas.polarities(myrgc);
+d02s.cones.weights=d02s.cones.weights(:, myrgc);
+d02s.spike_rate=d02s.spike_rate(myrgc, :);
 
 
 load(['/Volumes/Analysis/', piece, '/subunits/data006/conepreprocess.mat']);
@@ -115,7 +144,8 @@ d09cm.ei.num_spikes=d09cm.ei.num_spikes(raster_rgcs);
 
 savepath='/Volumes/Analysis/2012-04-13-1/singlecones/';
 mkdir(savepath)
-save([savepath, 'dataruns.mat'], 'd06s','d09cm');
+save([savepath, 'dataruns.mat'], 'd02s','d06s','d09cm');
+
 
 
 %% Load 2012-09-06-0
@@ -345,7 +375,7 @@ for i=1:length(rfweights)
     ncones(i)=length(rfweights{i});
 end
 
-save('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID', 'ncones')
+save('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID', 'ncones', 'ncells')
 
 figure
 hold on
@@ -363,7 +393,7 @@ ylabel('Contrast response estimate')
 
 %% all cells binned cone input
 
-% incl - only care for frames with COI at desired value
+% incl - only care for frames with reference cone at desired value
 % excl - other cones should be above THR (OFF cells want negative  input)
 % only - other cones should EACH have ABS value below THR
 % str - other cones SUM should have ABS value below THR
@@ -372,13 +402,16 @@ ylabel('Contrast response estimate')
 load('/Volumes/Analysis/alex/peters_fits.mat', 'coneID', 'ncones')
 
 mode='incl'; % 'incl', 'excl', 'rand', 'str', 'onl'
+ninclude=0; % n of trials to include
 plotit=false;
 plotbybin=false;
 plotalt=true;
 plot_each_cone=false;
-thr=0.2; % for "rest" in str, only, excl
+thr=0.1; % for "rest" in str, only, excl
 bkgr=true;
 alt_all=cell(1,length(ncells));
+alt_std_all=alt_all;
+
 % alt_coneID=cell(1, length(ncells));
 for i = 1:length(ncells)
     
@@ -390,12 +423,17 @@ for i = 1:length(ncells)
 %     alt_coneID{i}=ic(1:ncones(i));
     
     myinputs=conerun.cone_inputs(:, coneID{i});
-    myrate=conerun.spike_rate(cellID,:);
+    myrate=double(conerun.spike_rate(cellID,:));
+    if bkgr
+        myrate=myrate-mean(myrate);
+    end    
 
     mycone=zeros(10, 26, ncones(i));
+    myconeSTD=mycone;
     alt=zeros(size(mycone,1), ncones(i));
-    alt_control=alt;
+    alt_std=alt;
     nentries=zeros(ncones(i),size(mycone,1));
+    exclCones=cell(ncones(i), 10);
     
     if plotit
         figure
@@ -425,23 +463,28 @@ for i = 1:length(ncells)
                 case 'rand'
                     tmp=ceil(rand(100,1)*length(myrate-100));
             end
+            
             tt=[];
-            for j=1:length(tmp)
+            if ninclude
+                trials=ninclude;
+            else
+                trials=length(tmp);
+            end
+            for j=1:trials
                 if tmp(j)>6 && tmp(j)<length(myrate)-21
-                    tt=[tt; double(myrate(tmp(j)-5:tmp(j)+20))];
+                    tt=[tt; myrate(tmp(j)-5:tmp(j)+20)];
                 end
             end
-            nentries(k,cnt)=size(tt,1);
-            bkg=tt(:,15:end);            
-            mycone(cnt,:,k)=mean(tt);
-%             mycone(cnt,:,k)=sum(tt);
-            if bkgr
-%                 mycone(cnt,:,k)=mycone(cnt,:,k)-sum(bkg(:))/12;
-                mycone(cnt,:,k)=mycone(cnt,:,k)-mean(bkg(:));
-            end
             
-            alt(cnt,k)=sum(mycone(cnt,7, k));
-            alt_control(cnt,k)=max(mean(bkg(:)));
+
+            
+            nentries(k,cnt)=size(tt,1);
+            mycone(cnt,:,k)=mean(tt);
+            alt_std(cnt,k)=std(tt(:,7));
+%             mycone(cnt,:,k)=sum(tt);            
+            alt(cnt,k)=mycone(cnt,7, k);
+            
+            
             cnt=cnt+1;
         end
         
@@ -507,7 +550,6 @@ for i = 1:length(ncells)
         set(gcf, 'Name', [dates(ncells(i), :), '  Cell ', int2str(rgcs(i)) , ' ALT   ', mode, '  ', int2str(ncones(i)), ' cones'])
         plot(alt, '-x')
         line([1 10], [0,0],'color','k')
-%         line([1 10], [mean(alt_control(:)) mean(alt_control(:))], 'color', 'k')
         bin=-0.45:0.1:0.45;
         set(gca, 'xticklabel', {num2str(bin')})
         xlabel('middle of the bin')
@@ -515,9 +557,24 @@ for i = 1:length(ncells)
     end
     
     alt_all{i}=alt;
+    alt_std_all{i}=alt_std;
+    
 end
 
+
+for i=1:4%length(ncells)
+    figure
+    subplot(1,2,1)
+    plot(alt_all{i}, '-x')
+    subplot(1,2,2)
+    plot(alt_std_all{i}, '-x')
+end
+
+
+save('/Volumes/Analysis/alex/cr_white_noise_str_mode_thr_0.2.mat', 'alt_all', 'ncones')
 save('/Volumes/Analysis/alex/cr_white_noise_incl_mode.mat', 'alt_all', 'mycone',  'ncones')
+
+
 
 load('/Volumes/Analysis/alex/cr_white_noise_incl_mode.mat', 'alt_all', 'ncones')
 for i = 1:length(ncells)
@@ -643,6 +700,246 @@ for i=1:length(ncells)
     axis([0 ncones(i) -1 1.2])
     title(['CR vs WN ', num2str(err_ab, 2), '  WN vs RF ', num2str(err_bc, 2), '  CR vs RF', num2str(err_ac, 2)])
 end
+
+
+%% play with cancelling
+
+load('/Volumes/Analysis/alex/peters_fits.mat')
+load('/Volumes/Analysis/alex/myRFfit_incl_mode.mat') % load weight estimation (by my procedure)
+load('/Volumes/Analysis/alex/subunits_weights.mat', 'subUnitID','subsweights')
+
+% myrfweights=crweights;
+
+bkgr=true; % subtract background firing
+signBorder=0.25;
+bin=[-0.5, -signBorder];% choose cone input range to look for
+percentTolerance=0.15;
+maxcones=5;
+leg=false;
+savepath='/Users/alexth/Desktop/single_cones/SUBUNITScancelling_signBorder_0.25_tolerance_0.15/myrfweights/';
+if ~isdir(savepath)
+    mkdir(savepath)
+end
+
+
+colors='cmgr';
+maxcones=10
+for i = 14:length(ncells) % loop through cells
+    
+    conerun = eval(coneruns{ncells(i)});    
+    cellID=find(conerun.cell_ids==rgcs(i));
+    run=conerun.names.rrs_prefix(end-6:end);
+    
+    
+%     myData=dir(['/Volumes/Analysis/', dates(ncells(i),:), '/subunits/data*']);
+    path2data=['/Volumes/Analysis/', dates(ncells(i),:), '/subunits/',run,'/anal/subunit/'];
+    myData=dir([path2data, int2str(rgcs(i)), '*greedy*']);
+    load([path2data, myData.name])
+    
+    locs=res.fit_SUB.locs_c;
+    all_locs=conerun.cones.centers;
+    myCone=coneID{i};
+    refconessubunits=zeros(1, length(myCone));
+    clear subunitCone
+    for j=1:size(locs,1)
+        subunitCone(j)=find(all_locs(:,1)==locs(j,1) & all_locs(:,2)==locs(j,2));
+        tmp=find(myCone == subunitCone(j));
+        if ~isempty(tmp)
+            subUnitID{i}(j)=tmp;
+        else
+            subUnitID{i}(j)=0;
+        end
+    end
+    
+    presentInd=find(subUnitID{i});
+    refconessubunits(subUnitID{i}(presentInd))=1;
+    linInd=[];
+    if size(res.fit_SUB.I_sc,1)~=size(res.fit_SUB.I_sc,2)
+        subunits=find(sum(res.fit_SUB.I_sc')>1);
+        for jj=1:length(subunits)
+            subsCones=find(res.fit_SUB.I_sc(subunits(jj),:));
+            [~,ia,~]=intersect(myCone, subunitCone(subsCones)); % cones with index ia are in subunit!
+            refconessubunits(ia)=refconessubunits(ia)+jj;
+            linInd=[linInd ia'];
+        end
+        linInd=[linInd setdiff(subUnitID{i}(presentInd),linInd)];
+    else
+        linInd=subUnitID{i}(presentInd);
+    end
+    
+
+    % load raw cone inputs
+    myinputs=conerun.cone_inputs(:, coneID{i}); 
+    
+    % multiply cone inputs by cone weight to equalize them, plot hists 
+    myrfweights{i}=myrfweights{i}/max(myrfweights{i});
+    figure
+    for refcone=1:ncones(i)        
+        myinputs(:,refcone)=myinputs(:,refcone)*myrfweights{i}(refcone);
+        subplot(4, ceil(ncones(i)/4), refcone)
+        hist(myinputs(:,refcone), -0.5:0.025:0.5)
+        axis([-.5 0.5 0 Inf])
+        title(['Cone ', int2str(refcone)])
+    end
+    
+%     saveas(gcf, ['/Users/alexth/Desktop/single_cones/cancelling/corrected_cone_inputs_distr/Cell_',int2str(i),'_',dates(ncells(i),:), '_', int2str(rgcs(i)),'.pdf'], 'pdf')
+    close(gcf)
+
+    
+    % load spiking response, subtract mean firing rate (not spont act!)
+    myrate=double(conerun.spike_rate(cellID,:)); 
+    if bkgr
+        myrate=myrate-mean(myrate);
+    end
+        
+    
+            
+%     tmpp=sort(myrfweights{i}, 'descend');
+%     if length(tmpp)>maxcones
+%         cones2take=find(myrfweights{i}>=tmpp(maxcones));
+%         
+%     else
+%         cones2take=[1:ncones(i)]';
+%     end
+
+    cones2take=linInd(1:min(length(linInd),maxcones));
+
+    numr=length(cones2take);
+    
+    figure
+    set(gcf, 'Name', ['Cell ', int2str(rgcs(i)), ', ', int2str(ncones(i)),' cones'])
+    set(gcf,'position',[1           1        1920        1105])
+    cnt=1;
+    col='k';
+    col=repmat(col,1,length(cones2take)^2);
+    frames=zeros(1, length(cones2take)^2);
+    
+    clear ylims
+    % loop through cones
+    for refcone=cones2take
+%         excones=setdiff(cones2take,refcone); % indices of all other cones
+        
+        excones=cones2take;
+        excones(excones==refcone)=[];
+        
+        % find instances of weighted cone inputs for the REF CONE within specified
+        % range (bin parameter)
+        tmp=find(myinputs(:,refcone)>= bin(1) & myinputs(:,refcone)< bin(2));
+                
+        % throw away instances too close to the beginning or to the end
+        tmp(tmp<6)=[];tmp(tmp>length(myrate)-20)=[];
+        
+    
+
+        for complCone=excones
+                       
+            refInputs=myinputs(:,refcone);
+            otherInputs=myinputs(:,complCone);
+            tmpSameAbs=find(abs(refInputs)<abs(otherInputs)*(1+percentTolerance) & abs(refInputs)>abs(otherInputs)*(1-percentTolerance));
+            tmpbothPos=find(refInputs>signBorder & otherInputs>signBorder);
+            tmpbothNeg=find(refInputs<-signBorder & otherInputs<-signBorder);
+            tmpOpposite=find(refInputs<-signBorder & otherInputs>signBorder);
+            tmpAllNeg=find(refInputs>=bin(1) & refInputs<=bin(2));
+            tmpAllPos=find(refInputs<=-bin(1) & refInputs>=-bin(2));
+            
+            subsetSamePos=intersect(tmpSameAbs,tmpbothPos);
+            subsetSameNeg=intersect(tmpSameAbs,tmpbothNeg);
+            subsetOpposite=intersect(tmpSameAbs, tmpOpposite);
+            
+            tmpAllNeg(tmpAllNeg<6 | tmpAllNeg>length(myrate)-20)=[];
+            tmpAllPos(tmpAllPos<6 | tmpAllPos>length(myrate)-20)=[];
+            subsetSamePos(subsetSamePos<6 | subsetSamePos>length(myrate)-20)=[];
+            subsetSameNeg(subsetSameNeg<6 | subsetSameNeg>length(myrate)-20)=[];
+            subsetOpposite(subsetOpposite<6 | subsetOpposite>length(myrate)-20)=[];
+         
+            
+            responseSubset=zeros(5, 25);
+            for timePoints=1:25
+                responseSubset(1, timePoints)=mean(myrate(subsetSamePos-6+timePoints)./abs(refInputs(subsetSamePos))');
+                responseSubset(2, timePoints)=mean(myrate(subsetSameNeg-6+timePoints)./abs(refInputs(subsetSameNeg))');
+                responseSubset(3, timePoints)=mean(myrate(subsetOpposite-6+timePoints)./abs(refInputs(subsetOpposite))');
+                responseSubset(4, timePoints)=mean(myrate(tmpAllNeg-6+timePoints)./abs(refInputs(tmpAllNeg))'); % all values
+                responseSubset(5, timePoints)=mean(myrate(tmpAllPos-6+timePoints)./abs(refInputs(tmpAllPos))'); % all values
+
+            end
+            
+            [r,c]=ind2sub([numr,numr],cnt);
+            if r==c
+                subplot(numr,numr,cnt)
+                plot(responseSubset(4:5,:)', 'linewidth', 2)
+                axis tight
+                ylims(1:2,cnt)=get(gca,'yLim');
+                title(['C', int2str(refcone), ', w=', num2str(myrfweights{i}(refcone),2)...
+                    ', peak=', num2str(ylims(2,cnt),2)])
+                cnt=cnt+1;
+                [r,c]=ind2sub([numr,numr],cnt);
+            end
+            
+            if r~=c && refconessubunits(refcone)>1 && (refconessubunits(refcone)==refconessubunits(complCone))
+                frames(cnt)=true;
+                col(cnt)=colors(refconessubunits(refcone));
+            else
+                frames(cnt)=false;
+                
+            end
+            
+            if  r~=c
+                subplot(numr,numr,cnt)
+                plot(responseSubset(1:3,:)', 'linewidth', 2)
+                axis tight
+                ylims(1:2,cnt)=get(gca,'yLim');
+                axis([1 25 -0.5 0.5])
+                title(['C', int2str(refcone), ' vs C', int2str(complCone)])
+                cnt=cnt+1;
+                [r,c]=ind2sub([numr,numr],cnt);
+                a=length(subsetSamePos);b=length(subsetSameNeg);d=length(subsetOpposite);
+                if leg
+                    legend(int2str([a b d]'));
+                end
+            end
+            
+
+            
+            if r==c
+                subplot(numr,numr,cnt)
+                plot(responseSubset(4:5,:)', 'linewidth', 2)
+                axis tight
+                ylims(1:2,cnt)=get(gca,'yLim');
+                title(['C', int2str(refcone), ', w=', num2str(myrfweights{i}(refcone),2)...
+                    ', peak=', num2str(ylims(2,cnt),2)])
+                cnt=cnt+1;
+                [r,c]=ind2sub([numr,numr],cnt);
+            end
+        end
+            
+    end
+    
+    ymin=min(ylims(:));
+    ymax=max(ylims(:));
+    for subpl=1:cnt-1
+        subplot(numr,numr,subpl)
+        axis([1 25 ymin ymax]);
+        line([7, 7], [ymin,ymax], 'color', 'k')
+        line([1, 25], [0,0], 'color', 'k')
+        set(gca,'xtick',0,'xticklabel','')
+        
+        
+        if frames(subpl)
+            rectangle('Position',[1,ymin,25,ymax-ymin], 'edgecolor',col(subpl), 'linewidth',2)
+        end
+    end
+    drawnow
+    
+    saveas(gcf, [savepath, 'Cell_',int2str(i),'_',dates(ncells(i),:), '_', int2str(rgcs(i)),'.pdf'], 'pdf')
+    close(gcf)
+end
+
+
+
+top_cells=[2 3];
+linear_cells=[1 4 5 13 15 18 21];
+
+
 
 %% center of mass
 load('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID')
@@ -780,14 +1077,244 @@ regions = sparse([
     18
     19
     20]);
+%% binned approach for single cell from scratch (only cone inputs are needed), cone ID not provided, mode INCL
 
-%% peter's approach for white noise binned cone inputs based matrix
-load('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID')
-load('/Volumes/Analysis/alex/cr_white_noise_incl_mode.mat', 'alt_all', 'mycone',  'ncones')
+% params
+conerun=d02s;
+rgc=2389;
+
+nconesCell=10;
+bkgr=true;
+
+% calculate responses for binned cone input
+cellID=find(conerun.cell_ids==rgc);
+[val, ic]=sort(conerun.cones.weights(:,cellID), 'descend');
+myconeID=ic(1:nconesCell);
+myinputs=conerun.cone_inputs(:, myconeID);
+myrate=double(conerun.spike_rate(cellID,:));
+if bkgr
+    myrate=myrate-mean(myrate);
+end
+alt=zeros(10, nconesCell);
+for refcone=1:nconesCell
+    excones=setdiff(1:nconesCell,refcone);
+    cnt=1;
+    for bin=-0.5:0.1:0.4        
+
+        tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + 0.1));
+        
+        tmp(tmp<6 | tmp>(length(myrate)-20))=[];
+        tt=zeros(1,25);
+        for timePoint=1:25
+            tt(timePoint)=mean(myrate(tmp-6+timePoint));
+        end
+        alt(cnt,refcone)=tt(7);
+        cnt=cnt+1;
+    end    
+end
+      
+figure
+plot(alt, '-x')
+line([1 10], [0,0],'color','k')
+bin=-0.45:0.1:0.45;
+set(gca, 'xticklabel', {num2str(bin')})
+xlabel('middle of the bin')
+axis tight
+
+% calculate relative cone weights (binned approach)
+mycrs=alt(1:5, :)';
+mycrsx=repmat([-0.4:0.1:0],nconesCell,1);
+mycrs(:,5)=max(mean(mycrs(:,5)), 0);
+
+[p resnorm residual] = normcdfxscalesimple(mycrs, mycrsx, 'plot', false, 'title', false);
+myrfweights = p(1:end-2)';
+myrfweights=myrfweights/max(myrfweights);
+
+%plot cones with radius of weight index
+locs=conerun.cones.centers(myconeID,:);
+figure
+viscircles(locs,myrfweights)
+hold on
+text(locs(:,1),locs(:,2),int2str([1:nconesCell]'));
+axis ij
+axis([0 600 0 600])
+
+
+% cancelation analysis
+%parameters
+bkgr=true; % subtract background firing
+signBorder=0.25;
+bin=[-0.5, -signBorder];% choose cone input range to look for
+percentTolerance=0.15;
+maxcones=10;
+leg=false;
+
+%calculation
+myinputs=conerun.cone_inputs(:, myconeID);
 
 figure
-sepplots=false;
-twoplots=true;
+for refcone=1:nconesCell
+    myinputs(:,refcone)=myinputs(:,refcone)*myrfweights(refcone);
+    subplot(4, ceil(nconesCell/4), refcone)
+    hist(myinputs(:,refcone), -0.5:0.025:0.5)
+    axis([-.5 0.5 0 Inf])
+    title(['Cone ', int2str(refcone)])
+end
+
+myrate=double(conerun.spike_rate(cellID,:));
+if bkgr
+    myrate=myrate-mean(myrate);
+end
+
+tmpp=sort(myrfweights, 'descend');
+if length(tmpp)>maxcones
+    cones2take=find(myrfweights>=tmpp(maxcones));
+    
+else
+    cones2take=[1:nconesCell]';
+end
+
+numr=length(cones2take);
+
+figure
+set(gcf, 'Name', ['Cell ', int2str(rgc), ', ', int2str(nconesCell),' cones'])
+set(gcf,'position',[1           1        1920        1105])
+cnt=1;
+
+clear ylims
+% loop through cones
+for refcone=cones2take'
+    excones=setdiff(cones2take,refcone); % indices of all other cones
+    
+    % find instances of weighted cone inputs for the REF CONE within specified
+    % range (bin parameter)
+    tmp=find(myinputs(:,refcone)>= bin(1) & myinputs(:,refcone)< bin(2));
+    
+    % throw away instances too close to the beginning or to the end
+    tmp(tmp<6)=[];tmp(tmp>length(myrate)-20)=[];
+    
+    
+    
+    for complCone=excones'
+%         
+%         figure;plot(refInputs(tmpAllNeg),otherInputs(tmpAllNeg),'*')
+%         tt=sum(myinputs(tmpAllNeg,[2 4:end])');
+%         figure
+%         hist(tt)
+        
+        refInputs=myinputs(:,refcone);
+        otherInputs=myinputs(:,complCone);
+        tmpSameAbs=find(abs(refInputs)<abs(otherInputs)*(1+percentTolerance) & abs(refInputs)>abs(otherInputs)*(1-percentTolerance));
+        tmpbothPos=find(refInputs>signBorder & otherInputs>signBorder);
+        tmpbothNeg=find(refInputs<-signBorder & otherInputs<-signBorder);
+        tmpOpposite=find(refInputs<-signBorder & otherInputs>signBorder);
+        tmpAllNeg=find(refInputs>=bin(1) & refInputs<=bin(2));
+        tmpAllPos=find(refInputs<=-bin(1) & refInputs>=-bin(2));
+        
+        subsetSamePos=intersect(tmpSameAbs,tmpbothPos);
+        subsetSameNeg=intersect(tmpSameAbs,tmpbothNeg);
+        subsetOpposite=intersect(tmpSameAbs, tmpOpposite);
+        
+        tmpAllNeg(tmpAllNeg<6 | tmpAllNeg>length(myrate)-20)=[];
+        tmpAllPos(tmpAllPos<6 | tmpAllPos>length(myrate)-20)=[];
+        subsetSamePos(subsetSamePos<6 | subsetSamePos>length(myrate)-20)=[];
+        subsetSameNeg(subsetSameNeg<6 | subsetSameNeg>length(myrate)-20)=[];
+        subsetOpposite(subsetOpposite<6 | subsetOpposite>length(myrate)-20)=[];
+        
+        
+%         tt=[];
+%         for i=1:length(subsetOpposite)
+%             tt=[tt; myrate((subsetOpposite(i)-3):(subsetOpposite(i)+6))];
+%         end
+%         figure
+%         plot(tt')
+%         figure
+%         hist(tt(:,5), -1:0.5:5)
+        
+        
+        responseSubset=zeros(5, 25);
+        for timePoints=1:25
+            responseSubset(1, timePoints)=mean(myrate(subsetSamePos-6+timePoints)./abs(refInputs(subsetSamePos))');
+            responseSubset(2, timePoints)=mean(myrate(subsetSameNeg-6+timePoints)./abs(refInputs(subsetSameNeg))');
+            responseSubset(3, timePoints)=mean(myrate(subsetOpposite-6+timePoints)./abs(refInputs(subsetOpposite))');
+            responseSubset(4, timePoints)=mean(myrate(tmpAllNeg-6+timePoints)./abs(refInputs(tmpAllNeg))'); % all values
+            responseSubset(5, timePoints)=mean(myrate(tmpAllPos-6+timePoints)./abs(refInputs(tmpAllPos))'); % all values
+            
+        end
+        
+        [r,c]=ind2sub([numr,numr],cnt);
+        if r==c
+            subplot(numr,numr,cnt)
+            plot(responseSubset(4:5,:)', 'linewidth', 2)
+            axis tight
+            ylims(1:2,cnt)=get(gca,'yLim');
+            title(['C', int2str(refcone), ', w=', num2str(myrfweights(refcone),2)...
+                ', peak=', num2str(ylims(2,cnt),2)])
+            cnt=cnt+1;
+            [r,c]=ind2sub([numr,numr],cnt);
+        end
+        if  r~=c
+            subplot(numr,numr,cnt)
+            plot(responseSubset(1:3,:)', 'linewidth', 2)
+            axis tight
+            ylims(1:2,cnt)=get(gca,'yLim');
+            axis([1 25 -0.5 0.5])
+            title(['C', int2str(refcone), ' vs C', int2str(complCone)])
+            cnt=cnt+1;
+            [r,c]=ind2sub([numr,numr],cnt);
+            a=length(subsetSamePos);b=length(subsetSameNeg);d=length(subsetOpposite);
+            if leg
+                legend(int2str([a b d]'));
+            end
+        end
+        if r==c
+            subplot(numr,numr,cnt)
+            plot(responseSubset(4:5,:)', 'linewidth', 2)
+            axis tight
+            ylims(1:2,cnt)=get(gca,'yLim');
+            title(['C', int2str(refcone), ', w=', num2str(myrfweights(refcone),2)...
+                ', peak=', num2str(ylims(2,cnt),2)])
+            cnt=cnt+1;
+            [r,c]=ind2sub([numr,numr],cnt);
+        end
+    end
+    
+end
+
+ymin=min(ylims(:));
+ymax=max(ylims(:));
+for subpl=1:cnt-1
+    subplot(numr,numr,subpl)
+    axis([1 25 ymin ymax]);
+    line([7, 7], [ymin,ymax], 'color', 'k')
+    line([1, 25], [0,0], 'color', 'k')
+    set(gca,'xtick',0,'xticklabel','')
+end
+
+
+%% plot alt and save
+
+load('/Volumes/Analysis/alex/cr_white_noise_incl_mode.mat', 'alt_all', 'mycone',  'ncones')
+savepath='/Users/alexth/Desktop/single_cones/alt/';
+for i=1:length(ncells)
+    figure
+    plot(alt_all{i}, '-x')
+    line([1 10], [0 0], 'color', 'k')
+    title(['Cell_',int2str(i),'_',dates(ncells(i),:), '_', int2str(rgcs(i))], 'Interpreter', 'None')
+    saveas(gcf, [savepath, 'Cell_',int2str(i),'_',dates(ncells(i),:), '_', int2str(rgcs(i)),'.pdf'], 'pdf')
+    close(gcf)
+end
+
+
+%% peter vs binned 
+load('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID')
+load('/Volumes/Analysis/alex/cr_white_noise_incl_mode.mat', 'alt_all', 'mycone',  'ncones')
+load('/Volumes/Analysis/alex/cr_white_noise_str_mode_thr_0.2.mat', 'alt_all', 'ncones')
+
+
+figure
+sepplots=true;
+twoplots=false;
 thresh=0.25;
 subset=1:21;
 % subset=setdiff(subset, [linear_cells]);
@@ -1212,143 +1739,3 @@ plot(y)
 
 
 
-%% Scatterplot - gather data -- OLDER VERSION
-
-% cell array of all variables
-clear allruns
-ncells=[6 1 5 4]; % n of cones in each datarun
-dates = ['2011-12-13-2'; '2012-04-13-1'; '2012-09-06-0'; '2012-09-21-2'];
-allruns.rgcs = [1321 1351 2251 3586 4576 5162 6136 5103 5746 6031 6317 7022 5086 6346 6406 7696];
-allruns.padfactors  = [6 6 6 6 6 6 5 4 4 5 4 7 5 4.2 8 5];
-allruns.badregionss = {  [] [10] [8 9] [13] [6 7 8 10 11] [] [] [] [] [] [] [] [] [16] [15] []};
-coneruns = {'piece.d08s' 'piece.d06s' 'piece.d04s' 'piece.d09'};
-rasterruns = {'piece.d10' 'piece.d09cm' 'piece.d08' 'piece.d13'};
-stableruns = {'piece.d14s' 'piece.d10cm' 'piece.d09' 'piece.d14'};
-allruns.ars = [1 1 1 1 1 1 1 1 1 1 1 1 1 1.2 1 1];
-
-cnt=1;
-for k=1:length(ncells)
-    for j=1:ncells(k)
-        allruns.date{cnt} = dates(k,:);
-        piece = pieces(dates(k,:));
-        allruns.piece{cnt}=piece;
-        allruns.conerun{cnt}=eval(coneruns{k});        
-        allruns.rasterrun{cnt}=eval(rasterruns{k});
-        allruns.stablerun{cnt}=eval(stableruns{k});
-        mymaps=coneruns{k}(7:end);
-        allruns.rasterrun{cnt}.map=eval(['allruns.rasterrun{cnt}.map' mymaps]);
-        allruns.stablerun{cnt}.map=eval(['allruns.stablerun{cnt}.map' mymaps]);
-        cnt=cnt+1;
-    end
-end
-
-
-
-
-sepfigs = false;
-if ~sepfigs, figure; end
-clear rfweights crweights f gof
-
-for i = 1:sum(ncells)
-    conerun = allruns.conerun{i};
-    rasterrun = allruns.rasterrun{i};
-    stablerun = allruns.stablerun{i};
-
-    conerun.rgcs = allruns.rgcs(i);
-    stablerun.rgcs = stablerun.map(get_cell_indices(conerun, conerun.rgcs));
-    if i==7
-        rasterrun.rgcs = stablerun.rgcs;
-    else
-        rasterrun.rgcs = rasterrun.map(get_cell_indices(conerun, conerun.rgcs));
-    end
-    
-    padfactor = allruns.padfactors(i);
-    badregions = allruns.badregionss{i};
-    ar = allruns.ars(i);
-   
-    localmask = stimmasklocal(conerun, conerun.rgcs, rasterrun.stimulus.mapims{1}, 'az_pad_factor', padfactor);
-    localmap = localmask.*rasterrun.stimulus.mapims{1};
-    if ~isempty(badregions)
-        for r = badregions, localmap(localmap == r) = 0; end
-    end
-    
-    if sepfigs, figure; end
-    [axs rfweights{i} crweights{i} f{i} gof(i)] = allcones_plot(conerun, rasterrun, localmap, padfactor, 'stablerun', stablerun, 'ar', ar);        
-    drawnow
-    
-end
-
-figure
-hold on
-for i=1:length(rfweights)
-    plot(rfweights{i}, f{i}.a.*crweights{i}, '.k');     
-end
-plot([-.2 1.2], [-0.2 1.2], 'k');
-plot([-0.2 1.2], [0 0], 'k')
-plot([0 0], [-0.2 1.2],'k')
-axis([-0.2 1.2 -0.2 1.2])
-
-
-
-%% alternative rf calculation
-myCell=16;
-
-
-conerun = allruns.conerun{myCell};
-rasterrun = allruns.rasterrun{myCell};
-
-padfactor = allruns.padfactors(myCell);
-conerun.rgcs = allruns.rgcs(myCell);
-
-localmask = stimmasklocal(conerun, conerun.rgcs, rasterrun.stimulus.mapims{1}, 'az_pad_factor', padfactor);
-localmap = localmask.*rasterrun.stimulus.mapims{1};
-
-thresh=0.25;
-
-nr=7; nc=7;
-figure
-cnt=1;
-allgof=zeros(1,49);
-for npixels=1:49;
-    
-    marksthresh=3.5;
-    
-    stimmap=localmap;
-    regions = setdiff(unique(stimmap), 0);
-    
-    mapsize = size(stimmap);
-    scale = mapsize ./ [conerun.stimulus.field_width conerun.stimulus.field_height];
-    bounds = autozoom_to_fit(conerun, conerun.rgcs, padfactor, scale, ar);
-    localpoly = nyc2poly(map2manhattan(stimmap));
-    
-    % Plot RF
-    % figure
-    conerun = setsimplemarks(conerun, conerun.rgcs, marksthresh);
-    % plot_rf_stimmap(conerun, conerun.rgcs, localpoly, 'fit', false, 'az_pad_factor', padfactor, 'az_aspect_ratio', ar);
-    
-    % RF weights
-    rfweights = calc_stim_rf_weights(conerun, conerun.rgcs, stimmap, 'sumStrongest', npixels);
-    rfweights = rfweights(regions);
-    rfweights = rfweights./max(rfweights);
-    
-    % delete weak cones
-    tt=find(rfweights<thresh);
-    rfweights(tt)=[];
-    tmp=crweights{myCell};
-    tmp(tt)=[];
-    % Calculate normalization, check
-    % figure
-    subplot(nr,nc,cnt)
-    
-    [f gof] = fit(tmp, rfweights, fittype({'x'}));
-    plot(rfweights, f.a.*tmp, '.k'); hold on; plot([0 1], [0 1], 'k');
-    axis square
-    title([num2str(gof.rsquare), ', n pix = ' int2str(npixels)])
-    drawnow
-    allgof(cnt) = gof.rsquare;
-    cnt=cnt+1;
-end
-
-figure
-hold on
-plot(1:49, allgof)

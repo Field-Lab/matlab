@@ -90,18 +90,18 @@ end
 
 % plot the other cones
 if 1
-hold on
-[~,xInds] = isrange(dat.locations(:,1),...
-  celldat.xRange(1),celldat.xRange(2));
-[~,yInds] = isrange(dat.locations(:,2),...
-  celldat.yRange(1),celldat.yRange(2));
-inds = xInds & yInds;
-inds(celldat.coneIds) = 0;
-xPos = dat.locations(inds,1) - min(celldat.xRange) + 1;
-yPos = dat.locations(inds,2) - min(celldat.yRange) + 1;
-for i=1:length(xPos)
-    circle(xPos(i),yPos(i),coneSz,'none','w',coneEdge);
-end
+    hold on
+    [~,xInds] = isrange(dat.locations(:,1),...
+        celldat.xRange(1),celldat.xRange(2));
+    [~,yInds] = isrange(dat.locations(:,2),...
+        celldat.yRange(1),celldat.yRange(2));
+    inds = xInds & yInds;
+    inds(celldat.coneIds) = 0;
+    xPos = dat.locations(inds,1) - min(celldat.xRange) + 1;
+    yPos = dat.locations(inds,2) - min(celldat.yRange) + 1;
+    for i=1:length(xPos)
+        circle(xPos(i),yPos(i),coneSz,'none','w',coneEdge);
+    end
 end
 %%
 

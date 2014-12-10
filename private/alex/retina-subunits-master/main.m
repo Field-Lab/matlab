@@ -74,12 +74,20 @@ dataset='2012-04-13-1/data006'; % cellType 4, 'OFF midget'
 rgcs=6136;
 cellTypeName='OFF midget';
 
+dataset='2012-04-13-1/data002'; % cellType 4, 'OFF midget'
+rgcs=2389;
+cellTypeName='OFF midget';
+
 dataset='2012-09-06-0/data004'; %cellType 10,  'OFF sparsepicks'
 rgcs=[5103 5746 6031 6317 7022];
 cellTypeName='OFF sparsepicks';
 
 dataset='2012-08-21-2/data001'; %cellType 4,  'OFF midget'
 rgcs=[391 2266 2828 5447 7682];
+cellTypeName='OFF midget';
+
+dataset='2012-04-13-1/data002'; % cellType 4, 'OFF midget'
+rgcs=7158;
 cellTypeName='OFF midget';
 
 
@@ -93,3 +101,7 @@ toc
 disp('now running figures')
 batchAnal(workstation,dataset,cellTypeName,'subunit-local',0,1,0.33, rgcs)
 
+
+a=load('/Volumes/Analysis/2010-09-24-1/stimuli/off-midget-primary-secondary');
+figure
+imagesc(a)
