@@ -24,27 +24,69 @@
 % Saves a file containing the speed estimate for each trial to the specified
 % folder
 
-function motion_script_pooled_asFunction(data_set, data_run, config_num, vel)
+function motion_script_pooled_asFunction(varargin)
+
+
+    run_opt.data_set_vec = {'2007-03-27-1'};
+    run_opt.data_run_vec = 15; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+    run_opt.config_num_vec = 3; 
+    run_opt.cell_type_vec{1} = {'On parasol'}; % on/off parasol, on/off midget
+%     run_opt.cell_type_vec{2} = {'On midget'}; % on/off parasol, on/off midget
+    run_opt.velocity_exp_vec = 96; % >0
+if length(varargin) == 1
+    run_opt.data_set_vec = varargin{1};
+elseif length(varargin) == 2
+    run_opt.data_set_vec = varargin{1};
+    run_opt.data_run_vec = varargin{2}; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+elseif length(varargin) == 3
+    run_opt.data_set_vec = varargin{1};
+    run_opt.data_run_vec = varargin{2}; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+    run_opt.config_num_vec = varargin{3};
+elseif length(varargin) == 4
+    run_opt.data_set_vec = {varargin{1}};
+    run_opt.data_run_vec = varargin{2}; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+    run_opt.config_num_vec = varargin{3};
+       run_opt.velocity_exp_vec = varargin{4}; % >0
+elseif length(varargin) == 5
+    run_opt.data_set_vec = {varargin{1}};
+    run_opt.data_run_vec = varargin{2}; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+    run_opt.config_num_vec = varargin{3};
+       run_opt.velocity_exp_vec = varargin{4}; % >0
+    run_opt.cell_type_vec{1} = {varargin{5}}; % on/off parasol, on/off midget
+    run_opt.cell_type2_vec{2} = {varargin{5}}; % on/off parasol, on/off midget
+elseif length(varargin) == 6
+    run_opt.data_set_vec = {varargin{1}};
+    run_opt.data_run_vec = varargin{2}; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+    run_opt.config_num_vec = varargin{3};
+    run_opt.velocity_exp_vec = varargin{4}; % >0
+    run_opt.cell_type_vec{1} = {varargin{5}}; % on/off parasol, on/off midget
+    run_opt.cell_type2_vec{2} = {varargin{6}}; % on/off parasol, on/off midget
+end
+
+
+for i = 1:length(run_opt.data_run_vec)
+    
+    run_opt.data_set = run_opt.data_set_vec{i};
+    run_opt.data_run = run_opt.data_run_vec(i); % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+    run_opt.config_num = run_opt.config_num_vec(i); 
+    run_opt.cell_type{1} = run_opt.cell_type_vec{i}; % on/off parasol, on/off midget
+    run_opt.velocity_exp = run_opt.velocity_exp_vec(i);
+    if exist('run_opt.cell_type2_vec')
+        run_opt.cell_type{2} = run_opt.cell_type2_vec{i}; % on/off parasol, on/off midget
+    end
 % DATA PARAMETERS
 run_opt.load = true; % T/F
-run_opt.data_set = data_set;
-run_opt.data_run = data_run; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-run_opt.config_num = config_num; 
-% run_opt.cell_type = cell_type; % on/off parasol, on/off midget
-run_opt.cell_type{1} = 'On parasol'; % on/off parasol, on/off midget
-run_opt.cell_type{2} = 'On midget'; % on/off parasol, on/off midget
-run_opt.velocity_exp = vel; % >0
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
+run_opt.direction = 'right'; % 'left' or 'right'
+run_opt.save = 0;
 
-run_opt.direction = 'left'; % 'left' or 'right'
-run_opt.courseIter = 6;
+
 % NUMERICAL PARAMETERS
-
+run_opt.courseIter = 6;
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-4;
 
-
 % ANALYSES TO RUN
 run_opt.downsample_spikes = false; % must run on bertha
 run_opt.raster = false; % T/F
@@ -52,15 +94,19 @@ run_opt.rasterPerTrial = false; % T/F
 run_opt.trial_estimate = true; % T/F
 
 
-
-
-
-
-% ANALYSES TO RUN
-run_opt.downsample_spikes = false; % must run on bertha
-run_opt.raster = false; % T/F
-run_opt.rasterPerTrial = false; % T/F
-run_opt.trial_estimate = true; % T/F
+% Get computer identification
+sid = '';
+ni = java.net.NetworkInterface.getNetworkInterfaces;
+while ni.hasMoreElements
+    addr = ni.nextElement.getHardwareAddress;
+    if ~isempty(addr)
+        addrStr = dec2hex(int16(addr)+128);
+        sid = [sid, '.', reshape(addrStr,1,2*length(addr))];
+    end
+end
+run_opt.sid = sid; 
+% Bertha: '.163C7602AD5C'; 
+% My computer: '.CE033C0CF908'
 
 tic;
 
@@ -294,7 +340,7 @@ if run_opt.trial_estimate
     strsig1 = zeros(1,length(velocity));
     
     % Run coarse error function to initialize velocity
-    for i =1:length(tr)
+    for i =1:10%length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
             [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction);
@@ -308,28 +354,32 @@ if run_opt.trial_estimate
     end
     
     % Find speed estimate
-    parfor i =1:length(tr)
+    parfor i =1:10%length(tr)
 
         [estimates(i)] = fminunc(@(v) -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction), run_opt.trial_estimate_start(i), options);
 
         fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
     end
+    run_opt.elapsedTime=toc
     %save results
 %     foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMandOnP', run_opt.data_set);
 %     filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
-     foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/OnMandOnP', run_opt.data_set);
-    filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
-   
-    if exist(foldername)
-        save(filename, 'estimates', 'run_opt')
-    else
-        mkdir(foldername);
-        save(filename, 'estimates', 'run_opt')
-    end
-        
+    if run_opt.save
+        foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/OnMandOnP', run_opt.data_set);
+        filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/resultsColleen/%s/DarkLeft/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+
+        if exist(foldername)
+            save(filename, 'estimates', 'run_opt')
+        else
+            mkdir(foldername);
+            save(filename, 'estimates', 'run_opt')
+        end
+   end
+    
 end
 
 % send email when done
 % gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
 
-ElapsedTime=toc
+
+end
