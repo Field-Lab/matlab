@@ -1,6 +1,6 @@
 %graphs for presentation:
 close all
-requests = {'DBMR', 'DBMRpooled'};
+requests = {'ALL', 'ALLpooled'};
 
 for j = 1:size(requests, 2)
     request = requests{j};
@@ -23,11 +23,15 @@ for j = 1:size(requests, 2)
         tag = {'Bright Bar Moving Left'; 'ON Parasol pooled with ON Midget'};
     elseif strcmp('DBMRpooled', request);
         tag = {'Dark Bar Moving Right'; 'ON Parasol pooled with ON Midget'};
+    elseif strcmp('DBMLpooled', request);
+        tag = {'Dark Bar Moving Left'; 'ON Parasol pooled with ON Midget'};
+    elseif strcmp('ALLpooled', request);
+        tag = {'All Stimuli'; 'ON Parasol pooled with ON Midget'};
     end
     
     
     data  = getData(request);
-    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request)|| strcmp('DBMRpooled', request);
+    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request)|| strcmp('DBMRpooled', request)|| strcmp('DBMLpooled', request)|| strcmp('ALLpooled', request);
         meanOnPOnM = data(:,6);
         stdOnPOnM = data(:,7);
     else
@@ -43,11 +47,12 @@ for j = 1:size(requests, 2)
         
         meanOffM(:,j) = data(:,12);
         stdOffM(:,j) = data(:,13);
+        date = zeros(14,size(requests, 2));
+
     end
     
     filter(:,j) = data(:,5);
     delta(:,j) = data(:,4)*12;
-    date(:,j) = zeros(14,1);
     
     if strcmp('tau', request)
         tau(:,j) = data(:,14);
@@ -63,7 +68,7 @@ for j = 1:size(requests, 2)
     
     
     %Normalize
-    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request);
+    if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request)|| strcmp('DBMLpooled', request)|| strcmp('ALLpooled', request);
         stdOnPOnM = stdOnPOnM./delta(:,j);
         meanOnPOnM = meanOnPOnM*5/225*10;
         
@@ -80,7 +85,7 @@ for j = 1:size(requests, 2)
         meanOffM(:,j) = meanOffM(:,j)*5/225*10;
         
     end
-    if ~(strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request))
+    if ~(strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request)|| strcmp('DBMLpooled', request)|| strcmp('ALLpooled', request))
         graphSpeed(meanOnP(:,j), meanOffP(:,j), meanOnM(:,j), meanOffM(:,j),stdOnP(:,j), stdOffP(:,j), stdOnM(:,j), stdOffM(:,j), delta(:,j), tag)
         graphByDate(stdOnP(:,j), stdOffP(:,j), stdOnM(:,j), stdOffM(:,j), date(:,j), tag)
         graphStimWidths(stdOnP(:,j), stdOffP(:,j), stdOnM(:,j), stdOffM(:,j), filter(:,j), tag)
