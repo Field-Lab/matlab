@@ -20,7 +20,7 @@ dirInfo = dir(elecStimPath);
 elecsByPattern = full(getElecsFromPatternFiles([elecStimPath 'pattern_files/'])); %load the matrix that gives electrode numbers indexed by pattern
 
 % Load thresholds for bidirection axon bundle activation (determined by visual inspection of data)
-temp = load('~/Development/matlab-standard/private/lauren/MATLAB_code/analysis/dataset-specific/axonBundleThresholds_byPattern_2012_09_24_3_data008.mat');
+temp = load('~/git_code/matlab/private/lauren/MATLAB_code/analysis/dataset-specific/axonBundleThresholds_byPattern_2012_09_24_3_data008.mat');
 axonBundleThresholds = temp.axonBundleThresholds_byPattern_2012_09_24_3_data008;
 %%
 warning('off','stats:nlinfit:IllConditionedJacobian');

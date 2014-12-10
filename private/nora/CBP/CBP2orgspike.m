@@ -1,12 +1,12 @@
 % take a spike train from the same experiment and reformat it
 
 % set these three things
-cell='ONPar_1772';
+cell='OFFPar_1471';
 exp='2012-08-09-3';
 type='NSEM';
 
 % load CBP spikes here
-load('/Volumes/Analysis/nora/CBPSpikeSort/NSEM_cell_1772_long_share.mat')
+load('/Volumes/Analysis/nora/CBPSpikeSort/NSEM_cell_1471_long_share_data005.mat')
 CBP_spike_train=double(spk_tm)/20000;
 
 % load original organized spikes
