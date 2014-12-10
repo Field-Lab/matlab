@@ -3,6 +3,7 @@
 % electrodes and for different stimulation amplitudes for 1-electrode stim
 % Dataset 2014-07-24-0
 %% Plot the artifact recorded using TTX
+<<<<<<< HEAD
 datasets = [2:13 25]
 for dataset = datasets;
 	patts = [40 36 30 29 9 380 371 363 374 325 381 347];
