@@ -70,7 +70,7 @@ for j = 1:size(requests, 2)
     %Normalize
     if strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request)|| strcmp('DBMLpooled', request)|| strcmp('ALLpooled', request);
         stdOnPOnM = stdOnPOnM./delta(:,j);
-        meanOnPOnM = meanOnPOnM*5/225*10;
+        meanOnPOnM = convertMeanToDegSec(meanOnPOnM);
         
     else
         
@@ -79,10 +79,10 @@ for j = 1:size(requests, 2)
         stdOnM(:,j) = stdOnM(:,j)./delta(:,j);
         stdOffM(:,j) = stdOffM(:,j)./delta(:,j);
         
-        meanOnP(:,j) = meanOnP(:,j)*5/225*10;
-        meanOffP(:,j) = meanOffP(:,j)*5/225*10;
-        meanOnM(:,j) = meanOnM(:,j)*5/225*10;
-        meanOffM(:,j) = meanOffM(:,j)*5/225*10;
+        meanOnP(:,j) = convertMeanToDegSec(meanOnP(:,j));
+        meanOffP(:,j) =  convertMeanToDegSec(meanOffP(:,j));
+        meanOnM(:,j) =  convertMeanToDegSec(meanOnM(:,j));
+        meanOffM(:,j) =  convertMeanToDegSec(meanOffM(:,j));
         
     end
     if ~(strcmp('BBMRpooled', request) || strcmp('BBMLpooled', request) || strcmp('DBMRpooled', request)|| strcmp('DBMLpooled', request)|| strcmp('ALLpooled', request))
