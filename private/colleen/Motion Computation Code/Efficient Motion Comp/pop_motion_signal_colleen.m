@@ -1,4 +1,4 @@
-function [sig_str] = pop_motion_signal_colleen(velocity, spikes, indices1, indices2, x_pos, trigger, trial_length, tau, tol, datarun, direction)
+function [sig_str] = pop_motion_signal_colleen(velocity, spikes, indices1, indices2, x_pos, trigger, trial_length, tau, tol, datarun, direction, stx)
 %POP_MOTION_SIGNAL calculates the cumulative motion signal for a given velocity between all pairs in population of neurons.
 %   sig_str = POP_MOTION_SIGNAL(velocity, spikes, indices1, indices2, x_pos, trigger, stop, tau)
 %   caluclates the signal strength for the given velocity where:
@@ -37,7 +37,7 @@ function [sig_str] = pop_motion_signal_colleen(velocity, spikes, indices1, indic
 % Modified for faster motion signal computation by Colleen Rhoades 2014
 % rhoades@stanford.edu
 
-global savedVariables
+
 if nargin < 9
     tol = 1e-3;
 end
@@ -51,13 +51,11 @@ numberOfT = 100; % determined to be good enough
 t = linspace(0, trial_length, numberOfT);
 valueAtEachT = zeros(length(t),2);
 
-if strfind(datarun{1,1}.names.rrs_params_path, '2007-03-27-1') % Run with 8 stixel STA
+
     % reference is set to 0 (still works if the 0 is changed to another
     % number)
-    dx = x_pos(indices1)*0.8+0; % HARD CODED 0.8 FOR MY DATA : CHANGE THIS
-else % Run with 10 stixel STA
-    dx = x_pos(indices1)+0;
-end
+    dx = x_pos(indices1)*stx/10;
+
 
 
 
