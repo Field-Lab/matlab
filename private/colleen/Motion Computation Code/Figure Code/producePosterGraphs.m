@@ -351,7 +351,7 @@ run_opt.data_run = 4; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 200
 run_opt.config_num = 1; % 1-4 %Which type of stimulus to look at
 
 run_opt.cell_type = 'On midget'; % on/off parasol, on/off midget
-
+run_opt.direction = 'right';
 run_opt.cell_types = {'Off midget', 'Off parasol', 'On midget', 'On parasol'};
 run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
 
@@ -364,6 +364,14 @@ run_opt.raster = false; % T/F
 run_opt.rasterPerTrial = false; % T/F
 run_opt.trial_estimate = true; % T/F
 
+  if strcmp(run_opt.data_set, '2007-03-27-1')
+        run_opt.stx = 8;
+    elseif strcmp(run_opt.data_set, '2007-08-24-4')
+        run_opt.stx = 10;
+    else
+        run_opt.stx = 10;
+  end
+    
 % Load data fresh
 if run_opt.load
     
@@ -419,8 +427,7 @@ strsig1 = zeros(1,length(velocity));
 
 parfor j = 1:length(velocity)
     v = velocity(j);
-    [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(23), stop, run_opt.tau, run_opt.tol*.1, datarun);
-    
+    [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(23), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx);
 end
 
 [x1,y1] = min(strsig1);
@@ -456,7 +463,7 @@ set(gcf,'color','w');
 
 %%
 
-load('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/2007-08-24-4/BrightRight/On parasol_data_run_10_config_2.mat')
+load('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/2007-08-24-4/BrightRight/On parasol_data_run_10_config_2.mat')
 
 figure;
 histfit(estimates*5/225*10, 10)
@@ -470,7 +477,7 @@ set(children(2),'FaceColor',[1 1 1],'EdgeColor','k');
 set(gcf,'color','w');
 
 
-load('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/2007-08-24-4/BrightRight/Off parasol_data_run_06_config_3.mat')
+load('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/resultsColleen/2007-08-24-4/BrightRight/Off parasol_data_run_06_config_3.mat')
 figure;
 histfit(estimates*5/225*10, 10)
 % xlim([10.4 11.07]);
@@ -482,7 +489,7 @@ children = get(gca,'children');
 set(children(2),'FaceColor',[1 1 1],'EdgeColor','k');
 set(gcf,'color','w');
 
-load('/Users/vision/Desktop/GitHub code repository/private/colleen/colleenResults/2007-08-24-4/BrightRight/On midget_data_run_02_config_9.mat')
+load('/Users/vision/Desktop/GitHub code repository/private/colleen/colleen/Results/resultsColleen/2007-08-24-4/BrightRight/On midget_data_run_02_config_9.mat')
 figure;
 histfit(estimates*5/225*10, 10)
 % xlim([10.4 11.07]);
