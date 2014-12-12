@@ -129,7 +129,7 @@ if analysisMode
             targetEiMinPos(i) = find(squeeze(targetEi{i}(channelsToUse==centerChannel,:))...
                 ==min(squeeze(targetEi{i}(channelsToUse==centerChannel,:)))); %position of minimum on primary electrode
             if  targetEiMinPos(i)<=10 % LG 3/7/14 to prevent breaking at line 159
-                fprintf('Expect a %d sample point misalignment in the success traces with the EI templates (line 132 refreshEiPlots.m)',11-targetEiMinPos(i));
+                fprintf('Expect a %d sample point misalignment in the success traces with the EI templates (line 132 refreshEiPlots.m)\n',11-targetEiMinPos(i));
                 targetEiMinPos(i) = 11; 
             end
             nSpikes(i) = sum(latencies(:,i)~=0);

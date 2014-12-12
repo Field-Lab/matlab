@@ -91,6 +91,14 @@ end
 K  = fittedGLM.linearfilters.Stimulus.Filter;
 K  = reshape(K, [ROI_pixels, length(frame_shifts)]);
 
+% HUGE HACK AKHeitman 2014-10-21
+% rk1 filters are misscaled... too hard to dig out
+% rk1 filters are fit fine
+% this is confirmed to be the correct factor though!
+if strcmp(fittedGLM.GLMType.stimfilter_mode, 'rk1')
+    K = 2*K;
+end
+
 KX = zeros(ROI_pixels, params.frames);
 for i_pixel = 1:ROI_pixels
     X_frame_shift = prep_timeshift(X_frame(i_pixel,:),frame_shifts);
