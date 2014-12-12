@@ -140,8 +140,8 @@ for icond=2:6
     plot(fitsd{1},fitsd{icond},'.r');
     hold on
     plot(clipsd{1},clipsd{icond},'.b');
-    xlim([0,0.7]);
-    ylim([0,0.7]);
+    xlim([0,0.4]);
+    ylim([0,0.4]);
     hold on
     plot(0:0.1:0.7,0:0.1:0.7,'r');
     xlabel('Condition 1 sd');
@@ -215,9 +215,9 @@ for icond=2:6
     
     plot(fitsd2{1},fitsd2{icond},'.r');
     hold on
-    plot(clipsd2{1},clipsd2{icond},'.b');
-    xlim([0,0.7]);
-    ylim([0,0.7]);
+   plot(clipsd2{1},clipsd2{icond},'.b');
+    xlim([0,0.4]);
+    ylim([0,0.4]);
     hold on
     plot(0:0.1:0.7,0:0.1:0.7,'r');
     xlabel('Condition 1 sd');
