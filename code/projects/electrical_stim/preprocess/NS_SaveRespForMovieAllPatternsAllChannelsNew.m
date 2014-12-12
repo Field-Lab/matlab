@@ -127,7 +127,7 @@ for i=1:nMovies-1 % the last movie is expected to be empty.
         % Checks to make sure raw data file has all of the samples that the stimulus files thinks it does.
         if totalSamples <= movieBegin+repetitionPeriod*j+traceLength
             err = MException('MATLAB:rawDataMissingSamples', ...
-                ['Raw data file ' full_path ' does not have as many samples as expected by stimulus files']);
+                ['Raw data file ' rawDataPath ' does not have as many samples as expected by stimulus files']);
             throw(err);
         end
        

@@ -20,6 +20,16 @@ global channel_count channels
 channel_count=0;
 sampling_rate=20000;
 
+% let users pick some channels to look at if they want
+user_channels=input('Enter any channels you want to look at as an array or hit enter \n');
+if ~isempty(user_channels)
+    if max(user_channels)>number_of_channels || any(floor(user_channels)~=user_channels)
+        user_channels(user_channels>number_of_channels)=[];
+        user_channels(floor(user_channels)~=user_channels)=[];
+    end
+end
+n_user_channels=length(user_channels);
+
 % load and plot a second of data to do thresholding and channel selection
 rdf=edu.ucsc.neurobiology.vision.io.RawDataFile(rawdatafiledir);
 temp_data=rdf.getData(sampling_rate,sampling_rate);
@@ -28,13 +38,33 @@ scrsz = get(0,'ScreenSize');
 set(fig_h,'Name','Click the channels you want to monitor')
 set(fig_h,'Position',[1 scrsz(4)/1.5 scrsz(3)/2.1 scrsz(4)/1.3]);
 sample=randsample(number_of_channels,64);
-for i=1:64
-    channel=sample(i);
-    subplot(8,8,i);
-    p=plot(-double(temp_data(:,channel+1)));
-    set(p,'HitTest','off')
-    set(gca,'XTick',[],'YTick',[],'ButtonDownFcn',@createnew_fig, 'UserData', channel)
-    ylim([-500 200])
+if ~isempty(user_channels)
+    for i=1:n_user_channels
+        channel=user_channels(i);
+        subplot(8,8,i);
+        p=plot(-double(temp_data(:,channel+1)),'r');
+        set(p,'HitTest','off')
+        set(gca,'XTick',[],'YTick',[],'ButtonDownFcn',@createnew_fig, 'UserData', channel)
+        ylim([-500 200])
+        title(num2str(channel))
+    end
+    for i=n_user_channels+1:64
+        channel=sample(i);
+        subplot(8,8,i);
+        p=plot(-double(temp_data(:,channel+1)));
+        set(p,'HitTest','off')
+        set(gca,'XTick',[],'YTick',[],'ButtonDownFcn',@createnew_fig, 'UserData', channel)
+        ylim([-500 200])
+    end
+else
+    for i=1:64
+        channel=sample(i);
+        subplot(8,8,i);
+        p=plot(-double(temp_data(:,channel+1)));
+        set(p,'HitTest','off')
+        set(gca,'XTick',[],'YTick',[],'ButtonDownFcn',@createnew_fig, 'UserData', channel)
+        ylim([-500 200])
+    end
 end
 uicontrol('String','Done','Style','pushbutton','Callback',@done_selecting);
 
@@ -65,6 +95,7 @@ uicontrol('String','Done','Style','pushbutton','Callback',@done_selecting);
     function done_selecting(~,~,~)
         close(figure(1))
         save(thresholding_file,'channels')
+        
         clearvars -global channels channel_count
     end
 end
