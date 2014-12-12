@@ -427,7 +427,7 @@ strsig1 = zeros(1,length(velocity));
 
 parfor j = 1:length(velocity)
     v = velocity(j);
-    [strsig1(j)] = -pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(23), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx);
+    [strsig1(j)] = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(23), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx);
 end
 
 [x1,y1] = min(strsig1);
