@@ -197,7 +197,7 @@ if run_opt.trial_estimate
     for i =1:length(tr)
         parfor j = 1:length(velocity)
             v = velocity(j);
-            [strsig1(j)] = pop_motion_signal_colleen(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);
+            [strsig1(j)] = pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, direction);
         end
         plot(velocity, strsig1)
         axis off
