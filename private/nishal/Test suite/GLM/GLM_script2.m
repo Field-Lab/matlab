@@ -10,7 +10,7 @@ startup_bertha
 
 %% Load GLM dataset.
 %load('~/Box Files Backup (not synced)/Chichilnisky Lab/ONPar_5866.mat');
-load('/Volumes/Analysis/nishal/GLM_cells/nishal_glmfits/30min/7742.mat');
+load('/Volumes/Analysis/nishal/GLM_cells/nishal_glmfits/15min/5581.mat');
 
 %% Get k, and temporal filters 
 for itime=1:30
@@ -109,39 +109,39 @@ plotSpikeRaster(logical(response.spksGen),'PlotType','vertline');
 title('Raster');
 
 %% Generate long stimulus to calculate STA.
-mov_params.type='bw';
-mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
-mov_params.movie_len =60*30; % in seconds
-mov_params.refresh=1000/120;
-mov_params = generate_movie_ts(mov_params);
-
-mov_params.mov=mov_params.mov(1:Filtdim1,1:Filtdim2,:,:);
-% figure;
-% for itime=1:10
-% imagesc(mov_params.mov(:,:,itime));
-% colormap gray
-% pause(1/120)
-% end
-
-% Generate response
-mov_params.nTrials=1;
-response=generate_response_ts(mov_params,cell_params);
-
-% Calculate STA
-sta_params.Filtlen=40;
-sta_params.useTrial=1;
-response = calculate_sta_ts(mov_params,response,sta_params,cell_params{1})
+% mov_params.type='bw';
+% mov_params.movie_spec = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
+% mov_params.movie_len =60*30; % in seconds
+% mov_params.refresh=1000/120;
+% mov_params = generate_movie_ts(mov_params);
+% 
+% mov_params.mov=mov_params.mov(1:Filtdim1,1:Filtdim2,:,:);
+% % figure;
+% % for itime=1:10
+% % imagesc(mov_params.mov(:,:,itime));
+% % colormap gray
+% % pause(1/120)
+% % end
+% 
+% % Generate response
+% mov_params.nTrials=1;
+% response=generate_response_ts(mov_params,cell_params);
+% 
+% % Calculate STA
+% sta_params.Filtlen=40;
+% sta_params.useTrial=1;
+% response = calculate_sta_ts(mov_params,response,sta_params,cell_params{1})
 %%
    
 figure('Color','w');
 
-subplot(2,2,1);
-imagesc(response.analyse.STA(:,:,23));
-colormap gray
-axis image
-colorbar
-caxis([min(response.analyse.STA(:)),max(response.analyse.STA(:))]);
-title('Simulated Spatial WN STA');
+% subplot(2,2,1);
+% imagesc(response.analyse.STA(:,:,23));
+% colormap gray
+% axis image
+% colorbar
+% caxis([min(response.analyse.STA(:)),max(response.analyse.STA(:))]);
+% title('Simulated Spatial WN STA');
 
 subplot(2,2,2)
 x=sum(fittedGLM.cellinfo.WN_STA,3);
@@ -152,9 +152,9 @@ colorbar
 caxis([min(x(:)),max(x(:))]);
 title('Actual Spatial WN STA');
 
-subplot(2,2,3)
-plot(squeeze(response.analyse.STA(3,7,:)));
-title('Simulated Temporal WN STA');
+% subplot(2,2,3)
+% plot(squeeze(response.analyse.STA(3,7,:)));
+% title('Simulated Temporal WN STA');
 
 subplot(2,2,4)
 plot(squeeze(sum(x(11,3,:,:),3)));
@@ -295,7 +295,7 @@ cond_str{4}='Null for 4 cells'
 interestingConditions=[1,2,3,4];
 %%
 WN_datafile = '2014-11-05-2/data009/data009';
-Null_datafile = '/Volumes/Analysis/2014-11-05-2/data010';
+Null_datafile = '/Volumes/Analysis/2014-11-05-2/data010_from_data009_nps';
 %WN_mov='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
 WN_datafile_full = '/Volumes/Analysis/2014-11-05-2/data009';
 
@@ -349,7 +349,7 @@ for icond=1:4
 plot(x1{icond},y1{icond}+(icnt)*30,col(icnt+1));
 hold on
 icnt=icnt+1;
-plot(x2{icond}*(20000*12)/(10*1440),y2{icond}+(icnt)*30,col(icnt+1));
+plot(x2{icond}*(20000*11)/(10*1440),y2{icond}+(icnt)*30,col(icnt+1));
 hold on
 icnt=icnt+1;
 end
