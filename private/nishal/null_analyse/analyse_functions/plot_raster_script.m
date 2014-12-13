@@ -1,11 +1,11 @@
 
 function [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str)
 %%
-neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
-ref_cells=neuronPairsRefVsNew(:,2);
-
+%neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
+%ref_cells=neuronPairsRefVsNew(:,2);
+ref_cells=InterestingCell_vis_id;
 %%
-neuronPath = [Null_datafile,sprintf('/data%03d.neurons',imov)];
+neuronPath = [Null_datafile,sprintf('/data%03d_from_data009_nps.neurons',imov)];
 neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronPath);
 CellSpkTimes=neuronFile.getSpikeTimes(ref_cells(ref_cell_number));
 TTL=double(neuronFile.getTTLTimes());
