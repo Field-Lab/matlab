@@ -10,7 +10,7 @@ startup_bertha
 
 %% Load GLM dataset.
 %load('~/Box Files Backup (not synced)/Chichilnisky Lab/ONPar_5866.mat');
-load('/Volumes/Analysis/nishal/GLM_cells/ONPar_5866.mat');
+load('/Volumes/Analysis/nishal/GLM_cells/nishal_glmfits/30min/1382.mat');
 
 %% Get k, and temporal filters 
 WN_sta=cell(1,1);
