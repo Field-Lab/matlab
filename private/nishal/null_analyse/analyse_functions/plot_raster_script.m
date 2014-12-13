@@ -3,6 +3,7 @@ function [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafil
 %%
 neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
 ref_cells=neuronPairsRefVsNew(:,2);
+
 %%
 neuronPath = [Null_datafile,sprintf('/data%03d.neurons',imov)];
 neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronPath);
