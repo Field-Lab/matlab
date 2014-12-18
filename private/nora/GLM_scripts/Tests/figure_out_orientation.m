@@ -1,38 +1,12 @@
 clear; close all;  clc
 
-dataset='2014-11-05-2/data009_nps';
+dataset='2014-11-24-3/data005';
 
-%{
-cells={7742,...
-2255,...
-2181,...
-2389,...
-5929,...
-5928,...
-7276,...
-4567,...
-1382,...
-2716,...
-2747,...
-275,...
-5056,...
-2957,...
-6543,...
-3362,...
-5057,...
-3363,...
-1507,...
-%}
+cells={96};
 
-%didn't work 2296,
-cells={2296}
-%cells={2372,2523,2821,2912,2913,2956,3136,3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726,121,151,275,316,631,1081,1383,1787,1907,2296,2372,2523,2747,2821,2912,2913,2956,3136};
-%{121,151,316,631,1081,1383,1787,1907,
-d_save='/Volumes/Analysis/nora/colorglmfits';
-xml_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111-32x32.xml';
-fitframes=30*60*120/2; % 30 minutes * 60 seconds * 120 frames per second / interval of 2
-testframes=5760;
-raw_file='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
+d_save='/Volumes/Analysis/nora/colorglmfits_test';
+xml_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
+fitframes=20*60*120/2; % 30 minutes * 60 seconds * 120 frames per second / interval of 2
 
 %% DICTATE GLMTYPE and Datasets and cells  EDITS DONE HERE! 
 GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
@@ -67,10 +41,9 @@ datarun=load_neurons(datarun);
 datarun=load_sta(datarun);
 datarun=load_params(datarun);
 
-
 % Stimulus details
 StimulusPars.pixelsize = 10;
-StimulusPars.height = 32; StimulusPars.width  = 32;
+StimulusPars.height = 32; StimulusPars.width  = 64;
 StimulusPars.refreshrate = 2;
 %StimulusPars.frames_pertrigger = 50;
 StimulusPars.tstim = 1/120;
@@ -90,7 +63,6 @@ for i=1:fitframes
     fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/2));
 end
 clear temp_fitmovie height width i
-% testmovie = get_rawmovie(raw_file, testframes);
 
 %% Load Cell Specific Elements   Spikes and STA
 for i_cell = 1:length(cells)
@@ -143,6 +115,16 @@ for i_cell = 1:length(cells)
         spike.home=spikes_adj;
         clear spikes_adj;
         
+        %% STA test
+        STA=zeros(size(fitmovie,1),size(fitmovie,2),30);
+        for i=1:length(spike.home)
+            spike_fr=ceil(spike.home(i)*120);
+            if spike_fr > 29 && spike_fr < size(fitmovie,3)
+            STA=STA+fitmovie(:,:,(spike_fr-29):spike_fr);
+            end
+        end
+        
+        %%
         % Execute GLM
         tic
         [fittedGLM]     = glm_execute_CP(GLMType, spike,0, fitmovie, glm_cellinfo);

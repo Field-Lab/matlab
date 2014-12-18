@@ -30,7 +30,7 @@ fid = fopen(moviefile,'r');
 fread(fid, header_size); % skip header
 
 if ~exist('X','var')
-    X = zeros(width,height,3,frames,'uint8');
+    X = zeros(frames,width,height,'uint8');
 end
 
 % Loading up the Raw Movie
@@ -39,8 +39,8 @@ for i = 1:frames
     if isempty(t)
         error(['Raw movie is only ' num2str(i) ' frames.'])
     end
-    tt = reshape(t,width,height,3);
-    X(:,:,:,i) = tt;
+    tt = reshape(t,3,width,height);
+    X(i,:,:) = tt(1,:,:);
 end
 
 fclose(fid);
