@@ -1,20 +1,7 @@
-%% AKHeitman 2014-03-28
-% Trying to make performance evaluation more robust.
-% CALLS eval_rasterlogprob
-
 function xvalperformance = nishal_test(fittedGLM, datarun, testmovie, trials)
 %%
-%testmovie_filename='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
-%testmovie=get_rawmovie(testmovie_filename,testframes)
-%testframes=5760;
+
 trigger_diff=1.4;
-%cell_index=find();
-
-% if movie is in RGB, just take one
-if size(testmovie,3)==3
-    testmovie=3*squeeze(testmovie(:,:,1,:));
-end
-
 testframes=size(testmovie,3);
 spikes=datarun.spikes{datarun.cell_ids==fittedGLM.cellinfo.cid};
 
@@ -26,7 +13,6 @@ params.frames = testframes;
 params.testdur_seconds = params.bindur * params.bins ;
 
 center_coord = fittedGLM.cellinfo.slave_centercoord;
-% teststim       = testmovie{1}.matrix;
 
 frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord) ;
@@ -54,14 +40,27 @@ for i_blk = 1 : params.trials
 end
 clear i_blk spt sptimes
 
-
+%% STA check'
+%{
+STA=zeros(size(testmovie,1),size(testmovie,2),30);
+logicalspike = zeros( params.trials , params.bins) ;
+for i_blk = 1 : params.trials
+    sptimes = spikes(spikes>trial_starts(i_blk) & spikes<trial_starts(i_blk+1))-trial_starts(i_blk);
+    for i_sp = 1:length(sptimes)
+        sp_frame=ceil(sptimes(i_sp)*120);
+        if sp_frame>30 && sp_frame<size(testmovie,3)
+            STA=STA+double(testmovie(:,:,(sp_frame-29):sp_frame));
+        end
+    end
+end
+%}
 %%
 
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
 
 [X_frame0 ] = prep_stimcelldependentGP(GLMType_fortest, fittedGLM.GLMPars, testmovie,center_coord) ;
-X_frame     = X_frame0(:,testframes);
+X_frame     = X_frame0(:,1:testframes);
 
 clear GLMType_fortest
 
@@ -281,7 +280,7 @@ end
 xvalperformance.rasters.recorded = logicalspike;
 xvalperformance.rasters.glm_sim  = logical_sim;
 xvalperformance.rasters.bintime  = params.bindur;
-
+xvalperformance.rate  = cif_ps;
 
 end
 

@@ -1,7 +1,7 @@
 function plotraster(xval, fittedGLM, labels, separate, PSTH)
 
 dt = fittedGLM.t_bin;
-bins     = 120 * 30 * fittedGLM.bins_per_frame;
+bins     = 120 * 48 * fittedGLM.bins_per_frame;
 time     = dt*[1:bins];
 rec_rast = xval.rasters.recorded(:,1:bins);
 sim_rast = xval.rasters.glm_sim(:,1:bins);
@@ -65,6 +65,7 @@ else
         end
     end
     ylim([1 trials*2])
+    xlim([time(1) time(end)])
     
     if labels
         xlabel('Time (seconds)')
