@@ -1,7 +1,7 @@
 function xvalperformance = nishal_test(fittedGLM, datarun, testmovie, trials)
 %%
 
-trigger_diff=1.4;
+trigger_eps=0.2;
 testframes=size(testmovie,3);
 spikes=datarun.spikes{datarun.cell_ids==fittedGLM.cellinfo.cid};
 
@@ -17,10 +17,12 @@ center_coord = fittedGLM.cellinfo.slave_centercoord;
 frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord) ;
 
-trial_starts=datarun.triggers([true; diff(datarun.triggers)>trigger_diff]);
+trial_starts=datarun.triggers([true; abs(diff(datarun.triggers)-median(diff(datarun.triggers))) > trigger_eps ]);
 
-if length(trial_starts)~=trials
+if length(trial_starts)<trials
     error('Did not find all trial start times')
+elseif length(trial_starts)>trials
+    trial_starts=trial_starts(1:2:end);
 end
 
 trial_starts(end+1)=Inf;
