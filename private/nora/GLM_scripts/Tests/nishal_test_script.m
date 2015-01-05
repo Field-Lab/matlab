@@ -9,5 +9,5 @@ testmovie=permute(testmovie,[2 3 1]);
 
 %% Evaluate and Load the GLM fit
 load('/Volumes/Analysis/nora/nishal_glmfits/15min/7726.mat');
-x=nishal_test(fittedGLM, datarun, testmovie, 30);
-plotraster(x,fittedGLM,1,0,1)
+x=GLM_predict(fittedGLM, datarun, testmovie, 30);
+plotraster(x,fittedGLM,'labels',true,'raster_length',12)

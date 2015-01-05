@@ -9,5 +9,5 @@ datarun=load_neurons(datarun);
 [testmovie] = loadmoviematfile(fittedGLM.cellinfo.exp_nm , 'NSEM', '8pix_Identity_8pix','testmovie');
 
 %% Evaluate
-x=nishal_test(fittedGLM, datarun, testmovie{1,1}.matrix, 61);
-plotraster(x,fittedGLM,1,0,1)
+x=GLM_predict(fittedGLM, datarun, testmovie{1,1}.matrix, 61);
+plotraster(x,fittedGLM,'labels',true)
