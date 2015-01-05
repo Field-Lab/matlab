@@ -32,6 +32,9 @@ if ~exist('condition','var')
     if GLMType.CBP
         core = sprintf('%s_CBP'  , core);
     end
+    if GLMType.Saccades
+        core = sprintf('%s_S'  , core);
+    end
     
     GLM_fitname_core = sprintf('%s_%s', core, GLMType.cone_sname);
     

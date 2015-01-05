@@ -9,7 +9,7 @@
 % need troublshoot.doit (true or false), 
 %troubleshoot.plotdir,
 % troubleshoot.name
-function [X_frame,X_bin] = prep_stimcelldependentGP(GLMType, GLMPars, stimulus, center_coord,STA,troubleshoot)
+function [X_frame,X_bin] = prep_stimcelldependentGP_color(GLMType, GLMPars, stimulus, center_coord,STA,troubleshoot)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load up GLMParams
@@ -26,14 +26,11 @@ function [X_frame,X_bin] = prep_stimcelldependentGP(GLMType, GLMPars, stimulus, 
 
 stimsize.width  = size(stimulus,1);
 stimsize.height = size(stimulus,2);
-stimsize.frames = size(stimulus,3);
+stimsize.frames = size(stimulus,4);
 ROI_length      = GLMPars.stimfilter.ROI_length;
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 
-subplot(2,1,1)
-imagesc(sum(stimulus(ROIcoord.xvals, ROIcoord.yvals, :),3));
-axis image
-
+%{
 %first subunits!
 if GLMType.Subunits
 	for frame=1:stimsize.frames
@@ -41,8 +38,9 @@ if GLMType.Subunits
 		stimulus(:,:,frame)=tempstim;
 	end
 end
+%}
 
-stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :);
+stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :,:);
 
 fitmoviestats.mean     =  double(mean(stimulus(:)));
 fitmoviestats.minval   =  double(min(stimulus(:)));
@@ -59,7 +57,7 @@ if strcmp(GLMType.nullpoint, 'mean')
 else
     error('you need to fill in how to account for stimulus with a different nullpoint')
 end
-
+%{
 if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
    % display('implementing nonlinearity')
     newstim = stim;
@@ -80,7 +78,7 @@ if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
         newstim = newstim .^ (GLMPars.others.point_nonlinearity.scalar_raisedpower);
         newstim = newstim - min(newstim(:));
         newstim = newstim / max(newstim(:));
-        newstim = newstim - mean(newstim(:));
+        %newstim = newstim - mean(newstim(:));
     end
     
     if strcmp(GLMType.input_pt_nonlinearity_type, 'oddfunc_powerraise_aboutmean')
@@ -91,18 +89,10 @@ if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
         neg_stim          = find(stim < 0 );
         newstim(neg_stim) = -( (abs(newstim(pos_stim))) .*par);
     end
-    
-    
     stim = newstim; clear newstim
 end
-
-%NBTemp
-subplot(2,1,2)
-imagesc(sum(stim,3));
-axis image
-print('-dpdf','/Volumes/Analysis/nora/NSEM/stim.pdf')
-
-
+%}
+%{
 if exist('troubleshoot','var') && troubleshoot.doit
     clf
     totalframes = stimsize.frames;
@@ -122,7 +112,7 @@ if exist('troubleshoot','var') && troubleshoot.doit
     eval(sprintf('print -dpdf %s/%s_prepstimcellGP_stimnorm.pdf', troubleshoot.plotdir, troubleshoot.name));
 end 
 %}
-stim = reshape(stim, [ROI_length^2 , stimsize.frames]);
+stim = reshape(stim, 3*ROI_length^2, stimsize.frames);
 
 clear stimsize ROIcoord ROI_length fitmoviestats 
 
@@ -139,7 +129,10 @@ if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     stimsize.width  = size(stimulus,1);
     stimsize.height = size(stimulus,2); 
     ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
-    spfilter = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
+    for i_filter=1:3
+        spfilter{i_filter} = spatialfilterfromSTA(squeeze(STA(:,:,i_filter,:)),ROIcoord.yvals,ROIcoord.xvals)';
+    end
+    %{
     if exist('troubleshoot','var') && troubleshoot.doit
         clf
         subplot(3,2,[1 2]);   set(gca, 'fontsize', 10); axis off
@@ -162,7 +155,10 @@ if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
         orient landscape
         eval(sprintf('print -dpdf %s/%s_prepstimcellGP_spfilterfromSTA.pdf', troubleshoot.plotdir, troubleshoot.name));
     end 
-    spfilter  = spfilter';  % dimension [1,ROI_length]
+    
+    %}
+    
+     % dimension [1,ROI_length]
 end
 
 clear stimsize ROIcoord ROI_length fitmoviestats 
@@ -174,7 +170,10 @@ clear stimsize ROIcoord ROI_length fitmoviestats
 %%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     if strcmp(GLMPars.stimfilter.fixedSP_type, 'WNSTA')
-        X_frame = (spfilter) * stim;
+        X_frame=0;
+        for i_filter=1:3
+            X_frame = X_frame+(spfilter{i_filter}) * squeeze(stim(:,i_filter,:));
+        end
     end
 elseif strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2') || strcmp(GLMType.stimfilter_mode, 'fullrank')
     X_frame = stim;

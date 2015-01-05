@@ -29,14 +29,13 @@ channel_count=length(channels.thresh);
 rdf=edu.ucsc.neurobiology.vision.io.RawDataFile(rawdatafiledir);
 spike=cell(channel_count,number_of_rasters);
 
-trigger_channel=1;
 sampling_rate=20000;
 trigger_increment=1.6652e+04; % about where the next trigger is supposed to be! 100 frames later
 
 % load the initial half second of data to get started
 sample_start=0;
 sample_end=sampling_rate/2;
-trigger_data=rdf.getData(trigger_channel,sample_start,sample_end-sample_start);
+trigger_data=rdf.getData(0,sample_start,sample_end-sample_start);
 
 % bookkeeping counts, errors and warnings
 bad_channel_warn=0;
@@ -62,6 +61,7 @@ while ~end_of_streaming
         sample_start=trigger_time+trigger_increment+sample_start;
         sample_end=sample_start+5;
         trigger_count=trigger_count+1;
+        
         % if it is a raster start, find the spikes and plot!
         if ~mod(trigger_count, raster_interval)
             raster_count=raster_count+1;
@@ -75,11 +75,11 @@ while ~end_of_streaming
                 raster_wait=1;
                 while raster_wait
                     try
+                        pause(1)
                         rdf=edu.ucsc.neurobiology.vision.io.RawDataFile(rawdatafiledir);
                         selected_data=-double(rdf.getData(channels.number{j},trigger_time+sample_start,raster_length*sampling_rate))-channels.thresh{j};
                         raster_wait=0;
                     catch
-                        pause(1)
                         raster_wait=raster_wait+1;
                         if raster_wait>raster_length+2
                             raster_wait=0;
@@ -127,12 +127,11 @@ while ~end_of_streaming
                 for i=1:raster_count
                     X=[1,1]'*spike{j,i}';
                     Y=[i-0.4,i+0.4]'*ones(length(X),1)';
-                    l=line(X,Y,'LineWidth',0.25);
+                    l=line(X,Y);
                     set(l,'Color','black')
                 end
                 hold off
                 ylim([0 raster_count+1])
-                pause(0.05)
             end
         elseif mod(trigger_count,raster_interval)==1
             disp('Waiting for more data')
@@ -145,7 +144,7 @@ while ~end_of_streaming
         % try loading the next bit of data
         try
             rdf=edu.ucsc.neurobiology.vision.io.RawDataFile(rawdatafiledir);
-            trigger_data=rdf.getData(trigger_channel,sample_start, sample_end-sample_start);
+            trigger_data=rdf.getData(0,sample_start, sample_end-sample_start);
             wait_count=0;
         % if it doesn't load, wait a bit for more data
         catch

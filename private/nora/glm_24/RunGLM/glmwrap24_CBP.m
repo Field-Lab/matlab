@@ -43,11 +43,11 @@ GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
 GLMType.specialchange = false;
 
-%GLMType.stimfilter_mode = 'rk1';
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.stimfilter_mode = 'rk1';
+%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
-GLMType.CONVEX = true;
+GLMType.CONVEX = false;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -87,7 +87,7 @@ for i_exp = exptests
     %%
     expnumber = i_exp;
     [exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
-    cells={1471};
+cells={1772};
     [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
     
     % NBCoupling 06-12-14

@@ -1,47 +1,68 @@
-%% AKHeitman 2014-03-28
-% Trying to make performance evaluation more robust.
-% CALLS eval_rasterlogprob
+function xvalperformance = GLM_predict(fittedGLM, datarun, testmovie, trials, start_times)
+% GLM_predict(fittedGLM, datarun, testmovie, trials, optional: start_times) 
+% 
+% fittedGLM, the GLM structure from AH's GLM code
+% datarun, which must have the neurons loaded
+% testmovie, as a matfile, must be same dimensions as the fit movie
+% trials, the number of trials
+% start_times, optional, the start time of the trials in seconds. 
+%   IF each trials starts with a new trigger (wait-trigger in lisp code), 
+%   you can leave this out, and the code automatically detects new trials by 
+%   looking for unusually sized time intervals between triggers
 
-function xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, SPars, organizedspikes,neighborspikes, testmovie)
-%%
+%% Set some parameters
+
+if nargin==4
+    trigger_eps=0.2;
+    trial_starts=datarun.triggers([true; abs(diff(datarun.triggers)-median(diff(datarun.triggers))) > trigger_eps ]);
+else
+    trial_starts=start_times;
+end
+
+testframes=size(testmovie,3);
+spikes=datarun.spikes{datarun.cell_ids==fittedGLM.cellinfo.cid};
 
 bpf = fittedGLM.bins_per_frame;
 params.bindur = fittedGLM.t_bin;
-params.bins = fittedGLM.bins_per_frame *length(SPars.testframes);
-params.evalblocks = SPars.TestBlocks;
-params.trials = length(params.evalblocks);
-params.frames = length(SPars.testframes);
+params.bins = fittedGLM.bins_per_frame * testframes;
+params.trials = trials;
+params.frames = testframes;
 params.testdur_seconds = params.bindur * params.bins ;
 
 center_coord = fittedGLM.cellinfo.slave_centercoord;
-teststim       = testmovie{1}.matrix;
-
 
 frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord) ;
 
-%%
-logicalspike = zeros( length(params.evalblocks) , params.bins) ;
-for i_blk = 1 : length(params.evalblocks)
-    blknum = params.evalblocks(i_blk);
-    sptimes = organizedspikes.block.t_sp_withinblock{blknum} - SPars.fittest_skipseconds;
-    sptimes = sptimes(find(sptimes > 0 ) );
+if length(trial_starts)<trials
+    error('Did not find all trial start times')
+elseif length(trial_starts)>trials
+    trial_starts=trial_starts(1:2:end);
+end
+
+trial_starts(end+1)=Inf;
+
+%% Make the recorded spikes into a logical array 
+
+logicalspike = zeros( params.trials , params.bins) ;
+for i_blk = 1 : params.trials
+    sptimes = spikes(spikes>trial_starts(i_blk) & spikes<trial_starts(i_blk+1))-trial_starts(i_blk);
     for i_sp = 1:length(sptimes)
         spt = sptimes(i_sp);
         binnumber = ceil(spt / params.bindur );
-        logicalspike( i_blk, binnumber )  =  logicalspike( i_blk,binnumber ) + 1;
+        try
+            logicalspike( i_blk, binnumber )  =  logicalspike( i_blk,binnumber ) + 1;
+        catch
+        end
     end
 end
 clear i_blk spt sptimes
 
-
-%%
-
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
 
-[X_frame0 ] = prep_stimcelldependentGP(GLMType_fortest, fittedGLM.GLMPars, teststim,center_coord) ;
-X_frame     = X_frame0(:,SPars.testframes);
+[X_frame0 ] = prep_stimcelldependentGP(GLMType_fortest, fittedGLM.GLMPars, testmovie,center_coord) ;
+X_frame     = X_frame0(:,1:testframes);
 
 clear GLMType_fortest
 
@@ -49,9 +70,12 @@ GLMType = fittedGLM.GLMType;
 
 
 % NBCoupling stuffs 06-25-2014
+%{
 if GLMType.CouplingFilters
     for pair=1:12
-	if neighborspikes{pair} ~= 0
+	if neighborspikes{pair} == 0
+        pairspike{pair} = zeros( length(params.evalblocks) , params.bins) ;
+	else
         pairspike{pair} = zeros( length(params.evalblocks) , params.bins) ;
         for i_blk = 1 : length(params.evalblocks)
             blknum = params.evalblocks(i_blk);
@@ -67,12 +91,11 @@ if GLMType.CouplingFilters
         clear i_blk spt sptimes
     end
 end
+%}
 
 
 
-
-%% Set up CIF Components
-
+%% Set up CIF Components for prediction rasters
 
 MU = fittedGLM.linearfilters.TonicDrive.Filter;
 
@@ -80,14 +103,24 @@ if GLMType.PostSpikeFilter
     PS = fittedGLM.linearfilters.PostSpike.Filter;
 end
 
+%{
 % NBCoupling 06-23-2014
 if GLMType.CouplingFilters
     CP = fittedGLM.linearfilters.Coupling.Filter;
 end
 % NBcoupling
+%}
 
 K  = fittedGLM.linearfilters.Stimulus.Filter;
 K  = reshape(K, [ROI_pixels, length(frame_shifts)]);
+
+% HUGE HACK AKHeitman 2014-10-21
+% rk1 filters are misscaled... too hard to dig out
+% rk1 filters are fit fine
+% this is confirmed to be the correct factor though!
+if strcmp(fittedGLM.GLMType.stimfilter_mode, 'rk1')
+    K = 2*K;
+end
 
 KX = zeros(ROI_pixels, params.frames);
 for i_pixel = 1:ROI_pixels
@@ -110,6 +143,7 @@ if GLMType.PostSpikeFilter
     lcif = lcif + lcif_ps;
 end
 
+%{
 % NBCoupling 06-23-2014
 if GLMType.CouplingFilters
     for pair=1:12
@@ -118,6 +152,9 @@ if GLMType.CouplingFilters
     end
 end
 % end NBCoupling
+%}
+
+%% Calculate some statistics about goodness of fit
 
 glm_ratepersec  = exp(lcif);
 glm_rateperbin  = params.bindur * glm_ratepersec;
@@ -139,7 +176,7 @@ uop_bits_persecond   = uop_bits / params.testdur_seconds;
 glm_logprob       = sum(raster_logprob_bin);
 glm_bits          = glm_logprob - null_logprob;
 glm_bits_perspike = glm_bits / (sum(model_null0));
-glm_bits_perbin   = glm_bits / params.bins;
+% glm_bits_perbin   = glm_bits / params.bins;
 glm_bits_persecond   = glm_bits / params.testdur_seconds;
 
 
@@ -153,7 +190,8 @@ xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
 xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
 
 
-%%
+%% Make the prediction rasters
+
 lcif_const  = lcif_kx0 + lcif_mu0;
 logical_sim = zeros(params.trials, params.bins);
 
@@ -176,6 +214,7 @@ if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
     end
     
     % NBCoupling
+    %{
 elseif GLMType.CouplingFilters && ~GLMType.PostSpikeFilter
     for i=1:12
         cif_cpgain{i} = exp(CP{i});
@@ -198,6 +237,7 @@ elseif GLMType.CouplingFilters && ~GLMType.PostSpikeFilter
         end
         logical_sim(i_trial,:) = binary_simulation ;
     end
+    
     
 elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
     for i=1:12
@@ -225,6 +265,7 @@ elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
         logical_sim(i_trial,:) = binary_simulation ;
     end
     % end NBCoupling
+    %}
 else
     for i_trial = 1 : size(logicalspike,1)
         cif         = exp(lcif_const);
@@ -239,11 +280,12 @@ else
     end
 end
 
+%% Save everything in the xval structure
 
 xvalperformance.rasters.recorded = logicalspike;
 xvalperformance.rasters.glm_sim  = logical_sim;
 xvalperformance.rasters.bintime  = params.bindur;
-
+xvalperformance.rate  = cif_ps;
 
 end
 
