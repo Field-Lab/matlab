@@ -171,6 +171,10 @@ if(solver==3)
 [~,mov_modify_new]=fourier_project(stas,mov);
 end
 
+if(solver==4)
+[~,mov_modify_new]=null_project_spatial(stas,mov);
+end
+
 %% see_movie
 % see_movie2
 %% Correct means ,etc ?? Movie correction left ? 
