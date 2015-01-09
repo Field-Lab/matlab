@@ -16,18 +16,13 @@ A(icell,:)=stas_sp{icell}(:)';
 end
 
 % Null each frame of movie
-mov_new=0*mov;
 for iframe=1:size(mov,3)
-    if(mod(iframe,100)==1)
-        iframe
-    end
-    
 mov_fr=mov(:,:,iframe);
 mov_fr=mov_fr(:);
-mov_null=mov_fr-A'*(A'\(A\(A*mov_fr)));
-mov_new(:,:,iframe)=reshape(mov_null,[Filt_dim1,Filt_dim2]);
+
+mov_null=mov_fr-A'*inv(A*A')*A*mov_fr;
+
 end
 
-mov_orig=mov;
 
 end
