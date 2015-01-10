@@ -1,11 +1,14 @@
 %% add path to nora's folder for GLM code
-location_of_git_repo='/Users/Nora/Documents/MATLAB/matlab';
+location_of_git_repo='/home/vision/Nishal/matlab/';
 addpath(genpath([location_of_git_repo '/private/nora']));
 
+% Java library
+javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
+
 %% Fit the GLM from a classification run or other white noise run
-%fittedGLM=glm_fit_from_WNrun({316,7726}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '~/Desktop');
+fittedGLM=glm_fit_from_WNrun({316}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '~/Nishal/GLM_fits');
 % Or load a GLM fit that already exists
- load('/Volumes/Analysis/nora/nishal_glmfits/15min/316.mat');
+% load('/Volumes/Analysis/nora/nishal_glmfits/15min/316.mat');
 
 %% Load the rawMovie to make predictions for
 testmovie_filename='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
@@ -18,4 +21,4 @@ datarun=load_neurons(datarun);
 
 %% Evaluate the GLM fit and plot the rasters
 x=GLM_predict(fittedGLM, datarun, testmovie, 30);
-plotraster(x,fittedGLM,'labels',true,'raster_length',12)
+plotraster(x,fittedGLM,'labels',true,'raster_length',48)
