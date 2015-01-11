@@ -33,6 +33,8 @@ hold on
 plot(x2,y2+max(y2),'r');
 xlim([0 max(time_log_orig)]);
 ylim([0,2*max(y2)]);
+title('Rasters');
+legend('Null','Original');
 
 subplot(2,1,2);
 plot(time_log_null,psth_null,'k');
@@ -40,7 +42,7 @@ hold on
 plot(time_log_orig,psth_orig,'r');
 xlim([0,max(time_log_null)]);
 legend('Null','Original');
-
+title('PSTH')
 % 
 % figure;
 % scatter(psth_orig',psth_null');
