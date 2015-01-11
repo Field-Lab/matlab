@@ -79,7 +79,7 @@ end
 
 uSq=cell(4,1); 
 for isub=1:4
-uSq{isub}=reshape(u(:,isub),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
+uSq{isub}=reshape(u(:,isub),[Filtdim1,Filtdim2,Filtlen])%.*repmat(mask,[1,1,Filtlen]);
 end
 
 

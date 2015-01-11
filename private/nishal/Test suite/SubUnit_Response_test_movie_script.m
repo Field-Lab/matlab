@@ -59,16 +59,25 @@ title(sprintf('Raster, Avg spike rate: %0.02f spks/sec',avgSpkRate));
 figure;
 subplot(3,1,1);
 [E,C]=hist(cell_resp(:,1),100);
-plotyy(C,E,C,f(C));
+[ax,h1,h2]=plotyy(C,E,C,f(C));
+% xlim(ax(1),[min(C),max(C)]);
+% xlim(ax(2),[min(C),max(C)]);
+xlim(ax(1),[-5,5]);
+xlim(ax(2),[-5,5]);
 title('Input to a sub-unit and its non-linearity');
 
 subplot(3,1,2);
 [E,C]=hist(totalInput,100);
-plotyy(C,E,C,N(C));
+[ax,h1,h2]=plotyy(C,E,C,N(C));
+xlim(ax(1),[0,12]);
+xlim(ax(2),[0,12]);
+% xlim(ax(1),[min(C),max(C)]);
+% xlim(ax(2),[min(C),max(C)]);
 title('Total Input to the second layer');
 
 subplot(3,1,3);
-hist(totalOutput);
+hist(totalOutput,30);
+xlim([0,30])
 title(sprintf('Output of the second layer neuron,Avg spike rate: %0.02f spks/sec',avgSpkRate));
 
 
@@ -76,7 +85,10 @@ figure;
 for isub=1:nSubunits
 subplot(nSubunits,1,isub);
 [E,C]=hist(cell_resp(:,isub),100);
-plotyy(C,E,C,f(C));
-xlim([min(cell_resp(:)),max(cell_resp(:))]);
+[ax,h1,h2]=plotyy(C,E,C,f(C));
+% xlim(ax(1),[min(cell_resp(:)),max(cell_resp(:))]);
+% xlim(ax(2),[min(cell_resp(:)),max(cell_resp(:))]);
+xlim(ax(1),[-5,5]);
+xlim(ax(2),[-5,5]);
 title(sprintf('Input to sub-unit %d and its non-linearity',isub));
 end
