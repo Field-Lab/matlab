@@ -101,7 +101,7 @@ end
 end
 
 %% Generate white noise movie
-movieLen=120*30*60;
+movieLen=120*150*60;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
 movie_idx=2; 
 if(movie_idx==1)

@@ -144,3 +144,29 @@ subplot(2,1,2);
 difference =  mov_gen2_masked - mov_new2_masked;
 hist(difference(mov_gen2_masked~=0),20);
 title('Pixel value difference in mask');
+
+% Subunit Pixel time course
+[r,c]=find(logical(mask));
+pixCourse=[];
+for iPix=1:length(r)
+pixCourse(iPix,:)=mov_new2_masked(r(iPix),c(iPix),:);
+end
+
+figure;
+subplot(2,1,1);
+plot(pixCourse(:,500:600)');
+title('Subunit Pixel value time courses');
+
+subplot(2,1,2);
+plot(max((pixCourse(:,500:700)))','b');
+hold on;
+plot(min((pixCourse(:,500:700)))','r');
+hold on
+plot(max(abs(pixCourse(:,500:700)))','k');
+hold on
+plot([1,200],[0.5,0.5],'m');
+hold on;
+plot([1,200],[-0.5,-0.5],'m');
+legend('max','min','Absolute max','Original movie')
+title('Max and Min pixel value accross frames')
+

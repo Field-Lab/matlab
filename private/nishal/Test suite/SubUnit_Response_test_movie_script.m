@@ -92,3 +92,25 @@ xlim(ax(1),[-5,5]);
 xlim(ax(2),[-5,5]);
 title(sprintf('Input to sub-unit %d and its non-linearity',isub));
 end
+
+% subunit input time courses
+cell_resp_len=size(cell_resp,1);
+
+figure;
+subplot(2,1,1);
+col='rbkm';
+for isub=1:nSubunits
+plot(cell_resp(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),isub),col(isub));
+hold on;
+end
+title('Input to sub-units');
+
+subplot(2,1,2);
+plot(max(cell_resp(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:)'),'b');
+hold on
+plot(min(cell_resp(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:)'),'r');
+hold on
+plot(max(abs(cell_resp(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:))'),'k');
+legend('max','min','absolute max');
+title('Max and min inputs to sub-units');
+

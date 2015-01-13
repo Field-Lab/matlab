@@ -13,6 +13,7 @@ SubUnit_Response_test_movie_script
 binnedResponseNull=binnedResponses;
 psth_null=psth_resp;
 time_log_null=timeLog;
+cell_resp_orig=cell_resp;
 
 % Response to original movie
 movie_new_len=size(mov_orig2,3);
@@ -22,7 +23,30 @@ SubUnit_Response_test_movie_script
 binnedResponseOrig=binnedResponses;
 psth_orig=psth_resp;
 time_log_orig = timeLog;
+cell_resp_null=cell_resp;
 
+figure;
+
+
+plot(max(cell_resp_orig(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:)'),'b');
+hold on
+plot(max(cell_resp_null(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:)'),'b--');
+hold on
+
+plot(min(cell_resp_orig(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:)'),'r');
+hold on
+plot(min(cell_resp_null(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:)'),'r--');
+hold on
+
+plot(max(abs(cell_resp_orig(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:))'),'k');
+hold on
+plot(max(abs(cell_resp_null(uint16(cell_resp_len/2-100):uint16(cell_resp_len/2+100),:))'),'k--');
+hold on
+
+legend('max Orig','max Null','min Orig','min Null','absolute max Orig','absolute max Null','Location','best');
+title('Max and min inputs to sub-units in Original and Null movies');
+
+figure
 [x1,y1]=plotSpikeRaster(binnedResponseNull'>0,'PlotType','vertline');
 [x2,y2]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
 
