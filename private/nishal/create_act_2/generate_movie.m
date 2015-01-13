@@ -21,7 +21,7 @@ movie_log(:,:,(icnt-1)*120+1:icnt*120)=movv;
 end
 movie2=movie_log;
 clear movie_log
-var64=64;
+var64=movie_params.var64;
 mov=zeros(var64,32,movie_time);
 for itime=1:movie_time
 mov(:,:,itime)=(imresize(movie2(:,:,itime),[var64,32],'bilinear','Antialiasing',true)-movie_params.mean); % Doubt!!
@@ -57,7 +57,7 @@ end
 % BW noise
 if(strcmp(movie_params.mov_type,'bw'))
 movie_time=movie_params.movie_time;
-var64=64;
+var64=movie_params.var64;
 mov=double(rand(var64,32,movie_time)>0.5);
 mov=mov-0.5;
 mov=mov*movie_params.deviation/max(abs(mov(:)));
@@ -67,7 +67,7 @@ end
 % BW noise used in before
 if(strcmp(movie_params.mov_type,'bw-precomputed'))
 movie_time=movie_params.movie_time;
-var64=64;
+var64=movie_params.var64;
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111.xml';
 
 mov=zeros(var64,32,movie_time);

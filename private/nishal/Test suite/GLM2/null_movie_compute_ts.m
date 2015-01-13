@@ -1,14 +1,24 @@
 %% This should be STA from WN stimulus!
-k=fittedGLM.linearfilters.Stimulus.Filter;
-xcoords=fittedGLM.linearfilters.Stimulus.y_coord;
-ycoords=fittedGLM.linearfilters.Stimulus.x_coord;
+
+% Use GLM fit parameters
+% k=fittedGLM.linearfilters.Stimulus.Filter;
+% xcoords=fittedGLM.linearfilters.Stimulus.y_coord;
+% ycoords=fittedGLM.linearfilters.Stimulus.x_coord;
+
+% Use WN STA
+k=WNSTA(:,:,end:-1:1);
+        for iframe=1:size(k,3) % Flipping? Doubt!!
+            k(:,:,iframe)=k(:,:,iframe)';
+        end
+xcoords=1:size(WNSTA,1);
+ycoords=1:size(WNSTA,2);
 
 datafile = 'load_from_cell_params';
-stas_big{1}=zeros(32,64,3,30);
+stas_big{1}=zeros(32,32,3,30); %zeros(32,64,3,30);
 stas_big{1}(xcoords,ycoords,1,end:-1:1)=k;
 stas_big{1}(xcoords,ycoords,2,end:-1:1)=k;
 stas_big{1}(xcoords,ycoords,3,end:-1:1)=k;
-stas_big2{1}=stas_big{1}+rand(size(stas_big{1}))*0.01;
+stas_big2{1}=stas_big{1};%+rand(size(stas_big{1}))*0.06;
 
 figure;
 for itime=1:30
@@ -16,7 +26,7 @@ for itime=1:30
 imagesc(sum(stas_big2{1}(:,:,:,itime),3))
 colormap gray
 colorbar
-caxis([min(stas_big2{1}(:)),max(stas_big2{1}(:))]);
+caxis([min(min(min(min(stas_big2{1}(:,:,:,:))))),max(max(max(max(stas_big2{1}(:,:,:,:)))))]);
 pause(1/120); 
 end
 

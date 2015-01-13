@@ -1,4 +1,4 @@
-function plotraster(xval, fittedGLM, varargin)
+function hFig=plotraster(xval, fittedGLM, varargin)
 % Optional Paremeters
 % raster_length in seconds
 % labels, true or false, whether to label the axes

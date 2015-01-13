@@ -15,9 +15,14 @@ movie_path = destination;%'/Volumes/Data/stimuli/movies/null_space/original_eyem
 w=1536;
 h=1024;
 
+% Load movie
+loaded_data=load(origin);%'/Volumes/Analysis/nishal/original/movie.mat');
+mov=loaded_data.mov;
+mov_len=size(mov,3);
+
 % size of screen
-screenw=640;% changed for Alex
-screenh=320;
+screenw=size(mov,1)*10%640;% changed for Alex
+screenh=320
 
 % number of pixels to be used for screen
 wi=screenw/stixel;
@@ -27,9 +32,7 @@ hi=screenh/stixel;
 [fid,msg] = fopen(movie_path, 'w');  
 
 tic
- loaded_data=load(origin);%'/Volumes/Analysis/nishal/original/movie.mat');
- mov=loaded_data.mov;
- mov_len=size(mov,3);
+ 
  
 % write header
 hdr = sprintf('width\t%d\r\n', wi);

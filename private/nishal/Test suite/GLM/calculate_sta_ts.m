@@ -39,7 +39,7 @@ STA=squeeze(sum(STA,3));
  imagesc(squeeze((STA(:,:,itime)))');colormap gray
  caxis([min(STA(:)),max(STA(:))]);
  colorbar
- pause
+ pause(1/120)
  end
  response.analyse.STA=STA;
  

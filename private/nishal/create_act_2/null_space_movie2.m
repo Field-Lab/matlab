@@ -108,10 +108,11 @@ if(isfield(cell_params,'use_fits')==1)
     
 n_cell=length(stas);
 filt_len=size(stas{1},4);
- var64=64;
+var64=size(stas{1},1);
 filt_dim1=var64;
 filt_dim2=32;
 %% Get /Generate Original movie
+mov_params.var64=var64;
 [mov,mov_params]=generate_movie(mov_params);
 mov_orig=mov;
 movie_time=mov_params.movie_time;
