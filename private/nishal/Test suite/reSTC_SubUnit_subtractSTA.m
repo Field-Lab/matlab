@@ -1,5 +1,4 @@
 
-
 step=1;
 nTrials=1;
 % My own STA code 
@@ -14,7 +13,6 @@ icnt=icnt+binnedResponses(iframe,itrial);
 end
 end
 reSTA=reSTA/icnt;
-
 
 
 figure
@@ -41,10 +39,11 @@ figure
  disp('Obviously, Correlation between STA and reSTA too low as its in null space.. ')
  
  %% Re- STC
- 
+ % STC computation different.
 % My own STA code 
 
-
+xxreSTA = reshape(reSTA,[Filtdim1*Filtdim2*Filtlen,1]);
+xxreSTA=xxreSTA/norm(xxreSTA(:));
 
 reSTC=zeros(Filtdim1*Filtdim2*Filtlen);
 indx=[59:1:movie_new_len];
@@ -59,12 +58,12 @@ framesValid = indx(binnedResponsesTrial(indx)>0);
 for iframe=framesValid
     iframe
   xx=  reshape(repmat(mask,[1,1,30]).*mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
+  xxnew = (xx-((xx'*xxreSTA)*xxreSTA));
   
-reSTC=reSTC+ xx*xx'*binnedResponsesTrial(iframe);
+reSTC=reSTC+ xxnew*xxnew'*binnedResponsesTrial(iframe);
 end
 end
-yy=reshape(reSTA,[Filtdim1*Filtdim2*Filtlen,1]);
-reSTC=reSTC / (sum(binnedResponses(:))-1) - yy*yy'* (sum(binnedResponses(:)))/(sum(binnedResponses(:))-1);
+reSTC=reSTC / (sum(binnedResponses(:))-1);
 
 [u,s,v]=svds(reSTC,100);
 figure;

@@ -76,14 +76,14 @@ title('PSTH')
 % scatter(binnedResponseOrig,binnedResponseNull);
 % title('Scatter between Original and Null response');
 
-% Re-STA
+%% Re-STA and re STC
 binnedResponses=binnedResponseOrig;
-reSTC_SubUnit
+reSTC_SubUnit_subtractSTA
 reSTAOrig=reSTA;
 reSTCOrig=reSTC;
 
 binnedResponses=binnedResponseNull;
-reSTC_SubUnit
+reSTC_SubUnit_subtractSTA
 reSTANull=reSTA;
 reSTCNull=reSTC;
 

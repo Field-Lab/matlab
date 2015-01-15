@@ -8,7 +8,8 @@ addpath(genpath('../../create_act2'));
 addpath(genpath('../GLM'));
 %% Fit the GLM from a classification run or other white noise run
 for cellID=[3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726]
-%fittedGLM=glm_fit_from_WNrun({cellID}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '~/Nishal/GLM_fits');
+try
+    %fittedGLM=glm_fit_from_WNrun({cellID}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '~/Nishal/GLM_fits');
 % Or load a GLM fit that already exists
 
  load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
@@ -181,5 +182,7 @@ legend('Sim Condition 1','Rec Condition 1','Sim Cond 2','Rec Cond 2','Sim Cond 3
 title(sprintf('Cell: %d',cellID));
 filename = sprintf('/Volumes/Analysis/nishal/GLM_cells/GLM_predictions/%d',cellID);
 print(h, '-depsc', filename);
-
+catch
+display ('A cell did not work');    
+end
 end
