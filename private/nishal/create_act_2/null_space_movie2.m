@@ -102,7 +102,7 @@ if(isfield(cell_params,'use_fits')==1)
     end
     
     if(cell_params.use_fits==2)
-    [stas,totalMaskAccept]= clipSTAs(stas,cell_params);
+    [stas,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
     mov_params.totalMaskAccept=totalMaskAccept;
     end
     
@@ -183,5 +183,6 @@ end
 see_movie2
 
 
-
+%% Save movies and mask
+save('/Volumes/Analysis/nishal/test-null.mat','mov_orig','mov_modify_new','mov_orig','CellMasks','totalMaskAccept');
 end

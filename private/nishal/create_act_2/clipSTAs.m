@@ -1,4 +1,4 @@
-function [new_stas,totalMaskAccept]=clipSTAs(stas,cell_params)
+function [new_stas,totalMaskAccept,CellMasks]=clipSTAs(stas,cell_params)
 
 nCells=length(stas);
 CellNoiseSigmas=[];
