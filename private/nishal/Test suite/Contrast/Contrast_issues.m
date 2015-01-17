@@ -31,8 +31,8 @@ movies=cell(20,1);
 %% BW - 10 sec user List
 
 cell_params=struct();
-cell_params.type_name_inp='nc3';%'userCellList';
-cell_params.cell_list=[]%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.type_name_inp='userCellList';%'nc2';%'userCellList';
+cell_params.cell_list=[272,5824,5825,6378]%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
 cell_params.use_fits=2;
 cell_params.STAlen=14;
 
