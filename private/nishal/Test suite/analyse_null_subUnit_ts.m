@@ -10,6 +10,7 @@ movie_new_len=size(mov_new2,3);
 mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
 mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_new2; % Append zeros before the movie
 SubUnit_Response_test_movie_script
+spkRateNull = avgSpkRate;
 binnedResponseNull=binnedResponses;
 psth_null=psth_resp;
 time_log_null=timeLog;
@@ -20,6 +21,7 @@ movie_new_len=size(mov_orig2,3);
 mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
 mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
 SubUnit_Response_test_movie_script
+spkRateOrig = avgSpkRate;
 binnedResponseOrig=binnedResponses;
 psth_orig=psth_resp;
 time_log_orig = timeLog;
@@ -75,32 +77,32 @@ title('PSTH')
 % figure;
 % scatter(binnedResponseOrig,binnedResponseNull);
 % title('Scatter between Original and Null response');
-
-%% Re-STA and re STC
-binnedResponses=binnedResponseOrig;
-reSTC_SubUnit_subtractSTA
-reSTAOrig=reSTA;
-reSTCOrig=reSTC;
-
-binnedResponses=binnedResponseNull;
-reSTC_SubUnit_subtractSTA
-reSTANull=reSTA;
-reSTCNull=reSTC;
-
 % 
-[V,D]=eigs(reSTCNull,reSTCOrig,10,'lm');
-figure;
-plot(diag(abs(D)),'*');
-title('Eigen Values');
-
-uSq=cell(size(V,2),1);
-isel=1;
-uSq{isel}=reshape(V(:,isel),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
-figure; 
-for itime=1:30
-imagesc(squeeze(uSq{isel}(:,:,itime)));
- colormap gray
- caxis([min(uSq{isel}(:)),max(uSq{isel}(:))])
- hold on
-pause(1)
-end
+% %% Re-STA and re STC
+% binnedResponses=binnedResponseOrig;
+% reSTC_SubUnit_subtractSTA
+% reSTAOrig=reSTA;
+% reSTCOrig=reSTC;
+% 
+% binnedResponses=binnedResponseNull;
+% reSTC_SubUnit_subtractSTA
+% reSTANull=reSTA;
+% reSTCNull=reSTC;
+% 
+% % 
+% [V,D]=eigs(reSTCNull,reSTCOrig,10,'lm');
+% figure;
+% plot(diag(abs(D)),'*');
+% title('Eigen Values');
+% 
+% uSq=cell(size(V,2),1);
+% isel=1;
+% uSq{isel}=reshape(V(:,isel),[Filtdim1,Filtdim2,Filtlen]).*repmat(mask,[1,1,Filtlen]);
+% figure; 
+% for itime=1:30
+% imagesc(squeeze(uSq{isel}(:,:,itime)));
+%  colormap gray
+%  caxis([min(uSq{isel}(:)),max(uSq{isel}(:))])
+%  hold on
+% pause(1)
+% end

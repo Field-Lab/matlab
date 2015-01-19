@@ -101,7 +101,7 @@ end
 end
 
 %% Generate white noise movie
-for movieLen=120*90*60;
+for movieLen=120*30*60;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
 movie_idx=2; 
 if(movie_idx==1)
@@ -171,12 +171,65 @@ reconstruct_using_STC_STA;
 %reconstruct_using_STC;
 %% Experiment 0 - Null using WN-STC, and see response.
 movieLen=120*30;
+
+%null_compute_usingSTC_test
+numFitlers=4;
+null_compute_using_STC_STA_test
+
+nTrials=50;
+analyse_null_subUnit_ts
+
+
+
+end
+
+%% Contrast Stuff
+numberFilters=[];
+sd_orig_log=[];
+sd_null_log=[];
+spkRateOrig_log=[];
+spkRateNull_log=[];
+pixMax=[];
+
+for numFilters=1:4
+movieLen=120*30;
 %null_compute_usingSTC_test
 null_compute_using_STC_STA_test
 
 nTrials=50;
 analyse_null_subUnit_ts
+
+
+%% Contrast
+Contrast_subunit;
+numberFilters = [numberFilters;numFilters];
+sd_orig_log=[sd_orig_log;sd_orig];
+sd_null_log=[sd_null_log;sd_null];
+spkRateNull_log=[spkRateNull_log;spkRateNull];
+spkRateOrig_log=[spkRateOrig_log;spkRateOrig];
+pixMax =[pixMax;mean(max((pixCourse(:,:))))];
 end
+figure('Color','w');
+subplot(3,1,1);
+plot(numberFilters,spkRateOrig_log,numberFilters,spkRateNull_log);
+title('Number of filters v/s spk Rate');
+legend('Original','Null');
+xlabel('Number of filters');
+ylabel('Spike Rate');
+
+subplot(3,1,2)
+plot(numberFilters,sd_orig_log,numberFilters,sd_null_log);
+title('Number of filters v/s pixel-wise contrast');
+legend('Original','Null');
+xlabel('Number of filters');
+ylabel('Pixel s.d.');
+
+subplot(3,1,3);
+plot(numberFilters,pixMax);
+title('Number of Filters v/s max pixel values in each frame of Null movie');
+xlabel('Number of Filters');
+ylabel('Max pixel value');
+legend('Null');
 
  %% Experiment 1
  

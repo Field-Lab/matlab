@@ -2,13 +2,12 @@
 % Use code as used in master_run ! 
 
 addpath(genpath('../create_act_2/'));
-
-stas_coll=cell(4,1);
-stas_coll{2}=WN_uSq{1};
-stas_coll{3}=WN_uSq{2};
-stas_coll{4}=WN_uSq{3};
-%stas_coll{5}=WN_uSq{4};
+nFilters=numFilters%4;
+stas_coll=cell(nFilters,1);
 stas_coll{1}=reSTA;
+for iFilter=2:nFilters
+stas_coll{iFilter}=WN_uSq{iFilter-1};
+end
 
 mov_gen2=zeros(Filtdim1,Filtdim2,movieLen);
 movie_idx=2;
@@ -64,19 +63,16 @@ stas=cell(1,1);
 stas{1}=zeros(Filtdim1,Filtdim2,1,Filtlen);
 for itime=1:Filtlen
     itime
-stas{1}(:,:,1,itime)=stas_coll{1}(:,:,itime);%STA(:,:,itime).*mask;% STA from WN run and masked by significant pixels. Assume I have correct mask from significant_stixles calculation%mask*tf(1,1,1,itime);%STA(:,:,itime);
-stas{2}(:,:,1,itime)=stas_coll{2}(:,:,itime);
-stas{3}(:,:,1,itime)=stas_coll{3}(:,:,itime);
-stas{4}(:,:,1,itime)=stas_coll{4}(:,:,itime);
-%stas{5}(:,:,1,itime)=stas_coll{5}(:,:,itime);
+    for iFilter=1:nFilters
+stas{iFilter}(:,:,1,itime)=stas_coll{iFilter}(:,:,itime);%STA(:,:,itime).*mask;% STA from WN run and masked by significant pixels. Assume I have correct mask from significant_stixles calculation%mask*tf(1,1,1,itime);%STA(:,:,itime);
+    end
 end
 
 % Clip STA
-stas{1}(:,:,:,15:end)=0;
-stas{2}(:,:,:,15:end)=0;
-stas{3}(:,:,:,15:end)=0;
-stas{4}(:,:,:,15:end)=0;
-%stas{5}(:,:,:,15:end)=0;
+for iFilter=1:nFilters
+stas{iFilter}(:,:,:,15:end)=0;
+end
+
 [mov_orig2,mov_new2]=fourier_project_2(stas,mov2);
  
  % See movies
