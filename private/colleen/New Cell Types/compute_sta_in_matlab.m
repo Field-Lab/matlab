@@ -1,5 +1,105 @@
 clear
-% %% STA calculation
+%% Get timecourse of related cell 
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-01-23-5/data001-map-data010/data001-map-data010.neurons';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-4-0.48-22222.xml';
+num_frames = 32;
+target_cell = 322;
+
+
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
+datarun=load_data(datarun,opt);
+
+triggers=datarun.triggers; %onsets of the stimulus presentation
+
+[mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
+    triggers, 1,2);
+
+[mvi] = load_movie(mdf_file, triggers);
+
+%frames per trigger
+
+bt_triggers = triggers - [0;triggers(1:end-1)];
+avg_bt_triggers = mean(bt_triggers(2:end));
+frames_per_trigger = round(avg_bt_triggers*1000/refresh);
+
+last_trigger_time = ceil(triggers(end));
+
+frame_times = zeros(ceil(last_trigger_time/refresh*1000),1);
+
+% frame_times(1:25:end) = triggers
+
+temp = linspace(triggers(1),refresh/1000,frames_per_trigger);
+for i = 1: length(triggers)
+    temp = linspace(triggers(i),triggers(i)+ (frames_per_trigger-1)*refresh/1000,frames_per_trigger)';
+    frame_times(i*frames_per_trigger-(frames_per_trigger-1):i*frames_per_trigger) = temp;
+end
+frame_times = frame_times*1000; % in ms
+    
+cellID=find(datarun.cell_ids==target_cell)
+
+spikes=datarun.spikes{cellID};
+% spikes are in s. convert to ms
+spikes=round(spikes*1000);
+
+sta=zeros(height,width,num_frames); %height, width, frames back
+% stv=zeros(height,width,num_frames); %height, width, frames back
+sta_store = zeros(height,width, num_frames, length(spikes), 3);
+
+tic
+icnt=0;
+
+for i=spikes'
+ 
+    start=find(frame_times>i,1)-num_frames; 
+    if(start>000)
+    icnt=icnt+1
+        for j=1:num_frames
+        F = round(mvi.getFrame(start+j).getBuffer);
+        sta(:,:,j) = sta(:,:,j) + reshape(F(1:3:end),width,height)'+reshape(F(2:3:end),width,height)'+reshape(F(3:3:end),width,height)';
+        sta_store(:,:,j, icnt,1) = double(reshape(F(1:3:end),width,height)');
+        sta_store(:,:,j, icnt,2)=double(reshape(F(2:3:end),width,height)');
+        sta_store(:,:,j, icnt,3) =double(reshape(F(3:3:end),width,height)'); 
+        end
+    end
+end
+sta=sta/icnt;
+
+% choose first frame to show
+[junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
+
+% normalize STA color
+sta = norm_image(sta);
+
+% create slider control
+ha = make_loop_slider_list(start_index, 1, size(sta, 3), {@slider_plot, sta});
+
+% plot once before any clicks
+slider_plot(ha, [], sta);
+
+ranges = range(sta,3);
+[val, idx] = max(ranges(:));
+[x,y] = ind2sub(size(ranges), idx)
+time = 0:-refresh:-refresh*(num_frames-1);
+sta_valueR = zeros(num_frames,size(sta_store, 4));
+sta_valueG = zeros(num_frames,size(sta_store, 4));
+sta_valueB = zeros(num_frames,size(sta_store, 4));
+
+for i = 1:num_frames
+    for icnt = 1:size(sta_store, 4)
+    sta_valueR(i, icnt) = sta_store(x,y,i,icnt,1);
+    sta_valueG(i, icnt) = sta_store(x,y,i,icnt,2);
+    sta_valueB(i, icnt) = sta_store(x,y,i,icnt,3);
+    end
+    i
+end
+figure
+plot(time, fliplr(mean(sta_valueR,2)'), 'r')
+hold on
+plot(time, fliplr(mean(sta_valueG,2)'), 'g')
+plot(time, fliplr(mean(sta_valueB,2)'), 'b')
+
+%% STA calculation
+
 datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-01-23-5/data010/data010-colleen/data010-colleen.neurons';
 num_frames = 30;
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
