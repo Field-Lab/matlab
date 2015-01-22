@@ -29,8 +29,14 @@ movies=cell(20,1);
 cell_params=struct();
 cell_params.type_name_inp='nc2';%'userCellList';
 cell_params.cell_list=[]%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
-cell_params.use_fits=0;
 cell_params.STAlen=14;
+cell_params.sta_spatial=sprintf('%s/stas_spatial.mat',destination_mat);
+cell_params.use_fits=2; % 2, 0
+cell_params.sta_spatial_method=1;%1,2 
+% cell_params.sta_spatial_method = 1 for just using 4th frame, 2 is for fitting spatial STA. 
+% Use cell_params.use_fits=2 (clipping) if cell_params.sta_spatial_method = 1 and 
+% use cell_params.use_fits=0 (no processing of STA) if
+% cell_params.sta_spatial_method = 2;
 
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';

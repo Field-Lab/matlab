@@ -42,8 +42,8 @@ dum_mov=(dum_mov-mov_params.mean);
 mov_orig2=dum_mov*(0.5/127.5);
 
 
-cell_resp_orig=Ax(stas,mov_orig2,movie_time,n_cell);
-cell_resp_null=Ax(stas,mov_modify_new2,movie_time,n_cell);
+cell_resp_orig=Ax(stas_clipped,mov_orig2,movie_time,n_cell);
+cell_resp_null=Ax(stas_clipped,mov_modify_new2,movie_time,n_cell);
 
 
 figure

@@ -1,4 +1,11 @@
 function [mov_orig,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver)
+%% Note: 
+%cell_params.sta_spatial_method = 1 for just using 4th frame, 2 is for fitting spatial STA. 
+% Use cell_params.use_fits=2 (clipping) if cell_params.sta_spatial_method = 1 and 
+% use cell_params.use_fits=0 (no processing of STA) if
+% cell_params.sta_spatial_method = 2;
+
+
 %% Start parallel pool
 if(0)
 if ((exist('matlabpool')==2) && (matlabpool('size') == 0))
@@ -52,7 +59,7 @@ end
 stas=datarun.stas.stas(matlab_cell_ids);
 else
 stas=cell_params.stas;    
-    
+matlab_cell_ids=1;
 end
 
 % Load STAs
@@ -68,6 +75,11 @@ end
 stas=stas_new;
 stas_orig=stas_new;
 
+% Used in movie post process
+[stas_clipped,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
+mov_params.totalMaskAccept=totalMaskAccept;
+    
+    
 if(isfield(cell_params,'use_fits')==1)
     if(cell_params.use_fits==1)
     addpath(genpath('~/Nishal/matlab/code')); 
@@ -99,11 +111,15 @@ if(isfield(cell_params,'use_fits')==1)
    mov_params.totalMaskAccept=ones(size(stas{1},1),size(stas{1},2));
    display('Using STA fits')
    
+   % Run ClipSTA only for the mask.
+      [stas_clipped,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
+    mov_params.totalMaskAccept=totalMaskAccept;
     end
     
     if(cell_params.use_fits==2)
     [stas,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
     mov_params.totalMaskAccept=totalMaskAccept;
+    stas_clipped=stas;
     end
     
 n_cell=length(stas);
@@ -173,7 +189,7 @@ if(solver==3)
 end
 
 if(solver==4)
-[~,mov_modify_new]=null_project_spatial(stas,mov);
+[~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
 end
 
 %% see_movie
