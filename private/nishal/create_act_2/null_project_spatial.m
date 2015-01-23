@@ -2,8 +2,12 @@ function [mov_orig,mov_new]=null_project_spatial(stas,mov,cell_params,matlab_cel
 
 stas_sp_current=cell(length(stas),1);
 if(cell_params.sta_spatial_method==1) % use 4th frame. Better if stas is clipped one.
+    display('Finding best frame')
     for icell=1:length(stas)
-        stas_sp_current{icell}=stas{icell}(:,:,1,4);
+        [V,I]=max(abs(squeeze(sum(sum(stas{icell}(:,:,1,:),1),2))));
+        I
+        plot((squeeze(sum(sum(stas{icell}(:,:,1,:),1),2))));
+        stas_sp_current{icell}=stas{icell}(:,:,1,I);
     end
 end
 
@@ -26,7 +30,7 @@ parfor icell=1:length(stas)
     %fit_info{icell}=fit_sta_sequence(stas{icell}, 'fit_temporal',false,'fit_center',true,'fit_surround',true,'verbose',false);
     %full_fit{icnt} = sta_fit_function(fit_info{issta}.initial_params);
     %stas_sp{icell} = make_Gaussian_two_d(fit_sta_sequence(stas{icell}, 'fit_temporal',false,'fit_center',true,'fit_surround',true,'verbose',false));
-    [stas_sp_current{icell},newcomputed(icell)]=fit_spatial_sta_for_nulling(stas{icell},precomputed,matlab_cellids_datarun(icell));
+    [stas_sp_current{icell},newcomputed(icell)]=fit_spatial_sta_for_nulling(stas{icell},precomputed,matlab_cellids_datarun(icell),cell_params.CellMasks{icell});
 end
 
 for icell=1:length(stas)

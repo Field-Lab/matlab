@@ -26,7 +26,7 @@ for itime=1:30
 imagesc(sum(stas_big2{1}(:,:,:,itime),3))
 colormap gray
 colorbar
-caxis([min(min(min(min(stas_big2{1}(:,:,:,:))))),max(max(max(max(stas_big2{1}(:,:,:,:)))))]);
+caxis([3*min(min(min(min(stas_big2{1}(:,:,:,:))))),3*max(max(max(max(stas_big2{1}(:,:,:,:)))))]);
 pause(1/120); 
 end
 

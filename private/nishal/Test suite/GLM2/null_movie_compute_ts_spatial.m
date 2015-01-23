@@ -37,7 +37,7 @@ cell_params2=struct();
 cell_params2.type_name_inp='nc2';%'userCellList';
 cell_params2.cell_list=[]%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
 cell_params2.STAlen=14;
-cell_params2.sta_spatial=sprintf('%s/stas_spatial_test_suite.mat',destination_mat);
+cell_params2.sta_spatial=[];%sprintf('%s/stas_spatial_test_suite.mat',destination_mat);
 cell_params2.use_fits=2; % 2, 0
 cell_params2.sta_spatial_method=1;%1,2 
 cell_params2.stas=stas_big2;

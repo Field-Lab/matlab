@@ -78,7 +78,7 @@ stas_orig=stas_new;
 % Used in movie post process
 [stas_clipped,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
 mov_params.totalMaskAccept=totalMaskAccept;
-    
+cell_params.CellMasks=CellMasks;    
     
 if(isfield(cell_params,'use_fits')==1)
     if(cell_params.use_fits==1)
@@ -114,12 +114,14 @@ if(isfield(cell_params,'use_fits')==1)
    % Run ClipSTA only for the mask.
       [stas_clipped,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
     mov_params.totalMaskAccept=totalMaskAccept;
+    cell_params.CellMasks=CellMasks;    
     end
     
     if(cell_params.use_fits==2)
     [stas,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
     mov_params.totalMaskAccept=totalMaskAccept;
     stas_clipped=stas;
+    cell_params.CellMasks=CellMasks;    
     end
     
 n_cell=length(stas);

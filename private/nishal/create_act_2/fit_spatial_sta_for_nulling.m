@@ -1,4 +1,4 @@
-function [stas_sp,newcomputation]=fit_spatial_sta_for_nulling(stas,precomputed,matlab_cellids)
+function [stas_sp,newcomputation]=fit_spatial_sta_for_nulling(stas,precomputed,matlab_cellids,CellMask)
 
 % p = inputParser;
 % p.addParamValue('center_point_x', 3, @isnumeric);
@@ -19,6 +19,7 @@ else
     display('Computing fits');
     fit_info=fit_sta_sequence(stas, 'fit_temporal',false,'fit_center',true,'fit_surround',true,'verbose',false);
     stas_sp=make_Gaussian_two_d('center_point_x',fit_info.center_point_x,'center_point_y',fit_info.center_point_y,'sd_x',fit_info.center_sd_x,'sd_y',fit_info.center_sd_y,'amp_scale',fit_info.surround_amp_scale,'rotation_angle',fit_info.center_rotation_angle,'x_dim',fit_info.x_dim,'y_dim',fit_info.y_dim);
+    %stas_sp=stas_sp.*CellMask;
     newcomputation=1;
 end
 

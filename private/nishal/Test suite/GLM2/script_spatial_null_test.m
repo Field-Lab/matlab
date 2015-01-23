@@ -8,10 +8,16 @@ addpath(genpath('../../create_act2'));
 addpath(genpath('../GLM'));
 
 %%
-cellID=3152;
+cellID=3692;
 
 load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
-
+%% Test cell
+WNtime=120*24;
+WNmovie =double(rand(32,32,WNtime)>0.5)-0.5;
+x=GLM_predict(fittedGLM, WNmovie, 50);
+plotraster(x,fittedGLM,'labels',true,'raster_length',24,'start_time',0)
+figure;
+plotSpikeRaster(logical(x.rasters.glm_sim))
 
     %% Generate response to WN
     WNtime=120*60*30;
@@ -39,23 +45,24 @@ load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
     
     response = calculate_sta_ts(mov_params,response,sta_params,cell_params);
     WNSTA = response.analyse.STA;
-%          figure
-%          for itime=1:sta_params.Filtlen
-%          imagesc(squeeze((WNSTA(:,:,itime)))');colormap gray
-%          caxis([min(WNSTA(:)),max(WNSTA(:))]);
-%          colorbar
-%          pause(1/120)
-%          end
+         figure
+         for itime=1:sta_params.Filtlen
+         imagesc(squeeze((WNSTA(:,:,itime)))');colormap gray
+         caxis([min(WNSTA(:)),max(WNSTA(:))]);
+         colorbar
+         pause(1/120)
+         end
 
     %% Generate null movie from STA calculated above ? 
-     % null_movie_compute_ts_spatial
+     %null_movie_compute_ts_spatial
       null_movie_compute_ts
       testmovie_filename='~/Nishal/TS_data/18.rawMovie';
       testmovie=get_rawmovie(testmovie_filename,2880);
       testmovie=permute(testmovie,[2 3 1]);
        
     %% Generate rasters
-x=GLM_predict(fittedGLM, testmovie, 30);
-x.rasters.recorded = x.rasters.glm_sim;
-plotraster(x,fittedGLM,'labels',true,'raster_length',24)
+x=GLM_predict(fittedGLM, testmovie, 100);
 
+plotraster(x,fittedGLM,'labels',true,'raster_length',24,'start_time',0)
+% figure;
+% plotSpikeRaster(logical(x.rasters.glm_sim))
