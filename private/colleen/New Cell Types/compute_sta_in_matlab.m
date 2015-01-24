@@ -1,10 +1,10 @@
 clear
 %% Get timecourse of related cell 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-01-23-5/data001-map-data010/data001-map-data010.neurons';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-4-0.48-22222.xml';
-num_frames = 32;
-target_cell = 8;
-target_cell2 = 19;
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-03-27-2/data009/data009-colleen/data009-colleen.neurons';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
+num_frames = 30;
+target_cell = 4791;
+target_cell2 = 3946;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
@@ -108,19 +108,34 @@ for iter = 1: length(x_iter)
     green = [green; green_temp];
     blue = [blue; blue_temp];
 end
-
 red_avg = mean(red,1);
 green_avg = mean(green,1);
 blue_avg = mean(blue,1);
-red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
-green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
-blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
+colors = [red_avg; green_avg; blue_avg];
+[val, idx] = max(colors(:));
+[row_max,col_max] =ind2sub(size(colors), idx);
+[val, idx] = min(colors(:));
+[row_min,col_min] =ind2sub(size(colors), idx);
+    colors_avg = (colors - colors(row_min, col_min)) / (colors(row_max, col_max) - colors(row_min, col_min));
+%     red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
+%     green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
+%     blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
+% elseif col ==2
+%     red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
+%     green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
+%     blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
+% else
+%     red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
+%     green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
+%     blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
+% end
 
+colors_flipped = fliplr(colors_avg);
 figure
-plot(time, fliplr(red_avg), 'r')
+plot(time, colors_flipped(1,:), 'r')
 hold on
-plot(time, fliplr(green_avg), 'g')
-plot(time, fliplr(blue_avg), 'b')
+plot(time, colors_flipped(2,:), 'g')
+plot(time, colors_flipped(3,:), 'b')
 
 % this now gives the timecourse for each color for a different large cell
 % Now analysis the cell you actually care about
@@ -146,12 +161,12 @@ spikes=round(spikes*1000);
 
 sta=zeros(height,width,num_frames); %height, width, frames back
 stv=zeros(height,width,num_frames); %height, width, frames back
-stv_store = zeros(height,width, num_frames, length(spikes), 3);
+stv_store = zeros(height,width, num_frames, 3, length(spikes(1:30000)));
 
 tic
 icnt=0;
 
-for i=spikes'
+for i=spikes(1:30000)'
  
     start=find(frame_times>i,1)-num_frames; 
     if(start>000)
@@ -159,44 +174,33 @@ for i=spikes'
         for j=1:num_frames
         F = round(mvi.getFrame(start+j).getBuffer);
         sta(:,:,j) = sta(:,:,j) + reshape(F(1:3:end),width,height)'+reshape(F(2:3:end),width,height)'+reshape(F(3:3:end),width,height)';
-        stv_store(:,:,j, icnt,1) = double(round(reshape(F(1:3:end),width,height)'-0.5));
-        stv_store(:,:,j, icnt,2)=double(round(reshape(F(2:3:end),width,height)'-0.5));
-        stv_store(:,:,j, icnt,3) =double(round(reshape(F(3:3:end),width,height)'-0.5)); 
+        stv_store(:,:,j, 1, icnt) = double(round(reshape(F(1:3:end),width,height)'-0.5));
+        stv_store(:,:,j, 2, icnt)=double(round(reshape(F(2:3:end),width,height)'-0.5));
+        stv_store(:,:,j, 3, icnt) =double(round(reshape(F(3:3:end),width,height)'-0.5)); 
         end
     end
 end
 
-red_large = zeros(height, width, length(red_avg));
+color_large = zeros(height, width, size(colors_avg,2),3);
 for i = 1:length(red_avg)
-    red_large(:,:,i) = repmat(red_avg(i), height, width);
+    color_large(:,:,i, 1) = repmat(colors_avg(1,i), height, width);
 end
-red_super_large = repmat(red_large, 1,1,1,icnt);
 
-temp_red = red_super_large .* squeeze(stv_store(:,:,:,1:icnt,1));
 
-green_large = zeros(height, width, length(green_avg));
 for i = 1:length(green_avg)
-    green_large(:,:,i) = repmat(green_avg(i), height, width);
+    color_large(:,:,i, 2) = repmat(colors_avg(2,i), height, width);
 end
-green_super_large = repmat(green_large, 1,1,1,icnt);
 
-temp_green = green_super_large .* squeeze(stv_store(:,:,:,1:icnt,2));
-
-blue_large = zeros(height, width, length(blue_avg));
 for i = 1:length(blue_avg)
-    blue_large(:,:,i) = repmat(blue_avg(i), height, width);
+    color_large(:,:,i,3) = repmat(colors_avg(3,i), height, width);
 end
-blue_super_large = repmat(blue_large, 1,1,1,icnt);
+color_super_large = repmat(color_large, 1,1,1,1,icnt);
 
-temp_blue = blue_super_large .* squeeze(stv_store(:,:,:,1:icnt,3));
+temp_color = color_super_large .* stv_store(:,:,:,:, 1:icnt);
 
-inner_prod_red = squeeze(sum(temp_red,3));
-inner_prod_green = squeeze(sum(temp_green,3));
-inner_prod_blue = squeeze(sum(temp_blue,3));
-inner_prod = zeros(height, width, icnt, 3);
-inner_prod(:,:,:,1) = inner_prod_red;
-inner_prod(:,:,:,2) = inner_prod_green;
-inner_prod(:,:,:,3) = inner_prod_blue;
+inner_prod = squeeze(sum(temp_color,3));
+% inner_prod(:,:,:,2) = squeeze(sum(temp_green,3));
+% inner_prod(:,:,:,3) = squeeze(sum(temp_blue,3));
 
 % stv_store = stv_store(:,:,:,1:icnt, :);
 
@@ -204,7 +208,7 @@ for color = 1:3
 
     for x = 1:height
         for y = 1:width
-            frame_var(x,y, color) = var(squeeze(inner_prod(x,y,:, color)));
+            frame_var(x,y, color) = var(squeeze(inner_prod(x,y,color,:)));
         end
     end
 color
@@ -232,16 +236,21 @@ end
 % sum_green = var(green,0,2);
 
 % temporally weighted variance 
-figure; imagesc(frame_var(:,:,2)); colorbar
+figure; 
+imagesc(frame_var(:,:,2)); 
+frame_var_small = squeeze(frame_var(:,:,2));
+% colormap gray
+caxis([min(frame_var_small(:)),max(frame_var_small(:))]);
+colorbar
 
-
-for j=26%1:num_framesfor j=26%1:num_frames
+figure
+for j=19%1:num_frames%for j=26%1:num_frames
 
 imagesc(sta(:,:,j));
 colormap gray
 caxis([min(sta(:)),max(sta(:))]);
 colorbar
-pause(1/120);
+pause(10/120);
 end
 
 imagesc(sta(:,:,j));
