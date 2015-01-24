@@ -15,9 +15,9 @@ ycoords=1:size(WNSTA,2);
 
 datafile = 'load_from_cell_params';
 stas_big{1}=zeros(32,32,3,30); %zeros(32,64,3,30);
-stas_big{1}(xcoords,ycoords,1,end:-1:1)=k;
-stas_big{1}(xcoords,ycoords,2,end:-1:1)=k;
-stas_big{1}(xcoords,ycoords,3,end:-1:1)=k;
+stas_big{1}(xcoords,ycoords,1,1:end)=k;
+stas_big{1}(xcoords,ycoords,2,1:end)=k;
+stas_big{1}(xcoords,ycoords,3,1:end)=k;
 stas_big2{1}=stas_big{1};%+rand(size(stas_big{1}))*0.06;
 
 figure;
@@ -38,8 +38,8 @@ cell_params2.type_name_inp='nc2';%'userCellList';
 cell_params2.cell_list=[]%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
 cell_params2.STAlen=14;
 cell_params2.sta_spatial=[];%sprintf('%s/stas_spatial_test_suite.mat',destination_mat);
-cell_params2.use_fits=2; % 2, 0
-cell_params2.sta_spatial_method=1;%1,2 
+cell_params2.use_fits=use_fit_var; % 2, 0,0,2
+cell_params2.sta_spatial_method=sta_spatial_method_var;%1,2 ,3,4
 cell_params2.stas=stas_big2;
 % cell_params.sta_spatial_method = 1 for just using 4th frame, 2 is for fitting spatial STA. 
 % Use cell_params.use_fits=2 (clipping) if cell_params.sta_spatial_method = 1 and 

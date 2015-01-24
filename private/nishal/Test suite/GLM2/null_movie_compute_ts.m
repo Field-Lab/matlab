@@ -15,9 +15,9 @@ ycoords=1:size(WNSTA,2);
 
 datafile = 'load_from_cell_params';
 stas_big{1}=zeros(32,32,3,30); %zeros(32,64,3,30);
-stas_big{1}(xcoords,ycoords,1,end:-1:1)=k;
-stas_big{1}(xcoords,ycoords,2,end:-1:1)=k;
-stas_big{1}(xcoords,ycoords,3,end:-1:1)=k;
+stas_big{1}(xcoords,ycoords,1,1:end)=k;
+stas_big{1}(xcoords,ycoords,2,1:end)=k;
+stas_big{1}(xcoords,ycoords,3,1:end)=k;
 stas_big2{1}=stas_big{1};%+rand(size(stas_big{1}))*0.06;
 
 figure;

@@ -1,14 +1,70 @@
 function [mov_orig,mov_new]=null_project_spatial(stas,mov,cell_params,matlab_cellids_datarun)
-
+ncells=length(stas);
 stas_sp_current=cell(length(stas),1);
-if(cell_params.sta_spatial_method==1) % use 4th frame. Better if stas is clipped one.
+% Choose best frame
+if(cell_params.sta_spatial_method==1) % use 4th frame. Better if stas is clipped one. Best: cell_params.sta_spatial_method=1; usefits=2
     display('Finding best frame')
     for icell=1:length(stas)
-        [V,I]=max(abs(squeeze(sum(sum(stas{icell}(:,:,1,:),1),2))));
+        [V,I]=max(abs(squeeze(sum(sum(stas{icell}(:,:,1,:).^2,1),2))));
         I
         plot((squeeze(sum(sum(stas{icell}(:,:,1,:),1),2))));
         stas_sp_current{icell}=stas{icell}(:,:,1,I);
     end
+end
+
+if(cell_params.sta_spatial_method==4) %find temporal kernel by averaging and find ratio. Better if stas is clipped one. Best: cell_params.sta_spatial_method=4; usefits=2
+    display('Find common waveform and regress');
+    figure;
+    for icell=1:length(stas)
+       temporal_mean=squeeze(mean(mean(mean(stas{icell},3),1),2));
+       [r,c]=find(cell_params.CellMasks{icell}==1);
+        stas_sp_current{icell}=zeros(size(stas{icell},1),size(stas{icell},2));
+       for ipix=1:length(r)
+         stas_sp_current{icell}(r(ipix),c(ipix))=(squeeze(sum(stas{icell}(r(ipix),c(ipix),1,:),3))'*temporal_mean)/(temporal_mean'*temporal_mean);
+       end
+   
+subplot(3,1,1);
+imagesc(sum(stas{icell}(:,:,:,4),3));
+axis image;
+colormap gray
+subplot(3,1,2);
+imagesc(stas_sp_current{icell});
+axis image;
+colormap gray
+title('spatial filter')
+subplot(3,1,3);
+plot(temporal_mean);
+title('Temporal filter');
+    end
+end
+
+% Choose rank 1 approximation. Best: sta_spatial_method=3 usefits = 0 
+if(cell_params.sta_spatial_method==3) 
+    display('Rank 1 approximation');
+for icell=1:ncells
+Amat=zeros(size(stas{icell},1)*size(stas{icell},2),size(stas{icell},4));
+for itime=1:size(stas{icell},4)
+    x=stas{icell}(:,:,1,itime);
+    Amat(:,itime)=x(:);
+end
+[u,s,v]=svds(Amat,1);
+Arecons=u(:,1)*s(1,1)*v(:,1)';
+stas_sp_current{icell}=reshape(Arecons(:,4),[size(stas{icell},1),size(stas{icell},2)]).*cell_params.CellMasks{icell};
+
+figure;
+subplot(3,1,1);
+imagesc(sum(stas{icell}(:,:,:,4),3));
+axis image;
+colormap gray
+subplot(3,1,2);
+imagesc(stas_sp_current{icell});
+axis image;
+colormap gray
+title('spatial filter')
+subplot(3,1,3);
+plot(v(:,1));
+title('Temporal filter');
+end
 end
 
 if(cell_params.sta_spatial_method==2) % fits spatial STA. better if stas is raw.
