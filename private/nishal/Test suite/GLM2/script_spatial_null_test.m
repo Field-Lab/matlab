@@ -65,7 +65,7 @@ plotSpikeRaster(logical(x.rasters.glm_sim))
     %% Generate null movie from STA calculated above ? 
     use_fit_list=[2,0,0,2,0];
     sta_spatial_method_list=[1,2,3,4,0];
-    for ispatial_method=5%1:5
+    for ispatial_method=1:5%1:5
     use_fit_var=use_fit_list(ispatial_method) % 2, 0,0,2
     sta_spatial_method_var=sta_spatial_method_list(ispatial_method)%1,2 ,3,4
     if(ispatial_method~=5) 
