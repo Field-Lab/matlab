@@ -5,7 +5,7 @@ datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-12-12-1/data022/data022.n
 
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-4-0.48-11111.xml';
 num_frames = 30; % both have to be run with the name number of frames
-target_cell = 5058;
+target_cell = 4639;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
@@ -146,7 +146,7 @@ plot(time, colors_flipped(3,:), 'b')
 %clearvars datarun color_super_large
 %datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-12-12-1/data006-nwpca/data006/data006.neurons';
 %mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
-target_cell2 = 4058;
+target_cell2 = 5091;
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 datarun=load_data(datarun,opt);
@@ -274,12 +274,12 @@ end
 figure; 
 imagesc(frame_var(:,:,2)); 
 frame_var_small = squeeze(frame_var(:,:,2));
-colormap gray
+%colormap gray
 caxis([min(frame_var_small(:)),max(frame_var_small(:))]);
 colorbar
 
 figure
-for j=23%1:num_frames%for j=26%1:num_frames
+for j=24%1:num_frames%for j=26%1:num_frames
 
 imagesc(sta(:,:,j));
 colormap gray
