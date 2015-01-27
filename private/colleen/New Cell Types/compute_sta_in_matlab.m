@@ -1,10 +1,11 @@
 clear
 %% Get timecourse of related cell 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-03-27-2/data009/data009-colleen/data009-colleen.neurons';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
-num_frames = 30;
-target_cell = 4791;
-target_cell2 = 3946;
+
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-12-12-1/data022/data022.neurons';
+
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-4-0.48-11111.xml';
+num_frames = 30; % both have to be run with the name number of frames
+target_cell = 5058;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
@@ -72,10 +73,11 @@ sta=sta/icnt;
 sta = norm_image(sta);
 
 % create slider control
-ha = make_loop_slider_list(start_index, 1, size(sta, 3), {@slider_plot, sta});
+%ha = make_loop_slider_list(start_index, 1, size(sta, 3), {@slider_plot, sta});
 
 % plot once before any clicks
-slider_plot(ha, [], sta);
+%slider_plot(ha, [], sta);
+
 
 ranges = range(sta,3);
 [val, idx] = max(ranges(:));
@@ -140,8 +142,41 @@ plot(time, colors_flipped(3,:), 'b')
 % this now gives the timecourse for each color for a different large cell
 % Now analysis the cell you actually care about
 
-%% STA calculation
+%% STA calculationclearvars datarun
+%clearvars datarun color_super_large
+%datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-12-12-1/data006-nwpca/data006/data006.neurons';
+%mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
+target_cell2 = 4058;
 
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
+datarun=load_data(datarun,opt);
+
+triggers=datarun.triggers; %onsets of the stimulus presentation
+
+[mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
+    triggers, 1,2);
+
+
+[mvi] = load_movie(mdf_file, triggers);
+
+%frames per trigger
+
+bt_triggers = triggers - [0;triggers(1:end-1)];
+avg_bt_triggers = mean(bt_triggers(2:end));
+frames_per_trigger = round(avg_bt_triggers*1000/refresh);
+
+last_trigger_time = ceil(triggers(end));
+
+frame_times = zeros(ceil(last_trigger_time/refresh*1000),1);
+
+% frame_times(1:25:end) = triggers
+
+temp = linspace(triggers(1),refresh/1000,frames_per_trigger);
+for i = 1: length(triggers)
+    temp = linspace(triggers(i),triggers(i)+ (frames_per_trigger-1)*refresh/1000,frames_per_trigger)';
+    frame_times(i*frames_per_trigger-(frames_per_trigger-1):i*frames_per_trigger) = temp;
+end
+frame_times = frame_times*1000; % in ms
 cellID=find(datarun.cell_ids==target_cell2);
 
 
@@ -161,13 +196,13 @@ spikes=round(spikes*1000);
 
 sta=zeros(height,width,num_frames); %height, width, frames back
 stv=zeros(height,width,num_frames); %height, width, frames back
-stv_store = zeros(height,width, num_frames, 3, length(spikes(1:30000)));
+stv_store = zeros(height,width, num_frames, 3, length(spikes));
 
 tic
 icnt=0;
 
-for i=spikes(1:30000)'
- 
+for i=spikes'
+
     start=find(frame_times>i,1)-num_frames; 
     if(start>000)
     icnt=icnt+1
@@ -239,18 +274,20 @@ end
 figure; 
 imagesc(frame_var(:,:,2)); 
 frame_var_small = squeeze(frame_var(:,:,2));
-% colormap gray
+colormap gray
 caxis([min(frame_var_small(:)),max(frame_var_small(:))]);
 colorbar
 
 figure
-for j=19%1:num_frames%for j=26%1:num_frames
+for j=23%1:num_frames%for j=26%1:num_frames
 
 imagesc(sta(:,:,j));
 colormap gray
 caxis([min(sta(:)),max(sta(:))]);
 colorbar
+title(num2str(j));
 pause(10/120);
+
 end
 
 imagesc(sta(:,:,j));
@@ -261,7 +298,7 @@ pause(1/120);
 
 
 figure;
-for j=2%1:num_frames
+for j=24%1:num_frames
 % rgbImage = cat(3, squeeze(frame_var(:,:,j,1)), squeeze(frame_var(:,:,j,2)), squeeze(frame_var(:,:,j,3)));
 % imagesc(rgb2gray(rgbImage));
 imagesc(frame_var(:,:,j,2))
