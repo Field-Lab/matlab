@@ -6,11 +6,11 @@ disp('Running startup file...');
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
 
 % matlab code paths 
-addpath(genpath('/Users/vision/Desktop/GitHub code repository/code'));
+addpath(genpath('/Users/colleen/matlab/code'));
 addpath(genpath('~/matlab'));
 
 % Add utilities so that you have genpath2.m available
-addpath(genpath('/Users/vision/Desktop/GitHub code repository/utilities'))
+addpath(genpath('/Users/colleen/matlab/utilities'))
 
 % Use genpath2 to recursively add everything in matlab-standard to your path, but exclude .svn directories
 addpath(genpath(['../../../code']));
@@ -22,4 +22,7 @@ visstable();
 % set some default plot stuff
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
 
-addpath(genpath('/Users/vision/Desktop/GitHub code repository/private/colleen'));
+
+addpath(genpath('/Users/colleen/matlab/private/colleen'));
+
+
