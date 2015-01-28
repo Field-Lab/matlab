@@ -195,6 +195,18 @@ for i=spikes'
     end
 end
 
+%% Get significant stixels for histogram
+sta=sta/icnt;
+% normalize STA color
+sta = norm_image(sta);
+sta_rep = repmat(sta, 1,1,1,3);
+sta_rep = permute(sta_rep,[1 2 4 3]);
+[sig_stixels] = significant_stixels(sta_rep);
+[row, col] = find(sig_stixels);
+sig_stixels = [row,col];
+
+
+
 %% Get timecourse in right dimensions
 color_large = zeros(height, width, size(colors,2),3);
 for i = 1:length(red_avg)
@@ -216,11 +228,15 @@ inner_prod_stv = squeeze(sum(temp_color,3));
 
 %% Temporally weighted STV and skewness
 stv_weight = zeros(height,width, 3);
+stv_skew = zeros(height,width, 3);
+stv_man = zeros(height,width, 3);
+
 for i = 1:3
     stv_temp = squeeze(inner_prod_stv(:,:,i,:));
     for x = 1:height
         for y = 1:width
             stv_weight(x,y, i) = var(squeeze(inner_prod_stv(x,y,i,:)));
+            stv_man(x,y, i) = sum(squeeze(inner_prod_stv(x,y,i,:)).*2)/icnt;%var(squeeze(inner_prod_stv(x,y,i,:)));
             stv_skew(x,y, i) = skewness(squeeze(inner_prod_stv(x,y,i,:)));
         end
     end
@@ -229,7 +245,7 @@ end
 stv_unscl = zeros(height, width, num_frames, 3);
 for c = 1:3
     for i = 1:num_frames
-        stv_temp = squeeze(stv_store(:,:,i,c,:));
+        stv_temp = squeeze(stv(:,:,i,c,:));
         for x = 1:height
             for y = 1:width
                 stv_unscl(x,y, i, c) = var(squeeze(stv_temp(x,y,:)));
@@ -245,7 +261,7 @@ for color = 1:3
     for i = 1:num_frames
         for x = 1:height
             for y= 1:width
-                stv_temp = squeeze(stv_store(x,y,i,color,:));
+                stv_temp = squeeze(stv(x,y,i,color,:));
                 stv_sep(x,y,i, color) = var(stv_temp); % look at all 30 frames not collasped but still temporally filtered
             end
         end
@@ -263,7 +279,7 @@ inner_prod_sta = squeeze(sum(temp_sta(:,:,:,2),3));
 
 %% normal sta
 figure
-for j=1:num_frames
+for j=25%1:num_frames
     imagesc(sta(:,:,j));
     colormap gray
     caxis([min(sta(:)),max(sta(:))]);
@@ -284,7 +300,7 @@ pause(1/120);
 %% unscaled stv, specify channel
 
 figure;
-for i = 1:num_frames
+for i = 25%1:num_frames
     imagesc(stv_unscl(:,:,i, 2));
     colormap gray
     stv_one_color = squeeze(stv_unscl(:,:,:,2));
@@ -302,6 +318,14 @@ figure;
 imagesc(stv_weight(:,:,2));
 colormap gray
 caxis([min(stv_weight(:)),max(stv_weight(:))]);
+colorbar
+
+%% temporally weighted stv all frames collasped, mean = 0
+
+figure;
+imagesc(stv_man(:,:,2));
+colormap gray
+caxis([min(stv_man(:)),max(stv_man(:))]);
 colorbar
 
 
@@ -324,6 +348,20 @@ for i = 1:num_frames
     title(num2str(i))
     pause(10/120)
 end
+
+%% histogram of peak spikes/ noise spikes at peak frame
+
+x = round(mean(sig_stixels(:,1)));
+ y =round(mean(sig_stixels(:,2)))+1;
+ figure
+    hist(squeeze(inner_prod_stv(x,y,2, :)));
+    title(sprintf('pixel (%d,%d)', x,y))
+
+    x = 1;
+ y =1;
+ figure
+    hist(squeeze(inner_prod_stv(x,y,2, :)));
+    title(sprintf('pixel (%d,%d)', x,y))
 
 
 
