@@ -27,8 +27,11 @@ visstable();
 
 % set some default plot stuff
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
-
+% set figure background to white
+get(0, 'Factory');
+set(0, 'defaultfigurecolor', [1,1,1]);
 
 addpath(genpath('/Users/colleen/matlab/private/colleen'));
+
 
 
