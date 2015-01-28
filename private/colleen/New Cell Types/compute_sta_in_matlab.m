@@ -1,11 +1,11 @@
 clear
 %% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-01-23-5/data001-map-data010/data001-map-data010.neurons';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-03-27-2/data003-gdf/data003.neurons';
 
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-4-0.48-22222.xml';
-num_frames = 30; % both have to be run with the name number of frames
-target_cell = 8;
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-20-4-0.48-11111.xml';
+num_frames = 14; % both have to be run with the name number of frames
+target_cell = 7400;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
@@ -133,7 +133,7 @@ plot(time, colors_flipped(3,:), 'b')
 %clearvars datarun color_super_large
 %datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-12-12-1/data006-nwpca/data006/data006.neurons';
 %mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
-target_cell2 = 19;
+target_cell2 = 3950;
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 datarun=load_data(datarun,opt);
@@ -279,12 +279,12 @@ inner_prod_sta = squeeze(sum(temp_sta(:,:,:,2),3));
 
 %% normal sta
 figure
-for j=25%1:num_frames
+for j=1:num_frames
     imagesc(sta(:,:,j));
     colormap gray
     caxis([min(sta(:)),max(sta(:))]);
     colorbar
-    title(num2str(j));
+    title(['Normal STA Frame: ' num2str(j)]);
     pause(10/120);
     
 end
@@ -292,6 +292,7 @@ end
 %% temporally weighted sta
 figure
 imagesc(inner_prod_sta);
+title('Temporally Weighted STA')
 colormap gray
 caxis([min(inner_prod_sta(:)),max(inner_prod_sta(:))]);
 colorbar
@@ -300,13 +301,13 @@ pause(1/120);
 %% unscaled stv, specify channel
 
 figure;
-for i = 25%1:num_frames
+for i = 1:num_frames
     imagesc(stv_unscl(:,:,i, 2));
     colormap gray
     stv_one_color = squeeze(stv_unscl(:,:,:,2));
     caxis([min(stv_one_color(:)),max(stv_one_color(:))]);
     colorbar
-    title(num2str(i))
+    title(['Normal STV Frame: ', num2str(i)])
     pause(10/120)
 end
 
@@ -316,6 +317,7 @@ end
 
 figure;
 imagesc(stv_weight(:,:,2));
+title('Temporally Weighted STV')
 colormap gray
 caxis([min(stv_weight(:)),max(stv_weight(:))]);
 colorbar
@@ -324,6 +326,7 @@ colorbar
 
 figure;
 imagesc(stv_man(:,:,2));
+title('Temporally Weighted STV Deviation from 0')
 colormap gray
 caxis([min(stv_man(:)),max(stv_man(:))]);
 colorbar
@@ -333,6 +336,7 @@ colorbar
 
 figure;
 imagesc(stv_skew(:,:,2))
+title('Temporally Weighted Skewness')
 colormap gray
 caxis([min(stv_skew(:)),max(stv_skew(:))]);
 colorbar
@@ -345,23 +349,35 @@ for i = 1:num_frames
     colormap gray
     caxis([min(stv_sep(:)),max(stv_sep(:))]);
     colorbar
-    title(num2str(i))
+    title(['Temporally Weighted STV Frame: ' num2str(i)])
     pause(10/120)
 end
 
 %% histogram of peak spikes/ noise spikes at peak frame
+figure
+x_min = min(sig_stixels(:,1));
+x_max = max(sig_stixels(:,1));
+y_min = min(sig_stixels(:,2));
+y_max = max(sig_stixels(:,2));
+loc = 1;
+for x = x_min:x_max
+    for y = y_min:y_max
+        if ismember([x,y], sig_stixels, 'rows');
+            
+            weight = 'bold';
+        else
+            weight = 'normal';
+        end
+    
+        subplot(x_max-x_min+1,y_max-y_min+1, loc)
+        hist(squeeze(inner_prod_stv(x,y,2, :)));
+        title(sprintf('pixel (%d,%d)', x,y), 'fontsize', 8, 'fontweight', weight)
+        set(gca, 'fontsize', 8)
+        loc = loc+1;
+    end
+end
 
-x = round(mean(sig_stixels(:,1)));
- y =round(mean(sig_stixels(:,2)))+1;
- figure
-    hist(squeeze(inner_prod_stv(x,y,2, :)));
-    title(sprintf('pixel (%d,%d)', x,y))
 
-    x = 1;
- y =1;
- figure
-    hist(squeeze(inner_prod_stv(x,y,2, :)));
-    title(sprintf('pixel (%d,%d)', x,y))
 
 
 
