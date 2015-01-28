@@ -1,11 +1,11 @@
 clear
-%% Get timecourse of related cell 
+%% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-03-27-2/data003-gdf/data003.neurons';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-01-23-5/data001-map-data010/data001-map-data010.neurons';
 
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-20-4-0.48-11111.xml';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-4-0.48-22222.xml';
 num_frames = 30; % both have to be run with the name number of frames
-target_cell = 4793;
+target_cell = 8;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
@@ -36,7 +36,7 @@ for i = 1: length(triggers)
     frame_times(i*frames_per_trigger-(frames_per_trigger-1):i*frames_per_trigger) = temp;
 end
 frame_times = frame_times*1000; % in ms
-    
+
 cellID=find(datarun.cell_ids==target_cell)
 
 spikes=datarun.spikes{cellID};
@@ -51,16 +51,16 @@ tic
 icnt=0;
 
 for i=spikes'
- 
-    start=find(frame_times>i,1)-num_frames; 
+    
+    start=find(frame_times>i,1)-num_frames;
     if(start>000)
-    icnt=icnt+1
+        icnt=icnt+1
         for j=1:num_frames
-        F = round(mvi.getFrame(start+j).getBuffer);
-        sta(:,:,j) = sta(:,:,j) + reshape(F(1:3:end),width,height)'+reshape(F(2:3:end),width,height)'+reshape(F(3:3:end),width,height)';
-        sta_store(:,:,j, icnt,1) = double(reshape(F(1:3:end),width,height)');
-        sta_store(:,:,j, icnt,2)=double(reshape(F(2:3:end),width,height)');
-        sta_store(:,:,j, icnt,3) =double(reshape(F(3:3:end),width,height)'); 
+            F = round(mvi.getFrame(start+j).getBuffer);
+            sta(:,:,j) = sta(:,:,j) + round(reshape(F(1:3:end),width,height)'-0.5)+round(reshape(F(2:3:end),width,height)'-0.5)+round(reshape(F(3:3:end),width,height)'-0.5);
+            sta_store(:,:,j, icnt,1) = double(round(reshape(F(1:3:end),width,height)'-0.5));
+            sta_store(:,:,j, icnt,2)=double(round(reshape(F(2:3:end),width,height)'-0.5));
+            sta_store(:,:,j, icnt,3) =double(round(reshape(F(3:3:end),width,height)'-0.5));
         end
     end
 end
@@ -77,29 +77,32 @@ sta = norm_image(sta);
 
 % plot once before any clicks
 %slider_plot(ha, [], sta);
-
-
-ranges = range(sta,3);
-[val, idx] = max(ranges(:));
-[x,y] = ind2sub(size(ranges), idx)
-x_iter = [x-1, x-1, x-1, x, x, x, x+1, x+1, x+1];
-y_iter = [y-1, y, y+1, y-1, y, y+1, y-1, y, y+1];
+sta = repmat(sta, 1,1,1,3);
+sta = permute(sta,[1 2 4 3]);
+[sig_stixels] = significant_stixels(sta);
+[row, col] = find(sig_stixels);
+sig_stixels = [row,col];
+% ranges = range(sta,3);
+% [val, idx] = max(ranges(:));
+% [x,y] = ind2sub(size(ranges), idx)
+% x_iter = [x-1, x-1, x-1, x, x, x, x+1, x+1, x+1];
+% y_iter = [y-1, y, y+1, y-1, y, y+1, y-1, y, y+1];
 red = [];
 blue = [];
 green= [];
-for iter = 1: length(x_iter)
-    x_now = x_iter(iter);
-    y_now = y_iter(iter);
+for iter = 1: size(sig_stixels,1)
+    x_now = sig_stixels(iter,1);
+    y_now = sig_stixels(iter,2);
     time = 0:-refresh:-refresh*(num_frames-1);
     sta_valueR = zeros(num_frames,size(sta_store, 4));
     sta_valueG = zeros(num_frames,size(sta_store, 4));
     sta_valueB = zeros(num_frames,size(sta_store, 4));
-
+    
     for i = 1:num_frames
         for icnt = 1:size(sta_store, 4)
-        sta_valueR(i, icnt) = sta_store(x_now,y_now,i,icnt,1);
-        sta_valueG(i, icnt) = sta_store(x_now,y_now,i,icnt,2);
-        sta_valueB(i, icnt) = sta_store(x_now,y_now,i,icnt,3);
+            sta_valueR(i, icnt) = sta_store(x_now,y_now,i,icnt,1);
+            sta_valueG(i, icnt) = sta_store(x_now,y_now,i,icnt,2);
+            sta_valueB(i, icnt) = sta_store(x_now,y_now,i,icnt,3);
         end
         i
     end
@@ -114,25 +117,9 @@ red_avg = mean(red,1);
 green_avg = mean(green,1);
 blue_avg = mean(blue,1);
 colors = [red_avg; green_avg; blue_avg];
-[val, idx] = max(colors(:));
-[row_max,col_max] =ind2sub(size(colors), idx);
-[val, idx] = min(colors(:));
-[row_min,col_min] =ind2sub(size(colors), idx);
-    colors_avg = (colors - colors(row_min, col_min)) / (colors(row_max, col_max) - colors(row_min, col_min));
-%     red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
-%     green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
-%     blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
-% elseif col ==2
-%     red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
-%     green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
-%     blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
-% else
-%     red_avg = (red_avg(:) - min(red_avg(:))) / ( max(red_avg(:)) - min(red_avg(:)));
-%     green_avg = (green_avg(:) - min(green_avg(:))) / ( max(green_avg(:)) - min(green_avg(:)));
-%     blue_avg = (blue_avg(:) - min(blue_avg(:))) / ( max(blue_avg(:)) - min(blue_avg(:)));
-% end
 
-colors_flipped = fliplr(colors_avg);
+
+colors_flipped = fliplr(colors);
 figure
 plot(time, colors_flipped(1,:), 'r')
 hold on
@@ -142,11 +129,11 @@ plot(time, colors_flipped(3,:), 'b')
 % this now gives the timecourse for each color for a different large cell
 % Now analysis the cell you actually care about
 
-%% STA calculationclearvars datarun
+%% STA calculation
 %clearvars datarun color_super_large
 %datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-12-12-1/data006-nwpca/data006/data006.neurons';
 %mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
-target_cell2 = 7400;
+target_cell2 = 19;
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 datarun=load_data(datarun,opt);
@@ -181,185 +168,162 @@ cellID=find(datarun.cell_ids==target_cell2);
 
 
 spikes=datarun.spikes{cellID};
-% spikes = spikes(1:20000);
+
 % spikes are in s. convert to ms
 spikes=round(spikes*1000);
-%fr - frames - are in ms
-%fr=round(triggers(1)*1000:refresh:triggers(end)*1000);
-% make fr better
-% refresh = 33.309894493290145;
-% fr=[];
-% for itrig=1:length(triggers)
-% fr=[fr,triggers(itrig)*1000+refresh];
-% end
-% fr=fr';
+
 
 sta=zeros(height,width,num_frames); %height, width, frames back
-stv=zeros(height,width,num_frames); %height, width, frames back
-stv_store = zeros(height,width, num_frames, 3, length(spikes));
+stv = zeros(height,width, num_frames, 3, length(spikes));
 
 tic
 icnt=0;
 
 for i=spikes'
-
-    start=find(frame_times>i,1)-num_frames; 
+    
+    start=find(frame_times>i,1)-num_frames;
     if(start>000)
-    icnt=icnt+1
+        icnt=icnt+1
         for j=1:num_frames
-        F = round(mvi.getFrame(start+j).getBuffer);
-        sta(:,:,j) = sta(:,:,j) + reshape(F(1:3:end),width,height)'+reshape(F(2:3:end),width,height)'+reshape(F(3:3:end),width,height)';
-        stv_store(:,:,j, 1, icnt) = double(round(reshape(F(1:3:end),width,height)'-0.5));
-        stv_store(:,:,j, 2, icnt)=double(round(reshape(F(2:3:end),width,height)'-0.5));
-        stv_store(:,:,j, 3, icnt) =double(round(reshape(F(3:3:end),width,height)'-0.5)); 
+            F = round(mvi.getFrame(start+j).getBuffer);
+            % Change sta and stvto be -1 or +1
+            sta(:,:,j) = sta(:,:,j) + round(reshape(F(1:3:end),width,height)'-0.5)+round(reshape(F(2:3:end),width,height)'-0.5)+round(reshape(F(3:3:end),width,height)'-0.5);
+            stv(:,:,j, 1, icnt) = double(round(reshape(F(1:3:end),width,height)'-0.5));
+            stv(:,:,j, 2, icnt)=double(round(reshape(F(2:3:end),width,height)'-0.5));
+            stv(:,:,j, 3, icnt) =double(round(reshape(F(3:3:end),width,height)'-0.5));
         end
     end
 end
 
-color_large = zeros(height, width, size(colors_avg,2),3);
+%% Get timecourse in right dimensions
+color_large = zeros(height, width, size(colors,2),3);
 for i = 1:length(red_avg)
-    color_large(:,:,i, 1) = repmat(colors_avg(1,i), height, width);
+    color_large(:,:,i, 1) = repmat(colors(1,i), height, width);
 end
 
-
 for i = 1:length(green_avg)
-    color_large(:,:,i, 2) = repmat(colors_avg(2,i), height, width);
+    color_large(:,:,i, 2) = repmat(colors(2,i), height, width);
 end
 
 for i = 1:length(blue_avg)
-    color_large(:,:,i,3) = repmat(colors_avg(3,i), height, width);
+    color_large(:,:,i,3) = repmat(colors(3,i), height, width);
 end
 color_super_large = repmat(color_large, 1,1,1,1,icnt);
 
-temp_color = color_super_large .* stv_store(:,:,:,:, 1:icnt);
+%% Take inner product of timecourse and stv
+temp_color = color_super_large .* stv(:,:,:,:, 1:icnt);
+inner_prod_stv = squeeze(sum(temp_color,3));
 
-inner_prod = squeeze(sum(temp_color,3));
-% inner_prod(:,:,:,2) = squeeze(sum(temp_green,3));
-% inner_prod(:,:,:,3) = squeeze(sum(temp_blue,3));
-
-% stv_store = stv_store(:,:,:,1:icnt, :);
-
-for color = 1:3
-
+%% Temporally weighted STV and skewness
+stv_weight = zeros(height,width, 3);
+for i = 1:3
+    stv_temp = squeeze(inner_prod_stv(:,:,i,:));
     for x = 1:height
         for y = 1:width
-            frame_var(x,y, color) = var(squeeze(inner_prod(x,y,color,:)));
+            stv_weight(x,y, i) = var(squeeze(inner_prod_stv(x,y,i,:)));
+            stv_skew(x,y, i) = skewness(squeeze(inner_prod_stv(x,y,i,:)));
         end
     end
-color
+end
+%% Normal STV, not scaled
+stv_unscl = zeros(height, width, num_frames, 3);
+for c = 1:3
+    for i = 1:num_frames
+        stv_temp = squeeze(stv_store(:,:,i,c,:));
+        for x = 1:height
+            for y = 1:width
+                stv_unscl(x,y, i, c) = var(squeeze(stv_temp(x,y,:)));
+            end
+        end
+    end
 end
 
 
-% green = temp_green(1,1,:,:);
-% green = squeeze(green);
-% mean_green = mean(green,2);
-% figure; plot(mean_green);
-% See STA .. STA should be good and its a proof that the code is working
-% fine ..
-% c1423 = squeeze(green_large(14,23,:));
-% nc1423 = (c1423(:) - min(c1423(:))) / ( max(c1423(:)) - min(c1423(:)));
-% c11 = squeeze(green_large(1,1,:));
-% nc11 = (c11(:) - min(c11(:))) / ( max(c11(:)) - min(c11(:)));
+%% STV of each frame temporally scaled
+stv_sep = zeros(height, width, num_frames, 3);
+for color = 1:3
+    for i = 1:num_frames
+        for x = 1:height
+            for y= 1:width
+                stv_temp = squeeze(stv_store(x,y,i,color,:));
+                stv_sep(x,y,i, color) = var(stv_temp); % look at all 30 frames not collasped but still temporally filtered
+            end
+        end
+    end
+end
 
-% green = temp_green(14,23,:,:);
-% green = squeeze(green);
-% sum1423=repmat(nc1423,1, 23900).*green;
-% green = temp_green(1,1,:,:);
-% green = squeeze(green);
-% sum11 = repmat(nc11,1, 23900).*green;
-% figure;
-% sum_green = var(green,0,2);
 
-% temporally weighted variance 
-figure; 
-imagesc(frame_var(:,:,2)); 
-frame_var_small = squeeze(frame_var(:,:,2));
-colormap gray
-caxis([min(frame_var_small(:)),max(frame_var_small(:))]);
-colorbar
 
+
+%% Temporally scaled STA
+sta = repmat(sta, 1,1,1,3);
+temp_sta = color_large .* sta;
+inner_prod_sta = squeeze(sum(temp_sta(:,:,:,2),3));
+
+
+%% normal sta
 figure
-for j=24%1:num_frames%for j=26%1:num_frames
-
-imagesc(sta(:,:,j));
-colormap gray
-caxis([min(sta(:)),max(sta(:))]);
-colorbar
-title(num2str(j));
-pause(10/120);
-
+for j=1:num_frames
+    imagesc(sta(:,:,j));
+    colormap gray
+    caxis([min(sta(:)),max(sta(:))]);
+    colorbar
+    title(num2str(j));
+    pause(10/120);
+    
 end
 
-imagesc(sta(:,:,j));
+%% temporally weighted sta
+figure
+imagesc(inner_prod_sta);
 colormap gray
-caxis([min(sta(:)),max(sta(:))]);
+caxis([min(inner_prod_sta(:)),max(inner_prod_sta(:))]);
 colorbar
 pause(1/120);
 
+%% unscaled stv, specify channel
 
 figure;
-for j=24%1:num_frames
-% rgbImage = cat(3, squeeze(frame_var(:,:,j,1)), squeeze(frame_var(:,:,j,2)), squeeze(frame_var(:,:,j,3)));
-% imagesc(rgb2gray(rgbImage));
-imagesc(frame_var(:,:,j,2))
-colormap gray
-caxis([min(frame_var(:)),max(frame_var(:))]);
-colorbar
-pause(10/120);
-end
-
-
-figure
-time = 0:-refresh:-refresh*(num_frames-1);
-ranges = range(sta,3);
-[val, idx] = max(ranges(:));
-[x,y] = ind2sub(size(ranges), idx)
-% x= 12
-% y = 16
-x = 21;
-y = 29;
-
-sta_value = zeros(num_frames,1);
-for i = 1:30
-    sta_value(i) = sta(x,y,i);
-end
-figure
-plot(time, fliplr(sta_value'))
-
-
-time = 0:-refresh:-refresh*(num_frames-1);
-x = 7;
-y = 21;
-stv_value = zeros(num_frames,1);
 for i = 1:num_frames
-    stv_value(i) = frame_var(x,y,i,2);
-end
-figure
-plot(time, fliplr(stv_value'))
-
-stimuli = zeros(icnt, 3);
-bins = [0 0 0 ; 0 0 1; 0 1 0; 0 1 1; 1 0 0; 1 0 1; 1 1 0; 1 1 1];
-
-for i = 1:icnt
-    stimuli(i,:) = stv_store(x,y, 19, i, :);
+    imagesc(stv_unscl(:,:,i, 2));
+    colormap gray
+    stv_one_color = squeeze(stv_unscl(:,:,:,2));
+    caxis([min(stv_one_color(:)),max(stv_one_color(:))]);
+    colorbar
+    title(num2str(i))
+    pause(10/120)
 end
 
-for b = 1:size(bins,1)
-    which_bin{b} = find(ismember(stimuli, bins(b,:), 'rows'))
+
+
+%% temporally weighted stv all frames collasped
+
+figure;
+imagesc(stv_weight(:,:,2));
+colormap gray
+caxis([min(stv_weight(:)),max(stv_weight(:))]);
+colorbar
+
+
+%% temporally weighted stv skewness
+
+figure;
+imagesc(stv_skew(:,:,2))
+colormap gray
+caxis([min(stv_skew(:)),max(stv_skew(:))]);
+colorbar
+
+
+%% temporally weighted stv looking at each frame individually
+figure;
+for i = 1:num_frames
+    imagesc(stv_sep(:,:,i,2));
+    colormap gray
+    caxis([min(stv_sep(:)),max(stv_sep(:))]);
+    colorbar
+    title(num2str(i))
+    pause(10/120)
 end
 
-% to_hist = 1:size(bins,1)';
-for i = 1:size(bins,1)
-    to_hist(1,i) = size(which_bin{i},1);
-end
 
-figure
-for i =1:size(bins,1)
-plot(i, to_hist(i)/icnt,  'ko-','markerfacecolor', bins(i,:))
-hold on
-end
 
-set(gca, 'xticklabel' ,{'000', '001', '010', '011', '100', '101', '110', '111'}) 
-title({'Max STA frame stimulus characteristics'; 'Cell 3946 Data 2007-03-27-2/data009/data009-colleen'})
-ylabel('Proportion of frames of a particular color')
-xlabel('RGB Color')
