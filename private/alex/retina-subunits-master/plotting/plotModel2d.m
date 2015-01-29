@@ -38,12 +38,40 @@ out_SUB = evalFit(test,fit_SUB);
 out_LN = evalFit(test,fit_LN);
 %out_SING = evalFit(test,fit_SING);
 
-
+ 
 %%
 subselect = 1;
 if subselect 
     diffVals = (out_SUB.Z_t - out_LN.Z_t).^2;
     inds = diffVals > prctile(diffVals,80) & diffVals < prctile(diffVals,100);
+    
+    out_SUB_SEL = evalFit(test,fit_SUB,inds);
+    out_LN_SEL =  evalFit(test,fit_LN,inds);
+    
+% *** ATH Code *****
+%     cc=test.X_ct;
+%     pp=test.R_t;
+%     t=cc(:,inds);
+%     tmp=t;
+%     figure
+%     clear k 
+%     for i=1:6
+%         tmp(i,:)=t(i,:);%*fit_SUB.B_s(i);
+% %         tmp(i,tmp(i,:)>0)=tmp(i,tmp(i,:)>0)*0.1;
+%         subplot(2,3,i)
+%         hist(tmp(i,:),20)
+%         k(i)=sum(t(i,t(i,:)>0))+sum(t(i,t(i,:)<0));
+%         title(num2str(k(i)))        
+%     end
+%     corr(k',fit_SUB.B_s')
+%   
+%     figure
+%     plot(tmp','-*','linewidth',2)
+%     legend('1', '2', '3', '4', '5', '6')
+%     line([0 1000], [0 0],'color','k')
+% *** ATH Code END *****
+    
+    
     %out_SING_SEL = evalFit(test,fit_SING,inds);
     out_SUB_SEL = evalFit(test,fit_SUB,inds);
     out_LN_SEL =  evalFit(test,fit_LN,inds);
@@ -155,7 +183,7 @@ set(rect1,'FaceColor',[0.5 0.5 0.5]);
 set(rect1,'EdgeColor','none');
 
 centroid = getCentroid(celldat.locs_c);
-
+ 
 % plot the lines
 hold on
 locs_s = normMat(fit_SUB.I_sc,'L1',2)*celldat.locs_c;

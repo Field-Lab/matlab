@@ -40,17 +40,29 @@ subplot(hPlot)
 
 if flag==0 % find cones automatically
     
+    % prepare sta
+    sta=datarun.stas.stas{datInd};
+    sta=sta(:,:,:,params.frame); % frame
+    if datarun.stimulus.independent=='t'
+        % RGB run, choose either green or blue channel
+        tmpGreen=sta(:,:,2);
+        tmpBlue=sta(:,:,3);
+        if max(abs(tmpGreen(:)))>max(tmpBlue(:)) % green gun bigger; non Blue cell
+            sta=tmpGreen;
+        else
+            sta=tmpBlue;
+        end
+    end
+    sta=double(squeeze(sta));
+    tmp_sta=sta;
+    if abs(min(tmp_sta(:)))>max(tmp_sta(:))  % OFF cell, invert polarity
+        tmp_sta=-tmp_sta;
+    end
+    
+    
     if length(cones)<myInd % first time, find a bunch
         cones{myInd}=[]; 
-        
-        sta=squeeze(datarun.stas.stas{datInd});
-        sta=sta(:,:,params.frame); % frame
-        
-        tmp_sta=sta;
-        if abs(min(tmp_sta(:)))>max(tmp_sta(:))  % OFF cell, invert polarity
-            tmp_sta=-tmp_sta;
-        end
-                
+
         w_center=[];
 
         keep_looking=true;
@@ -96,14 +108,6 @@ if flag==0 % find cones automatically
         delete_cell(0); % check if this cone is on deleted list; remove and correct display
         
     else % automatically add cones (1 by 1)
-        
-        sta=squeeze(datarun.stas.stas{datInd});
-        sta=sta(:,:,params.frame); % frame
-        
-        tmp_sta=sta;
-        if abs(min(tmp_sta(:)))>max(tmp_sta(:))  % OFF cell, invert polarity
-            tmp_sta=-tmp_sta;
-        end
         
         for i=1:length(cones{myInd})
             col=cones{myInd}(i,1);

@@ -2,11 +2,7 @@ function delete_cell(flag)
 
 global myCells cones myLimits ctr rad fit_angle coord_tform datarun
 global STAplotPosition RFfitsPlotPosition
-persistent deleted_cells_list
-
-if isempty(deleted_cells_list)
-    deleted_cells_list=[];
-end
+global deleted_cells_list
 
 if flag
     

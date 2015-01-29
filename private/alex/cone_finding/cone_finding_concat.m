@@ -1,24 +1,41 @@
 %% Input here
-starttime = tic;
 
+% main parameters
+piece = '2014-09-10-1';
+run = 'data001';
+movie_descr = 'RGB-1-6-0.48-11111-320x320.xml';
+online = false;  % look in online folder (/Acquisition)
+streamed = true;  %  look for streamed data in offline folder (/Analysis/streamed)
 
- datarun = load_data(fullfile(server_path(), '2014-09-10-1/Streamed/data001/data001'));% s_path='/Volumes/Analysis/';
-% datarun = load_data(fullfile(server_path(), '2014-06-04-7/data002/data002'));
-% datarun = load_data('/Volumes/Acquisition/Analysis/2014-09-10-1/data001/data001');
-movie_spec='/Volumes/Analysis/deprecated/movie-xml2/RGB-1-6-0.48-11111-320x320.xml';
+% additionbal parameters
+nickname = '';
+rig = 'A';
+optical_path_direction = 'below';
+display_type = 'crt1';
+cell_types = {1,2,3,4,5}; % to analyze for cone finding
 
-datarun.names.nickname = '';
-datarun.piece.rig = 'A';
-datarun.piece.optical_path_direction = 'below';
-datarun.piece.display = 'crt1';
-extra_dirname_info = 'RGB-1-6';
+%% load stuff
 
+% load data
+path2data = find_data(piece, run, streamed, online);
+datarun = load_data(path2data);
+
+datarun.names.nickname = nickname;
+datarun.piece.rig = rig;
+datarun.piece.optical_path_direction = optical_path_direction;
+datarun.piece.display = display_type;
 
 datarun = load_params(datarun,'verbose',1);
 datarun = load_neurons(datarun);
 datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
 datarun = set_polarities(datarun);
 
+
+% find movie, check if exists
+movie_spec = fullfile(movies_path(), movie_descr);
+if ~exist(movie_spec, 'file')
+    fprintf('\nMOVIE DOESN''T EXIST\n')
+end
 
 % BW or RGB stimulus?
 independent = strcmpi(datarun.stimulus.independent, 't');
@@ -27,7 +44,7 @@ field_height = datarun.stimulus.field_height;
 
 info(datarun);
 
-cell_types = {1,2,3,4,5};%{1,2,3,4,5};
+starttime = tic;
 
 %% get sta info - summary and static nonlinearities
 

@@ -16,7 +16,7 @@ function batchAnal(computer,dataSet,cellType,analType,doAnal,doPlot,percent,cell
     
     celldat = [];
     celldat.cellType = cellType;
-    celldat.cellNum = cellIds(i);
+    celldat.cellNum = cellIds(i); 
     celldat.rgcId = cellIds(i);
     celldat.loadType = loadType;  
     celldat.percent = 0.2;
@@ -55,11 +55,11 @@ function batchAnal(computer,dataSet,cellType,analType,doAnal,doPlot,percent,cell
           case 'subunit-exhaustive';
             analModel = 'exhaustive';
           end
-          
+           
           if percent ~= 0.2
             celldat.percent = percent;
             [train test celldat] = loadCellData(dat,celldat,0);
-          end
+          end 
           
           if ~isempty(train) && ~isempty(test)
             if doAnal

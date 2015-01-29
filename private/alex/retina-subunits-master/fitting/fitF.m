@@ -34,27 +34,33 @@ Y_st_in = (fit.I_sc.*fit.A_sc)*data.X_ct;
 mnVal = prctile(Y_st_in(:),1);
 mxVal = prctile(Y_st_in(:),99);
 
-% store the old nonlinearity
-fOld = fit.f;
-
-% create the spline parameter matrix
-fit.f.knots = linspace(mnVal,mxVal,fit.f.nknots);
-fit.f.Mspline = splineParamMatrix(fit.f.knots,...
-    fit.f.smoothness,fit.f.extrap);
-
-% get initial values for the spline parameters
-initPrs = initNonLinSpline(fit.f,fOld);
-
-% do the optimization
-if ~exist('initFlag','var') || initFlag == 0
-    options = optimset('maxiter',250,'maxfunevals',1e6,...
-        'Display',displayMode,'Largescale','off','TolX',10e-04);
-    estParams = fminunc(@(prs) fitF_errFun(prs,Y_st_in,data.R_t,fit),initPrs,options);
-    fit.f.w = estParams;
+if 0 
+    load('/Volumes/Analysis/2011-10-25-5/subunits/data001-0/orig_fit_results.mat','mean_w','mean_knots','mean_Mspline')
+    fit.f.w=mean_w;
+    fit.f.knots=mean_knots;
+    fit.f.Mspline=mean_Mspline;
 else
-    fit.f.w = initPrs;
+    % store the old nonlinearity
+    fOld = fit.f;
+    
+    % create the spline parameter matrix
+    fit.f.knots = linspace(mnVal,mxVal,fit.f.nknots);
+    fit.f.Mspline = splineParamMatrix(fit.f.knots,...
+        fit.f.smoothness,fit.f.extrap);
+    
+    % get initial values for the spline parameters
+    initPrs = initNonLinSpline(fit.f,fOld);
+    
+    % do the optimization
+    if ~exist('initFlag','var') || initFlag == 0
+        options = optimset('maxiter',250,'maxfunevals',1e6,...
+            'Display',displayMode,'Largescale','off','TolX',10e-04);
+        estParams = fminunc(@(prs) fitF_errFun(prs,Y_st_in,data.R_t,fit),initPrs,options);
+        fit.f.w = estParams;
+    else
+        fit.f.w = initPrs;
+    end
 end
-
 
 %-------------------------------------------
 function [err] = fitF_errFun(prs,Y_st_in,R_t,fit)

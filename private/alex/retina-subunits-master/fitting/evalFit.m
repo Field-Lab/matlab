@@ -61,4 +61,3 @@ r2 = 1 - sse/sst;
 out.negloglik = negloglik;
 out.r2 = r2;
 out.Z_t = Z_t;
-

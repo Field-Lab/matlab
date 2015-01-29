@@ -20,7 +20,7 @@ celldat.mainAnalPath = dat.mainAnalPath;
 celldat.mainFigurePath = dat.mainFigurePath;
 celldat.computer = dat.computer;
 celldat.locations = dat.locations;
-
+ 
 if celldat.loadType == 1
   ids = getTypeIds(dat.cellTypes,celldat.cellType);
   cellInd = getCellInds(dat.rgcIds,ids(celldat.cellNum));
@@ -112,7 +112,7 @@ end
 
 if celldat.tempFilter
   coneInputs = tempFilterCones(coneInputs,timeCourse/norm(timeCourse));
-end
+end 
 
 [train.X_ct test.X_ct] = partitionDat(coneInputs...
   ,celldat.trainFrac,celldat.subDivide,1);

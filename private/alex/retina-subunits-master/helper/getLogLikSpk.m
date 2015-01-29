@@ -20,5 +20,5 @@ function loglik = getLogLikSpk(predic,spks)
 etol = 10^-6;
 predic(predic<etol) = etol;
 
-loglik = (sum(spks(:).*log(predic(:))) - sum(predic(:)));
+loglik = sum(spks(:).*log(predic(:))) - sum(predic(:));
 

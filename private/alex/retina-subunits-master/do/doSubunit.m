@@ -7,7 +7,7 @@ fit_SUB.constraints.B_s = 'none';
 fit_SUB.constraints.A_sc = 'L1';
 fit_SUB.C = celldat.nConesFit;
 fit_SUB.locs_c = celldat.locs_c;
-
+ 
 switch mode
     case 'singletons'
         init = mkSubAssgn(fit_SUB.C,'singletons');
@@ -21,7 +21,7 @@ saveName = strcat(saveName,'-',num2str(celldat.percent));
 
 if isfield(celldat,'simopts')
     saveName = strcat(saveName,'-',sprintf('d%g',celldat.simopts.train_dur),'-',num2str(celldat.simopts.iter),'-',celldat.simopts.mode);
-end
+end 
 
 fprintf('(doSubunit) saving %s\n',saveName);
 
@@ -34,15 +34,15 @@ fit_SUB.B_s = normMat(ones(1,fit_SUB.S),'L1',2);
 fit_SUB.A_sc = normMat(ones(fit_SUB.S,fit_SUB.C).*fit_SUB.I_sc,'L1',2);
 
 if celldat.polarity == 1
-fit_SUB.f.type = 'rectLinear';
+    fit_SUB.f.type = 'rectLinear';
 end
 if celldat.polarity == -1
-fit_SUB.f.type = 'rectLinearNeg';
+    fit_SUB.f.type = 'rectLinearNeg';
 end
 fit_SUB.f.p = 0;
 fit_SUB.f = initSpline(fit_SUB.f);
 fit_SUB = fitF(train,fit_SUB,1);
-nIter = 3;
+nIter = 3; 
 for iIter = 1:nIter 
     fit_SUB = fitB(train,fit_SUB,0);
     if fit_SUB.S ~= fit_SUB.C || sum(vector(fit_SUB.I_sc ~= eye(fit_SUB.C)))

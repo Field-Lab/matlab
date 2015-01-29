@@ -402,18 +402,22 @@ ylabel('Contrast response estimate')
 load('/Volumes/Analysis/alex/peters_fits.mat', 'coneID', 'ncones')
 
 mode='incl'; % 'incl', 'excl', 'rand', 'str', 'onl'
+bintotal=linspace(-.5, 0.5,12);
 ninclude=0; % n of trials to include
 plotit=false;
 plotbybin=false;
 plotalt=true;
 plot_each_cone=false;
 thr=0.1; % for "rest" in str, only, excl
-bkgr=true;
+bkgr=false;
 alt_all=cell(1,length(ncells));
 alt_std_all=alt_all;
 
+
+binwidth=diff(bintotal(1:2));
+nbins=length(bintotal)-1;
 % alt_coneID=cell(1, length(ncells));
-for i = 1:length(ncells)
+for i = 6%:length(ncells)
     
     conerun = eval(coneruns{ncells(i)});
     
@@ -428,12 +432,12 @@ for i = 1:length(ncells)
         myrate=myrate-mean(myrate);
     end    
 
-    mycone=zeros(10, 26, ncones(i));
+    mycone=zeros(nbins, 26, ncones(i));
     myconeSTD=mycone;
     alt=zeros(size(mycone,1), ncones(i));
     alt_std=alt;
     nentries=zeros(ncones(i),size(mycone,1));
-    exclCones=cell(ncones(i), 10);
+    exclCones=cell(ncones(i), nbins);
     
     if plotit
         figure
@@ -445,24 +449,25 @@ for i = 1:length(ncells)
         refcone=k;
         excones=setdiff(1:ncones(i),k);
         cnt=1;
-        for bin=-0.5:0.1:0.4
+        for bin=bintotal
             
             switch mode
                 case 'incl'
-                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + 0.1));
+                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + binwidth));
                 case 'excl'
-                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + 0.1) & ...
+                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + binwidth) & ...
                         ~sum(myinputs(:,excones)<thr, 2));
                 case 'str'
                     rest=sum(myinputs(:,excones),2);
-                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + 0.1) & ...
+                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + binwidth) & ...
                         abs(rest)<abs(thr));
                 case 'only'
-                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + 0.1) & ...
+                    tmp=find(myinputs(:,refcone)>= bin & myinputs(:,refcone)< (bin + binwidth) & ...
                         ~sum(abs(myinputs(:,excones))>thr, 2));
                 case 'rand'
                     tmp=ceil(rand(100,1)*length(myrate-100));
             end
+            
             
             tt=[];
             if ninclude
@@ -470,18 +475,19 @@ for i = 1:length(ncells)
             else
                 trials=length(tmp);
             end
-            for j=1:trials
-                if tmp(j)>6 && tmp(j)<length(myrate)-21
-                    tt=[tt; myrate(tmp(j)-5:tmp(j)+20)];
+            if ~isempty(tmp)
+                for j=1:trials
+                    if tmp(j)>6 && tmp(j)<length(myrate)-21
+                        tt=[tt; myrate(tmp(j)-5:tmp(j)+20)];
+                    end
                 end
+                
+                
             end
-            
-
-            
-            nentries(k,cnt)=size(tt,1);
+            nentries(k,cnt)=trials;
             mycone(cnt,:,k)=mean(tt);
-            alt_std(cnt,k)=std(tt(:,7));
-%             mycone(cnt,:,k)=sum(tt);            
+            %             alt_std(cnt,k)=std(tt(:,7));
+            %             mycone(cnt,:,k)=sum(tt);
             alt(cnt,k)=mycone(cnt,7, k);
             
             
@@ -513,7 +519,7 @@ for i = 1:length(ncells)
     end
     
     if plot_each_cone
-        bin=-0.5:0.1:0.5;
+        bin=bintotal;
         
         for k=1:ncones(i)
             figure
@@ -522,8 +528,8 @@ for i = 1:length(ncells)
             
             mmax=max(mycone(:));
             mmin=min(mycone(:));
-            for j=1:10
-                subplot(2,5, j)
+            for j=1:nbins
+                subplot(5,5, j)
                 wr=squeeze(mycone(j,:,k));
                 plot(wr, 'r', 'linewidth', 3)
                 axis([1 26 mmin mmax])
@@ -549,11 +555,14 @@ for i = 1:length(ncells)
         figure
         set(gcf, 'Name', [dates(ncells(i), :), '  Cell ', int2str(rgcs(i)) , ' ALT   ', mode, '  ', int2str(ncones(i)), ' cones'])
         plot(alt, '-x')
-        line([1 10], [0,0],'color','k')
-        bin=-0.45:0.1:0.45;
-        set(gca, 'xticklabel', {num2str(bin')})
-        xlabel('middle of the bin')
+%         line([1 10], [0,0],'color','k')
+        bin=bintotal(1:end-1);
+        set(gca,'xtick',1:nbins, 'xticklabel', {num2str(bin')})
+        xlabel('beg of the bin')
         axis tight
+        a=get(gca,'YLim');
+        line([nbins/2+0.5, nbins/2+0.5], a,'color','k')
+        drawnow
     end
     
     alt_all{i}=alt;
@@ -562,12 +571,15 @@ for i = 1:length(ncells)
 end
 
 
-for i=1:4%length(ncells)
+for i=1:length(ncells)
     figure
-    subplot(1,2,1)
+%     subplot(1,2,1)
     plot(alt_all{i}, '-x')
-    subplot(1,2,2)
-    plot(alt_std_all{i}, '-x')
+    axis tight
+    a=get(gca,'YLim');
+    line([5.5, 5.5], a,'color','k')
+%     subplot(1,2,2)
+%     plot(alt_std_all{i}, '-x')
 end
 
 

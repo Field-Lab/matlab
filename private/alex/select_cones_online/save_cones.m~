@@ -11,7 +11,13 @@ stixel = datarun.stimulus.stixel_width;
 
 coord=stim.coord*stixel;
 
-R=max(1, floor(mean_nnd*stixel/2-1));% radius
+if floor(mean_nnd*stixel/2-1)<1 % mean spacing is < than 1 pixel
+    R=1;
+    singleStixel = 1;
+else
+    R=floor(mean_nnd*stixel/2-1);% radius
+    singleStixel = 0;
+end  
 
 tmp=gcf;
 
@@ -37,9 +43,12 @@ while ~strcmp(get(hEditRadius, 'String'), '0')
     for kone=1:length(coord)
         
         C = coord(kone,:);
-        if R==1 % if single pixel stimulus desired
-            myMap(round(C(1)),round(C(2)))=kone;            
-        else            
+        if singleStixel
+            myMask(i,1)=
+            myMask(i,2)=
+            
+        else
+            
             t = linspace(0, 2*pi, 100);
             x = round(R*cos(t) + C(1));
             y = round(R*sin(t) + C(2));

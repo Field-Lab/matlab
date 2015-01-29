@@ -31,9 +31,9 @@ function fit = fitB(data,fit,testMode)
 %
 % freeman, 3-14-2012
 %-------------------------------------------
-
+ 
 displayMode = 'off';
-
+  
 if nargin < 3
     testMode = 0;
 end
@@ -54,7 +54,7 @@ end
 % initialize the parameters
 if usingSplines
     initPrs = [fit.B_s];
-else
+else 
     initPrs = [fit.B_s, fit.g.p(1)];
 end
 

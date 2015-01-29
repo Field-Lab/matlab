@@ -35,6 +35,7 @@ Wc = sparse(prod(datarun.stimulus.field_height*datarun.stimulus.field_width)*3,l
 
 kern_size=size(stim.cone_template,1)-1;
 tmp_coord=stim.coord-kern_size/2;
+tmp_coord(tmp_coord<1)=1;
 
 
 for i=1:length(allcones);
@@ -46,7 +47,7 @@ for i=1:length(allcones);
     bw_kern = reshape(bw_kern,[],1);
     
     % get rgb values
-    rgb = [1 1 1];
+    rgb = [1 1 1]; 
     % multiply out
     rgb_kern = bw_kern * rgb;
     % reshape
@@ -68,7 +69,9 @@ save([datarun.names.rrs_prefix(1:tmp(end)),'cone_info.mat'],'cones','myCells', '
 
 datarun = conepreprocess_wnm(datarun, 'conepath',datarun.names.rrs_prefix(1:tmp(end)));
 
-conepreprocess_save(datarun, 'cell_types',datarun.cell_ids,'cone_data_ind', 'data', 'date', date);
+conepreprocess_save(datarun, 'cell_types',datarun.cell_ids, 'date', date);
+
+% conepreprocess_save(datarun, 'cell_types',datarun.cell_ids,'cone_data_ind', 'data', 'date', date);
 
 
 

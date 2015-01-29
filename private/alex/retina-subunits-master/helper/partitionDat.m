@@ -25,8 +25,10 @@ test = [];
 for i=1:nBins
     tmpWidth = binEdges(i+1)-binEdges(i);
     if dim == 1
-        train = [train; dat(binEdges(i):binEdges(i)+round(trainFrac*tmpWidth),:)];
-        test = [test; dat(binEdges(i)+round(trainFrac*tmpWidth)+1:binEdges(i+1)-1,:)];
+%         train = [train; dat(binEdges(i):binEdges(i)+round(trainFrac*tmpWidth),:)];
+%         test = [test; dat(binEdges(i)+round(trainFrac*tmpWidth)+1:binEdges(i+1)-1,:)];
+        train = [train; dat(binEdges(i)+round((1-trainFrac)*tmpWidth)+1:binEdges(i+1)-1,:)];
+        test = [test; dat(binEdges(i):binEdges(i)+round((1-trainFrac)*tmpWidth),:)];
     end
 end
 

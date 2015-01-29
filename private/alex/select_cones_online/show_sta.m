@@ -55,8 +55,21 @@ if cellInd>0 % if not 0, show sta
     end
     
     % prepare sta
-    sta=squeeze(datarun.stas.stas{datInd});
-    sta=sta(:,:,params.frame); % frame
+    sta=datarun.stas.stas{datInd};
+    sta=sta(:,:,:,params.frame); % frame
+    if datarun.stimulus.independent=='t'
+        % RGB run, choose either green or blue channel
+        tmpGreen=sta(:,:,2);
+        tmpBlue=sta(:,:,3);
+        if max(abs(tmpGreen(:)))>max(tmpBlue(:)) % green gun bigger; non Blue cell
+            sta=tmpGreen;
+        else
+            sta=tmpBlue;
+        end
+    end
+    sta=double(squeeze(sta));
+    
+    
     
     % prepare RF fit
     centre=round(ctr(datInd,:));

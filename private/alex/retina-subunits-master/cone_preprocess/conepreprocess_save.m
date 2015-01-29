@@ -27,7 +27,9 @@ parsed = parse_rrs_prefix(inrun);
 savepath = [conepreprocess_path parsed.piece_fullname];
 % mkdir(savepath);
 savepath =  [savepath '/subunits/' parsed.run_full_name];
-mkdir(savepath); 
+if ~isdir(savepath)
+    mkdir(savepath);
+end
 if ischar(opts.cone_data_ind)
     savepath = [savepath '/' opts.cone_data_ind '/' opts.date '/' parsed.run_full_name];
     mkdir(savepath);
