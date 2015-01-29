@@ -22,10 +22,11 @@ end
 movie2=movie_log;
 clear movie_log
 var64=movie_params.var64;
-mov=zeros(var64,32,movie_time);
+var32=movie_params.var32;
+mov=zeros(var64,var32,movie_time);
 for itime=1:movie_time
-mov(:,:,itime)=(imresize(movie2(:,:,itime),[var64,32],'bilinear','Antialiasing',true)-movie_params.mean); % Doubt!!
-%mov(:,:,itime)=movie2(var64,32,itime);
+mov(:,:,itime)=(imresize(movie2(:,:,itime),[var64,var32],'bilinear','Antialiasing',true)-movie_params.mean); % Doubt!!
+%mov(:,:,itime)=movie2(var64,var32,itime);
 display('Resizing a snippet');
 end
 
@@ -58,7 +59,8 @@ end
 if(strcmp(movie_params.mov_type,'bw'))
 movie_time=movie_params.movie_time;
 var64=movie_params.var64;
-mov=double(rand(var64,32,movie_time)>0.5);
+var32=movie_params.var32;
+mov=double(rand(var64,var32,movie_time)>0.5);
 mov=mov-0.5;
 mov=mov*movie_params.deviation/max(abs(mov(:)));
 % White noise, but it's +1 or -1
@@ -68,9 +70,14 @@ end
 if(strcmp(movie_params.mov_type,'bw-precomputed'))
 movie_time=movie_params.movie_time;
 var64=movie_params.var64;
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111.xml';
+var32=movie_params.var32;
 
-mov=zeros(var64,32,movie_time);
+if(~isfield(movie_params,'mdf_file'))
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111.xml';
+else
+    mdf_file=movie_params.mdf_file;
+end
+mov=zeros(var64,var32,movie_time);
 triggers=[0:100/120:movie_time/120]; % Or maybe, movie_time/120 ?? Doubt!
 [mvi] = load_movie(mdf_file,triggers);
 [~,height,width,duration,refresh] = get_movie_ath(mdf_file,...
@@ -91,7 +98,7 @@ end
 % This will take care of initial and final conditions and make proper
 % buffers
 
-mov_buffered=zeros(var64,32,movie_time+2*120);
+mov_buffered=zeros(var64,var32,movie_time+2*120);
 mov_buffered(:,:,121:end-120)=mov;
 movie_time=movie_time+2*120;
 movie_params.movie_time=movie_time;

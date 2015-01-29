@@ -44,7 +44,7 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
-
+mov_params.stixel=10;
 
 solver=4; % Solver 4 used for spatial nulling!
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
@@ -67,15 +67,16 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
+mov_params.stixel=10;
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
 movies{1}=mov_orignial;
 movies{2}=mov_modify_new;
 mov_idx=1;
-write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 mov_idx=2;
-write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 
 %%
 
@@ -91,7 +92,7 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
-
+mov_params.stixel=10;
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
@@ -109,7 +110,7 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
-
+mov_params.stixel=10;
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
@@ -126,6 +127,7 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.005;
+mov_params.stixel=10;
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
@@ -142,6 +144,7 @@ mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 mov_params.scaling_loss=0.00;
+mov_params.stixel=10;
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
@@ -162,12 +165,13 @@ mov_params.mean=0.25*255; % mean on [0-255] scale.
 mov_params.deviation_plus=0.73*255;
 mov_params.deviation_minus=0.23*255;
 mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
+mov_params.stixel=10;
 
 solver=3;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
 movies{1}=mov_orignial;
 movies{2}=mov_modify_new;
 mov_idx=1;
-write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 mov_idx=2;
-write_movie_idx(destination_mat,movies{mov_idx},mov_idx);
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);

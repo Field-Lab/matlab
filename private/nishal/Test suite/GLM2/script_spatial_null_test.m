@@ -15,35 +15,38 @@ spatial_method{1}.struct_orig=[];
 spatial_method{1}.struct_null=[];
 
 icell_list=0;
-for cellID=[3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726];%]%
+for cellID= [3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726];%]%[3152,3331,3692,4726,4921]%
 try
     icell_list=icell_list+1
-%fittedGLM=glm_fit_from_WNrun({cellID}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '~/Nishal/GLM_fits');
+%fittedGLM=glm_fit_from_WNrun({3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '/Volumes/Analysis/nora/nishal_glmfits/15min_rank2');
+%save(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min_rank2/%d.mat',cellID),'fittedGLM');
+
 load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
 
 %% Replace fitted linear filter with STA - better filter?
-
-sta_filter=fittedGLM.cellinfo.WN_STA;
-cell_params.STAlen=30;
-sta_filt{1}=sta_filter;
-[new_stas,totalMaskAccept,CellMasks]=clipSTAs(sta_filt,cell_params);
-
-sta_filter=squeeze(sum(sta_filter,3));
-xcoords = fittedGLM.linearfilters.Stimulus.x_coord;
-ycoords = fittedGLM.linearfilters.Stimulus.y_coord;
-totalMaskAccept=totalMaskAccept(ycoords,xcoords);
-sta_filter = sta_filter(ycoords,xcoords,:).*repmat(totalMaskAccept,[1,1,30]);
-sta_filter(:,:,1:14)=0;
-fittedGLM.linearfilters.Stimulus.Filter = sta_filter;
-
+% 
+% sta_filter=fittedGLM.cellinfo.WN_STA;
+% cell_params.STAlen=30;
+% sta_filt{1}=sta_filter;
+% [new_stas,totalMaskAccept,CellMasks]=clipSTAs(sta_filt,cell_params);
+% 
+% sta_filter=squeeze(sum(sta_filter,3));
+% xcoords = fittedGLM.linearfilters.Stimulus.x_coord;
+% ycoords = fittedGLM.linearfilters.Stimulus.y_coord;
+% totalMaskAccept=totalMaskAccept(ycoords,xcoords);
+% sta_filter = sta_filter(ycoords,xcoords,:).*repmat(totalMaskAccept,[1,1,30]);
+% sta_filter(:,:,1:14)=0;
+% fittedGLM.linearfilters.Stimulus.Filter = sta_filter*max(abs(fittedGLM.linearfilters.Stimulus.Filter(:)))/max(abs(sta_filter(:)));
 h1= figure;
+
 subplot(1,2,1);
-imagesc(fittedGLM.linearfilters.Stimulus.Filter(:,:,27));
+imagesc(fittedGLM.linearfilters.Stimulus.Filter(:,:,6));
 colormap gray
 caxis([min(fittedGLM.linearfilters.Stimulus.Filter(:)),max(fittedGLM.linearfilters.Stimulus.Filter(:))]);
+pause(1)
 
 subplot(1,2,2);
-ssta_dummy = zeros(121,30);
+ssta_dummy = zeros(size(fittedGLM.linearfilters.Stimulus.Filter,1)^2,30);
 for itime =1:30
     xx=fittedGLM.linearfilters.Stimulus.Filter(:,:,itime);
     ssta_dummy(:,itime)=xx(:);
@@ -54,7 +57,7 @@ subplot(1,2,2);
 plot(s,'*');
 title(sprintf('Cell %d',cellID));
 
-print(h1,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA/cell_%d_linear_filter.eps',cellID));
+print(h1,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA_srun/cell_%d_linear_filter.eps',cellID));
 
 %% Test cell
 WNtime=120*24;
@@ -65,7 +68,7 @@ figure;
 plotSpikeRaster(logical(x.rasters.glm_sim))
 
     %% Generate response to WN
-    WNtime=120*60*30;
+    WNtime=120*15*30;
     WNmovie =double(rand(32,32,WNtime)>0.5)-0.5;
     x=GLM_predict(fittedGLM, WNmovie, 1);
     
@@ -126,12 +129,13 @@ title(sprintf('Cell: %d Null method %d Original struct %f , Null struct %f',cell
 spatial_method{ispatial_method}.struct_orig(icell_list)=original_struct;
 spatial_method{ispatial_method}.struct_null(icell_list)=null_struct;
 
-print(hFig,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA/cell_%d_null_method_%d.eps',cellID,ispatial_method));
+print(hFig,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA_srun/cell_%d_null_method_%d.eps',cellID,ispatial_method));
 
 
     end
     
 catch
+    
 end
 
 
@@ -163,6 +167,6 @@ xlabel('Structure in Original');
 ylabel('Sructure in Null');
 
 
-print(hFig,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA/Scatter_collection.eps'));
+print(hFig,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA_srun/Scatter_collection.eps'));
 
-save('/Volumes/Analysis/nishal/Spatial_null/Statial_null_data.mat','spatial_method');
+save('/Volumes/Analysis/nishal/Spatial_null/GLM_STA_srun/Statial_null_data.mat','spatial_method');

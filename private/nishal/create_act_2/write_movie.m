@@ -11,9 +11,7 @@ function write_movie(origin,destination,stixel)
 time_per_image=1;
 movie_path = destination;%'/Volumes/Data/stimuli/movies/null_space/original_eyemove_stix10.rawMovie';
 
-% size of image
-w=1536;
-h=1024;
+
 
 % Load movie
 loaded_data=load(origin);%'/Volumes/Analysis/nishal/original/movie.mat');
@@ -21,8 +19,8 @@ mov=loaded_data.mov;
 mov_len=size(mov,3);
 
 % size of screen
-screenw=size(mov,1)*10%640;% changed for Alex
-screenh=320
+screenw=size(mov,1)*stixel%640;% changed for Alex
+screenh=size(mov,2)*stixel
 
 % number of pixels to be used for screen
 wi=screenw/stixel;

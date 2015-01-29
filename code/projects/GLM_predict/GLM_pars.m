@@ -7,7 +7,7 @@ GLMType.fit_type = 'WN'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.CBP=false;
-GLMType.stimfilter_mode = 'rk1';
+GLMType.stimfilter_mode = 'rk2';
 %GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';

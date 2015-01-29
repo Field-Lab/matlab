@@ -67,7 +67,7 @@ end
 stas_new=cell(length(stas),1);
 for icell=1:length(stas)
     st_temp=zeros(size(stas{1},2),size(stas{1},1),1,size(stas{1},4)); % DOUBT .. Could be a reason for things to fail!!!!!
-    for itime=1:30
+    for itime=1:size(stas{1},4)
         st_temp(:,:,:,itime)=mean(stas{icell}(:,:,:,end-itime+1),3)'; % DOUBT .. Could be a reason for things to fail!!!!!
     end
     stas_new{icell}=st_temp;
@@ -127,10 +127,13 @@ if(isfield(cell_params,'use_fits')==1)
 n_cell=length(stas);
 filt_len=size(stas{1},4);
 var64=size(stas{1},1);
+var32=size(stas{1},2);
 filt_dim1=var64;
-filt_dim2=32;
+filt_dim2=var32;
 %% Get /Generate Original movie
 mov_params.var64=var64;
+mov_params.var32=var32;
+
 [mov,mov_params]=generate_movie(mov_params);
 mov_orig=mov;
 movie_time=mov_params.movie_time;

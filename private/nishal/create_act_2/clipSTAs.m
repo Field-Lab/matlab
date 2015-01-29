@@ -87,7 +87,7 @@ CellSNR=CellMaxSTA./CellNoiseSigmas;
 figure;
 hist(CellSNR,20);
 
-threshold=-1%input('Select SNR threshold to eliminate cells?');
+threshold=input('Select SNR threshold to eliminate cells?');
 
 
 cellChoose=(CellSNR>threshold);
