@@ -5,7 +5,7 @@ function [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafil
 %ref_cells=neuronPairsRefVsNew(:,2);
 ref_cells=InterestingCell_vis_id;
 %%
-neuronPath = [Null_datafile,sprintf('/data%03d_from_data009_nps.neurons',imov)];
+neuronPath = [Null_datafile,sprintf('/data002-from-data001.neurons')];
 neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronPath);
 CellSpkTimes=neuronFile.getSpikeTimes(ref_cells(ref_cell_number));
 TTL=double(neuronFile.getTTLTimes());
