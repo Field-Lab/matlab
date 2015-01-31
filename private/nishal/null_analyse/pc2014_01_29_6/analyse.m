@@ -70,7 +70,8 @@ end
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
-    close all
+   try
+       close all
      [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,5,condDuration,cond_str);
      
     ref_cell_number
@@ -79,6 +80,8 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     %testsuite_prediction
   [timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
     pause
+   catch
+   end
 end
 
 
