@@ -1,5 +1,5 @@
-function plotBundleVoltage(patternNos, display)
-bundleMeans = getBundleVoltagesAStar(patternNos, display);%getBundleVoltages(patternNos, display);
+function plotBundleVoltage(path, patternNos, display)
+bundleMeans = getBundleVoltagesAStar(path, patternNos, display);%getBundleVoltages(patternNos, display);
 temp = load('~/git_code/matlab/private/lauren/MATLAB_code/analysis/dataset-specific/axonBundleThresholds_byPattern_2012_09_24_3_data008.mat');
 axonBundleThresholds = temp.axonBundleThresholds_byPattern_2012_09_24_3_data008;
 figure; xlabel('Stimulation amplitude (uA)'); ylabel('Average bundle voltage (mV)'); whitebg('black'); set(gcf, 'InvertHardCopy', 'off');
