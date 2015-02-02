@@ -24,7 +24,7 @@ movieNo = p.Results.movieNo;
 movieIndex = p.Results.movieIndex;
 
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-temp = load('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/freddy/512elecpositions.mat'); % Find a more general location for this or call a different text file.
+temp = load([matlab_code_path() '/private/freddy/512elecpositions.mat']); % Find a more general location for this or call a different text file.
 positions = temp.positions;
 
 if ~strcmp(pathToAnalysisData(end),filesep)
