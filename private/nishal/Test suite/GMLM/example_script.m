@@ -1,3 +1,4 @@
+%% run startup_null_analyse_tenessee in nishal/Reconstruction
 %%
 clear datarun
 datarun.names.rrs_neurons_path='/Volumes/Analysis/2012-08-09-3/data002/data002.neurons';

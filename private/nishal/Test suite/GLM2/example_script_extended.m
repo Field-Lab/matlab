@@ -15,7 +15,7 @@ try
  load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
 
 %% Load the rawMovie to make predictions for
-testmovie_filename='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
+testmovie_filename='/Volumes/Data/2014-11-05-2/Visual/18.rawMovie';
 testmovie=get_rawmovie(testmovie_filename,5760);
 testmovie=permute(testmovie,[2 3 1]);
 

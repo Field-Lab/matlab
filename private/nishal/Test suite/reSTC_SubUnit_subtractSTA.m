@@ -57,8 +57,13 @@ framesValid = indx(binnedResponsesTrial(indx)>0);
 
 for iframe=framesValid
     iframe
-  xx=  reshape(repmat(mask,[1,1,30]).*mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
-  xxnew = (xx-((xx'*xxreSTA)*xxreSTA));
+  xx= reshape(repmat(mask,[1,1,30]).*mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
+%  mask!
+
+%  xx=  reshape(mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
+% Don't mask!
+
+xxnew = (xx-((xx'*xxreSTA)*xxreSTA));
   
 reSTC=reSTC+ xxnew*xxnew'*binnedResponsesTrial(iframe);
 end

@@ -15,7 +15,7 @@ interestingConditions=[1,2,3,4];
 
 
 rawMovFrames=5760;
-[stim,height,width,header_size] = get_raw_movie('/Volumes/Data/2014-11-05-2/visual/18.rawMovie',rawMovFrames,1);
+[stim,height,width,header_size] = get_raw_movie('/Volumes/Data/2014-11-05-2/Visual/18.rawMovie',rawMovFrames,1);
 subtract_movies{3}=mean(stim,1);
 subtract_movies{3}=mean(stim,1)*0+127.5;
 movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
@@ -59,7 +59,7 @@ datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
 
-cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
+cellTypeId=[2]; % 1 for On Parasols, 2 for Off parasols
 InterestingCell_vis_id=[];
 for icellType=cellTypeId
     icellType 
@@ -69,14 +69,14 @@ cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
 for ref_cell_number=6%1:length(InterestingCell_vis_id); %11
     close all
-     %[spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str);
+     [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str);
      
     ref_cell_number
    
-   %plot_mosaic(datarun,InterestingCell_vis_id,ref_cell_number)
+   plot_mosaic(datarun,InterestingCell_vis_id,ref_cell_number)
     %testsuite_prediction
-    gen=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'clip',nConditions,cond_str);
-    gen=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'fit',nConditions,cond_str);
+   % gen=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'clip',nConditions,cond_str);
+   % gen=linear_output(WN_datafile,InterestingCell_vis_id,ref_cell_number,condMovies,'fit',nConditions,cond_str);
   %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
     %pause
 end

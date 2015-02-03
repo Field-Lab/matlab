@@ -1,10 +1,10 @@
 
-function [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str)
-%%
+function [spkColl,spkCondColl]=plot_raster_script_withGLM_pred(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,PlotConds)
+%% Map neurons. Might be bad! Do better! Replace with CBP spike sorting.
 neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
 ref_cells=neuronPairsRefVsNew(:,2);
 %ref_cells=InterestingCell_vis_id;
-%%
+%% Load spikes
 neuronPath = [Null_datafile,sprintf('/data010.neurons')];
 neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronPath);
 CellSpkTimes=neuronFile.getSpikeTimes(ref_cells(ref_cell_number));
@@ -61,27 +61,30 @@ end
 % figure;
 % plotSpikeRaster(spkColl,'PlotType','vertline');
 
-figure;
+% figure;
+% 
+% for icond=1:nConditions
+% subplot(nConditions,1,icond);
+% plotSpikeRaster(spkCondColl(icond).spksColl,'PlotType','vertline');
+% title(sprintf('%s: data012 vis ID: %d Avg Spk Rate: %f',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(icond).avgSpkRate));
+% end
 
-for icond=1:nConditions
-subplot(nConditions,1,icond);
-plotSpikeRaster(spkCondColl(icond).spksColl,'PlotType','vertline');
-title(sprintf('%s: data012 vis ID: %d Avg Spk Rate: %f',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(icond).avgSpkRate));
-end
-
-%%
+%% Plot Raster
 %nConditions=6;
+
 nTrials1=nTrials;
-figure;
+h=figure;
 for icond=1:nConditions
 subplot(nConditions,1,icond);
 [xPoints, yPoints]=plotSpikeRaster(spkCondColl(icond).spksColl,'PlotType','vertline');
+
 
 plot(xPoints, yPoints+nTrials1, 'k');
 spkCondColl(icond).xPoints=xPoints;
 spkCondColl(icond).yPoints=yPoints;
 
 end
+close(gcf);
 
 col='rkrkrk';
 figure('Color','w');
@@ -96,7 +99,66 @@ ylim([0,nConditions*nTrials]);
 %title(sprintf('%s: data%03d vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},imov,InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate,spkCondColl(6).avgSpkRate));
 end
 
+
+%% 
+% figure;
+% plotSpikeRaster(spkColl,'PlotType','vertline');
+
 %%
-figure;
-plotSpikeRaster(spkColl,'PlotType','vertline');
+% Fit rank 2
+%fittedGLM=glm_fit_from_WNrun({InterestingCell_vis_id(ref_cell_number)}, '2014-11-05-2/data009', 'RGB-10-2-0.48-11111-32x32', 900, '~/Nishal/GLM_fits');
+% Load rank 1
+load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/30min/%d.mat',InterestingCell_vis_id(ref_cell_number)));
+ 
+datarun=load_data('2014-11-05-2/data009');
+datarun=load_neurons(datarun);
+
+location_of_git_repo='/home/vision/Nishal/matlab/';
+addpath(genpath([location_of_git_repo '/private/nora']));
+
+testmovie_filename='/Volumes/Data/2014-11-05-2/Visual/18.rawMovie';
+testmovie=get_rawmovie(testmovie_filename,5760);
+testmovie=permute(testmovie,[2 3 1]);
+
+prediction=GLM_predict(fittedGLM,testmovie, 30);
+
+sim_Pts=cell(nConditions,1);
+    block_len = size(prediction.rasters.glm_sim,2)/nConditions;
+for icond=1:nConditions
+
+[xPoints, yPoints]=plotSpikeRaster(logical(prediction.rasters.glm_sim(:,block_len*(icond-1)+1:icond*block_len)),'PlotType','vertline');
+sim_Pts{icond}.xPoints=xPoints;
+sim_Pts{icond}.yPoints=yPoints;
+
+end
+
+%h=plotraster(prediction,fittedGLM,'labels',true,'raster_length',48)
+%close(h);
+
+col='krkrkrk';
+figure('Color','w');
+ymax=0;
+icolcnt=0;
+for pltcnd=PlotConds
+        icolcnt=icolcnt+1
+    xpts=sim_Pts{pltcnd}.xPoints*prediction.rasters.bintime;
+    ypts=sim_Pts{pltcnd}.yPoints;
+    plot(xpts, ypts+ymax, col(icolcnt));
+     ymax=ymax+31;
+       hold on
+   icolcnt=icolcnt+1
+    xpts=spkCondColl(pltcnd).xPoints*1/20000;
+    ypts=spkCondColl(pltcnd).yPoints;
+    plot(xpts, ypts+ymax, col(icolcnt));
+
+   ymax=ymax+31;
+
+     hold on
+end
+set(gca,'YTick',[]);
+set(gca,'YColor','w');
+
+xlabel('Time (s)');
+
+ylim([0,ymax]);
 end

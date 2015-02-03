@@ -101,7 +101,7 @@ end
 end
 
 %% Generate white noise movie
-for movieLen=120*30*60;
+ movieLen=120*30*60;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
 movie_idx=2; 
 if(movie_idx==1)
@@ -161,14 +161,18 @@ figure
  
 movie_new_len = size(mov,3);
 mov_new2=mov;
-%reSTC_SubUnit_subtractSTA % Calculate STA and STC .. 
-reSTC_SubUnit; % Do not subtract/remove STA
+reSTC_SubUnit_subtractSTA % Calculate STA and STC .. 
+%reSTC_SubUnit; % Do not subtract/remove STA
 WNSTA=reSTA;
 WNSTC=reSTC;
 
 WN_uSq=uSq;
 reconstruct_using_STC_STA;
 %reconstruct_using_STC;
+
+%% Train GMLM..
+
+fitGLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
 %% Experiment 0 - Null using WN-STC, and see response.
 movieLen=120*30;
 
@@ -181,7 +185,7 @@ analyse_null_subUnit_ts
 
 
 
-end
+
 
 %% Contrast Stuff
 numberFilters=[];
