@@ -1,5 +1,5 @@
 
-function [spkColl,spkCondColl]=plot_raster_script(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str)
+function [spkColl,spkCondColl,h]=plot_raster_script_2015_01_29_2(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str)
 %%
 %neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
 %ref_cells=neuronPairsRefVsNew(:,2);
@@ -84,9 +84,9 @@ spkCondColl(icond).yPoints=yPoints;
 end
 
 col='rkrkrk';
-figure('Color','w');
-for icond=1:nConditions
-
+h=figure('Color','w');
+subplot(4,1,1);
+icond=1;
 xPoints = spkCondColl(icond).xPoints;
 yPoints = spkCondColl(icond).yPoints;
 nTrials1=max(yPoints(:));
@@ -94,8 +94,14 @@ plot(xPoints*1/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
 hold on
 ylim([0,nConditions*nTrials]);
 %title(sprintf('%s: data%03d vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},imov,InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate,spkCondColl(6).avgSpkRate));
-end
 
+icond=2;
+xPoints = spkCondColl(icond).xPoints;
+yPoints = spkCondColl(icond).yPoints;
+nTrials1=max(yPoints(:));
+plot((xPoints*1/20000) - 6, yPoints+(nConditions-icond)*nTrials1,col(icond));
+hold on
+ylim([0,nConditions*nTrials]);
 %%
 % figure;
 % plotSpikeRaster(spkColl,'PlotType','vertline');

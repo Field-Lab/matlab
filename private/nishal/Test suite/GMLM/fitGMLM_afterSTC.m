@@ -5,9 +5,19 @@ global_vars_GMLM_afterSTC
 binnedResponses_global=binnedResponses; 
 %%
 nSTCs=3;
+
+%% Normalize STA and STC 
+
+WNSTA=WNSTA/norm(WNSTA(:)); % Normalize
+for istc=1:nSTCs
+    WN_uSq{istc} = WN_uSq{istc}/norm(WN_uSq{istc}(:)); % Normalize
+end
+
+%%
 mov_filtered = squeeze(convn(mov,WNSTA,'valid'))';
 for istc=1:nSTCs
-mov_filtered(istc+1,:)=squeeze(convn(mov,WN_uSq{istc},'valid'))';
+
+    mov_filtered(istc+1,:)=squeeze(convn(mov,WN_uSq{istc},'valid'))';
 end
 
 binnedResponses_global=binnedResponses(end-size(mov_filtered,2)+1:end);
@@ -50,18 +60,18 @@ temporalCouplingLen=0;
 %initialFilters = 2*(rand(filteredStimDim*nFrontEnds,1)-0.5);
 
 %% Random equi-norm initialization
- initialFilters=zeros(filteredStimDim*nFrontEnds,1);
- for ifrontend=1:nFrontEnds
-    su=squeeze(subunits{ifrontend});
-      
-    initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds)=randn(nFrontEnds,1);
-     initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds)= initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds)/norm( initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds));
- 
- end
- display('Random Equinorm initialization')
+%  initialFilters=zeros(filteredStimDim*nFrontEnds,1);
+%  for ifrontend=1:nFrontEnds
+%     su=squeeze(subunits{ifrontend});
+%       
+%     initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds)=randn(nFrontEnds,1);
+%      initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds)= initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds)/norm( initialFilters((ifrontend-1)*filteredStimDim+1:(ifrontend-1)*filteredStimDim+nFrontEnds));
+%  
+%  end
+%  display('Random Equinorm initialization')
  %% EYE filters
-%initialFilters= eye(nFrontEnds,nFrontEnds);
-% initialFilters=initialFilters(:);
+initialFilters= eye(nFrontEnds,nFrontEnds);
+initialFilters=initialFilters(:);
 
 %%
 %options = optimoptions(@fminunc,'GradObj','on','Diagnostics','on');

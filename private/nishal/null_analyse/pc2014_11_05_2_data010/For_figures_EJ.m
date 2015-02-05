@@ -18,15 +18,15 @@ datarun=load_params(datarun)
 % end 
 % cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 InterestingCell_vis_id = [275,1382,2181,2255,2389,2716,2747,2957,3362,4567,5056,5057,5928,5929,6543,7276,7742]
-for ref_cell_number=[2,3,4,7,16]%1:length(InterestingCell_vis_id); %11
-    ref_cell_number=16;
+for ref_cell_number=[16]%1:length(InterestingCell_vis_id); %11
+   
     close all
-    % PltCnd=[3,1];
+    % PltCnd=[2,1];
     % [spkColl,spkCondColl]=plot_raster_script_withGLM_pred(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,PltCnd);
     ref_cell_number
     CondtoWrite=[1,2];
     makeConditionMovies( cond_str,condMovies,datarun,InterestingCell_vis_id(ref_cell_number),CondtoWrite);
     
    % plot_mosaic(datarun,InterestingCell_vis_id,ref_cell_number)
- pause
+% pause
 end
