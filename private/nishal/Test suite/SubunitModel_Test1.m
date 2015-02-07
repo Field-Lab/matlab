@@ -139,6 +139,8 @@ mov2(:,:,Filtlen:movieLen+Filtlen-1)=mov; % Append zeros before the movie
 nTrials=1;
 SubUnit_Response_test_movie_script
 
+% Spike triggered sub-unit Input 
+spikeTriggeredSubUnitInput(binnedResponses,cell_resp)
  %% Calculate STA
 
 

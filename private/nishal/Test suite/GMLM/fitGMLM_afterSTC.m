@@ -28,6 +28,14 @@ filteredStimDim=size(mov_filtered,1);
 nFrontEnds=4;
 temporalCouplingLen=0;
 
+% spikeTriggeredSubUnitInput(binnedResponses_global,mov_filtered')
+
+%% Fit GMM and find cluster centers
+
+gm = fitGMM(binnedResponses_global,mov_filtered');
+mu2=gm.mu';
+initialFilters = mu2(:);
+
 %% Initialize with sub-units to check if the sub-units are optimal weights
 
 % Find weights for sub-units 
@@ -70,8 +78,8 @@ temporalCouplingLen=0;
 %  end
 %  display('Random Equinorm initialization')
  %% EYE filters
-initialFilters= eye(nFrontEnds,nFrontEnds);
-initialFilters=initialFilters(:);
+% initialFilters= eye(nFrontEnds,nFrontEnds);
+% initialFilters=initialFilters(:);
 
 %%
 %options = optimoptions(@fminunc,'GradObj','on','Diagnostics','on');
@@ -130,6 +138,31 @@ colormap gray
 colorbar
 axis image
 title('STC');
+end
+
+%% Initial filter
+
+fitGLM.Linear.initfilter=cell(4,1);
+for ifilter=1:nFrontEnds
+fitGLM.Linear.initfilter{ifilter}=initialFilters((ifilter-1)*filteredStimDim+1:ifilter*filteredStimDim);
+end
+
+initFrontEnds=cell(4,1);
+for ifilter=1:nFrontEnds
+initFrontEnds{ifilter}=fitGLM.Linear.initfilter{ifilter}(1)*WNSTA;
+for iSTC=1:nSTCs
+    initFrontEnds{ifilter} = initFrontEnds{ifilter} + fitGLM.Linear.initfilter{ifilter}(iSTC+1)*WN_uSq{iSTC};
+end
+end
+
+figure;
+for ifilter=1:nFrontEnds
+subplot(3,2,ifilter);
+imagesc(initFrontEnds{ifilter}(:,:,4));
+colormap gray
+colorbar
+axis image
+title('Initial filters');
 end
 
 %% Plot derived filters

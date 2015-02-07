@@ -1,6 +1,6 @@
 
 % Nishal P. Shah , Jan 2014
-% To go to the state of program : git commit code : 7e4e5a47ffb3cec930dcc58c26097fb3254b41ee
+% To go to the state of program : git commit code : 5e51df0e2c685efb377eaf465ee3c87095b9a472
 
 % Have a dataset ready with cells you want to nullify grouped under a
 % common name(use Vision software).
