@@ -1,11 +1,11 @@
 clear
 %% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-01-23-5/data010/data010.neurons';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-4-0.48-11111.xml';
-num_frames = 9; % both have to be run with the name number of frames
-target_cell = 7055;
-target_cell2 = 7667;
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-08-27-6/data000/data000.neurons';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
+num_frames = 30; % both have to be run with the name number of frames
+target_cell = 6738;
+target_cell2 = 2510;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);

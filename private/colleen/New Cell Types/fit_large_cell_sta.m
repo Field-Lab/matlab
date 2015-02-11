@@ -13,6 +13,8 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 
 [mvi] = load_movie(mdf_file, triggers);
 
-cell_specification = 'all';
-datarun = compute_sta_fits(datarun, cell_specification);
+cell_specification = [139];
+datarun = compute_sta_fits(datarun, cell_specification, 'verbose', true);
+cell_indices = get_cell_indices(datarun, cell_specification);
+output_matrix = make_Gaussian_two_d('center_point_x', datarun.matlab.sta_fits{cell_indices}.center_point_x, 'center_point_y', datarun.matlab.sta_fits{cell_indices}.center_point_y, 'rotation_angle', datarun.matlab.sta_fits{cell_indices}.center_rotation_angle, 'amp_scale', datarun.matlab.sta_fits{cell_indices}.surround_amp_scale, 'sd_x', datarun.matlab.sta_fits{cell_indices}.center_sd_x, 'sd_y',datarun.matlab.sta_fits{cell_indices}.center_sd_y, 'x_dim', datarun.matlab.sta_fits{cell_indices}.x_dim, 'y_dim', datarun.matlab.sta_fits{cell_indices}.y_dim)
 
