@@ -685,6 +685,6 @@ fit_info.rmse = fval;
 fit_info.initial_params = input_params;
 
 % Plot result
-plot_sta_fit(sta, fit_params, fixed_params, fit_indices, fixed_indices)
+plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices);
 
 
