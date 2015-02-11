@@ -6,7 +6,7 @@ all_params(fixed_indices) = fixed_params;
 % get sta fit
 sta_fit = sta_fit_function(all_params);
     % spatial fit
-    figure(1)
+    figure
     subplot(2,1,1)
     hold off
     temp_rf = rf_from_sta(sta);
