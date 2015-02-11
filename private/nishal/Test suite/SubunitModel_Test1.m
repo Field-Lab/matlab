@@ -176,10 +176,10 @@ reconstruct_using_STC_STA;
 
 fitGLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
 %% Experiment 0 - Null using WN-STC, and see response.
-movieLen=120*30;
+movieLen=120*10;
 
 %null_compute_usingSTC_test
-numFitlers=4;
+numFilters=4;
 null_compute_using_STC_STA_test
 
 nTrials=50;
@@ -248,7 +248,7 @@ null_compute_subUnit_test
 
 nTrials=1;
 analyse_null_subUnit_ts
-
+[fitGLM,output] = fitGMLM_afterSTC(binnedResponseNull,movNull,WN_uSq,WNSTA,subunits)
 
 %% Experiment 2
  
