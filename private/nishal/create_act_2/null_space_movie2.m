@@ -76,6 +76,7 @@ stas=stas_new;
 stas_orig=stas_new;
 
 % Used in movie post process
+
 [stas_clipped,totalMaskAccept,CellMasks]= clipSTAs(stas,cell_params);
 mov_params.totalMaskAccept=totalMaskAccept;
 cell_params.CellMasks=CellMasks;    

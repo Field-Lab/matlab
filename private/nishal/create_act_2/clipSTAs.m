@@ -18,9 +18,29 @@ dummySTA= stas{icell};
 % figure;
 % imagesc(sig_stixels)    
 
+% if no significant stixels found my sig_stixles, all pixels are
+% significant! 
+if(sum(sig_stixels(:))==0)
+display('WARNING: No significant stixles (maybe very clean STA, no gaussian noise!) found by clip-STA');
+rf_strength_out=abs(squeeze(sum(dummySTA,4)));
+maxVal=max(rf_strength_out(:));
+[max_r,max_c]=find(rf_strength_out==maxVal);
+sig_stixels = 0*rf_strength_out;
+sizeClip=12;
+sig_stixels(max_r-sizeClip/2 : max_r+sizeClip/2,max_c-sizeClip/2:max_c+sizeClip/2)=1;
+sig_stixels=logical(sig_stixels);
+rf_strength_out=rf_strength_out.*sig_stixels;
+display(sprintf('Used a region of %d pixels around maximum',sizeClip));
+figure;
+imagesc(rf_strength_out);
+colormap gray
+axis image
+title('NO SIGNIFICANT STA, this is what was chosen!');
 
+end
 
 % Find continous region
+
 max_val=double(max(rf_strength_out(sig_stixels)));
 [row,col]=find(double(rf_strength_out).*double(sig_stixels)==max_val)
 list=[row,col];
@@ -87,10 +107,13 @@ CellSNR=CellMaxSTA./CellNoiseSigmas;
 figure;
 hist(CellSNR,20);
 
-threshold=input('Select SNR threshold to eliminate cells?');
+threshold=-1%input('Select SNR threshold to eliminate cells?');
 
-
+if(threshold>=0)
 cellChoose=(CellSNR>threshold);
+else
+cellChoose=ones(size(CellSNR));    
+end
 
 newSTAs=cell(sum(cellChoose),1);
 icnt=0;

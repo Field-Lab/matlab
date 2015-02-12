@@ -1,0 +1,240 @@
+%% Load STAs
+ datafile = '2012-09-06-0/data001';
+ datarun=load_data(datafile)
+ datarun=load_sta(datarun)
+
+ stas=datarun.stas.stas;
+ n_cell=length(stas);
+
+% for i=1:n_cell
+%     stas{i}=rand(320,160,6);
+% end
+
+filt_len=size(stas{1},4);
+%%
+
+for imov=2:2
+load(sprintf('/Volumes/Data/stimuli/movies/eye-movement/nishal_test_chunks/movie_chunk_%d',imov));
+end
+
+
+%% See movie
+movie_time=50;%size(movie,3);
+%mov = rand(filt_dim,filt_dim,movie_time);
+mov=movie/max(movie(:));
+mov=mov-0.5;%mean(mov(:));
+for itime=1:movie_time
+   imagesc(imresize(mov(:,:,itime),[300,300]));
+   colormap gray
+   title(sprintf('Time: %d',itime));
+   pause(0.1);
+end
+
+%%
+filt_dim1=320;
+filt_dim2=160;
+%%
+
+% making sparse toeplitz ?
+%filt_mat= sparse([],[],[],movie_time*n_cell,filt_dim1*filt_dim2*movie_time,n_cell*movie_time*6*320*160);
+%filt_mat= sparse([],[],[],movie_time*1,filt_dim1*filt_dim2*movie_time,n_cell*movie_time*6*320*160);
+filt_mat=cell(n_cell,1);
+inv_filt_mat=cell(n_cell,1);
+
+for icell=1:n_cell
+k=stas{icell};
+nzero=1*movie_time*6*320*160;
+x_log=zeros(nzero,1);
+y_log=zeros(nzero,1);
+v_log=zeros(nzero,1);
+cnt=0;
+
+icell
+for itime=1:movie_time
+   
+    for iitime=1:min(itime,filt_len)
+    k_t=k(:,:,iitime);   
+    k_t=k_t(:)';
+    %filt_mat(itime+(icell-1)*(movie_time),itime*filt_dim1*filt_dim2-(iitime)*filt_dim1*filt_dim2+1:itime*filt_dim1*filt_dim2-(iitime-1)*filt_dim1*filt_dim2)=k_t(:)';
+    for ispace=1:filt_dim1*filt_dim2
+        cnt=cnt+1;
+    x_log(cnt)=itime+(1-1)*(movie_time);
+    y_log(cnt)=itime*filt_dim1*filt_dim2-(iitime)*filt_dim1*filt_dim2+ispace;
+    v_log(cnt)=k_t(ispace);
+        
+    end
+    
+    end
+end
+x_log=x_log(1:cnt);
+y_log=y_log(1:cnt);
+v_log=v_log(1:cnt);
+
+filt_mat{icell}=sparse(x_log,y_log,v_log,movie_time*1,filt_dim1*filt_dim2*movie_time,1*movie_time*6*320*160);
+inv_filt_mat{icell}=(filt_mat{icell}*filt_mat{icell}')\filt_mat{icell};
+end
+%% 
+mov_reshape=zeros(filt_dim1*filt_dim2*movie_time,1);
+itime=0;
+for i=1:filt_dim1*filt_dim2:length(mov_reshape)
+    itime=itime+1;
+    xx=imresize(mov(:,:,itime),300,300);
+  mov_reshape(i:i+filt_dim1*filt_dim2-1)=  xx(:);
+end
+
+%%
+
+dd=filt_dim1*filt_dim2*movie_time;
+tic;
+cvx_begin
+variable mov_modify(dd)
+filt_mat*mov_modify==0
+minimize (norm(mov_modify-mov_reshape))
+cvx_end
+toc;
+%% 
+%filt_proj=(eye(dd)-filt_mat'*inv(filt_mat*filt_mat')*filt_mat);
+tic;
+inv_filt_mat=filt_mat'*(filt_mat*filt_mat')\filt_mat;
+toc;
+
+tic;
+mov_modify2=mov_reshape-filt_mat'*((filt_mat*filt_mat')\(filt_mat*mov_reshape));
+toc;
+
+
+%%
+tic;
+mov_modify=mov_reshape;
+% Alternating projections same as Dykstra's for multiple affine sub-spaces!
+
+residual=zeros(n_cell,1);
+res_log=[];
+for outer_iter=1:300
+   outer_iter
+  %  mov_modify_sum=zeros(length(mov_reshape),1);
+for icell=1:n_cell
+    %[outer_iter,icell]
+    mov_modify_new = mov_modify- filt_mat{icell}'*(inv_filt_mat{icell}*mov_modify);
+    %mov_modify_sum = mov_modify_sum+(mov_modify- filt_mat{icell}'*(inv_filt_mat{icell}*mov_modify)) ;
+
+    %mov_modify=(mov_modify_new+mov_modify)/2;
+   % mov_modify_sum=mov_modify_sum+mov_modify_new;
+    mov_modify=mov_modify_new;
+end
+
+%mov_modify=mov_modify_sum/n_cell;
+
+for icell=1:n_cell
+residual(icell)=norm(filt_mat{icell}*mov_modify);
+end
+res_log=[res_log;mean(residual)];
+mean(residual)
+end
+
+orig=zeros(n_cell,1);
+for icell=1:n_cell
+    orig(icell)=norm(filt_mat{icell}*mov_reshape);
+end
+
+figure;
+plot(orig,'r');hold on;plot(residual,'b')
+figure;
+plot(res_log);
+% If constraints inconsistent, then least square? pinv? pseudo-norm ? 
+
+toc;
+%%
+%%
+mov_mod=zeros(filt_dim1,filt_dim2,movie_time);
+
+for itime=1:movie_time
+mov_mod(:,:,itime)=reshape(mov_modify(1+(itime-1)*filt_dim1*filt_dim2:itime*filt_dim1*filt_dim2),[filt_dim1, filt_dim2]);
+end
+
+%%
+f=figure;
+subplot(1,2,1)
+imagesc(k_space);colormap(gray)
+colorbar
+axis image
+title('Space filter')
+%
+subplot(1,2,2)
+plot([-29:0],k_time(end:-1:1));
+title('Time filter');
+
+print(f,'Filters_1.png','-dpng');
+
+
+%%  
+[movfile,movpath] = uiputfile('*.avi','Save Movie As');
+    movieFileName = [movpath movfile];
+    writerObj = VideoWriter(movieFileName);
+    writerObj.FrameRate = 3;
+    open(writerObj);
+
+f = figure; set(f,'Position',[100 360 1000 550]);
+set(f,'Color','white');
+
+for itime=1:movie_time
+    clf
+    subplot(2,2,1)
+     imagesc(mov(:,:,itime));
+   title(sprintf('Time: %d',itime));
+   axis image
+   
+colorbar
+subplot(2,2,2)
+imagesc(mov_mod(:,:,itime));colormap(gray)
+title(sprintf('Time: %d',itime));
+axis image
+colorbar
+ subplot(2,2,3)
+imagesc(mov_mod(:,:,itime)-mov(:,:,itime));colormap(gray)
+title(sprintf('Time: %d',itime));
+axis image
+caxis([min(mov_mod(:)-mov(:)) max(mov_mod(:)-mov(:))])
+colorbar
+
+subplot(2,2,4)
+%imagesc(k_space);colormap(gray)
+imagesc(stas{10}(:,:,mod(itime,6)+1));colormap(gray)
+caxis([min(stas{10}(:)),max(stas{10}(:))]);
+colorbar
+axis image
+title('RF in data')
+
+
+ M = getframe(f);
+ writeVideo(writerObj,M);
+ pause(1/120)
+end
+
+ close(writerObj);
+
+ % All temporal structure lost!- even in stimulus filter, because of first
+ % order structure!
+ 
+ %% 
+ % Verify!
+ f=figure;
+ subplot(1,2,1);
+ plot(filt_mat*mov_modify);
+ title('Both');
+ 
+ % Make filt_mat2 - see if only in spatial null space? 
+ filt_mat2= sparse(filt_dim1*filt_dim2*movie_time,filt_dim1*filt_dim2*movie_time);
+
+for itime=1:movie_time
+   
+    for iitime=1:1%min(itime,filt_len)
+        
+    filt_mat2(itime,itime*filt_dim*filt_dim-(iitime)*filt_dim*filt_dim+1:itime*filt_dim*filt_dim-(iitime-1)*filt_dim*filt_dim)=k_space(:)'*k_time(iitime);
+    
+    end
+end
+subplot(1,2,2);
+plot(filt_mat2*mov_modify);
+title(' only spatial filter');
+print(f,'Stimulus_2_inner_prod.png','-dpng');

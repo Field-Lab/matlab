@@ -138,43 +138,47 @@ end
 col='rkrkrkrk';
 figure('Color','w');
 ymax=0;
-icolcnt=0;
+icolcnt=0; 
+h=figure('Color','w');
 for pltcnd=PlotConds
  
-    h=figure('Color','w');
+  
     icolcnt=icolcnt+1
     xpts=sim_Pts{pltcnd}.xPoints*prediction.rasters.bintime;
     validIdx=(xpts>1)&(xpts<11);
     ypts=sim_Pts{pltcnd}.yPoints;
     plot(xpts, ypts+ymax, col(icolcnt));
+   
     xlim([1,11]);
-    set(gca,'YTick',[]);
-    set(gca,'YColor','w');
-    set(gca,'XColor','w')
-     set(gca,'XTick',[]);
-     ylim([0,max(ypts)]);
+%     set(gca,'YTick',[]);
+%     set(gca,'YColor','w');
+%     set(gca,'XColor','w')
+%      set(gca,'XTick',[]);
+%     ylim([0,max(ypts)]);
      
-     s=hgexport('readstyle','raster');
-     hgexport(h,sprintf('/Volumes/Analysis/nishal/Presentations/Figures for EJ/Sim_cond_%d.eps',pltcnd),s);
- %    ymax=ymax+31;
+     hold on
+  %   s=hgexport('readstyle','raster');
+  %   hgexport(h,sprintf('/Volumes/Analysis/nishal/Presentations/Figures for EJ/Sim_cond_%d.eps',pltcnd),s);
+     ymax=ymax+31;
        
-    h=figure('Color','w');
+   % h=figure('Color','w');
     icolcnt=icolcnt+1
     xpts=spkCondColl(pltcnd).xPoints*1/20000;
     validIdx=(xpts>1)&(xpts<11);
     ypts=spkCondColl(pltcnd).yPoints;
     plot(xpts, ypts+ymax, col(icolcnt));
-   % ymax=ymax+31;
+   ymax=ymax+31;
     xlim([1,11]);
-    ylim([0,max(ypts)]);
+   % ylim([0,max(ypts)]);
     
-    set(gca,'XColor','w')
-    set(gca,'XTick',[]);
-    set(gca,'YTick',[]);
-    set(gca,'YColor','w');
-    s=hgexport('readstyle','raster');
-    hgexport(h,sprintf('/Volumes/Analysis/nishal/Presentations/Figures for EJ/Rcd_cond_%d.eps',pltcnd),s);
-  
+%     set(gca,'XColor','w')
+%     set(gca,'XTick',[]);
+%     set(gca,'YTick',[]);
+%     set(gca,'YColor','w');
+    hold on
+%     s=hgexport('readstyle','raster');
+%     hgexport(h,sprintf('/Volumes/Analysis/nishal/Presentations/Figures for EJ/Rcd_cond_%d.eps',pltcnd),s);
+%   
 end
 
 %xlabel('Time (s)');

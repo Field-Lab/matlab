@@ -1,0 +1,72 @@
+
+%%
+
+
+
+tic;
+lambda=10;
+mov_modify=0.8*mov_reshape;
+%Implementing ADMM here
+
+residual=zeros(n_cell,1);
+res_log=[];
+
+y=cell(n_cell+1,1); % last one for ||x-c||
+
+for icell=1:n_cell+1
+y{icell}=zeros(length(mov_modify),1);
+end
+
+
+
+mov_modify_new=cell(n_cell+1,1); % last one for ||x-c||
+
+for outer_iter=1:100
+    %mov_modify_sum=zeros(length(mov_reshape),1);
+    outer_iter
+    
+
+
+for icell=1:n_cell+1
+    %[outer_iter,icell]
+    if(icell==n_cell+1)
+    mov_modify_new{icell}=(1-lambda/norm(-mov_reshape+mov_modify-lambda*y{n_cell+1}))*(-mov_reshape+mov_modify-lambda*y{n_cell+1}).*double(-mov_reshape+mov_modify-lambda*y{n_cell+1}>=lambda) + mov_reshape;
+    % Wrong proximal step!
+    else
+    mov_modify_new{icell} = (mov_modify-lambda*y{icell})- filt_mat{icell}'*(inv_filt_mat{icell}*(mov_modify-lambda*y{icell}));
+    %mov_modify=(mov_modify_new+mov_modify)/2;
+    %mov_modify_sum=mov_modify_sum+mov_modify_new;
+    %mov_modify=mov_modify_new;
+    end
+end
+
+%mov_modify=mov_modify_sum/n_cell;
+mov_modify_sum2=zeros(length(mov_reshape),1);
+for icell=1:n_cell+1
+mov_modify_sum2=mov_modify_sum2+mov_modify_new{icell};    
+end
+mov_modify=mov_modify_sum2/(n_cell+1);
+
+for icell=1:n_cell+1
+y{icell}=y{icell}+(1/lambda)*(mov_modify_new{icell}-mov_modify);
+end
+
+for icell=1:n_cell
+residual(icell)=norm(filt_mat{icell}*mov_modify);
+end
+res_log=[res_log;mean(residual)];
+mean(residual)
+end
+
+orig=zeros(n_cell,1);
+for icell=1:n_cell
+    orig(icell)=norm(filt_mat{icell}*mov_reshape);
+end
+
+figure;
+plot(orig,'r');hold on;plot(residual,'b')
+figure;
+plot(res_log);
+% If constraints inconsistent, then least square? pinv? pseudo-norm ? 
+
+toc;

@@ -90,7 +90,7 @@ testmovie=permute(testmovie,[2 3 1]);
 datarun=load_data('2014-11-05-2/data010_from_data009_nps');
 datarun=load_neurons(datarun);
 
-testmovie_filename='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
+testmovie_filename='/Volumes/Data/2014-11-05-2/Visual/18.rawMovie';
 testmovie=get_rawmovie(testmovie_filename,5760);
 testmovie=permute(testmovie,[2 3 1]);
 
@@ -114,7 +114,7 @@ sim_rast_tv4=[]; % Dummy
 for imodel_run=1:30
     close all
     imodel_run
-testmovie_filename='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
+testmovie_filename='/Volumes/Data/2014-11-05-2/Visual/18.rawMovie';
 testmovie=get_rawmovie(testmovie_filename,5760);
 testmovie=permute(testmovie,[2 3 1]);
 x=GLM_predict(fittedGLM, testmovie, 30,datarun);
