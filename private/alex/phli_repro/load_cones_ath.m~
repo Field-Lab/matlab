@@ -5,10 +5,13 @@ parsed = parse_rrs_prefix(datarun);
 
 piece = parsed.piece_fullname;
 run = parsed.run_name;
+path2data=datarun.names.rrs_prefix;
 
-path2data=['/Volumes/Analysis/',piece,'/cone_data/'];
+tmp=regexpi(path2data(\w+)d+)-(\w+)-(\d+)-(\d+)','match');
+path2data=path2data(1:tmp(1)-1);
 
-if isdir(path2data)
+if isdir([path2data,'cone_data'])
+    path2data=[path2data,'cone_data/'];
     if strcmp (cone_spec, piece)
         cone_data = dir([path2data,'*', run,'*']);        
     else

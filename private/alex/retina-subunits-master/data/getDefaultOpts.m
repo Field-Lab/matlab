@@ -6,8 +6,8 @@ function celldat = getDefaultOpts(celldat)
 celldat.trainFrac = 0.8; % default by Jeremy
 celldat.subDivide = 10; % default by Jeremy
 
-% celldat.trainFrac = 0.7;
-% celldat.subDivide = 20;
+% celldat.trainFrac = 0.75;
+% celldat.subDivide = 15;
 
 celldat.thresh = 15;
 celldat.threshType = 'peak';

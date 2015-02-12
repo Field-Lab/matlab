@@ -6,7 +6,21 @@ global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle
 global stim STAplotPosition RFfitsPlotPosition deleted_cells_list
 cones={}; myCells=[]; deleted_cells_list=[];
 
+%*********** 2008 *********
+
+date = '2008-08-27-5';
+run = 'data003';
+path2load = fullfile(server_path(), [date, '/',run,'/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
+
 %*********** 2010 *********
+
+date = '2010-09-24-1';
+run = 'data006';
+path2load = fullfile(server_path(), [date, '/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
 
 date = '2010-03-05-2';
 run = 'data001';
@@ -32,11 +46,19 @@ date='2011-10-25-5';
 run='data001-0';
 path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
 
 date='2011-12-13-2';
 run='data008-0';
 path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
+
+date='2011-12-13-2';
+run='data000-0';
+path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
 
 %*********** 2012 *********
 
@@ -82,7 +104,7 @@ frame=6;
 %% main body
 
 mapName = ['map_', run];
-cellType=3;
+cellType=2;
 nnd_scale=3;
 
 
@@ -91,12 +113,6 @@ datarun = load_data(path2load);
 datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
 datarun = set_polarities(datarun);
-
-% check for RGB
-if datarun.stimulus.independent
-    
-    
-end
 
 % figure
 % plot_rf_summaries(datarun, {1}, 'clear', false,  'plot_fits', true, 'fit_color', 'r')

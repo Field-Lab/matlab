@@ -33,7 +33,23 @@ datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
 datarun = set_polarities(datarun);
 datarun = load_neurons(datarun);
 
-datarun = load_cones(datarun,'10');
+datarun = load_cones_ath(datarun,'2011-06-30-0');
+
+datarun.names.rrs_movie_path='/Volumes/Analysis/2011-06-30-0/data003/data003.movie';%BW-2-4-0.48-11111-300x300-60.35.xml';
+
+datarun = conepreprocess_wnm(datarun, 'cone_data_ind', 'bayes');
+conepreprocess_save(datarun, 'cone_data_ind', 'data', 'date', '2011-06-30-0');
+
+    
+%% cone preprocessing
+
+datarun = load_data(fullfile(server_path(), '2012-09-13-2/data009/data009'));
+datarun = load_params(datarun,'verbose',1);
+datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
+datarun = set_polarities(datarun);
+datarun = load_neurons(datarun);
+
+datarun = load_cones_ath(datarun,'localmax');
 
 datarun.names.rrs_movie_path='/Volumes/Analysis/2011-06-30-0/data003/data003.movie';%BW-2-4-0.48-11111-300x300-60.35.xml';
 
@@ -110,26 +126,51 @@ cellTypeName='SBC';
 
 dataset = '2011-06-30-0/data003';
 rgcs=[4218 3721 2237];
+rgcs=2237;
 cellTypeName='ON midget';
 
 dataset = '2010-03-05-2/data013';
 rgcs=[481,560,841,677];
+rgcs=481;
 cellTypeName='ON midget';
+
+dataset = '2008-08-27-5/data003';
+rgcs=[1951, 2986];
+cellTypeName='ON midget';
+
+dataset = '2011-12-13-2/data000-0';
+rgcs=[2658, 2659, 3856, 3061, 2251, 2266];
+rgcs=[2658 2659 3856];
+rgcs=3856;
+cellTypeName='ON midget';
+
+
+dataset='2011-10-25-5/data001-0';
+rgcs=[6034];
+cellTypeName='OFF parasol';
+
+dataset='2010-09-24-1/data006';
+rgcs=[1351 1037 1561];
+cellTypeName='OFF parasol';
 
 % workstation='stanford';
 workstation='bertha';
 dat = loadData(workstation,dataset);
 
 disp('now running stc')
-batchAnal(workstation,dataset,cellTypeName,'stc',1,0,0.33, rgcs);
+batchAnal(workstation,dataset,cellTypeName,'stc',1,0,0.5, rgcs);
 
 disp('now running subunits')
 tic
-batchAnal(workstation,dataset,cellTypeName,'subunit-local',1,0,0.33, rgcs)
+batchAnal(workstation,dataset,cellTypeName,'subunit-local',1,0,0.5, rgcs)
 toc
 
 disp('now running figures')
-batchAnal(workstation,dataset,cellTypeName,'subunit-local',0,1,0.33, rgcs)
+batchAnal(workstation,dataset,cellTypeName,'subunit-local',0,1,0.5, rgcs)
+
+
+dataset='2011-06-30-0/data003';
+cellTypeName='ON parasol';
 
 
 workstation='bertha';
