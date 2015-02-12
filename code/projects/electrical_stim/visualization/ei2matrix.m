@@ -13,8 +13,8 @@ function [EIm, EImView] = ei2matrix(oneEI)
 % L Grosberg Jan 2014
 
 % Load electrode positions as matrix 
-h = load('/Users/grosberg/Lab/matlab/code/projects/electrical_stim/resources/array_matrix_id510'); % Find a more general location for this or call a different text file. 
-
+fname = fullfile(fileparts(mfilename('fullpath')),'../resources/array_matrix_id510'); 
+h = load(fname); 
 electrodeMatrix = h.array_matrix_id510; clear h; 
 
 EIm = oneEI(electrodeMatrix(:)); 

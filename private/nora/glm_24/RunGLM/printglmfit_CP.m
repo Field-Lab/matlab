@@ -115,9 +115,7 @@ ylim([1 , 2*trials]); hold on
 for i_trial = 1:trials
     sim1 = time(find(sim_rast(i_trial,:)));
     rec1 = time(find(rec_rast(i_trial,:)));
-    
-    
-    
+   
     plot(rec1, i_trial, 'k.')
     
     if length(sim1) < 4*length(rec1) 
