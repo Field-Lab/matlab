@@ -3,7 +3,7 @@
 
 % stim_grid = -2:2
 dS=0.01;
-stims = -5:dS:5;
+stims = -10:dS:10;
 
 sigma=2;
 meanStim=0;
@@ -12,7 +12,7 @@ probStims =dS*(1/(sqrt(2*pi)*sigma))*(exp(-((stims-meanStim).^2)/(2*sigma^2))); 
 %probStims = double(stims>0.5 & stims<1.5) + double(stims>-1.5 & stims<-0.5);
 probStims=probStims/sum(probStims); % As range truncated bor us! 
 
-
+Threshold = sum(probStims)
 probMap = zeros(length(stims));
 respMap = zeros(length(stims));
 %hinge = @(x) x.*double(x>0);
@@ -25,9 +25,13 @@ for i=1:size(probMap,1)
         respMap (i,j) = respFunc(stims(j),stims(i)); %exp(stims(i)) + exp(stims(j));
     end
 end
+
+probMap = probMap/sum(probMap(:));
+
+
  [X,Y]=meshgrid(stims,stims);
 figure('Color','w');
-subplot(1,3,1);
+subplot(2,2,1);
 contourf(X,Y,probMap/max(probMap(:)),20);
 hold on
 contour(X,Y,respMap/max(respMap(:)),100);
@@ -38,7 +42,7 @@ xlabel('Sub-unit 1');
 ylabel('Sub-unit 2');
 title('Input stimulus and Iso-response curves');
 
-subplot(1,3,2);
+subplot(2,2,2);
 SpikeTriggerdEnsemble = probMap.*respMap;
 contourf(X,Y,SpikeTriggerdEnsemble,20);
 axis image
@@ -56,7 +60,7 @@ ylabel('Sub-unit 2');
 title('Spike Triggered Ensemble');
 
 % Response on null line
-subplot(1,3,3);
+subplot(2,2,3);
 S1 = stims;
 S2 = -STA(1)*S1/STA(2);
 respNull=respFunc(S1,S2);
@@ -68,6 +72,26 @@ spikeTriggeredNullResp= probStims.*respNull;
 spikeTriggeredNullResp=spikeTriggeredNullResp/sum(spikeTriggeredNullResp);
 plot(S1,spikeTriggeredNullResp,'r')
 legend('Probability Of Input','Response','Spike Triggered Ensemble')
+
+figure;
+[X,Y]=meshgrid(stims,stims);
+actualPartition = double(1*X+0*Y>=0*X+1*Y);
+plot(stims,stims,'r');
+hold on
+fittedPartition = double(0.6*X+0.4*Y>=0.4*X+0.6*Y);
+%contour(X,Y,fittedPartition);
+
+title('Actual and Fitted Partition');
+hold on
+contour(X,Y,probMap/max(probMap(:)),20);
+
+Sigma3Boundary = sqrt(X.^2+Y.^2)<3*sigma;
+hold on;
+contour(X,Y,Sigma3Boundary);
+hold on;
+plot([0,1],[1,0],'b*');
+hold on;
+plot([0.6,0.4],[0.4,0.6],'r*');
 
 %% 3D case
 
