@@ -57,7 +57,7 @@ end
 % BW noise
 if(strcmp(movie_params.mov_type,'bw'))
 movie_time=movie_params.movie_time;
-var64=64;
+var64=32;
 mov=double(rand(var64,32,movie_time)>0.5);
 mov=mov-0.5;
 mov=mov*movie_params.deviation/max(abs(mov(:)));
@@ -68,7 +68,7 @@ end
 if(strcmp(movie_params.mov_type,'bw-precomputed'))
 movie_time=movie_params.movie_time;
 var64=32;
-mdf_file='/Volumes/Analysis/movie-xml/BW-10-1-0.48-11111.xml';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111.xml';
 
 mov=zeros(var64,32,movie_time);
 triggers=[0:100/120:movie_time/120]; % Or maybe, movie_time/120 ?? Doubt!

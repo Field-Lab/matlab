@@ -16,8 +16,7 @@ psth_null=psth_resp;
 time_log_null=timeLog;
 cell_resp_null=cell_resp;
 movNull=mov2;
-
-spikeTriggeredSubUnitInput(binnedResponseNull,cell_resp_null)
+%spikeTriggeredSubUnitInput(binnedResponseNull,cell_resp_null)
 
 % Response to original movie
 movie_new_len=size(mov_orig2,3);
@@ -30,7 +29,7 @@ psth_orig=psth_resp;
 time_log_orig = timeLog;
 cell_resp_orig=cell_resp;
 movOrig=mov2;
-spikeTriggeredSubUnitInput(binnedResponseOrig,cell_resp_orig)
+%spikeTriggeredSubUnitInput(binnedResponseOrig,cell_resp_orig)
 figure;
 
 

@@ -13,7 +13,7 @@ ycoords=1:size(WNSTA,2);
     end
     
     if(strcmp(null_filter,'actual'))
-    k=fittedGLM.linearfilters.Stimulus.Filter;
+    k=fittedGLM.linearfilters.Stimulus.Filter(:,:,end:-1:1);
     xcoords=fittedGLM.linearfilters.Stimulus.y_coord;
     ycoords=fittedGLM.linearfilters.Stimulus.x_coord;
     end
@@ -99,5 +99,15 @@ movie_full(:,:,(icnt-1)*size(movies{imov},3)+1:icnt*size(movies{imov},3))=movies
 icnt=icnt+1;
 end
 mov_idx=18;
-write_movie_idx(destination_mat,movie_full,mov_idx,mov_params2.stixel);
+if(exist('code_version','var'))
+    if(strcmp(code_version,'old'))
+        write_movie_idx(destination_mat,movie_full,mov_idx);
+    else
+        write_movie_idx(destination_mat,movie_full,mov_idx,mov_params2.stixel);
+    end
+else
+    write_movie_idx(destination_mat,movie_full,mov_idx,mov_params2.stixel);
+end
+
+
 display(sprintf('Movie Length %d',size(movie_full,3)));

@@ -175,6 +175,79 @@ reconstruct_using_STC_STA;
 %% Train GMLM..
 
 fitGLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
+
+%% Test on a WN movie
+nTrials=50;
+mov_orig2=(rand(6,6,2000)>0.5) -0.5;
+movie_new_len=size(mov_orig2,3);
+mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
+mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
+SubUnit_Response_test_movie_script
+spkRateOrig = avgSpkRate;
+binnedResponseOrig=binnedResponses;
+psth_orig=psth_resp;
+time_log_orig = timeLog;
+cell_resp_orig=cell_resp;
+
+
+nTrials=50;
+ModelbinnedresponseOrig = predictGMLM_afterSTC(fitGLM,mov2,nTrials);
+Modelbinnedresponse2 = predictGMLM_afterSTC(fitGLM2,mov2,nTrials);
+
+figure
+[x1,y1]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(ModelbinnedresponseOrig'>0,'PlotType','vertline');
+[x3,y3]=plotSpikeRaster(Modelbinnedresponse2'>0,'PlotType','vertline');
+step=max(y2);
+figure;
+subplot(2,1,1);
+plot(x1,y1,'k');
+hold on
+plot(x2,y2-step,'r');
+hold on
+plot(x2,y2-2*step,'m');
+legend('Subunit','Fit model','Fit model2');
+
+%% Null Test on a stimulus with Model
+movieLen=120*15;
+null_compute_subUnit_test
+ 
+nTrials=50;
+analyse_null_subUnit_ts
+
+ModelbinnedresponseOrig = predictGMLM_afterSTC(fitGLM2,movOrig,nTrials);
+ModelbinnedresponseNull = predictGMLM_afterSTC(fitGLM2,movNull,nTrials);
+figure
+[x1,y1]=plotSpikeRaster(binnedResponseNull'>0,'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
+[x3,y3]=plotSpikeRaster(ModelbinnedresponseOrig'>0,'PlotType','vertline');
+[x4,y4]=plotSpikeRaster(ModelbinnedresponseNull'>0,'PlotType','vertline');
+
+step=max(y3);
+figure;
+subplot(2,1,1);
+plot(x1,y1,'k');
+hold on
+plot(x2,y2+step,'r');
+%xlim([0 max(time_log_orig)]);
+%ylim([0,2*max(y2)]);
+hold on 
+plot(x3,y3-step,'r');
+hold on
+plot(x4,y4-2*step,'k');
+
+
+title('Rasters');
+legend('Null','Original','Model Orig','Model Null');
+
+subplot(2,1,2);
+plot(time_log_null,psth_null,'k');
+hold on
+plot(time_log_orig,psth_orig,'r');
+xlim([0,max(time_log_null)]);
+legend('Null','Original');
+title('PSTH')
+% 
 %% Experiment 0 - Null using WN-STC, and see response.
 movieLen=120*10;
 
@@ -248,7 +321,46 @@ null_compute_subUnit_test
 
 nTrials=1;
 analyse_null_subUnit_ts
-[fitGLM,output] = fitGMLM_afterSTC(binnedResponseNull,movNull,WN_uSq,WNSTA,subunits)
+
+% Fit model using original run and null run
+[fitGLM1,output] = fitGMLM_afterSTC(binnedResponseOrig,movOrig,WN_uSq,WNSTA,subunits)
+pause(1)
+[fitGLM2,output] = fitGMLM_afterSTC(binnedResponseNull,movNull,WN_uSq,WNSTA,subunits)
+
+% Generate raster !
+nTrials=50;
+mov_orig2=(rand(6,6,2000)>0.5) -0.5;
+movie_new_len=size(mov_orig2,3);
+mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
+mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
+SubUnit_Response_test_movie_script
+spkRateOrig = avgSpkRate;
+binnedResponseOrig2=binnedResponses;
+psth_orig=psth_resp;
+time_log_orig = timeLog;
+cell_resp_orig=cell_resp;
+
+
+nTrials=50;
+[ModelbinnedresponseOrig , mov_filtered] = predictGMLM_afterSTC(fitGLM1,mov2,nTrials);
+[Modelbinnedresponse2 , mov_filtered] = predictGMLM_afterSTC(fitGLM2,mov2,nTrials);
+
+figure
+[x1,y1]=plotSpikeRaster(binnedResponseOrig2'>0,'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(ModelbinnedresponseOrig'>0,'PlotType','vertline');
+[x3,y3]=plotSpikeRaster(Modelbinnedresponse2'>0,'PlotType','vertline');
+step=max(y2);
+figure;
+subplot(2,1,1);
+plot(x1,y1,'k');
+hold on
+plot(x2,y2-step,'r');
+hold on
+plot(x2,y2-2*step,'m');
+legend('Subunit','Fit model','Fit model2');
+
+subplot(2,1,2);
+plot(cell_resp_orig);
 
 %% Experiment 2
  

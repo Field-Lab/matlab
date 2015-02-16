@@ -22,13 +22,11 @@ addpath(genpath([location_of_git_repo '/private/nora']));
 
 % Java library
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
+addpath(genpath('~/Nishal/matlab/private/nishal/create_act_2/'));
 addpath(genpath('~/Nishal/matlab/private/nishal/Test suite/GLM/'));
 addpath(genpath('~/Nishal/matlab/private/nishal/Test suite/GLM2/'));
 addpath(genpath('~/Nishal/matlab/code'));
-%%
-% rmpath(genpath('~/Nishal/matlab/private/nishal/create_act_2_exp_repo/create_act_2_pc2014_11_05_2/'));
-% addpath(genpath('~/Nishal/matlab/private/nishal/create_act_2/'));
-% code_version='new';
+
 %% If want to do run code for experiment day
 rmpath(genpath('~/Nishal/matlab/private/nishal/create_act_2/'));
 addpath(genpath('~/Nishal/matlab/private/nishal/create_act_2_exp_repo/create_act_2_pc2014_11_05_2/'));
@@ -50,7 +48,7 @@ sim_rast_tv1STA=[];
 sim_rast_tv2STA=[];
 WNstas=cell(30,1);
 
-for imodel_run=1:1
+for imodel_run=1:30
 imodel_run
     % Generate response to WN
     WNtime=120*60*30;
@@ -89,7 +87,7 @@ imodel_run
          end
 
     % Generate null movie from STA calculated above ? 
-      mov_type_null_touse='bw-precomputed';
+      mov_type_null_touse='bw';
       null_filter='STA';
       mdf_file ='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111-32x32.xml';
       null_movie_compute_ts
@@ -100,7 +98,7 @@ imodel_run
        
  
 % Generate null movie using actual GLM filter
-      mov_type_null_touse='bw-precomputed';
+      mov_type_null_touse='bw';
       null_filter='actual';
      mdf_file ='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111-32x32.xml';
      null_movie_compute_ts 
@@ -112,11 +110,11 @@ imodel_run
 % STA null
 x=GLM_predict(fittedGLM, testmovieSTA, 100);
 %x.rasters.recorded = x.rasters.glm_sim;
-%plotraster(x,fittedGLM,'labels',true,'raster_length',24)
+plotraster(x,fittedGLM,'labels',true,'raster_length',24)
 
 % Actual null
 y=GLM_predict(fittedGLM, testmovieActual, 100);
-%plotraster(y,fittedGLM,'labels',true,'raster_length',24)
+plotraster(y,fittedGLM,'labels',true,'raster_length',24)
 
 % Together
 
@@ -142,15 +140,15 @@ cond_times1 = time>=12*0+2 & time<12*1-2;
 sim_rast_tv1Actual(imodel_run)=sqrt(var(PSTH_rec(cond_times1)));
 sim_rast_tv2Actual(imodel_run)=sqrt(var(PSTH_rec(cond_times2)));
 
-%save('~/Nishal/Est_err3_old_code.mat','sim_rast_tv1Actual','sim_rast_tv2Actual','sim_rast_tv1STA','sim_rast_tv2STA','WNstas','fittedGLM');
+save('~/Nishal/Est_err_bw_old_code.mat','sim_rast_tv1Actual','sim_rast_tv2Actual','sim_rast_tv1STA','sim_rast_tv2STA','WNstas','fittedGLM');
 
 
 end
 
 %% figure;
-load('~/Nishal/Est_err_bw_newcode.mat');
-
+load('~/Nishal/Est_err.mat');
 figure('Color','w');
+
 [X1,N1]=hist(sim_rast_tv1STA);
 [X2,N2]=hist(sim_rast_tv1Actual);
 [X3,N3]=hist(sim_rast_tv2STA);
@@ -165,79 +163,3 @@ hold on;
 bar(N4,X4,'m');
 
 legend('Original STA','Original Actual','Null STA','Null Actual')
-
-%% Angle between STAs .
-
-% Angle between random direction and actual filter. 
-
-angles_noise_actual=[];
-for imodel_run=1:100
-WNSTA = randn(32,32,30);
-
-k1=WNSTA(:,:,:);
-for iframe=1:size(k1,3); % Flipping? Doubt!!
-       k1(:,:,iframe)=k1(:,:,iframe)';
-end
-xcoords=1:size(WNSTA,1);
-ycoords=1:size(WNSTA,2);
-
-kbig_1=zeros(32,32,3,30); %zeros(32,64,3,30);
-kbig_1(xcoords,ycoords,1,1:end)=k1;
-kbig_1(xcoords,ycoords,2,1:end)=k1;
-kbig_1(xcoords,ycoords,3,1:end)=k1;
-
-
-
-k2=fittedGLM.linearfilters.Stimulus.Filter;
-xcoords=fittedGLM.linearfilters.Stimulus.y_coord;
-ycoords=fittedGLM.linearfilters.Stimulus.x_coord;
-
-kbig_2=zeros(32,32,3,30); %zeros(32,64,3,30);
-kbig_2(xcoords,ycoords,1,1:end)=k2;
-kbig_2(xcoords,ycoords,2,1:end)=k2;
-kbig_2(xcoords,ycoords,3,1:end)=k2;
-
-angle = acosd(sum(kbig_1(:).*kbig_2(:))/(norm(kbig_1(:)) * norm(kbig_2(:))));
-angles_noise_actual=[angles_noise_actual,angle];
-end
-% Angle between WNSTAs and actual filter.
-
-angles_STA_actual=[];
-for imodel_run=1:28
-WNSTA = WNstas{imodel_run};
-
-k1=WNSTA(:,:,:);
-for iframe=1:size(k1,3); % Flipping? Doubt!!
-       k1(:,:,iframe)=k1(:,:,iframe)';
-end
-xcoords=1:size(WNSTA,1);
-ycoords=1:size(WNSTA,2);
-
-kbig_1=zeros(32,32,3,30); %zeros(32,64,3,30);
-kbig_1(xcoords,ycoords,1,1:end)=k1;
-kbig_1(xcoords,ycoords,2,1:end)=k1;
-kbig_1(xcoords,ycoords,3,1:end)=k1;
-
-
-
-k2=fittedGLM.linearfilters.Stimulus.Filter;
-xcoords=fittedGLM.linearfilters.Stimulus.y_coord;
-ycoords=fittedGLM.linearfilters.Stimulus.x_coord;
-
-kbig_2=zeros(32,32,3,30); %zeros(32,64,3,30);
-kbig_2(xcoords,ycoords,1,1:end)=k2;
-kbig_2(xcoords,ycoords,2,1:end)=k2;
-kbig_2(xcoords,ycoords,3,1:end)=k2;
-
-angle = acosd(sum(kbig_1(:).*kbig_2(:))/(norm(kbig_1(:)) * norm(kbig_2(:))));
-angles_STA_actual=[angles_STA_actual,angle];
-end
-
-figure('Color','w');
-[X1,N1]=hist(angles_noise_actual);
-[X2,N2]=hist(angles_STA_actual);
-bar(N1,X1,'r');
-hold on
-bar(N2,X2,'b');
-legend('Angle with Noise','Angle with WN STA');
-xlabel('Angle in degrees');

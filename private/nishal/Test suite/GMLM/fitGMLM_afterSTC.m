@@ -37,8 +37,8 @@ mu2=gm.mu';
 initialFilters = mu2(:);
 
 %% Initialize with sub-units to check if the sub-units are optimal weights
-
-% Find weights for sub-units 
+% 
+% %Find weights for sub-units 
 % initialFilters = (1/nFrontEnds)*ones(filteredStimDim*nFrontEnds,1);
 % nSTCs=3;
 % WN_uSq=WN_uSq;
@@ -83,7 +83,9 @@ initialFilters = mu2(:);
 
 %%
 %options = optimoptions(@fminunc,'GradObj','on','Diagnostics','on');
-
+%% Add bias in initial filter
+initialFilters=[initialFilters;0];
+%%
 optim_struct = optimset(...
    'derivativecheck','off',...
    'diagnostics','off',...  % 
@@ -95,11 +97,17 @@ optim_struct = optimset(...
  [x,fval,exitflag,output,grad,hessian]  = fminunc(@GMLM_afterSTC,initialFilters,optim_struct);
 
  change_from_initial = norm(initialFilters-x)
+ mu = x(end)
 
-fitGLM.Linear.filter=cell(4,1);
+ fitGLM.Linear.filter=cell(4,1);
 for ifilter=1:nFrontEnds
 fitGLM.Linear.filter{ifilter}=x((ifilter-1)*filteredStimDim+1:ifilter*filteredStimDim);
 end
+
+fitGLM.mu=mu;
+fitGLM.WN_uSq=WN_uSq;
+fitGLM.WNSTA=WNSTA;
+
 
 FrontEnds=cell(4,1);
 for ifilter=1:nFrontEnds

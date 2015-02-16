@@ -136,7 +136,7 @@ cond_times1 = time>=12*0+2 & time<12*1-2;
 sim_rast_tv1Actual(imodel_run)=sqrt(var(PSTH_rec(cond_times1)));
 sim_rast_tv2Actual(imodel_run)=sqrt(var(PSTH_rec(cond_times2)));
 
-save('~/Nishal/Est_err2.mat','sim_rast_tv1Actual','sim_rast_tv2Actual','sim_rast_tv1STA','sim_rast_tv2STA','WNstas');
+save('~/Nishal/Est_err_bw_newcode.mat','sim_rast_tv1Actual','sim_rast_tv2Actual','sim_rast_tv1STA','sim_rast_tv2STA','WNstas');
 
 
 end

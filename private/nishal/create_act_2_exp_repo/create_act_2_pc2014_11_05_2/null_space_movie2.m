@@ -29,6 +29,7 @@ global_vars
 type_name= cell(1,1);
 type_name{1}=cell_params.type_name_inp;
 
+if(~strcmp(datafile,'load_from_cell_params'))
 datarun=load_data(datafile)
 datarun=load_sta(datarun)
 datarun=load_params(datarun)
@@ -49,7 +50,10 @@ matlab_cell_ids=get_cell_indices(datarun,type_name);
 end
 stas=datarun.stas.stas(matlab_cell_ids);
 
-
+else
+stas=cell_params.stas;    
+matlab_cell_ids=1;
+end
 % Load STAs
 
 stas_new=cell(length(stas),1);
