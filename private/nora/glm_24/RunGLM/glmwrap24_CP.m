@@ -40,14 +40,16 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
 GLMType.nullpoint = 'mean'; 
 GLMType.fit_type = 'WN'; GLMType.map_type = 'mapPRJ';
-GLMType.debug = false;
+GLMType.debug = true;
 GLMType.specialchange = false;
 GLMType.CBP=false;
 
 %GLMType.stimfilter_mode = 'rk1';
 GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
-GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
+%GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
+GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
+
 GLMType.CONVEX = true;
 GLMType.DoubleOpt = false;
 %{
@@ -62,6 +64,9 @@ GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
 GLMType.CouplingFilters = false;
 GLMType.Subunits = false;
+GLMType.Saccades=false;
+GLMType.color=false;
+
 % GLMType.fixed_spatialfilter = true;
 % NBCoupling 06-12-2014
 GLMType.func_sname = 'glmwrap24_CP';
@@ -78,7 +83,8 @@ troubleshoot.name    = 'singleopt';
 %  LOOP THROUGH DATA SETS
 
 BD = NSEM_BaseDirectories;
-exptests = [1];
+
+exptests = [3];
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
@@ -87,13 +93,7 @@ for i_exp = exptests
     %%
     expnumber = i_exp;
     [exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
-    if GLMType.CBP
-        cells={1772}
-    else
-      cells;
-    end
-    cells={1772};
-    [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
+[StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
     
     % NBCoupling 06-12-14
     if GLMType.CouplingFilters==true
@@ -150,11 +150,7 @@ for i_exp = exptests
     DirPars.WN_STAdir   = NSEM_secondaryDirectories('WN_STA', inputs);
     inputs.stim_type    = GLMType.fit_type;
 
-    if GLMType.CBP
-        DirPars.organizedspikesdir='/Volumes/Analysis/nora/NSEM/CBPBlockedSpikes/2012-08-09-3/NSEM_mapPRJ'
-    else
-        DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
-    end
+    DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
     clear inputs
     
     for i_cell = 1:length(cells)
@@ -209,9 +205,17 @@ for i_exp = exptests
                     neighborspikes.home{j} = concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
                     neighbor_organizedspikes{j}=organizedspikes;
                 end
+                if GLMType.Saccades
+                   neighborspikes.home{n_couplings+1}=(0:1:(size(concat_fitmovie,3)/120))';
+                   neighbor_organizedspikes{n_couplings+1}.block.t_sp_withinblock=repmat({0:StimulusPars.slv.seconds_perstaticblock;0:StimulusPars.slv.seconds_perstaticblock},StimulusPars.slv.n_rep,1);
+                end
             else
-                % if there's no coupling, just set this to zero
-                neighborspikes=0;neighbor_organizedspikes=0;
+                if GLMType.Saccades
+                    neighborspikes.home{1}=(0:1:(size(concat_fitmovie,3)/120))';
+                    neighbor_organizedspikes{1}.block.t_sp_withinblock=repmat({0:StimulusPars.slv.seconds_perstaticblock;0:StimulusPars.slv.seconds_perstaticblock},StimulusPars.slv.n_rep,1);
+                else
+                    neighborspikes=0;neighbor_organizedspikes=0;
+                end
             end
             % end NBCoupling
             

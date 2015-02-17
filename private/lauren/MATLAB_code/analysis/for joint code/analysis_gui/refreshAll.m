@@ -577,9 +577,9 @@ end
 
 if ~analysisMode 
     elecResp.dummyField = 0;
-    refreshEiPlots(main, elecResp, dataTraces)
+    refreshEiPlots(main, elecResp, dataTraces);
 elseif analysisAnalyzed
-    refreshEiPlots(main, elecResp, dataTraces)
+    refreshEiPlots(main, elecResp, dataTraces);
 end
 
 end
