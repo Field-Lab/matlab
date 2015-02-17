@@ -24,7 +24,9 @@ if GLMType.specialchange
 end
 if GLMType.debug, GLMPars.optimization.tolfun = 3;  end
 
+
 frames = size(fitmovie,3);
+
 bins   = frames * GLMPars.bins_per_frame;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
 fittedGLM.t_bin = t_bin;
@@ -204,9 +206,10 @@ ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
 WN_STA           = double(glm_cellinfo.WN_STA); 
-[STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
+
 if GLMType.CONVEX
-    if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')    
+    if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')  
+        [STA_sp,~]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
         timefilter           = pstar(paramind.X);
         stimfilter           = STA_sp * (timefilter');
         stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);
@@ -239,11 +242,10 @@ if ~GLMType.CONVEX
             spacefilter2 = pstar(paramind.space2);
             stimfilter  = spacefilter1 * timefilter1' + spacefilter2 * timefilter2';
         end
-        
-        stimfilter = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.time1)]);
-        linearfilters.Stimulus.Filter             = stimfilter;
         linearfilters.Stimulus.Filter_rank        = 1;
         linearfilters.Stimulus.time_rk1           = timefilter1;
+        stimfilter = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.time1)]);
+        linearfilters.Stimulus.Filter             = stimfilter;
         linearfilters.Stimulus.space_rk1          = reshape(spacefilter1,[ROI_length,ROI_length]);
         linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
         linearfilters.Stimulus.y_coord            = ROIcoord.yvals;

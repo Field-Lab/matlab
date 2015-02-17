@@ -20,7 +20,7 @@ if GLMType.PostSpikeFilter
 end
 
 % NBCoupling 05-28-14
-if GLMType.CouplingFilters
+if n_couplings>0
     for j_params=1:n_couplings
         CPstart = numParams + 1;  CPend = numParams + GLMPars.spikefilters.cp.filternumber;
         paramind.CP{j_params} = [CPstart  : CPend]; %paramind.CP has numbers for each coupled cell
@@ -50,8 +50,8 @@ if ~GLMType.CONVEX
     paramind.Xnote0 = 'The stimulus filter X, has non-linear components, breaking convexity';
     if strcmp(GLMType.stimfilter_mode, 'rk1') 
         paramind.Xnote1 = 'Stim filter is outer product of space1 and time1';
-        Xstart = convParams + 1;  
-        Xend   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;        
+        Xstart = convParams + 1;
+        Xend   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;
         paramind.X      = [Xstart:Xend];
         paramind.space1 = [Xstart: ((Xstart-1) + (GLMPars.stimfilter.ROI_length^2))];
         paramind.time1  = [(Xstart + GLMPars.stimfilter.ROI_length^2) : Xend ];
@@ -59,8 +59,8 @@ if ~GLMType.CONVEX
     end
     if strcmp(GLMType.stimfilter_mode, 'rk2')
         paramind.Xnote1 = 'Stim filter is sum of outer products of (space1,time1) and (space2,time2)';
-        Xstart_1 = convParams + 1;  
-        Xend_1   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;        
+        Xstart_1 = convParams + 1;
+        Xend_1   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;
         paramind.space1 = [Xstart_1: ((Xstart_1-1) + (GLMPars.stimfilter.ROI_length^2))];
         paramind.nonconvex.time1  = [(Xstart_1 + GLMPars.stimfilter.ROI_length^2) : Xend_1 ];
         Xstart_2 = Xend_1 + 1;  
