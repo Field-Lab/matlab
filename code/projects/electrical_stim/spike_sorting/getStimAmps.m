@@ -1,4 +1,4 @@
-function [amps channelsWithStim stimAmpVectors channelsConnected] = getStimAmps(dataPath, patternNumber, movieNumber,varargin)
+function [amps channelsWithStim stimAmpVectors channelsConnected elecCurrentStep currentRangesUsed] = getStimAmps(dataPath, patternNumber, movieNumber,varargin)
 
 % arguments
 %   dataPath: path from current directory to pattern definitions file
@@ -34,6 +34,7 @@ for kk=1:(nbin/2)
             throw(err);
     end
 end
+
 
 
 if isnumeric(patternNumber)
@@ -101,8 +102,10 @@ nElecInPattern = length(thisPattern);
 currentRanges = NS_GlobalConstants.CurrentRanges;
 
 elecCurrentStep = zeros(1, nElecInPattern);
+currentRangesUsed = zeros(1, nElecInPattern);
 for i = 1:nElecInPattern
     elecCurrentStep(i) = currentRanges(status.ChannelsStatus(thisPattern(i).channel).range + 1)/127;
+    currentRangesUsed(i) = currentRanges(status.ChannelsStatus(thisPattern(i).channel).range + 1);
 end
 
 %get channel numbers from thisPattern and finds where they are within argument "channels"
