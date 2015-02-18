@@ -198,6 +198,12 @@ if(solver==4)
 [~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
 end
 
+if(solver==5) % 256x256
+    [stas256x256,mov256x256]=preprocess256x256(stas,mov);
+    [mov_orig256x256,mov_modify_new256x256]=fourier_project256x256(stas256x256,mov256x256);
+    [mov_orig,mov_modify_new] =postprocess256x256(mov_orig256x256,mov_modify_new256x256,mov);
+    
+end
 %% see_movie
 % see_movie2
 %% Correct means ,etc ?? Movie correction left ? 
