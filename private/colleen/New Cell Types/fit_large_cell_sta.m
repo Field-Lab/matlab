@@ -41,9 +41,9 @@ for rgc = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(rgc)};
 
 
-    temp_fit_params = fit_sta(temp_sta, 'initial_n_filters', 10);
+    temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', false, 'initial_n_filters', 10, 'initial_scale_one',0.1,'initial_scale_two',-0.09,'initial_tau_one',1,'initial_tau_two',1);
 
-    
+
     if isempty(temp_fit_params)
         temp_id = datarun.cell_ids(cell_indices(rgc));
         warn_message = ['cell ',num2str(temp_id), ' has no sig stixels and no fit'];
@@ -58,5 +58,5 @@ end
 
 %datarun = compute_sta_fits(datarun, cell_specification, 'verbose', true);
 cell_indices = get_cell_indices(datarun, cell_specification);
-output_matrix = make_Gaussian_two_d('center_point_x', datarun.matlab.sta_fits{cell_indices}.center_point_x, 'center_point_y', datarun.matlab.sta_fits{cell_indices}.center_point_y, 'rotation_angle', datarun.matlab.sta_fits{cell_indices}.center_rotation_angle, 'amp_scale', datarun.matlab.sta_fits{cell_indices}.surround_amp_scale, 'sd_x', datarun.matlab.sta_fits{cell_indices}.center_sd_x, 'sd_y',datarun.matlab.sta_fits{cell_indices}.center_sd_y, 'x_dim', datarun.matlab.sta_fits{cell_indices}.x_dim, 'y_dim', datarun.matlab.sta_fits{cell_indices}.y_dim)
+%output_matrix = make_Gaussian_two_d('center_point_x', datarun.matlab.sta_fits{cell_indices}.center_point_x, 'center_point_y', datarun.matlab.sta_fits{cell_indices}.center_point_y, 'rotation_angle', datarun.matlab.sta_fits{cell_indices}.center_rotation_angle, 'amp_scale', datarun.matlab.sta_fits{cell_indices}.surround_amp_scale, 'sd_x', datarun.matlab.sta_fits{cell_indices}.center_sd_x, 'sd_y',datarun.matlab.sta_fits{cell_indices}.center_sd_y, 'x_dim', datarun.matlab.sta_fits{cell_indices}.x_dim, 'y_dim', datarun.matlab.sta_fits{cell_indices}.y_dim);
 
