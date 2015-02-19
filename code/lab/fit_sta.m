@@ -359,7 +359,7 @@ end
 
 % if surround isn't to be fit, then set these parameter to zero
 if ~fit_surround
-   initial_surround_sd_scale = 0;
+   initial_surround_sd_scale = 0; %I think this parameters should be 1 or else the fitting fails -CR 2/18/15
    initial_surround_amp_scale = 0;
 end
 
