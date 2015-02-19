@@ -33,10 +33,11 @@ end
 
 
 cell_indices = get_cell_indices(datarun, cell_specification);
-
 num_rgcs = length(cell_indices);
-
-% loop over cells and fit
+parameters= zeros(num_rgcs,21);
+variables = {'cell_specification', 'cell_indices', 'center_point_x', 'center_point_y', 'center_sd_x', 'center_sd_y', 'center_rotation_angle', 'color_weight_a', 'color_weight_b', 'color_weight_c', 'x_dim', 'y_dim', 'surround_sd_scale', 'surround_amp_scale', 'scale_one', 'scale_two', 'tau_one', 'tau_two','n_filters', 'frame_number', 'rmse'};
+information{1} = dataset;
+information{2} = variables;
 for rgc = 1:num_rgcs
     
     fprintf('fitting the STA for cell %d... \n', datarun.cell_ids(cell_indices(rgc)))
@@ -55,12 +56,67 @@ for rgc = 1:num_rgcs
     end
     
     datarun.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
-    
+  
+
+
+
+    parameters(rgc,1) = cell_specification(rgc);
+    parameters(rgc,2) = cell_indices(rgc);
+    parameters(rgc,3) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_x;
+    parameters(rgc,4) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_y;
+    parameters(rgc,5) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_sd_x;
+    parameters(rgc,6) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_sd_y;
+    parameters(rgc,7) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_rotation_angle;
+    parameters(rgc,8) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_a;
+    parameters(rgc,9) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_b;
+    parameters(rgc,10) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_c;
+    parameters(rgc,11) = datarun.matlab.sta_fits{cell_indices(rgc)}.x_dim;
+    parameters(rgc,12) = datarun.matlab.sta_fits{cell_indices(rgc)}.y_dim;
+    parameters(rgc,13) = datarun.matlab.sta_fits{cell_indices(rgc)}.surround_sd_scale;
+    parameters(rgc,14) = datarun.matlab.sta_fits{cell_indices(rgc)}.surround_amp_scale;
+    parameters(rgc,15) = datarun.matlab.sta_fits{cell_indices(rgc)}.scale_one;
+    parameters(rgc,16) = datarun.matlab.sta_fits{cell_indices(rgc)}.scale_two;
+    parameters(rgc,17) = datarun.matlab.sta_fits{cell_indices(rgc)}.tau_one;
+    parameters(rgc,18) = datarun.matlab.sta_fits{cell_indices(rgc)}.tau_two;
+    parameters(rgc,19) = datarun.matlab.sta_fits{cell_indices(rgc)}.n_filters;
+    parameters(rgc,20) = datarun.matlab.sta_fits{cell_indices(rgc)}.frame_number;
+    parameters(rgc,21) = datarun.matlab.sta_fits{cell_indices(rgc)}.rmse;
+
+
+
+
+information{3} = parameters;
+save([dataset,'/large-cells'], 'information')
 end
 
 
+%% Look at the results
+figure
+suptitle({information{1}; [num2str(size(information{3},1)) ' large cells']})
 
-%datarun = compute_sta_fits(datarun, cell_specification, 'verbose', true);
-cell_indices = get_cell_indices(datarun, cell_specification);
-%output_matrix = make_Gaussian_two_d('center_point_x', datarun.matlab.sta_fits{cell_indices}.center_point_x, 'center_point_y', datarun.matlab.sta_fits{cell_indices}.center_point_y, 'rotation_angle', datarun.matlab.sta_fits{cell_indices}.center_rotation_angle, 'amp_scale', datarun.matlab.sta_fits{cell_indices}.surround_amp_scale, 'sd_x', datarun.matlab.sta_fits{cell_indices}.center_sd_x, 'sd_y',datarun.matlab.sta_fits{cell_indices}.center_sd_y, 'x_dim', datarun.matlab.sta_fits{cell_indices}.x_dim, 'y_dim', datarun.matlab.sta_fits{cell_indices}.y_dim);
+%scale 1
+scale_one = information{3}(:,15);
+subplot(2,3,1) 
+hist(scale_one);
+title('Scale One');
+
+scale_two = information{3}(:,16);
+subplot(2,3,2) ; hist(scale_two);
+title('Scale Two');
+
+tau_one = information{3}(:,17);
+subplot(2,3,3) ; hist(tau_one);
+title('Tau One');
+
+tau_two = information{3}(:,18);
+subplot(2,3,4) ; hist(tau_two);
+title('Tau Two');
+
+n = information{3}(:,19);
+subplot(2,3,5) ; hist(n);
+title('N Filters');
+
+area = information{3}(:,5).*information{3}(:,6)*pi;
+subplot(2,3,6) ; hist(area);
+title('RF Size');
 
