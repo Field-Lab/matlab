@@ -96,27 +96,27 @@ suptitle({information{1}; [num2str(size(information{3},1)) ' large cells']})
 
 %scale 1
 scale_one = information{3}(:,15);
-subplot(2,3,1) 
+subplot(3,2,1) 
 hist(scale_one);
 title('Scale One');
 
 scale_two = information{3}(:,16);
-subplot(2,3,2) ; hist(scale_two);
+subplot(3,2,2) ; hist(scale_two);
 title('Scale Two');
 
 tau_one = information{3}(:,17);
-subplot(2,3,3) ; hist(tau_one);
+subplot(3,2,3) ; hist(tau_one);
 title('Tau One');
 
 tau_two = information{3}(:,18);
-subplot(2,3,4) ; hist(tau_two);
+subplot(3,2,4) ; hist(tau_two);
 title('Tau Two');
 
 n = information{3}(:,19);
-subplot(2,3,5) ; hist(n);
+subplot(3,2,5) ; hist(n);
 title('N Filters');
 
 area = information{3}(:,5).*information{3}(:,6)*pi;
-subplot(2,3,6) ; hist(area);
+subplot(3,2,6) ; hist(area);
 title('RF Size');
 
