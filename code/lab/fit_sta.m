@@ -1,4 +1,4 @@
-function fit_info = fit_sta(sta, varargin)
+function [fit_info] = fit_sta(sta, varargin)
 %
 % fit_sta.m fits a spatial-temporal-chromatic STA with a differences of
 % Gaussians (in space), a difference of a cascade of filters (in time), and
@@ -683,7 +683,10 @@ fit_info.fit_surround = fit_surround;
 fit_info.frame_number = frame_number;
 fit_info.rmse = fval;
 fit_info.initial_params = input_params;
-
+fit_info.fit_indices = fit_indices;
+fit_info.fixed_indices = fixed_indices;
+fit_info.fit_params = final_fit_params;
+fit_info.fixed_params = input_params(fixed_indices);
 % Plot result
 plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices);
 
