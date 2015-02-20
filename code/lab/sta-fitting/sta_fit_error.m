@@ -56,7 +56,9 @@ if verbose
     
     % temporal fit
    
-    temp_stix = significant_stixels(sta, 'time', 'max', 'select', 'max', 'thresh', 3.5, 'robust_std_method', 1);
+    temp_stix = significant_stixels(sta, 'time', 'std', 'select', 'thresh', 'thresh', 2.0, 'robust_std_method', 3); %changed from 3.5 to 3.0
+    biggestBlob = ExtractNLargestBlobs(full(temp_stix), 1);
+    temp_stix = biggestBlob;
     fit_tc = time_course_from_sta(sta_fit, temp_stix);
     norm_factor = max(abs(reshape(fit_tc, 1, [])));
 %     plot(fit_tc)
@@ -75,7 +77,9 @@ if verbose
     else 
         error('dimensions of sta color is not recognized')
     end
-    real_stix = significant_stixels(sta, 'time', 'max', 'select', 'max', 'thresh', 3.5, 'robust_std_method', 1);
+    real_stix = significant_stixels(sta, 'time', 'std', 'select', 'thresh', 'thresh', 2.0, 'robust_std_method', 3); %changed from 3.5 to 3.0
+    biggestBlob = ExtractNLargestBlobs(full(real_stix), 1);
+    real_stix = biggestBlob;
     tc = time_course_from_sta(sta, real_stix);
     norm_factor = max(abs(reshape(tc, 1, [])));
     tc = tc ./ norm_factor;

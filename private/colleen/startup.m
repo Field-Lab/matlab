@@ -8,6 +8,9 @@ addpath('../../utilities')
 % addpath(genpath2('matlab/private/alex/matlab/code', {'.svn'}));
 
 % visstable()
+%addpath('/home/vision/Colleen/matlab/utilities')
+%addpath(genpath2('/home/vision/Colleen/matlab/code', {'.svn'}));
+%visstable()
 %addpath('/home/vision/alex/matlab/')
 %addpath(genpath('/home/vision/alex/matlab/private/alex/retina-subunits-master'))
 
