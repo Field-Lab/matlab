@@ -74,7 +74,7 @@ GLMType.fullmfilename =mfilename('fullpath');
 i_exp = 1; i_cell = 1;
 
 GLMType.fitname  = GLM_fitname(GLMType);   
-troubleshoot.doit    = true;
+troubleshoot.doit    = false;
 %troubleshoot.plotdir = '/Users/akheitman/Matlab_code/troubleshooting_plots'
 % NBCoupling
 %troubleshoot.plotdir=BD.GLM_troubleshootplots;
