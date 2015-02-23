@@ -204,6 +204,148 @@ if(solver==5) % 256x256
     [mov_orig,mov_modify_new] =postprocess256x256(mov_orig256x256,mov_modify_new256x256,mov);
     
 end
+
+if(solver==6)
+    for iter=1:5
+        maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=fourier_project(stas,mov);
+violations = sum(abs(mov_modify_new(:))>maxClip)
+mov_modify_new(mov_modify_new>maxClip)=maxClip;
+mov_modify_new(mov_modify_new<-maxClip)=-maxClip;
+mov=mov_modify_new;
+norm(mov_orig(:)-mov_modify_new(:))
+% Need to change post processing!!
+    end
+    
+end
+
+
+if(solver==7)
+    for iter=1:5
+            maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+violations = sum(abs(mov_modify_new(:))>maxClip)
+mov_modify_new(mov_modify_new>maxClip)=maxClip;
+mov_modify_new(mov_modify_new<-maxClip)=-maxClip;
+mov=mov_modify_new;
+norm(mov_orig(:)-mov_modify_new(:))
+% Need to change post processing!!
+    end
+    
+end
+
+
+if(solver==8) % Dykstra's Alternating Projections, Spatial
+     togo=1;
+    while togo==1
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = input('Continue Iterating?');
+    end
+    
+end
+
+if(solver==9) % Dykstra's Alternating Projections, 64x32, Spatio-temporal
+    togo=1;
+    while togo==1
+       
+        maxClip = (0.48/0.5)*127.5;
+
+        [~,mov_modify_new]=fourier_project(stas,mov);
+
+        figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = input('Continue Iterating?');
+    end
+end
+    
+    
+if(solver==9) % Dykstra's Alternating Projections,128x128, Spatio-temporal
+    togo=1;
+    while togo==1
+       
+        maxClip = (0.48/0.5)*127.5;
+
+     
+
+         [stas128x128,mov128x128]=preprocess128x128(stas,mov);
+         [mov_orig128x128,mov_modify_new128x128]=fourier_project128x128(stas128x128,mov128x128);
+         [~,mov_modify_new] =postprocess128x128(mov_orig128x128,mov_modify_new128x128,mov);
+  
+    
+        figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = input('Continue Iterating?');
+    end
+    
+end
+    
+if(solver==10) % Dykstra's Alternating Projections , 64x32, Spatio-temporal
+    togo=1;
+    while togo==1
+       
+        maxClip = (0.48/0.5)*127.5;
+
+
+        [stas64x64,mov64x64]=preprocess64x64(stas,mov);
+        [mov_orig64x64,mov_modify_new64x64]=fourier_project64x64(stas64x64,mov64x64);
+        [~,mov_modify_new] =postprocess64x64(mov_orig64x64,mov_modify_new64x64,mov);
+    
+        figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = input('Continue Iterating?');
+    end
+end
 %% see_movie
 % see_movie2
 %% Correct means ,etc ?? Movie correction left ? 

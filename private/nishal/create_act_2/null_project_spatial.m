@@ -6,7 +6,7 @@ if(cell_params.sta_spatial_method==1) % use 4th frame. Better if stas is clipped
     display('Finding best frame')
     for icell=1:length(stas)
         [V,I]=max(abs(squeeze(sum(sum(stas{icell}(:,:,1,:).^2,1),2))));
-        I
+        I;
 %         plot((squeeze(sum(sum(stas{icell}(:,:,1,:),1),2))));
         stas_sp_current{icell}=stas{icell}(:,:,1,I);
     end
@@ -17,7 +17,7 @@ if(cell_params.sta_spatial_method==4) %find temporal kernel by averaging and fin
     display('Find common waveform and regress');
 %     figure;
     parfor icell=1:length(stas)
-       icell
+
         stas_sp_current{icell} = common_temporal_form(stas{icell},CellMasks_sp{icell})
 %    
 % subplot(3,1,1);
