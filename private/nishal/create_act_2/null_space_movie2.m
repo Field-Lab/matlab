@@ -286,7 +286,7 @@ togo = input('Continue Iterating?');
 end
     
     
-if(solver==9) % Dykstra's Alternating Projections,128x128, Spatio-temporal
+if(solver==10) % Dykstra's Alternating Projections,128x128, Spatio-temporal
     togo=1;
     while togo==1
        
@@ -318,7 +318,7 @@ togo = input('Continue Iterating?');
     
 end
     
-if(solver==10) % Dykstra's Alternating Projections , 64x32, Spatio-temporal
+if(solver==11) % Dykstra's Alternating Projections , 64x64, Spatio-temporal
     togo=1;
     while togo==1
        
@@ -345,6 +345,37 @@ mov=mov + x_k_1 - mov_modify_new;
 % Need to change post processing!!
 togo = input('Continue Iterating?');
     end
+end
+
+if(solver==12) % Dykstra's Alternating Projections,256x256, Spatio-temporal
+    togo=1;
+    while togo==1
+       
+        maxClip = (0.48/0.5)*127.5;
+
+     
+    [stas256x256,mov256x256]=preprocess256x256(stas,mov);
+    [mov_orig256x256,mov_modify_new256x256]=fourier_project256x256(stas256x256,mov256x256);
+    [mov_orig,mov_modify_new] =postprocess256x256(mov_orig256x256,mov_modify_new256x256,mov);
+    
+    
+        figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = input('Continue Iterating?');
+    end
+    
 end
 %% see_movie
 % see_movie2

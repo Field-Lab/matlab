@@ -39,12 +39,16 @@ mov_params.mov_type='bw-precomputed';
 mov_params.movie_time=120*10;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
-mov_params.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
 mov_params.stixel=4;
 mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-4-1-0.48-11111-80x80.xml';
 
+% Post process. Default is stretch. If using default, need to give only mov_params.scaling_loss parameter.
+mov_params.post_process_method = 'scale'; % or, 'stretch'
+mov_params.scale = 0.48/0.48;
+%mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
 
-solver=5;
+
+solver=12;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
 movies{1}=mov_orignial;
 movies{2}=mov_modify_new;
@@ -68,6 +72,11 @@ cell_params.sta_spatial_method=4;%1,2 ,3,4
 % cell_params.sta_spatial_method = 2;
 % STA spatial null Method 3 = low rank, 4 = average waveform and use it ..  
 
+% Post process. Default is stretch. If using default, need to give only mov_params.scaling_loss parameter.
+mov_params.post_process_method = 'scale'; % or, 'stretch'
+mov_params.scale = 0.48/0.48;
+%mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
+
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';
 mov_params.movie_time=120*10;
@@ -79,7 +88,7 @@ mov_params.interval = 5; % Not important to have this parameter. Default is 1. W
 mov_params.stixel=4;
 mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-4-1-0.48-11111-80x80.xml';
 
-solver=4; % Solver 4 used for spatial nulling!
+solver=8; % Solver 4 used for spatial nulling!
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
 
 
