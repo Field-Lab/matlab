@@ -1,10 +1,13 @@
 clear
+% This function computes the STA independent of the Vision STAs. It also
+% computes the temporally weighted STA, STV, and temporally weighted STV
+% compute_only_sta just does the STA independent of matlab
 %% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-08-27-6/data000/data000.neurons';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2005-04-26-0/data002-nwpca/data002.neurons';
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 num_frames = 30; % both have to be run with the name number of frames
-target_cell = 6738;
+target_cell = 1023;
 target_cell2 = 2510;
 
 
