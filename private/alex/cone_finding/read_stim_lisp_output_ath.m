@@ -27,15 +27,15 @@ end
 if nargin < 3, mappath = []; end
 if nargin < 4, parsepoly = true; end
 
-% Add SERVER_DATA_PATH unless already absolute path
-filepath = add_base_path(filepath, '/Volumes/Analysis/');
-
-
-% File exists?
-if ~exist(filepath, 'file')
+% check if exists
+if exist(['/Volumes/Analysis/',filepath],'file')
+    filepath = ['/Volumes/Analysis/',filepath];
+elseif exist(['/Volumes/Data/',piece,'/Visual/',stim],'file')
+    filepath = ['/Volumes/Data/',piece,'/Visual/',stim];
+else
     error('Could not find stimulus file %s.', filepath);
 end
-
+ 
 % Read lines from file
 lines = {};
 f = fopen(filepath, 'r');

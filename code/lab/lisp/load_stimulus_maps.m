@@ -25,12 +25,16 @@ mappath = strrep(mappath, ':', filesep());
 
 
 % First check in the stimulus_maps_path
-stimmappath = add_base_path(mappath, stimulus_maps_path());
-if exist(stimmappath, 'file')
-    stimstruct = load_stimulus_maps_(stimstruct, stimmappath, opts);
+if exist( add_base_path(mappath, stimulus_maps_path()),'file')
+    stimmappath = add_base_path(mappath, stimulus_maps_path());
+elseif exist(['/Volumes/Data/',piece,'/Visual/',mappath,'.txt'],'file')
+    stimmappath=['/Volumes/Data/',piece,'/Visual/',mappath,'.txt']
+else
+    disp('no map file found')
     return
 end
-
+    
+stimstruct = load_stimulus_maps_(stimstruct, stimmappath, opts);
 
 % Now check analysis directories
 % Sometimes stim lisp output puts the piece on the front of the mappath,

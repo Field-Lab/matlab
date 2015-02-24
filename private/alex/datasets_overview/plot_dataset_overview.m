@@ -16,20 +16,6 @@ for i=1:length(myfiles)
     end
 end
 
-%mouse
-myfiles=dir('/Volumes/Lab/Projects/survey/mouse/');
-cnt=1;
-clear piecesMouse
-for i=1:length(myfiles)
-    tmp = regexp(myfiles(i).name,'(\d+)-(\w+)-(\d+)','match');
-    if ~isempty(tmp)
-        if cnt==1 || ~strcmp(piecesMouse(cnt-1,:),tmp)
-            piecesMouse(cnt,:)=tmp;
-            cnt=cnt+1;
-        end
-    end
-end
-
 
 %monkey
 file_path='/Volumes/Lab/Projects/survey/monkey/';
@@ -50,7 +36,7 @@ end
 
 % notebooks directory
 notes=dir('/Volumes/Lab/Notebooks/');
-expression='(\d+)-(\w+)-(\d+)';
+expression='(\d+)-(\d+)-(\d+)';
 clear mynote_date_list final_notes
 cnt=1;
 for i=1:length(notes)
@@ -59,12 +45,6 @@ for i=1:length(notes)
         mydate = regexpi(name,expression,'match');
         if ~isempty(mydate)
             fl=1;
-            for j=1:length(piecesMouse)
-                if strcmp(mydate,piecesMouse(j))
-                    fl=0;
-                    break;
-                end
-            end
             if fl
                 for j=1:length(piecesRat)
                     if strcmp(mydate,piecesRat(j))
@@ -109,7 +89,7 @@ clear myFiles
 for i=1:length(analyzed)
     name=analyzed(i).name;
     if name(1)~='.'
-        mydate = regexpi(name,'(\d+)-(\w+)-(\d+)','match');
+        mydate = regexpi(name,'(\d+)-(\d+)-(\d+)','match');
         if ~isempty(mydate) % if it is a valid data folder
             for j=1:length(mynote_date_list)
                 if strcmp(mydate{1},mynote_date_list{j}) % if notebook exists
@@ -130,8 +110,8 @@ for i=1:length(analyzed)
     end
 end
 
-expression='(\d+)-(\w+)-(\d+)-(\d+)';
-secondExpr='(\d+)-(\w+)-(\d+)';
+expression='(\d+)-(\d+)-(\d+)-(\d+)';
+secondExpr='(\d+)-(\d+)-(\d+)';
 cnt=0;cnt1=1;
 mycodes=cell(size(myFiles,1),4);
 for i=1:size(myFiles,1)
@@ -157,36 +137,30 @@ for i=1:size(myFiles,1)
         a=textread(myNotebook,'%s');
         
         
-        % check subfolders for 'data0xx'
+        % check subfolders for 'data'
         subfolders=dir(['/Volumes/Analysis/',name,'/data*']);
-        allruns={}; cnt=1;
+        allruns={}; cnt=1; runpath={};
         for j=1:length(subfolders)
             nameSF=subfolders(j).name;
-            if length(nameSF)==7
-                %check if there is dataxxx.params file
-                tmp=dir(['/Volumes/Analysis/',name,'/',nameSF,'/',nameSF,'.params']);
-                if ~isempty(tmp)
-                    allruns{cnt}=nameSF;
-                    cnt=cnt+1;
-                    runtype='full';
-                end
+            %check if there is dataxxx.params file
+            tmp=dir(['/Volumes/Analysis/',name,'/',nameSF,'/',nameSF,'.params']);
+            if ~isempty(tmp)
+                allruns{cnt}=nameSF;
+                runpath{cnt}=['/Volumes/Analysis/',name,'/',nameSF,'/',nameSF];
+                cnt=cnt+1;                
             end
         end
         
-        %check streamed data if no analyzed runs found
-        if isempty(allruns)
-            subfolders=dir(['/Volumes/Analysis/',name,'/streamed/data*']);
-            for j=1:length(subfolders)
-                nameSF=subfolders(j).name;
-                if length(nameSF)==7
-                    %check if there is dataxxx.params file
-                    tmp=dir(['/Volumes/Analysis/',name,'/streamed/',nameSF,'/',nameSF,'.params']);
-                    if ~isempty(tmp)
-                        allruns{cnt}=nameSF;
-                        cnt=cnt+1;
-                        runtype='streamed';
-                    end
-                end
+        %check streamed data as well
+        subfolders=dir(['/Volumes/Analysis/',name,'/streamed/data*']);
+        for j=1:length(subfolders)
+            nameSF=subfolders(j).name;
+            %check if there is dataxxx.params file
+            tmp=dir(['/Volumes/Analysis/',name,'/streamed/',nameSF,'/',nameSF,'.params']);
+            if ~isempty(tmp)
+                allruns{cnt}=nameSF;
+                runpath{cnt}=['/Volumes/Analysis/',name,'/streamed/',nameSF,'/',nameSF];
+                cnt=cnt+1;                
             end
         end
         
@@ -194,7 +168,6 @@ for i=1:size(myFiles,1)
         if isempty(allruns)
             mycodes{i,2}='No runs found';            
         else
-            mycodes{i,3}=runtype;
             % find datarun in notebook
             beg=0;stop=0;
             for k=1:length(a)
@@ -215,36 +188,38 @@ for i=1:size(myFiles,1)
             end
             
             % parse notebook
-            baseExpr='data.|Data.';
-            WNexpr='BW.|RGB.|bw.|rgb.';
+            baseExpr='data.';
+            WNexpr='bw.|rgb.';
             myRun=[];myStim={};cntStim=1;
             for kk=beg+1:stop
                 tmp=a{kk};
                 
-                tt=regexp(tmp,baseExpr); % check if it's data
+                tt=regexpi(tmp,baseExpr); % check if it's data
                 if ~isempty(tt) % if it is, check if it is one of the existing data runs
                     if ~isempty(regexpi(tmp,'datarun\d.'))
                         tmp=[tmp(1:4),tmp(8:10)];
                     end
                     for ps=1:length(allruns)
-                        tt1=regexpi(tmp,allruns{ps});
+                        tt1=regexpi(tmp,allruns{ps}(1:7));
                         if ~isempty(tt1)
-                            myRun=allruns{ps};
+                            myRun=allruns{ps}(1:7);
+                            myRunpath=runpath{ps};
                             break;
                         end
                         if ps==length(allruns)
                             myRun=[];
+                            myRunpath=[];
                         end
                     end
                 end
                 
                 tt1=regexpi(tmp,WNexpr); % check if it's RGB or BW run
                 if isempty(tt1) % check if it is 'RGB bin xx' format
-                    tt1=regexpi(tmp,'BW|RGB|bw|rgb');
+                    tt1=regexpi(tmp,'bw|rgb');
                     if ~isempty(tt1)
                         tt2=regexpi(a{kk+1},'bin|binary');
-                        tt3=regexp(a{kk+2},'\d.','once');
-                        tt4=regexp(a{kk+1},'\d.','once');
+                        tt3=regexpi(a{kk+2},'\d.','once');
+                        tt4=regexpi(a{kk+1},'\d.','once');
                         if ~isempty(tt2) && ~isempty(tt3)
                             stimCode=[a{kk},'-', a{kk+2}];
                         elseif ~isempty(tt4)
@@ -254,10 +229,11 @@ for i=1:size(myFiles,1)
                 else
                     stimCode=a{kk};
                 end
-                if ~isempty(tt1) && ~isempty(myRun) && ~isempty(regexp(stimCode,'\d', 'once'))
+                if ~isempty(tt1) && ~isempty(myRun) && ~isempty(regexpi(stimCode,'\d', 'once'))
                     myStim{cntStim,1}=myRun;
                     myStim{cntStim,2}=stimCode;
-                    myRun=[];
+                    myStim{cntStim,3}=myRunpath;
+                    myRun=[]; myRunpath=[];
                     cntStim=cntStim+1;
                 end
             end
@@ -322,7 +298,24 @@ file=textscan(fid, '%s');
 fclose(fid);
 pathfile=file{1};
 
+donefiles=dir('/Users/alexth/Desktop/all_dataruns_survey/*.pdf')
+donef=[];
 for i=length(pathfile):-1:1
+    for j=1:length(donefiles)
+        if strcmp(pathfile{i}(18:end),[donefiles(j).name(1:12),'/',donefiles(j).name(14:20)])
+            donef=[donef i];
+            break;
+        elseif strcmp(pathfile{i}(18:end),[donefiles(j).name(1:12),'/',donefiles(j).name(14:21),'/',donefiles(j).name(23:29)])
+            donef=[donef i];
+            break;
+        end
+    end
+end
+
+todo=1:length(pathfile);
+todo(donef)=[];
+
+for i=todo
    
     clear datarun
     t=dir(['/' pathfile{i} '/d*.params']);

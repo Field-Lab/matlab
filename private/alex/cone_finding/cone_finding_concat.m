@@ -266,7 +266,8 @@ choose_magic_number(datarun,bcf,bcf_params);
 
 %%
 magic_number = 140
-save_bayesian_cones(datarun, bcf, bcf_params, magic_number, ['all_',extra_dirname_info,date], false, [], 'fit_foa', [], 'robust_std_method', 1);
+extra_dirname_info=''
+save_bayesian_cones(datarun, bcf, bcf_params, magic_number, ['all_',extra_dirname_info], false, [], 'fit_foa', [], 'robust_std_method', 1);
 
 
 

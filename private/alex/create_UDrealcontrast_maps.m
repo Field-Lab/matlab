@@ -24,7 +24,7 @@ tmp=randperm(size(contrast_list,1));
 contrast_list=contrast_list(tmp,:);
 
 fid=fopen('/Users/alexth/Desktop/test/tmp.txt','w');
-fprintf(fid,'(:n 4 :map "cancellation_stimulus:test_control:map-0000.txt")\r');
+fprintf(fid,'(:n 4 :map "cancellation_stimulus:test_control:map-0000.txt")\r\n');
 for i=1:size(contrast_list,1)-1
     fprintf(fid,'(%f\t%f\t%f\t%f)\r\n',contrast_list(i,:));
 end

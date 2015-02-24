@@ -104,7 +104,7 @@ frame=6;
 %% main body
 
 mapName = ['map_', run];
-cellType=2;
+cellType=5;
 nnd_scale=3;
 
 
