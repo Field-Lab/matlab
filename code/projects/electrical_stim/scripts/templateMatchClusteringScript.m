@@ -20,9 +20,9 @@ movieInt = 0;
 
 % Experiment specific inputs
 
-elecRespInfo.experimentName = '2014-11-05-8';
-elecRespInfo.dataPath       = '/Volumes/Analysis/2014-11-05-8/data003/';  %Location of raw data chunks
-elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-11-05-8/data001/';  %Location of vision output files
+elecRespInfo.experimentName = '2014-11-24-2';
+elecRespInfo.dataPath       = '/Volumes/Analysis/2014-11-24-2/data006/';  %Location of raw data chunks
+elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-11-24-2/data008/';  %Location of vision output files
 
 % elecRespInfo.experimentName = '2014-09-10-0';
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2014-09-10-0/data006/';  %Location of raw data chunks
