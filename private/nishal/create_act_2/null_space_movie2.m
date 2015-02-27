@@ -377,6 +377,32 @@ togo = input('Continue Iterating?');
     end
     
 end
+
+if(solver==14) % Dykstra's Alternating Projections, Spatial, mean stuff for NSEM
+     togo=1;
+    while togo==1
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+mean(mov_modify_new(:))
+violations = sum(abs(mov_modify_new(:)-mov_params.mean)>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = input('Continue Iterating?');
+    end
+    
+end
+
 %% see_movie
 % see_movie2
 %% Correct means ,etc ?? Movie correction left ? 

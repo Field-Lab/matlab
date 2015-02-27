@@ -48,7 +48,7 @@ mov_params.scale = 0.48/0.48;
 %mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
 
 
-solver=12;
+solver=12 ;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
 movies{1}=mov_orignial;
 movies{2}=mov_modify_new;

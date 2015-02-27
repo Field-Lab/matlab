@@ -78,7 +78,7 @@ else
     mdf_file=movie_params.mdf_file;
 end
 mov=zeros(var64,var32,movie_time);
-triggers=[0:100/120:movie_time/120]; % Or maybe, movie_time/120 ?? Doubt!
+triggers=[0:100/120:movie_time*10/120]; % Or maybe, movie_time/120 ?? Doubt!
 [mvi] = load_movie(mdf_file,triggers);
 [~,height,width,duration,refresh] = get_movie_ath(mdf_file,...
     triggers, 1,2);
