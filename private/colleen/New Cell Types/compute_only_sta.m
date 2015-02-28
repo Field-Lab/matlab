@@ -1,9 +1,6 @@
-function [sta, timecourse] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting)
+function [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %% Requires datarun for the trigger infomation, the mdf_file for the movie, num_frames, the spikes sequence, and a 0 or 1 for if you want plotting
-
-opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
-datarun=load_data(datarun,opt);
 
 triggers=datarun.triggers; %onsets of the stimulus presentation
 
@@ -59,7 +56,7 @@ sta=sta/icnt;
 sta = norm_image(sta);
 
 % Compute the timecourse
-[sig_stixels] = significant_stixels(sta);
+[sig_stixels] = significant_stixels(sta, 'select', 'thresh', 'thresh', 3);
 [timecourse, params] = time_course_from_sta(sta, sig_stixels);
 
 

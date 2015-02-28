@@ -9,7 +9,8 @@ datarun.names.rrs_sta_path = '/Volumes/Analysis/2005-04-26-0/data002-nwpca/data0
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 
 % First cell is parasol, second cell is blue/green
-cell_specification = [3797,3798];
+cell_specification = [3048,3050];
+cell_type = 'ON Midget';
 
 % Parce the name of the datarun for saving purposes
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
@@ -53,17 +54,39 @@ sta = cell(2,1);
 % Set this parameter based on timecourses
 num_frames = 20; % both have to be run with the name number of frames
 for i = 1:num_rgcs
+    figure
+    hb= tight_subplot(1,3,[.01 .03],[.1 .01],[.01 .01]);
+    if i == 1
+        label = [cell_type, ' Spikes'];
+    else
+        label = 'Blue/Green Spikes';
+    end
     
     
     spikes=datarun.spikes{cell_indices(i)};
     % Cut down parasol spikes because simulation takes too long
-    if length(spikes) > 20000
-        spikes = spikes(1:20000);
-    end
+%     if length(spikes) > 20000
+%         spikes = spikes(1:20000);
+%     end
     % spikes are in s. convert to ms
     spikes=round(spikes*1000);
     % compute the STA in matlab (not using java information)
-    [sta{i}, timecourse] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1);
+    [sta{i}, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 0);
+    
+    for a = 1:3
+    axes(hb(a)); 
+    frame = 11;
+        imagesc(squeeze(sta{i}(:,:,:, frame+a)));
+        title({['STA Frame: ' num2str(frame+a)] ; label})
+        axis image
+        axis off
+    end
+  
+    
+        
+    % Plot the time course from the significant stixels
+    h = plot_time_course_(timecourse, 'colors', ['rgb']', 'foa', 0)
+    title({'Time Course'; label});
 end
 % Find the peak frame of the STA
 [junk,start_index] = max(sum(reshape(sta{2}.^2,[],size(sta{2},4)),1));
@@ -77,7 +100,14 @@ spikes1 = datarun.spikes{cell_indices(1)};
 spikes2 = datarun.spikes{cell_indices(2)};
 total_bg = length(spikes2);
 
+ 
+    
 for percentage = 1:length(perc)
+%     percentage = 7;
+%     total_bg = 2000;
+     figure
+    ha = tight_subplot(2,3,[.01 .03],[.1 .01],[.01 .01]);
+%     total_bg = 2000;
     % compute how many parasol spikes to add
     total_spikes = round(total_bg/(1-perc(percentage)));
     
@@ -92,24 +122,33 @@ for percentage = 1:length(perc)
     
     spikes=round(spikes*1000);
     % Compute new sta with the b/g spikes and some parasol spikes
-    [combined_sta, timecourse] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 0); % 0 indicates no plotting
+    [combined_sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 0); % 0 indicates no plotting
     % Comput significant stixels into order to determine the timecourse
-    [sig_stixels] = significant_stixels(combined_sta);
-    [timecourse, params] = time_course_from_sta(combined_sta, sig_stixels);
+    %[sig_stixels] = significant_stixels(combined_sta);
+    %[timecourse, params] = time_course_from_sta(combined_sta, sig_stixels);
     % Plot the important frames of the STA
-    figure
-    imagesc(squeeze(combined_sta(:,:,:, 12)));
-    title({['STA Frame: ' num2str(12)]; sprintf('%d Percent OFF Parasol Spikes', perc(percentage)*100)});
-    
-    figure
-    imagesc(squeeze(combined_sta(:,:,:, 13)));
-    title({['STA Frame: ' num2str(13)]; sprintf('%d Percent OFF Parasol Spikes', perc(percentage)*100)});
-    figure
-    imagesc(squeeze(combined_sta(:,:,:, 14)));
-    title({['STA Frame: ' num2str(14)]; sprintf('%d Percent OFF Parasol Spikes', perc(percentage)*100)});
+  for a = 1:6
+    axes(ha(a)); 
+    frame = 11;
+    if a < 4
+        imagesc(squeeze(sta{2}(:,:,:, frame+a)));
+        title({['STA Frame: ' num2str(frame+a)] ; 'Blue/Green Spikes'})
+        axis image
+        axis off
+    else
+        frame = 8;
+        imagesc(squeeze(combined_sta(:,:,:, frame+a)));
+        title({['STA Frame: ' num2str(frame+a)]; sprintf(['%d Percent ' cell_type ' Spikes'], perc(percentage)*100)});
+           axis image
+        axis off
+
+    end
+  end
+  
     % Plot the time course from the significant stixels
     h = plot_time_course_(timecourse, 'colors', ['rgb']', 'foa', 0)
-    title({'Time Course'; sprintf('%d Percent OFF Parasol Spikes', perc(percentage)*100)});
+    title({'Time Course'; sprintf(['%d Percent ' cell_type ' Spikes'], perc(percentage)*100)});
+   
     % Save resulting STA for quantification
     sta_perc{percentage} = combined_sta;
 end
@@ -123,3 +162,10 @@ for a = 1:length(perc)
     per_frame_diff_bg(:,a) = squeeze(sum(sum(sum(abs(sta{2} - sta_perc{a}), 1), 2), 3));
     
 end
+var_bg = var(per_frame_diff_bg,1);
+var_other = var(per_frame_diff_para,1);
+figure; plot(perc*100, var_bg); hold on; plot(perc*100,var_other, 'r')
+xlabel('Percent contamination')
+title({'Variance across frames of STA'; 'of difference between contaminated result and ' ; 'either original blue/green STA or other cell type STA'})
+ylabel('Variance')
+legend('Blue/Green Cell', 'Reference Cell Type', 'location' ,'north')
