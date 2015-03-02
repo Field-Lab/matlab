@@ -9,8 +9,8 @@ datarun.names.rrs_sta_path = '/Volumes/Analysis/2005-04-26-0/data002-nwpca/data0
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 
 % First cell is parasol, second cell is blue/green
-cell_specification = [3048,3050];
-cell_type = 'ON Midget';
+cell_specification = [1023,1025];
+cell_type = 'OFF Parasol';
 
 % Parce the name of the datarun for saving purposes
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
@@ -107,7 +107,7 @@ for percentage = 1:length(perc)
 %     total_bg = 2000;
      figure
     ha = tight_subplot(2,3,[.01 .03],[.1 .01],[.01 .01]);
-%     total_bg = 2000;
+    total_bg = 1500;
     % compute how many parasol spikes to add
     total_spikes = round(total_bg/(1-perc(percentage)));
     
@@ -118,7 +118,7 @@ for percentage = 1:length(perc)
     spikes=datarun.spikes{cell_indices(1)}(p);
     
     %Combine b/g and comtamination spikes into one variables
-    spikes = [spikes; spikes2];
+    spikes = [spikes; spikes2(100:1600)];
     
     spikes=round(spikes*1000);
     % Compute new sta with the b/g spikes and some parasol spikes
