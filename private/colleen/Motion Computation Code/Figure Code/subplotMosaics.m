@@ -1,13 +1,13 @@
 %subplot moasics
 
-javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar');
+% javaaddpath('/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
 
 %   Initializing the data structure
 %   The most important function is load data! load_data is expecting to be
 %   directed to the file with the data000.bin, data000.neuron etc. These are
 %   in the Analysis drive. The function is set up so that you can just type
 %   'Date/data000'. This initializes the datarun structure. 
-datarun=load_data('2009-12-03-0/data003-nwpca/daat003');
+datarun=load_data('2009-12-03-0/data003-nwpca/daat003/daat003.neurons');
 
 % Loading other information
 %   Other information you might want including STAs, params, ei, neurons
