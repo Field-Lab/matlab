@@ -140,6 +140,6 @@ imagesc(totalMaskAccept);
 title('Accepted RFs');
 
 new_stas=newSTAs;
-totalMaskAccept=double(totalMaskAccept~=0);
+%totalMaskAccept=double(totalMaskAccept~=0);
 pause(1)
 end
