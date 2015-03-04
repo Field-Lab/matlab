@@ -2,8 +2,10 @@ datarun.names.rrs_neurons_path='/Volumes/Analysis/2010-09-24-0/data001-nwpca/dat
 datarun.names.rrs_sta_path = '/Volumes/Analysis/2010-09-24-0/data001-nwpca/data001-nwpca.sta';
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111-80x60.xml';
 
-cell_specification = [1024];
+% cell_specification = [502,860,1024,1130,2076,2361,2618,2705,3022,3172,3213,3559,4022,4071,4238,4774,4852,5496,6518,6533,6860,7279,7671];
+cell_specification = [17;63;139;218;227;242;290;319;365;394;500;513;542;558;573;648;661;723;846;861;875;889;933];
 
+cell_type = 'On Parasol';
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
@@ -48,8 +50,8 @@ for rgc = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(rgc)};
 
     % fit_surround_sd_scale is necessary for any fitting to occur
-    temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'initial_n_filters', 10, 'initial_scale_one',0.15,'initial_scale_two',-0.2,'initial_tau_one',5,'initial_tau_two',5, 'fit_surround_sd_scale', true, 'fit_surround', true);
-    %temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', true, 'fit_surround', true);
+%     temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'initial_n_filters', 10, 'initial_scale_one',0.15,'initial_scale_two',-0.2,'initial_tau_one',5,'initial_tau_two',5, 'fit_surround_sd_scale', true, 'fit_surround', true);
+    temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', false, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 6);
     suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
   
     
@@ -92,6 +94,7 @@ for rgc = 1:num_rgcs
 information{3} = parameters;
 information{4} = datarun.matlab.sta_fits;
 save([dataset,'-large-cells'], 'information')
+rgc
 end
 
 figure
@@ -105,7 +108,7 @@ end
 
 %% Look at the results
 figure
-suptitle({information{1}; [num2str(size(information{3},1)) ' large cells']})
+suptitle({information{1}; [num2str(size(information{3},1)), cell_type, ' cells']})
 
 %scale 1
 scale_one = information{3}(:,15);

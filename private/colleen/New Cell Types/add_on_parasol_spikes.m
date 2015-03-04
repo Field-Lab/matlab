@@ -4,13 +4,13 @@
 
 tic
 % Information about run to be analysized
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2005-04-26-0/data002-nwpca/data002.neurons';
-datarun.names.rrs_sta_path = '/Volumes/Analysis/2005-04-26-0/data002-nwpca/data002.sta';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-09-18-3/data000-mg/data000-cr2/data000-cr2.neurons';
+datarun.names.rrs_sta_path = '/Volumes/Analysis/2007-09-18-3/data000-mg/data000-cr2/data000-cr2.sta';
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 
 % First cell is parasol, second cell is blue/green
-cell_specification = [1023,1025];
-cell_type = 'OFF Parasol';
+cell_specification = [1651,1652];
+cell_type = 'SBC';
 
 % Parce the name of the datarun for saving purposes
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
@@ -51,6 +51,7 @@ variables = {'cell_specification', 'cell_indices', 'center_point_x', 'center_poi
 information{1} = dataset;
 information{2} = variables;
 sta = cell(2,1);
+sig_stixels_sum = cell(2,1);
 % Set this parameter based on timecourses
 num_frames = 20; % both have to be run with the name number of frames
 for i = 1:num_rgcs
@@ -72,10 +73,10 @@ for i = 1:num_rgcs
     spikes=round(spikes*1000);
     % compute the STA in matlab (not using java information)
     [sta{i}, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 0);
-    
+    sig_stixels_sum{i} = sig_stixels;
     for a = 1:3
-    axes(hb(a)); 
-    frame = 11;
+        axes(hb(a)); 
+        frame = 11;
         imagesc(squeeze(sta{i}(:,:,:, frame+a)));
         title({['STA Frame: ' num2str(frame+a)] ; label})
         axis image
@@ -92,7 +93,7 @@ end
 [junk,start_index] = max(sum(reshape(sta{2}.^2,[],size(sta{2},4)),1));
 
 % Percent contamination
-perc = [.05,.10,.20,.30,.40,.50,.75];
+perc = [0,.05,.10,.20,.30,.40,.50,.75];
 sta_perc = cell(size(perc,2),1);
 
 % Get the spikes from both the b/g cell and the parasol
@@ -103,11 +104,11 @@ total_bg = length(spikes2);
  
     
 for percentage = 1:length(perc)
-%     percentage = 7;
-%     total_bg = 2000;
+%     percentage = 8;
+    total_bg = 4250;
      figure
     ha = tight_subplot(2,3,[.01 .03],[.1 .01],[.01 .01]);
-    total_bg = 1500;
+%     total_bg = 1500;
     % compute how many parasol spikes to add
     total_spikes = round(total_bg/(1-perc(percentage)));
     
@@ -118,7 +119,7 @@ for percentage = 1:length(perc)
     spikes=datarun.spikes{cell_indices(1)}(p);
     
     %Combine b/g and comtamination spikes into one variables
-    spikes = [spikes; spikes2(100:1600)];
+    spikes = [spikes; spikes2(100:4349)];
     
     spikes=round(spikes*1000);
     % Compute new sta with the b/g spikes and some parasol spikes
@@ -154,18 +155,87 @@ for percentage = 1:length(perc)
 end
 toc
 
-% Compute difference between frames with and without contamination
-per_frame_diff_para = zeros(num_frames, length(perc));
-per_frame_diff_bg = zeros(num_frames, length(perc));
-for a = 1:length(perc)
-    per_frame_diff_para(:,a) = squeeze(sum(sum(sum(abs(sta{1} - sta_perc{a}), 1), 2), 3));
-    per_frame_diff_bg(:,a) = squeeze(sum(sum(sum(abs(sta{2} - sta_perc{a}), 1), 2), 3));
+
+% Per sig_stixel differences
+% non blue/green cell type
+diff_sig = zeros(sum(sum(sig_stixels_sum{1})), 3, num_frames, length(perc));
+diff_bg = zeros(sum(sum(sig_stixels_sum{2})), 3, num_frames, length(perc));
+
+for b = 1:length(perc)
+    full_indexing = repmat(full(sig_stixels_sum{1}), [1,1,3,num_frames]);
+    sig_para =  sta{1}(full_indexing);
+        sig_para = reshape(sig_para, [sum(sum(sig_stixels_sum{1})), 3, num_frames]);
+
+    sig_contam = sta_perc{b}(full_indexing);
+    sig_contam = reshape(sig_contam, [sum(sum(sig_stixels_sum{1})), 3, num_frames]);
+    diff_sig(:,:,:,b) = sig_para - sig_contam;
+end
+mean_para_change = squeeze(mean(diff_sig,1));
+% select_frame = 12;
+% select_color = 2;
+% if select_color == 2
+%     color_str = 'Green';
+% elseif select_color == 3
+%     color_str = 'Blue';
+% else
+%     color_str = 'Red';
+% end
+% h = figure; 
+% plot(perc*100, squeeze(mean_para_change(select_color, select_frame,:)))
+% set(h, 'Position', [680 460 650 650])
+% %  set(h, {'color'}, num2cell(jet(sum(sum(sig_stixels_sum{2}))), 2));
+% xlabel('Percent of contaminated pixels')
+% ylabel(['Mean(',  cell_type , ' sign.stixels - contaminated sign. stixels)'])
+% title({['Contamination with ', cell_type, ' Cells']; dataset; [num2str(cell_specification(1)), ' and ' num2str(cell_specification(2))]; ['Frame ',num2str(select_frame), ' ', color_str]})
+
+
+figure; plot(perc*100, squeeze(diff_sig(:,2,12,:)))
+xlabel('Percent of contaminated pixels')
+ylabel('Contaminated sign. stixels - Parasol sign.stixels')
+% legend(legendCell)
+
+% Blue/green
+for c = 1:length(perc)
+    full_indexing = repmat(full(sig_stixels_sum{2}), [1,1,3,num_frames]);
+    sig_bg =  sta{2}(full_indexing);
+        sig_bg = reshape(sig_bg, [sum(sum(sig_stixels_sum{2})), 3, num_frames]);
+
+    sig_contam = sta_perc{c}(full_indexing);
+    sig_contam = reshape(sig_contam, [sum(sum(sig_stixels_sum{2})), 3, num_frames]);
+    diff_bg(:,:,:,c) = sig_contam - sig_bg;
     
 end
-var_bg = var(per_frame_diff_bg,1);
-var_other = var(per_frame_diff_para,1);
-figure; plot(perc*100, var_bg); hold on; plot(perc*100,var_other, 'r')
-xlabel('Percent contamination')
-title({'Variance across frames of STA'; 'of difference between contaminated result and ' ; 'either original blue/green STA or other cell type STA'})
-ylabel('Variance')
-legend('Blue/Green Cell', 'Reference Cell Type', 'location' ,'north')
+mean_bg_change = squeeze(mean(diff_bg,1));
+
+
+select_frame = 12;
+select_color = 1;
+if select_color == 2
+    color_str = 'Green';
+elseif select_color == 3
+    color_str = 'Blue';
+else
+    color_str = 'Red';
+end
+
+g = figure; 
+plot(perc*100, squeeze(mean_bg_change(1, select_frame,:)), 'r')
+hold on
+plot(perc*100, squeeze(mean_bg_change(1, select_frame+1,:)), 'r:')
+plot(perc*100, squeeze(mean_bg_change(1, select_frame+2,:)), 'r--')
+
+plot(perc*100, squeeze(mean_bg_change(2, select_frame,:)), 'g')
+plot(perc*100, squeeze(mean_bg_change(3, select_frame,:)), 'b')
+
+
+plot(perc*100, squeeze(mean_bg_change(2, select_frame+1,:)), 'g:')
+plot(perc*100, squeeze(mean_bg_change(3, select_frame+1,:)), 'b:')
+
+
+plot(perc*100, squeeze(mean_bg_change(2, select_frame+2,:)), 'g--')
+plot(perc*100, squeeze(mean_bg_change(3, select_frame+2,:)), 'b--')
+set(g, 'Position', [680 460 650 650])
+xlabel('Percent of contaminated pixels')
+ylabel('Mean(Contaminated sign. stixels - Blue/Green sign.stixels)')
+title({['Contamination with ', cell_type, ' Cells']; dataset; [num2str(cell_specification(1)), ' and ' num2str(cell_specification(2))]})
+legend(['Frame ' num2str(select_frame)], ['Frame ' num2str(select_frame+1)], ['Frame ' num2str(select_frame+2)])
