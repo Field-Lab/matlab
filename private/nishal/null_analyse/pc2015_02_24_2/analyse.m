@@ -1,7 +1,7 @@
 addpath(genpath('../null_analyse/'));
 addpath(genpath('../null_analyse/analyse_functions'));
-%startup_null_analyse_tenessee
-startup_null_analyse_bertha
+startup_null_analyse_tenessee
+%startup_null_analyse_bertha
 
 %%
 % Condition strings
@@ -45,6 +45,13 @@ for icondi=[1,2,3]
     title('Difference in pixel value compared to original movie');
 end
 
+% Contrast map
+cMap = cell(3,1);
+for icond=1:3
+    cMap{icond}=contrastMap(condMovies{icond});
+    subplot(2,2,icond);
+    imagesc(cMap{icond});
+end
 
 %%
 
