@@ -683,4 +683,8 @@ fit_info.fit_surround = fit_surround;
 fit_info.frame_number = frame_number;
 fit_info.rmse = fval;
 fit_info.initial_params = input_params;
+fit_info.fit_indices = fit_indices;
+fit_info.fixed_indices = fixed_indices; 
+fit_info.fit_params = final_fit_params;
+fit_info.fixed_params = input_params(fixed_indices); 
 

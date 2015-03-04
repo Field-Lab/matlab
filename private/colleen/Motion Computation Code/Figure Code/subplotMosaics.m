@@ -7,7 +7,7 @@
 %   directed to the file with the data000.bin, data000.neuron etc. These are
 %   in the Analysis drive. The function is set up so that you can just type
 %   'Date/data000'. This initializes the datarun structure. 
-datarun=load_data('2009-12-03-0/data003-nwpca/daat003/daat003.neurons');
+datarun=load_data('2009-11-14-0/data000/data000.neurons');
 
 % Loading other information
 %   Other information you might want including STAs, params, ei, neurons

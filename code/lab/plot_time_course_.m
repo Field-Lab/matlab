@@ -61,7 +61,7 @@ plot_axes = set_up_fig_or_axes(params.foa);
 hold on
 plot(plot_axes,[1 size(time_course,1)],[0 0],'color',.8*[1 1 1])
 for cc=1:size(time_course,2)
-    plot(plot_axes,1:size(time_course,1),time_course(:,cc),'-','Color',params.colors(cc,:))
+    plot(plot_axes,(1:size(time_course,1))',time_course(:,cc),'-','Color',params.colors(cc,:))
 end
 
 
