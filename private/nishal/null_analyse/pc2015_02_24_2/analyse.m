@@ -14,7 +14,7 @@ cond_str{3}='Null for cell group 2';
 interestingConditions=[1,2,3];
 %% Load Movies
 rawMovFrames=4320/(8);
-[stim,height,width,header_size] = get_raw_movie('/Volumes/Data/2015-02-24-2/Visual/pc2015_02_24_2/19.rawMovie',rawMovFrames,1);
+[stim,height,width,header_size] = get_raw_movie('/Volumes/Data/2015-02-24-2/Visual/pc_2015_02_24_2_data010/19.rawMovie',rawMovFrames,1);
 subtract_movies{3}=mean(stim,1);
 subtract_movies{3}=mean(stim,1)*0+127.5;
 movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
@@ -47,12 +47,19 @@ end
 
 % Contrast map
 cMap = cell(3,1);
+h=figure('Color','w');
 for icond=1:3
     cMap{icond}=contrastMap(condMovies{icond});
     subplot(2,2,icond);
     imagesc(cMap{icond});
+    caxis([3,6]);
+    colorbar
+    title(sprintf('cMap: %s',cond_str{icond}));
 end
 
+   s=hgexport('readstyle','cMap');
+   hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_2/data014/cMap.eps'),s);
+  
 %%
 
 
