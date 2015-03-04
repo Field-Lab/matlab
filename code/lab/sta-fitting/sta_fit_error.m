@@ -138,12 +138,12 @@ function constraint_error = apply_constraints(all_params)
     constraint_error = 0;
 
     % ensure surround_radius >= center_radius
-    if all_params(13) < 1; constraint_error = constraint_error + 1000; end
+%     if all_params(13) < 1; constraint_error = constraint_error + 1000; end
     
     if all_params(13) > 5; constraint_error = constraint_error + 1000; end
     
     % ensure surround_scale >= 0
-    if all_params(14) < 0;  constraint_error = constraint_error + 1000; end
+%     if all_params(14) < 0;  constraint_error = constraint_error + 1000; end
     
     % ensure surround_scale < 1
     if all_params(14) >= 1;  constraint_error = constraint_error + 1000; end
