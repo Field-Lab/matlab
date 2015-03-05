@@ -8,13 +8,13 @@ startup_bertha
 
 startup_rooster
 
-datafile='nishal/2015-02-24-5/data006/data006';%'nishal/2014-08-20-2/data001/data001';
+datafile='2015-02-24-5/streamed/data006/data006';%'nishal/2014-08-20-2/data001/data001';
 
 % type_name_inp = 'userCellList' for a list of cells.
 
 no_images_per_movie=10;
 start_image=10;
-tag='pc2015-02-24-5_data006_test';
+tag='test-tag';
 destination_mat=['/Volumes/Analysis/nishal/',tag];
 if(~exist(destination_mat,'dir'))
 mkdir(destination_mat);
@@ -42,18 +42,18 @@ cell_params.sta_spatial_method=4;%1,2 ,3,4
 
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';
-mov_params.movie_time=120*10/1;
-mov_params.mean=0.25*255;
+mov_params.movie_time=120*10/8;
+mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 
 mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-20-8-0.48-11111-16x16.xml';
 mov_params.stixel=20;
 
-mov_params.interval = 1; % Not important to have this parameter. Default is 1. When we want repeated frames, just set this interval (This just controls the blank Frames), and select the movie_time appropriately.
+mov_params.interval = 8; % Not important to have this parameter. Default is 1. When we want repeated frames, just set this interval (This just controls the blank Frames), and select the movie_time appropriately.
 
 % Post process. Default is stretch. If using default, need to give only mov_params.scaling_loss parameter.
 mov_params.post_process_method = 'scale'; % or, 'stretch'
-mov_params.scale = 0.24/0.48;
+mov_params.scale = 0.45/0.48;
 %mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
 
 solver=8; % Solver 4 used for spatial nulling, 8 for iterated spatial nulling
