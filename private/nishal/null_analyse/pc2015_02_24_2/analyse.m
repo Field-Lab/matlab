@@ -510,3 +510,52 @@ title('data012,014,019 - order: Null2,Null1,Original');
   
 
 end
+
+
+%% Full Joint from data016
+
+WN_datafile = '2015-02-24-2/streamed/data016/data016';
+datarun1=load_data(WN_datafile);
+datarun1=load_params(datarun1);
+datarun1=load_ei(datarun1,datarun1.cell_ids);
+
+WN_datafile_concat = '2015-02-24-2/d00-24-norefit/data016-from-d00-d24/data016-from-d00-d24';
+datarun2=load_data(WN_datafile_concat);
+datarun2=load_params(datarun2);
+datarun2.names.rrs_ei_path='/Volumes/Analysis/2015-02-24-2/d00-24-norefit/d00-24-norefit.ei';
+datarun2=load_ei(datarun2,datarun2.cell_ids);
+
+[cell_list_map, failed_cells] =map_ei(datarun1,datarun2);
+
+
+NullCells1=[2793,1832,5131,6948];
+NullCells2 = [5042,1531,2911,7246]; 
+
+NullCells1_2=[];
+NullCells1_1=[];
+icnt=1;
+for iList=1:length(NullCells1)
+x=cell_list_map(datarun1.cell_ids==NullCells1(iList));
+try
+NullCells1_2(icnt)=x{1};
+NullCells1_1(icnt)=NullCells1(icnt);
+icnt=icnt+1;
+catch
+display('No match');
+end
+
+end
+
+NullCells2_2=[];
+NullCells2_1=[];
+icnt=1;
+for iList=1:length(NullCells2)
+x=cell_list_map(datarun1.cell_ids==NullCells2(iList));
+try
+NullCells2_2(icnt)=x{1};
+NullCells2_1(icnt)=NullCells2(icnt);
+icnt=icnt+1;
+catch
+display('No match');    
+end
+end
