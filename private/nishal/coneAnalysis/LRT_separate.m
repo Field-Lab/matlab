@@ -1,3 +1,6 @@
+load('/Volumes/Analysis/nishal/Cone_data_alex/conepreprocess.mat');
+
+%%
 cellID=9;
 figure;
 imagesc(datarun.stas.rfs{cellID});

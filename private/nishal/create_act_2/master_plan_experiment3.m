@@ -42,7 +42,7 @@ cell_params.sta_spatial_method=4;%1,2 ,3,4
 
 mov_params=struct();
 mov_params.mov_type='bw-precomputed';
-mov_params.movie_time=120*10;
+mov_params.movie_time=120*10/1;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
 

@@ -98,7 +98,7 @@ end
 % This will take care of initial and final conditions and make proper
 % buffers
 if(isfield(movie_params,'interval'))
-blankFrames = 120/movie_params.interval
+blankFrames = double(uint8(35/movie_params.interval));
 
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
@@ -106,9 +106,10 @@ movie_time=movie_time+2*blankFrames;
 movie_params.movie_time=movie_time;
 else
     
-mov_buffered=zeros(var64,var32,movie_time+2*120);
-mov_buffered(:,:,121:end-120)=mov;
-movie_time=movie_time+2*120;
+blankFrames = 35;
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
 movie_params.movie_time=movie_time;
 end
 
