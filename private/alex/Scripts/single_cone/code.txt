@@ -1,0 +1,10 @@
+ defaultStream = RandStream.getDefaultStream;
+            defaultStream.State = s(checkers_sg_protocol).State;
+            imageArray=zeros(800,800);
+            b=uint8(randi([0 1],1,160000)*60); % colors 0 and 60
+            b=repmat(b,2,1);
+            b=reshape(b,320000,1);
+            b=reshape(b,800,400);
+            imageArray(:,1:2:end)=b;
+            imageArray(:,2:2:end)=b;
+           

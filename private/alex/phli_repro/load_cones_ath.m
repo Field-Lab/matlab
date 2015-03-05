@@ -12,6 +12,9 @@ if isdir(path2data)
     if strcmp (cone_spec, piece)
         cone_data = dir([path2data,'*', run,'*']);        
     else
+        if isnumeric(cone_spec)
+            cone_spec=num2str(cone_spec);
+        end
         cone_data = dir([path2data,'*', run, '*', cone_spec,'*']);
     end    
 else

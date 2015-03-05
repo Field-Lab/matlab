@@ -1,0 +1,113 @@
+clear
+
+chirpLength=22500;
+
+%% get firing rates from WT experiment
+date='20121023';
+path2fit=['S:\user\alexandra\MEA_data\',date,'\fit_res_HC\'];
+fits=dir([path2fit,'\*.mat']);
+
+chirpPath=dir(['S:\user\alexandra\MEA_data\',date,'\easy_formatted_units\*chirp*']);
+load(['S:\user\alexandra\MEA_data\',date,'\easy_formatted_units\',chirpPath(1).name])
+trialsChirp=size(spike_info.name_info,1);
+
+for unit=1:length(fits)
+    load([path2fit,fits(unit).name]);
+    cnt=1;
+    for i=22:12:94
+        ampl(unit,cnt)=mean(common_res_fit(1,i:i+2));
+        lat(unit,cnt)=mean(common_res_fit(2,i:i+2));
+        cnt=cnt+1;
+    end
+    
+    name=fits(unit).name(1:end-15);
+    % CHIRP
+    load(['S:\user\alexandra\MEA_data\',date,'\easy_formatted_units\',name,'___spike_info_chirp'])
+    chirp=zeros(trialsChirp,25000);
+    for trial=1:trialsChirp
+        spikes=cell2mat(spike_info.spike_times(trial));
+        flips=cell2mat(spike_info.flip_times(trial));
+        flips=flips(:,1);
+        conv=convolved(spikes,40,flips(end,1));
+        conv=conv(121:end-120);
+        chirp(trial,1:length(conv))=conv;
+    end
+    cnt=1;
+    for i=1:5:35
+        responses(cnt,1:chirpLength,unit)=mean(chirp(i:i+4,1:chirpLength));
+        cnt=cnt+1;
+    end
+end
+
+clear name common_res_fit chirp chirpPath date flips fits path2fit trial trialsChirp unit spike_info conv spikes
+
+%% SLIDING WINDOW
+clear param spont
+noStim=200:2500;
+window=500;
+% structure: rows - parameters,columns - nds, slices - units
+for i=1:35
+    for j=1:7
+        baseLine=mean(responses(j,noStim,i));        
+        based=abs(responses(j,:,i)-baseLine);
+% based=responses(j,:,i);
+        spont(j,i)=sum(based(noStim));
+        cnt=1;
+        for fc=1:50:chirpLength-window
+            param(cnt,j,i)=sum(based(fc:fc+window))/window;
+            cnt=cnt+1;
+        end        
+        spont(1:cnt-1,j,i)=repmat(sum(based(noStim)),cnt-1,1);
+    end
+end
+
+clear based baseLine noStim lowFreqChirp midFreqChirp highFreqChirp lowAmplChirp midAmplChirp highAmplChirp
+
+%% normalize amplitude
+ampl=abs(ampl);
+for i=1:35
+    tmp=max(ampl(i,:));
+    ampl(i,:)=ampl(i,1:7)/tmp;    
+end
+
+
+%% correlation for each unit between amplitude and parameter changes
+k=zeros(35,size(param,1));
+for j=1:35
+    for i=1:size(param,1)        
+        k(j,i)=corr(ampl(j,:)',param(i,:,j)');
+%         k(j,i)=corr(lat(j,:)',param(i,:,j)');
+    end
+end
+nanmean(k)
+h=k;
+h(isnan(h))=1;
+
+figure
+plot(nanmean(k),'linewidth',3)
+
+
+figure
+hold on
+plot(std(h)./sqrt(35)+mean(h),'b','LineWidth',2);
+plot(mean(h),'r','LineWidth',2);
+plot(-std(h)./sqrt(35)+mean(h),'b','LineWidth',2);
+% axis([0 400  0 1]);
+
+figure
+plot(h');
+
+
+figure
+for i=1:7
+    subplot(7,1,8-i)
+    plot(mean(param(:,i,:),3))
+    title(int2str(8-i))
+end
+
+param_wt=param;
+save('C:\Documents and Settings\atikidzhi\My Documents\Dropbox\paper\2_lightAdaptation\chirp\wt_modul_param','param_wt')
+
+
+wt=h;
+save('C:\Documents and Settings\atikidzhi\My Documents\Dropbox\paper\2_lightAdaptation\chirp\wt_ampl_modul_corr','wt')
