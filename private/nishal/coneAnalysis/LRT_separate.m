@@ -40,6 +40,6 @@ LRT_mat(cone1,cone2)=LRT;
 end
 end
 
-threshold=-0.4; % minimum violations
+threshold=-166; % minimum violations
 Connectivity = LRT_mat>threshold;
 Connectivity(logical(eye(noCones)))=0
