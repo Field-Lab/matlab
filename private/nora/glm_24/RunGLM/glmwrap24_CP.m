@@ -41,16 +41,17 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 GLMType.nullpoint = 'mean'; 
 GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
-GLMType.specialchange = false;
+GLMType.specialchange = true;
+GLMType.specialchange_name = 'extra_coupling';
 GLMType.CBP=false;
 
-GLMType.stimfilter_mode = 'rk1';
-%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+% GLMType.stimfilter_mode = 'rk1';
+GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
 GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
 
-GLMType.CONVEX = false;
+GLMType.CONVEX = true;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
