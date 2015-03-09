@@ -66,6 +66,7 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 mov_idx=2;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 
+%[cMaps,h]=makecMap(destination_mat,movIDs,rawMovFrames)
 
 %% Iterative clipping - remember to carefully decide the scaling (not stretching) when doing Iterated methods.
 
