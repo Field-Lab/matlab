@@ -1,7 +1,7 @@
 addpath(genpath('../null_analyse/'));
 addpath(genpath('../null_analyse/analyse_functions'));
-%startup_null_analyse_tenessee
-startup_null_analyse_bertha
+startup_null_analyse_tenessee
+%startup_null_analyse_bertha
 
 %%
 % Condition strings
@@ -78,12 +78,13 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
      [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_5(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
  
   plot_mosaic_pc2015_02_24_5(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
+   stc_analysis_data011
    InterestingCell_vis_id(ref_cell_number)
     if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data011/CellType_%s',datarun.cell_types{cellTypeId}.name)))
     mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data011/CellType_%s',datarun.cell_types{cellTypeId}.name));
     end
-   s=hgexport('readstyle','ras_mos4');
-   hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data011/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+  % s=hgexport('readstyle','ras_mos4');
+  % hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data011/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
   
     %testsuite_prediction
   %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
@@ -122,12 +123,13 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
      [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_5(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
  
   plot_mosaic_pc2015_02_24_5(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
+
    InterestingCell_vis_id(ref_cell_number)
     if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data010/CellType_%s',datarun.cell_types{cellTypeId}.name)))
     mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data010/CellType_%s',datarun.cell_types{cellTypeId}.name));
     end
-   s=hgexport('readstyle','ras_mos4');
-   hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data010/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+  % s=hgexport('readstyle','ras_mos4');
+  % hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_02_24_5/data010/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
   
     %testsuite_prediction
   %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
