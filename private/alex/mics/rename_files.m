@@ -1,8 +1,8 @@
-path2data='/Volumes/Analysis/2015-01-29-0/d00-07-norefit/';
+path2data='/Volumes/Analysis/2013-10-10-1/d00-03-norefit/';
 
-name_extension='-from-data000_data001_data002_data003_data004_data005_data006_data007';
+name_extension='-from-data000_data001_data002_data003';
 
-add_extension='-from-d00-d07';
+add_extension='-from-d00-d03';
 
 % rename files
 for i=0:7
