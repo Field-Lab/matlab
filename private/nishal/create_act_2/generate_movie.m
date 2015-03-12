@@ -53,6 +53,26 @@ end
 
 
 %mov=mov*127.5/max(abs(mov(:))); %contrast correction
+
+% Add 
+% Add one second of dark screen in front and back of movie .. 
+% This will take care of initial and final conditions and make proper
+% buffers
+if(isfield(movie_params,'interval'))
+blankFrames = double(uint8(35/movie_params.interval));
+
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames)-0.25*(255);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
+movie_params.movie_time=movie_time;
+else
+    
+blankFrames = 35;
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames)-0.25*(255);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
+movie_params.movie_time=movie_time;
+end
 end
 
 % BW noise
@@ -64,6 +84,27 @@ mov=double(rand(var64,var32,movie_time)>0.5);
 mov=mov-0.5;
 mov=mov*movie_params.deviation/max(abs(mov(:)));
 % White noise, but it's +1 or -1
+
+
+% Add 
+% Add one second of dark screen in front and back of movie .. 
+% This will take care of initial and final conditions and make proper
+% buffers
+if(isfield(movie_params,'interval'))
+blankFrames = double(uint8(35/movie_params.interval));
+
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
+movie_params.movie_time=movie_time;
+else
+    
+blankFrames = 35;
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
+movie_params.movie_time=movie_time;
+end
 end
 
 % BW noise used in before
@@ -90,7 +131,6 @@ triggers=[0:100/120:movie_time*10/120]; % Or maybe, movie_time/120 ?? Doubt!
     end
 mov=mov-0.5;
 mov=mov*movie_params.deviation/max(abs(mov(:)));
-end
 
 
 % Add 
@@ -112,5 +152,8 @@ mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
 movie_time=movie_time+2*blankFrames;
 movie_params.movie_time=movie_time;
 end
+end
+
+
 
 end
