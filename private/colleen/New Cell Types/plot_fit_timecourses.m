@@ -1,4 +1,4 @@
-function plot_fit_timecourses(sta, fit_indices, fixed_indices, fit_params, fixed_params)
+function fit_tc = plot_fit_timecourses(sta, fit_indices, fixed_indices, fit_params, fixed_params)
 
 all_params(fit_indices) = fit_params;
 all_params(fixed_indices) = fixed_params;

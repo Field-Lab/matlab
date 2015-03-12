@@ -1,4 +1,4 @@
-function [fit_info] = fit_sta(sta, varargin)
+function [fit_info, sta, sta_temp, sig_stixels] = fit_sta(sta, varargin)
 %
 % fit_sta.m fits a spatial-temporal-chromatic STA with a differences of
 % Gaussians (in space), a difference of a cascade of filters (in time), and
@@ -65,6 +65,10 @@ function [fit_info] = fit_sta(sta, varargin)
 %   fit_color_weight_c              true    unless STA is BW
 %
 %   fit_sig_stixels_one             false   only fit significant stixels
+%
+%   interpolate                     false   use a spline fit to estimate
+%                                           shape of the curve before
+%                                           fitting
 %
 %   verbose                         false   plot fit results on each
 %                                           iteration
@@ -186,6 +190,8 @@ p.addParamValue('fit_n_filters', false, @islogical);
 % fit_only_sig stixels
 p.addParamValue('fit_sig_stixels_only', false, @islogical);
 
+p.addParamValue('interpolate', false, @islogical);
+
 p.addParamValue('verbose', false, @islogical);
 
 % fiting options
@@ -227,6 +233,8 @@ fit_scale_two = p.Results.fit_scale_two;
 fit_tau_one = p.Results.fit_tau_one;
 fit_tau_two = p.Results.fit_tau_two;
 fit_n_filters = p.Results.fit_n_filters;
+
+interpolate = p.Results.interpolate;
 
 verbose = p.Results.verbose;
 fit_sig_stixels_only = p.Results.fit_sig_stixels_only;
@@ -279,6 +287,22 @@ end
 [matrix_subscript_i, matrix_subscript_j] = find(sig_stixels);
 matrix_subscripts = [matrix_subscript_i, matrix_subscript_j];
 
+%% Interpolation option 
+sta_temp = sta;
+sta_inter = zeros(size(sta,1), size(sta,2), size(sta,3),45);    
+if interpolate
+    for a = 1:size(sta,1)
+        for b= 1:size(sta,2)
+            for c = 1:size(sta,3)
+                Y = squeeze(sta(a,b,c,:));
+                x = 1:length(Y);
+                xi = linspace(1,length(Y), 45);
+                sta_inter(a,b,c,:) = interp1(x,Y,xi, 'spline')';
+            end
+        end
+    end
+    sta = sta_inter;    
+end
 
 
 
@@ -505,18 +529,17 @@ fixed_indices = find(~fit_list);
 
 
 
-
 %% --- FIT THE STA ---
 
 input_params = double(input_params);
 
 [final_fit_params, fval] = fminsearch(@(fit_params)sta_fit_error(sta,...
-                              fit_params, input_params(fixed_indices),...
-                              fit_indices, fixed_indices,...
-                              verbose),...
-                              input_params(fit_indices),...
-                              optimset(optim{:}));
-                          
+    fit_params, input_params(fixed_indices),...
+    fit_indices, fixed_indices,...
+    verbose),...
+    input_params(fit_indices),...
+    optimset(optim{:}));
+
 final_params = input_params;
 final_params(fit_indices) = final_fit_params;
 sta_fit = sta_fit_function(final_params);
@@ -688,6 +711,6 @@ fit_info.fixed_indices = fixed_indices;
 fit_info.fit_params = final_fit_params;
 fit_info.fixed_params = input_params(fixed_indices);
 % Plot result
-plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices);
+% plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices);
 
 

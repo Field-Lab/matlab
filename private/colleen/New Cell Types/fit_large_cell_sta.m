@@ -1,19 +1,43 @@
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2010-09-24-0/data001-nwpca/data001-nwpca.neurons';
-datarun.names.rrs_sta_path = '/Volumes/Analysis/2010-09-24-0/data001-nwpca/data001-nwpca.sta';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111-80x60.xml';
+clear
+file_name = '2005-04-26-0/data002-nwpca/data002';
+datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
+datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
 
+datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-11111.xml';
+interpolate = false;
 % cell_specification = [502,860,1024,1130,2076,2361,2618,2705,3022,3172,3213,3559,4022,4071,4238,4774,4852,5496,6518,6533,6860,7279,7671];
-cell_specification = [17;63;139;218;227;242;290;319;365;394;500;513;542;558;573;648;661;723;846;861;875;889;933];
 
-cell_type = 'On Parasol';
+cell_type = {'Blue Green'};
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
 dataset(to_replace) = '-';
-% num_frames = 30; % both have to be run with the name number of frames
+num_frames = 15; % both have to be run with the name number of frames
 
-opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true,'load_all',true);
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',true);
+opt.load_sta_params.save_rf = 1;
+opt.load_sta_params.frames = 16:30% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
+
+cell_type_index= zeros(1,size(cell_type,2));
+for num_cell_types = 1:size(cell_type,2)
+    for i = 1:size(datarun.cell_types,2)
+        right_cell_type = strcmpi(datarun.cell_types{i}.name, cell_type{num_cell_types}); % case insensitive
+        if right_cell_type == 1;
+            cell_type_index(num_cell_types) = i;
+            break
+        end
+        cell_type_index(num_cell_types) = 0;% couldn't find the right cell type
+    end
+    
+end
+
+cell_specification = datarun.cell_types{cell_type_index}.cell_ids;
+% cell_specification = [6241];
+
+% Find out indices for desired cell type
+
 
 triggers=datarun.triggers; %onsets of the stimulus presentation
 
@@ -51,8 +75,30 @@ for rgc = 1:num_rgcs
 
     % fit_surround_sd_scale is necessary for any fitting to occur
 %     temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'initial_n_filters', 10, 'initial_scale_one',0.15,'initial_scale_two',-0.2,'initial_tau_one',5,'initial_tau_two',5, 'fit_surround_sd_scale', true, 'fit_surround', true);
-    temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', false, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 6);
-    suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
+
+
+
+                    
+
+[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 12, 'interpolate', true, 'frame_number', num_frames*3);
+% Plot result
+plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels);
+
+% Add raw data to plot
+% hold on
+%         real_stix = significant_stixels(temp_sta);
+%       biggestBlob = ExtractNLargestBlobs(full(real_stix), 1);
+%     real_stix = biggestBlob;
+%     tc = time_course_from_sta(temp_sta, real_stix);
+%     norm_factor = max(abs(reshape(tc, 1, [])));
+%     tc = tc ./ norm_factor;
+%     hold on
+%     subplot(2,1,2)
+%         plot(tc(:,1), 'r', 'linewidth', 2)
+%         plot(tc(:,2), 'g', 'linewidth', 2)
+%         plot(tc(:,3), 'b', 'linewidth', 2)
+
+suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
   
     
     if isempty(temp_fit_params)
@@ -93,22 +139,26 @@ for rgc = 1:num_rgcs
 
 information{3} = parameters;
 information{4} = datarun.matlab.sta_fits;
-save([dataset,'-large-cells'], 'information')
-rgc
+% save([dataset,'-', cell_type{1}], 'information')
+
 end
 
 figure
 for q = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(q)};
     temp_fit_params = datarun.matlab.sta_fits{cell_indices(q)};
-    plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params)
+    fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params);
     hold on
 end
+title({['Fits of ' num2str(length(cell_specification)), ' ', cell_type{1}, ' Cells']; dataset})
+xlabel('Time')
+ylabel('Amplitude')
+
 
 
 %% Look at the results
 figure
-suptitle({information{1}; [num2str(size(information{3},1)), cell_type, ' cells']})
+suptitle({information{1}; [num2str(size(information{3},1)), cell_type{1}, ' cells']})
 
 %scale 1
 scale_one = information{3}(:,15);
@@ -136,3 +186,59 @@ area = information{3}(:,5).*information{3}(:,6)*pi;
 subplot(3,2,6) ; hist(area);
 title('RF Size');
 
+
+
+%% Plot mosaic 
+  figure
+for q = 1:num_rgcs
+    temp_sta = datarun.stas.stas{cell_indices(q)};
+    temp_fit_params = datarun.matlab.sta_fits{cell_indices(q)};
+    fit_indices = temp_fit_params.fit_indices;
+    fixed_indices = temp_fit_params.fixed_indices;
+    fit_params = temp_fit_params.fit_params;
+    fixed_params = temp_fit_params.fixed_params;
+
+    all_params(fit_indices) = fit_params;
+    all_params(fixed_indices) = fixed_params;
+
+    % get sta fit
+    sta_fit = sta_fit_function(all_params);
+    % spatial fit
+  
+  
+    hold on
+%     temp_rf = rf_from_sta(sta);
+%     imagesc(norm_image(temp_rf))
+%     hold on
+    h(q) = plot_spatial_sd(all_params);
+    set(h(q), 'DisplayName', 'Fitting Code');
+    drawnow
+end
+    axis equal
+
+set(gca, 'xlim', [0, datarun.stimulus.field_width]);
+set(gca, 'ylim', [0, datarun.stimulus.field_height]);
+set(gca,'YDir','reverse');
+%% compare mosaic to that from vision
+% datarun=load_data('2010-09-24-0/data001-nwpca-cr');
+% datarun=load_sta(datarun);
+% datarun=load_params(datarun);
+% datarun=load_neurons(datarun);
+% datarun=set_polarities(datarun);
+hold on
+h(rgc+1) = plot_rf_summaries(datarun,{cell_type_index}, 'plot_fits',1,'label',0, 'foa', -1, 'clear', 0); %looking at the data type 8 is on large
+set(h(rgc+1), 'DisplayName', 'Vision')
+legend(h(end-1:end));
+title({['STA Fitting Code:  ', cell_type{1}] ; 'Clean Spike Sorting'; dataset})
+
+
+%% Calculate zero crossing
+zero_crossing = zeros(size(fit_tc,2),1);
+for i = 1:size(fit_tc,2)
+    cell_ = fit_tc{i}(:,2)*16.65; % units of ms
+
+    [x0,y0] = intersections(1:num_frames,cell_,1:num_frames, zeros(num_frames,1)); % find zero crossing
+    zero_crossing(i) = x0(1);
+end
+information{5} = zero_crossing;
+save([dataset,'-', cell_type{1}], 'information')
