@@ -3,7 +3,7 @@
 
 % Have a dataset ready with cells you want to nullify grouped under a
 % common name(use Vision software).
-% To restore code state, GIT key: e1de379272c93dc94178746bf0716c4d9c4bcfa5
+% To restore code state, GIT key: 8151e3d04f4f9d4822d9c0a0cfc8dab080a140caq
 % This is uses 2015-03-09-7/data006
 
 startup_bertha

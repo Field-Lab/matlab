@@ -5,7 +5,7 @@
 % common name(use Vision software).
 
 
-% To restore code state, GIT key: e1de379272c93dc94178746bf0716c4d9c4bcfa5
+% To restore code state, GIT key: 8151e3d04f4f9d4822d9c0a0cfc8dab080a140ca
 % This is uses 2015-03-09-3/data003 and data004. (See lisp code).
 
 startup_bertha
