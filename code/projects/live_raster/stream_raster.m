@@ -163,7 +163,6 @@ while ~end_of_streaming
                 ylim([0 raster_count+1])
                 pause(0.05)
             end
-            trigger_time+sample_start
         elseif mod(trigger_count,raster_interval)==1
             disp('Waiting for more data')
         end
