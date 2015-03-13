@@ -10,3 +10,7 @@ addpath(genpath('/home/vision/Nora/matlab/private/nora'));
 
 % set some default plot stuff
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
+
+
+
+addpath(genpath('/home/vision/Nishal/matlab/code'));
