@@ -40,8 +40,8 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
 GLMType.nullpoint = 'mean'; 
 GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
-GLMType.debug = false;
-GLMType.specialchange = true;
+GLMType.debug = true;
+GLMType.specialchange = false;
 GLMType.specialchange_name = 'extra_coupling';
 GLMType.CBP=false;
 
@@ -63,7 +63,7 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
-GLMType.CouplingFilters = true;
+GLMType.CouplingFilters = false;
 GLMType.Subunits = false;
 GLMType.Saccades=false;
 GLMType.color=false;
@@ -86,7 +86,7 @@ troubleshoot.name    = 'singleopt';
 BD = NSEM_BaseDirectories;
 
 exptests = [1 2 3 4];
-cellselectiontype = 'shortlist';
+cellselectiontype = 'all';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
 
@@ -224,13 +224,14 @@ for i_exp = exptests
             % DO SOMETHING ABOUT COMPUTED TSTIM!!!
             %% Execute the correct GLM
             tic
-            if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                [fittedGLM] =    glm_execute_DoubleOpt_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo, troubleshoot);
-            else
-                [fittedGLM]     = glm_execute_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo);
-            end
+            try
+                if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
+                    [fittedGLM] =    glm_execute_DoubleOpt_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo, troubleshoot);
+                else
+                    [fittedGLM]     = glm_execute_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo);
+                end
+
             toc
-            
             % NBCoupling
             xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, StimulusPars.slv, cell_organizedspikes,neighbor_organizedspikes,testmovie);
             fittedGLM.xvalperformance  = xvalperformance;
@@ -238,6 +239,10 @@ for i_exp = exptests
             eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
             printname = sprintf('%s/DiagPlots_%s', d_save,fittedGLM.cellinfo.cell_savename);
             printglmfit_CP(fittedGLM,datarun_mas,printname)
+            
+            catch error
+                disp(error)
+            end
             
         % NB 06-11-2014
         else
