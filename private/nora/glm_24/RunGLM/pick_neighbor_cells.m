@@ -13,7 +13,7 @@ function paired_cells=pick_neighbor_cells(mean, parasol_struct, datarun_vision)
          end
      end
      [sorted indices]=sort(distance);
-     pairs{j}=parasol_struct.ids{j}(indices(1:9));
+     pairs{j}=parasol_struct.ids{j}(indices(1:6));
  end
  
  paired_cells=[pairs{1} pairs{2}];
