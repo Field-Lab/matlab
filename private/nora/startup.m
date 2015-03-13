@@ -5,7 +5,7 @@ disp('Running startup file 1/27/14...');
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
 
 % matlab code paths
-addpath(genpath('/home/vision/Nora/matlab/code'));
+addpath(genpath('/home/vision/Sasi/matlab/code'));
 addpath(genpath('/home/vision/Nora/matlab/private/nora'));
 
 % set some default plot stuff
