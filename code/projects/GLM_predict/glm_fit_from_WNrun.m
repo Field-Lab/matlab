@@ -8,9 +8,9 @@ function fittedGLM=glm_fit_from_WNrun(cells, dataset, stim_description, stim_len
 
 if nargin==3
     stim_length=1800; 
-    d_save='/Volumes/Analysis/nora/colorglmfits';
+    d_save='/Volumes/Analysis/nishal/colorglmfits';
 elseif nargin==4
-    d_save='/Volumes/Analysis/nora/colorglmfits';
+    d_save='/Volumes/Analysis/nishal/colorglmfits';
 end
 
 %% Stimulus and GLM parameters
