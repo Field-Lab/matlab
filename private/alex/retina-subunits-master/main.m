@@ -6,7 +6,7 @@ datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
 datarun = set_polarities(datarun);
 datarun = load_neurons(datarun);
 
-datarun = load_cones(datarun,'15'); % load_cones(datarun, 'Analysis');
+datarun = load_cones_ath(datarun,'15'); % load_cones(datarun, 'Analysis');
 
 datarun = conepreprocess_wnm(datarun, 'cone_data_ind', 'bayes');
 conepreprocess_save(datarun, 'cone_data_ind', 'data','date','2011-10-25-5');

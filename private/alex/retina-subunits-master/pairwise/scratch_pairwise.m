@@ -31,5 +31,5 @@ end
 %%
 plotPairwiseCell(cellDat,cellDat.v);
 set(gcf,'Position',[763 507 437 299]);
-h = title(sprintf('%s, #%g',cellDat.cellType,c ellDat.rgcId));
+h = title(sprintf('%s, #%g',cellDat.cellType,cellDat.rgcId));
 set(h,'FontSize',20);

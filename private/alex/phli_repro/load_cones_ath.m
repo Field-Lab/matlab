@@ -7,7 +7,7 @@ piece = parsed.piece_fullname;
 run = parsed.run_name;
 
 path2data=['/Volumes/Analysis/',piece,'/cone_data/'];
-
+ 
 if isdir(path2data)
     if strcmp (cone_spec, piece)
         cone_data = dir([path2data,'*', run,'*']);        
@@ -16,6 +16,9 @@ if isdir(path2data)
             cone_spec=num2str(cone_spec);
         end
         cone_data = dir([path2data,'*', run, '*', cone_spec,'*']);
+        if isempty(cone_data)
+            cone_data = dir([path2data,'*', cone_spec,'*']);
+        end
     end    
 else
     disp('Check cone_data folder')

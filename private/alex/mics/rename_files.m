@@ -29,3 +29,5 @@ for i=0:7
    myNewName=['data', tmp(end-2:end), add_extension];
    movefile([path2data, myName], [path2data, myNewName])
 end
+
+
