@@ -267,7 +267,7 @@ end
 % get significant stixels if they were not provided
 if isempty(p.Results.sig_stixels)
     if isempty(mark_params)
-        sig_stixels = significant_stixels(sta);
+        sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 4);
     else
         sig_stixels =significant_stixels(sta, mark_params);
     end
@@ -289,15 +289,16 @@ matrix_subscripts = [matrix_subscript_i, matrix_subscript_j];
 
 %% Interpolation option 
 sta_temp = sta;
-sta_inter = zeros(size(sta,1), size(sta,2), size(sta,3),45);    
+sta_inter = zeros(size(sta,1), size(sta,2), size(sta,3),75);    
 if interpolate
     for a = 1:size(sta,1)
         for b= 1:size(sta,2)
             for c = 1:size(sta,3)
                 Y = squeeze(sta(a,b,c,:));
                 x = 1:length(Y);
-                xi = linspace(1,length(Y), 45);
+                xi = linspace(1,length(Y), 75);
                 sta_inter(a,b,c,:) = interp1(x,Y,xi, 'spline')';
+                frame_number = 75;
             end
         end
     end

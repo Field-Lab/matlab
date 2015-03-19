@@ -101,7 +101,7 @@ end
 
 fit_error = sqrt(mean((reshape(sta,1,[]) - reshape(sta_fit,1,[])).^2)) +...
             (norm(all_params(6:8)) -1).^2; % this last bit constrains the color vector to be norm 1.
-
+% fit_error = sqrt(mean((reshape(sta,1,[]) - reshape(sta_fit,1,[])).^2)); % this last bit constrains the color vector to be norm 1.
 % % apply constraints
 constraint_error = apply_constraints(all_params);
 fit_error = fit_error + constraint_error;

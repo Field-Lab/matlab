@@ -1,23 +1,22 @@
 clear
-file_name = '2005-04-26-0/data002-nwpca/data002';
+file_name = '2008-08-27-6/data009-mg/data009';
 datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
 datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
 
 datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-11111.xml';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 interpolate = false;
 % cell_specification = [502,860,1024,1130,2076,2361,2618,2705,3022,3172,3213,3559,4022,4071,4238,4774,4852,5496,6518,6533,6860,7279,7671];
-
-cell_type = {'Blue Green'};
+cell_type = {'on parasol'};
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
 dataset(to_replace) = '-';
-num_frames = 15; % both have to be run with the name number of frames
+num_frames = 20; % both have to be run with the name number of frames
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',true);
 opt.load_sta_params.save_rf = 1;
-opt.load_sta_params.frames = 16:30% have to input as a vector list of frames, not the number of frames total, counting backwards
+opt.load_sta_params.frames = 11:30% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
 cell_type_index= zeros(1,size(cell_type,2));
@@ -79,10 +78,10 @@ for rgc = 1:num_rgcs
 
 
                     
-
-[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 12, 'interpolate', true, 'frame_number', num_frames*3);
+[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', false, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames);
 % Plot result
-plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels);
+%  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
+
 
 % Add raw data to plot
 % hold on
@@ -147,7 +146,7 @@ figure
 for q = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(q)};
     temp_fit_params = datarun.matlab.sta_fits{cell_indices(q)};
-    fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params);
+    fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params, sig_stixels, 1); % plot_raw = 1
     hold on
 end
 title({['Fits of ' num2str(length(cell_specification)), ' ', cell_type{1}, ' Cells']; dataset})
@@ -232,6 +231,14 @@ legend(h(end-1:end));
 title({['STA Fitting Code:  ', cell_type{1}] ; 'Clean Spike Sorting'; dataset})
 
 
+
+area  = parameters(:,5) .* parameters(:,6) .* pi;
+diameters = 2*[parameters(:,5) , parameters(:,6)];
+column1_larger = find(diameters(:,1)>diameters(:,2));
+column2_larger = find(diameters(:,1)<=diameters(:,2));
+max_diameters = [diameters(column1_larger,1); diameters(column2_larger,2)];
+disp('Mean RF diameter')
+mean(max_diameters)
 %% Calculate zero crossing
 zero_crossing = zeros(size(fit_tc,2),1);
 for i = 1:size(fit_tc,2)
