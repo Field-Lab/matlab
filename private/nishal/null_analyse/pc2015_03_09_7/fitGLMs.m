@@ -41,14 +41,21 @@ end
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
     cellID=InterestingCell_vis_id(ref_cell_number);
-   fittedGLM=glm_fit_from_WNrun({cellID}, WN_datafile_short, movie_xml, stim_len);
-   InterestingCell_vis_id(ref_cell_number)
-    if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data003/CellType_%s',datarun.cell_types{cellTypeId}.name)))
+    
+         if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data003/CellType_%s',datarun.cell_types{cellTypeId}.name)))
     mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data003/CellType_%s',datarun.cell_types{cellTypeId}.name));
     end
  
-   save(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data003/CellType_%s/CellID_%d.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)));
+  
+  xx=datarun.cell_types{cellTypeId}.name;
+  xx(xx==' ') = '';
+  dsave=sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data003/CellType_%s',xx);
+
+    
+   fittedGLM=glm_fit_from_WNrun({cellID}, WN_datafile_short, movie_xml, stim_len,dsave);
+   InterestingCell_vis_id(ref_cell_number)
  
+
 end
 
 
@@ -80,14 +87,18 @@ end
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
     cellID=InterestingCell_vis_id(ref_cell_number);
-   fittedGLM=glm_fit_from_WNrun({cellID}, WN_datafile_short, movie_xml, stim_len);
-   InterestingCell_vis_id(ref_cell_number)
-    if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data008/CellType_%s',datarun.cell_types{cellTypeId}.name)))
-    mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data008/CellType_%s',datarun.cell_types{cellTypeId}.name));
+    
+         if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data008/CellType_%s',datarun.cell_types{cellTypeId}.name)))
+    mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data008/CellType_%s',datarun.cell_types{cellTypeId}.name));
     end
  
-   save(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data008/CellType_%s/CellID_%d.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)));
- 
+  xx=datarun.cell_types{cellTypeId}.name;
+  xx(xx==' ') = '';
+  dsave=sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data008/CellType_%s',xx);
+    
+   fittedGLM=glm_fit_from_WNrun({cellID}, WN_datafile_short, movie_xml, stim_len,dsave);
+   InterestingCell_vis_id(ref_cell_number)
+  
 end
 
 
