@@ -11,8 +11,8 @@ hold on
 plot_rf_fit(datarun, cellID_use,'fill_color',[0,1,1],'alpha',0.3,'fill',true,'edge',true,'labels',true,'edge_color',[1,0,0]);
 hold on
 plot_rf_fit(datarun,NullCells1,'fill_color',[0,1,0],'alpha',0.3,'fill',true,'edge',false,'labels',true,'edge_color',[1,0,0]);
-%hold on
-%plot_rf_fit(datarun,NullCells2,'fill_color',[1,0.2,1],'alpha',0.3,'fill',true,'edge',false,'labels',true,'edge_color',[1,0,0]);
+hold on
+plot_rf_fit(datarun,NullCells2,'fill_color',[1,0.2,1],'alpha',0.3,'fill',true,'edge',false,'labels',true,'edge_color',[1,0,0]);
 axis image
 %xlim([0,Filtdim1]);
 %ylim([0,Filtdim2]);
