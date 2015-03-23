@@ -1,6 +1,9 @@
+function pAmpmovie = movie_cone(qq,interval)
+
+moviematrix0 = (qq+0.5)*255;
 
 binsperframe = 8;  %roughly msec bins
-interval=2;
+%interval=2;
 framedur = (interval*1/120);
 max_rstar_sec_mult = 1000/255;
 
@@ -39,3 +42,5 @@ conesignormed = (conesig - mean(conesig))/max(abs(conesig));
 plotyy(timeindices,squeeze(qq(pixX,pixY,timeindices)),timeindices,conesig);
 hold on;
 plot(squeeze(qq(pixX,pixY,timeindices)))
+
+pAmpmovie=pAmpmovie(:,:,61:end);

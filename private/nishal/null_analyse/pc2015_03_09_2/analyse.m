@@ -94,6 +94,42 @@ end
 s=hgexport('readstyle','cMap');
 hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data038/cMap.eps'),s);
 
+
+% make cone movies
+
+rawMovFrames=1272/(2);
+icnt=0;
+coneMov=cell(1,1);
+h=figure('Color','w');
+for imov=[1,2,4,6,8,10]
+    [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-03-09-2/Visual/pc2015_03_09_2_data038/%d.rawMovie',imov),rawMovFrames,1);
+    subtract_movies{3}=mean(stim,1);
+    subtract_movies{3}=mean(stim,1)*0+127.5;
+    movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
+    movie=movie/255;
+    
+    icnt=icnt+1;
+    
+    subplot(3,2,icnt);
+    qq=permute(movie,[2,3,1]);
+    
+    coneMov{icnt} = movie_cone(qq,interval);
+
+    figure;
+    for itime=size(qq,3)
+    subplot(1,2,1);
+    imagesc(qq(:,:,itime));
+    colormap gray
+    caxis([-0.5,0.5]);
+    
+    subplot(1,2,2);
+    imagesc(coneMov{icnt}(:,:,itime));
+    colormap gray
+    caxis([min(coneMov{icnt}(:)) , max(coneMov{icnt}(:))]);
+    pause(1/120);
+    end
+end
+
 %% data041 from data031
 
 
