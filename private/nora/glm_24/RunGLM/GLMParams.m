@@ -70,6 +70,7 @@ GLMPars.others.fitblockchange = false;
 if exist('optional_change','var') && ~isempty(optional_change)
     if strcmp(optional_change, 'ROIlength_9')
         GLMPars.stimfilter.ROI_length = 9;
+    elseif strcmp(optional_change, 'extra_coupling')
     else 
         error('you need to specify how your param changes actually changes the parameters')
     end

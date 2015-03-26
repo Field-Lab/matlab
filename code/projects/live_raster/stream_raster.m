@@ -1,11 +1,13 @@
-function stream_raster(rawdatafiledir,thresholding_file, raster_interval, raster_length, number_of_rasters)
+function spike = stream_raster(rawdatafiledir,thresholding_file, raster_interval, raster_length, number_of_rasters, previous_spikes)
 % stream_raster(rawdatafiledir,thresholding_file,raster_interval,raster_length, number_of_rasters)
 %
 % INPUTS
 % rawdatafiledir can be either the location of the raw data files or one specific
 %           file
 % thresholding_file is the file to read the thresholding data from
-% raster_interval: the number of triggers in between raster starts
+% raster_interval: either one number: the number of triggers in between raster starts
+%                       or two numbers: the # of triggers between rasters
+%                       and the # of triggers to delay
 % raster_length: in seconds
 % number_of_rasters: just to preallocate the variable, so overestimats
 %
@@ -23,13 +25,29 @@ function stream_raster(rawdatafiledir,thresholding_file, raster_interval, raster
 % Needs your path to include something like Vision.app/Contents/Resources/Java/Vision.jar
 % Run stream_thresh FIRST!
 
-% Allocations and stuff
 load(thresholding_file);
 channel_count=length(channels.thresh);
 rdf=edu.ucsc.neurobiology.vision.io.RawDataFile(rawdatafiledir);
-spike=cell(channel_count,number_of_rasters);
 
-trigger_channel=1;
+if nargin == 5
+    spike=cell(channel_count,number_of_rasters);
+    raster_count=0;
+else
+    raster_count=size(previous_spikes,2);
+    number_of_rasters=number_of_rasters + raster_count ;
+    spike=cell(channel_count,number_of_rasters);
+    spike(:,1:raster_count) = previous_spikes;
+    clear previous_spikes
+end
+
+if length(raster_interval) == 2
+    offset = raster_interval(2)+1;
+    raster_interval = raster_interval(1);
+else
+    offset=1;
+end
+
+trigger_channel=0;
 sampling_rate=20000;
 trigger_increment=1.6652e+04; % about where the next trigger is supposed to be! 100 frames later
 
@@ -42,7 +60,6 @@ trigger_data=rdf.getData(trigger_channel,sample_start,sample_end-sample_start);
 bad_channel_warn=0;
 trigger_count=0;
 missed_trigger=0;
-raster_count=0;
 end_of_streaming=0;
 
 while ~end_of_streaming
@@ -52,7 +69,7 @@ while ~end_of_streaming
  
     % if there's no trigger, load the next second of data and check there
     if isempty(trigger_time)
-        sample_start=sample_end;
+        sample_start=sample_end
         sample_end=sample_end+sampling_rate;
         missed_trigger=missed_trigger+1;
         
@@ -63,8 +80,14 @@ while ~end_of_streaming
         sample_end=sample_start+5;
         trigger_count=trigger_count+1;
         % if it is a raster start, find the spikes and plot!
-        if ~mod(trigger_count, raster_interval)
+        if trigger_count >= offset && ~mod(trigger_count-offset, raster_interval)
             raster_count=raster_count+1;
+            if raster_count > number_of_rasters 
+                raster_count=raster_count-1; 
+                spike=spike(:,1:raster_count);
+                disp('Done'); 
+                break; 
+            end
             
             disp(['Making Raster ' num2str(raster_count)])
 
@@ -89,7 +112,10 @@ while ~end_of_streaming
                     end
                 end
                 
-                if end_of_streaming; break; end
+                if end_of_streaming
+                    spike=spike(:,1:raster_count);
+                    break; 
+                end
                 
                 % make binary
                 selected_data(selected_data>0)=1;
@@ -108,8 +134,11 @@ while ~end_of_streaming
                 bad_channel_warn=0;
             end
             
-            if end_of_streaming; break; end
-
+            if end_of_streaming
+                spike=spike(:,1:raster_count);
+                break; 
+            end
+            
             % plot rasters
             scrsz = get(0,'ScreenSize');
             h=figure(1);
@@ -155,11 +184,11 @@ while ~end_of_streaming
             if wait_count>10
                 wait_count=0;
                 end_of_streaming=1;
+                spike=spike(:,1:raster_count);
                 disp('End of streaming')
             end
         end
     end
-    
-    
+      
 end
 end
