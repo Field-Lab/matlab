@@ -1,0 +1,971 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles
+END
+hessian_sep_psnormconstr.m
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/hessian_sep_psnormconstr.m
+END
+untitled.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/untitled.m
+END
+ll_func2_fixrk2.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2_fixrk2.m
+END
+add_hess_crossterms.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/add_hess_crossterms.m
+END
+onoffsort_2009dataset.m
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/onoffsort_2009dataset.m
+END
+train_glm_fixrk2.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm_fixrk2.m
+END
+orthogonalize_basis.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/orthogonalize_basis.m
+END
+ll_hess_mult_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_hess_mult_lite.m
+END
+linearfilt_grad_nonsep.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/linearfilt_grad_nonsep.m
+END
+nonsep_lgrad.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/nonsep_lgrad.m
+END
+design_interpolator.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/design_interpolator.m
+END
+linearfilt_grad_vglm.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/linearfilt_grad_vglm.m
+END
+train_glm2_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm2_lite.m
+END
+plot_sqfilter_prog.m
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_sqfilter_prog.m
+END
+plot_opt_results.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_opt_results.m
+END
+get_npars.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_npars.m
+END
+train_ll_grad4.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll_grad4.m
+END
+range2.mexa64
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/range2.mexa64
+END
+get_model_filters.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_model_filters.m
+END
+train_ll3.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll3.m
+END
+fitting_script.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/fitting_script.m
+END
+construct_cosine_basis3.m
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/construct_cosine_basis3.m
+END
+ll_func2_fixfilt.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2_fixfilt.m
+END
+train_ll3_fixfilt_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll3_fixfilt_lite.m
+END
+ll_hess_mult.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_hess_mult.m
+END
+create_exponential_basis.m
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/create_exponential_basis.m
+END
+interpmtx.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/interpmtx.m
+END
+plot_gradient.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_gradient.m
+END
+regularize_sep_spatial.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/regularize_sep_spatial.m
+END
+train_glm_fixfilt.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm_fixfilt.m
+END
+get_spacetime_approx.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_spacetime_approx.m
+END
+hess_spacetimeconst.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/hess_spacetimeconst.m
+END
+train_ll3_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll3_lite.m
+END
+mult_col_mult.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_col_mult.c
+END
+validate_gradient.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/validate_gradient.m
+END
+train_glm2_multi.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm2_multi.m
+END
+multisample_gradHess.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multisample_gradHess.m
+END
+imgb.m
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/imgb.m
+END
+ll_fixfilt_hess_mult.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_fixfilt_hess_mult.m
+END
+plot_sep_filter_prog.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_sep_filter_prog.m
+END
+fastconv.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/fastconv.m
+END
+plot_sep_sqfilter_prog.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_sep_sqfilter_prog.m
+END
+multisample_gradHess_structs_fixrk2.m
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multisample_gradHess_structs_fixrk2.m
+END
+filterstimulus_train.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/filterstimulus_train.m
+END
+multres_product.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multres_product.m
+END
+ll_hess_mult_normconst.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_hess_mult_normconst.m
+END
+train_glm_nonsep.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm_nonsep.m
+END
+get_cropped_sta.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_cropped_sta.m
+END
+mult_col.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_col.c
+END
+ll_func2.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2.m
+END
+get_crop_idx.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_crop_idx.m
+END
+repcols.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/repcols.m
+END
+untitled4.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/untitled4.m
+END
+ll_eval_mex.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_eval_mex.c
+END
+stim_design.mexa64
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/stim_design.mexa64
+END
+ll_func2_multi.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2_multi.m
+END
+permute_cellarray.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/permute_cellarray.m
+END
+mult_col.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_col.mexmaci64
+END
+get_ortho_coeffs.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_ortho_coeffs.m
+END
+mult_row.mexa64
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_row.mexa64
+END
+construct_gaussian_bump_basis.m
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/construct_gaussian_bump_basis.m
+END
+hessian_sep_normconstr.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/hessian_sep_normconstr.m
+END
+linearfilt_grad.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/linearfilt_grad.m
+END
+train_ll3_glm.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll3_glm.m
+END
+ll_eval_mex.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_eval_mex.mexmaci64
+END
+sep2nonsep.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/sep2nonsep.m
+END
+get_spike_segment.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_spike_segment.m
+END
+findif.m
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/findif.m
+END
+ll_eval_mex.mexa64
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_eval_mex.mexa64
+END
+makeaxis.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/makeaxis.m
+END
+multisample_gradHess_structs.m
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multisample_gradHess_structs.m
+END
+validate_hessian.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/validate_hessian.m
+END
+train_glm_nonsep_cg.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm_nonsep_cg.m
+END
+get_1f_stimulus.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_1f_stimulus.m
+END
+get_sep_filt_idces.m
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_sep_filt_idces.m
+END
+create_histbasis.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/create_histbasis.m
+END
+train_ll3_fixrk2.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll3_fixrk2.m
+END
+form_cell_prefix.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/form_cell_prefix.m
+END
+ll_func2_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2_lite.m
+END
+spike_convmex.mexa64
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/spike_convmex.mexa64
+END
+set_sta_init.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/set_sta_init.m
+END
+plot_ps_filter.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_ps_filter.m
+END
+get_lava_stimulus.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_lava_stimulus.m
+END
+get_nspacetime.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_nspacetime.m
+END
+stim_design.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/stim_design.c
+END
+get_ext_signal.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_ext_signal.m
+END
+grad_basis.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/grad_basis.m
+END
+ll_func2_hessmult_precon.m
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2_hessmult_precon.m
+END
+spike_convmex.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/spike_convmex.c
+END
+plot_basisfns.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_basisfns.m
+END
+stim_design.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/stim_design.mexmaci64
+END
+normalize_sep_filts.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/normalize_sep_filts.m
+END
+spike_convmex.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/spike_convmex.mexmaci64
+END
+adjust_baserate_ext.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/adjust_baserate_ext.m
+END
+multiple_neuron_c.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multiple_neuron_c.m
+END
+create_bases_fns.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/create_bases_fns.m
+END
+geninterp.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/geninterp.m
+END
+project_to_subspace.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/project_to_subspace.m
+END
+compute_rms.m
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/compute_rms.m
+END
+mult_row.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_row.c
+END
+train_glm2.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm2.m
+END
+determine_polarity.m
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/determine_polarity.m
+END
+plot_filter_summary.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_filter_summary.m
+END
+llfunc_findif_wrapper.m
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/llfunc_findif_wrapper.m
+END
+bootstrap_neuron.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/bootstrap_neuron.m
+END
+range2.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/range2.c
+END
+fast_sta.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/fast_sta.m
+END
+set_nframes.m
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/set_nframes.m
+END
+pcnlcg.m
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/pcnlcg.m
+END
+find_init_pt.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/find_init_pt.m
+END
+block_spikes.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/block_spikes.m
+END
+mult_row.mexmaci64
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_row.mexmaci64
+END
+train_ll_grad4_fixrk2.m
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll_grad4_fixrk2.m
+END
+create_leaveout_idx.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/create_leaveout_idx.m
+END
+find_last_nonzero.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/find_last_nonzero.m
+END
+regularize_sep_whole.m
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/regularize_sep_whole.m
+END
+bound_sep_filts.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/bound_sep_filts.m
+END
+get_train_idx.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_train_idx.m
+END
+mult_col.mexa64
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/mult_col.mexa64
+END
+plot_hessian.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_hessian.m
+END
+get_wn_stimulus.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_wn_stimulus.m
+END
+pull_spikes.m
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/pull_spikes.m
+END
+plot_fixfilt_prog.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_fixfilt_prog.m
+END
+stretch_filt.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/stretch_filt.m
+END
+regularize_nonsep.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/regularize_nonsep.m
+END
+spikes_analog2logical.m
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/spikes_analog2logical.m
+END
+rep2long_stimulus.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/rep2long_stimulus.m
+END
+interleave.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/interleave.m
+END
+ps_norm_constr.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ps_norm_constr.m
+END
+plot_cp_filter.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_cp_filter.m
+END
+goodness_of_fit.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/goodness_of_fit.m
+END
+sincinterpmtx.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/sincinterpmtx.m
+END
+setup_plotfcns.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/setup_plotfcns.m
+END
+get_pars_idx.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_pars_idx.m
+END
+train_glm_nonsep_multi.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_glm_nonsep_multi.m
+END
+plot_filter_prog.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_filter_prog.m
+END
+crop_sta.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/crop_sta.m
+END
+pull_spikes2.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/pull_spikes2.m
+END
+sincinterp.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/sincinterp.m
+END
+vglm_lgrad.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/vglm_lgrad.m
+END
+running_mean.m
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/running_mean.m
+END
+savefig.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/savefig.m
+END
+plot_ext_prog.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_ext_prog.m
+END
+construct_cosine_basis2.m
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/construct_cosine_basis2.m
+END
+plot_ext_signal.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_ext_signal.m
+END
+ll_func_cg.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func_cg.m
+END
+ll_hess_mult_precon.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_hess_mult_precon.m
+END
+construct_fourier_basis.m
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/construct_fourier_basis.m
+END
+reprows.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/reprows.m
+END
+test_hess.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/test_hess.m
+END
+train_ll_grad4_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll_grad4_lite.m
+END
+norm_constr.m
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/norm_constr.m
+END
+plot_gof_wrapper.m
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/plot_gof_wrapper.m
+END
+train_ll_grad4_fixfilt.m
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll_grad4_fixfilt.m
+END
+train_ll3_fixfilt.m
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/train_ll3_fixfilt.m
+END
+cg_plotpars.m
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/cg_plotpars.m
+END
+ll_func2_fixfilt_hessmult.m
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/ll_func2_fixfilt_hessmult.m
+END
+get_sep_filters.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/get_sep_filters.m
+END
+multisample_gradHess_structs_lite.m
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multisample_gradHess_structs_lite.m
+END
+multiple_neuron_ini.m
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multiple_neuron_ini.m
+END
+multiple_neuron.m
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/snle/matlab/!svn/ver/467/code/projects/glm/chaitu/mfiles/multiple_neuron.m
+END
