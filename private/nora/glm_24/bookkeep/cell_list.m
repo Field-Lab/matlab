@@ -25,7 +25,7 @@ end
 
 
 if strcmp(cellselectiontype, 'debug')    
-    if expnumber == 1, cid_cell = {3676}; end %{5086 841}
+    if expnumber == 1, cid_cell = {841}; end %{5086 841 3676}
     if expnumber == 2, cid_cell = {1 6858};  end
     if expnumber == 3, cid_cell = {2824  5447}; end 
     if expnumber == 4, cid_cell = { 5866 5418};end

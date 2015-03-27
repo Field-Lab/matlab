@@ -178,7 +178,7 @@ if GLMType.CouplingFilters
     end
     
     orient landscape
-    %eval(sprintf('print -dpdf %s.pdf',[printname 'Coupling']))
+    eval(sprintf('print -dpdf %s.pdf',[printname 'Coupling']))
 end
 % end NBCoupling
 
