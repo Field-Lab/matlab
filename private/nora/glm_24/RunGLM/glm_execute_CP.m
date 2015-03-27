@@ -41,7 +41,7 @@ if GLMType.PostSpikeFilter
 end
 
 % NBCoupling
-if GLMType.CouplingFilters
+if GLMType.CouplingFilters || GLMType.Saccades
     basis_params  = GLMPars.spikefilters.cp;
     cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
 end
@@ -61,8 +61,8 @@ if GLMType.PostSpikeFilter
 end
 
 % NBCoupling 05-28-14
-if GLMType.CouplingFilters;
-    n_couplings=length(glm_cellinfo.pairs);
+if GLMType.CouplingFilters || GLMType.Saccades;
+    n_couplings=length(neighborspikes.home);
     basis = cp_basis';
     for j_pair=1:n_couplings
         %spikes of neighbor neurons NB
@@ -78,7 +78,6 @@ end
 if GLMType.TonicDrive
     MU_bin = ones(1,bins);
 end
-
 
 
 % Find the correct stimulus related input term
