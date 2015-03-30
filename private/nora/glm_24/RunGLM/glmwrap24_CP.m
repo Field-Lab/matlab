@@ -40,7 +40,7 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
 GLMType.nullpoint = 'mean'; 
 GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
-GLMType.debug = false;
+GLMType.debug = true;
 GLMType.specialchange = false;
 GLMType.specialchange_name = 'extra_coupling';
 GLMType.CBP=false;
@@ -65,7 +65,7 @@ GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
 GLMType.CouplingFilters = false;
 GLMType.Subunits = false;
-GLMType.Saccades = true;
+GLMType.Saccades = false;
 GLMType.color = false;
 
 % GLMType.fixed_spatialfilter = true;
