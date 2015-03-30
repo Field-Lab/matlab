@@ -61,7 +61,7 @@ for imov=[1,2,4,6,8]
 end
 
    s=hgexport('readstyle','cMap');
-   hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data000/cMap.eps'),s);
+   hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data000/cMap.eps'),s);
   
 %% data003 from data000
 
@@ -103,11 +103,11 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
  
  plot_mosaic_pc2015_03_09_3(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
    InterestingCell_vis_id(ref_cell_number)
-    if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data003/CellType_%s',datarun.cell_types{cellTypeId}.name)))
-    mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data003/CellType_%s',datarun.cell_types{cellTypeId}.name));
+    if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data003/CellType_%s',datarun.cell_types{cellTypeId}.name)))
+    mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data003/CellType_%s',datarun.cell_types{cellTypeId}.name));
     end
    s=hgexport('readstyle','ras_mos4');
-   hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data003/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+   hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data003/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
   
     %testsuite_prediction
   %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
@@ -116,6 +116,15 @@ end
 
 
 
+%% analyze data012,data013,data008
+% Condition strings
+nConditions=3;
+condDuration=1272/120;
+cond_str=cell(3,1);
+cond_str{1}='Original';
+cond_str{2}='Cell group 1 Spatial';
+cond_str{3}='OFF parasol';
+interestingConditions=[1,2,3];
 
 %% data012-from-data008
 WN_datafile = '2015-03-09-3/streamed/data008/data008';
@@ -129,16 +138,14 @@ datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
 
-cellTypeId=[4]; % 1 for On Parasols, 2 for Off parasols
+cellTypeId=[2]; % 1 for On Parasols, 2 for Off parasols
 InterestingCell_vis_id=[];
 for icellType=cellTypeId
     icellType 
     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end 
 
-%InterestingCell_vis_id = [5568,1726,5252,3061]; % OFF 
-% InterestingCell_vis_id = [6106,1835,7730]; % ON
-%InterestingCell_vis_id = [4501]; % SBC
+InterestingCell_vis_id = [4083,1804,2448,5221,1068]; % OFF 
 
 
 NullCells1=[4083,1804,2448,5221,1068];  % OFF
@@ -155,11 +162,11 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
  
  plot_mosaic_pc2015_03_09_3(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
    InterestingCell_vis_id(ref_cell_number)
-    if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data012/CellType_%s',datarun.cell_types{cellTypeId}.name)))
-    mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data012/CellType_%s',datarun.cell_types{cellTypeId}.name));
+    if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data012/CellType_%s/CellID_%d',datarun.cell_types{cellTypeId}.name,cellID)))
+    mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data012/CellType_%s/CellID_%d',datarun.cell_types{cellTypeId}.name,cellID));
     end
    s=hgexport('readstyle','ras_mos4');
-   hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_3/data012/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+   hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data012/CellType_%s/CellID_%d/recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
   
     %testsuite_prediction
   %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);

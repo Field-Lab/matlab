@@ -22,15 +22,15 @@ StimulusPars.type=stim_description(1:dashes(1)-1);
 StimulusPars.pixelsize = str2double(stim_description(dashes(1)+1:dashes(2)-1));
 StimulusPars.refreshrate = str2double(stim_description(dashes(2)+1:dashes(3)-1));
 StimulusPars.RNG = str2double(stim_description(dashes(3)+1:dashes(4)-1));
-try
-    StimulusPars.height = str2double(stim_description(dashes(5)+1:dashes(5)+2)); 
-    StimulusPars.width = str2double(stim_description(dashes(5)+4:dashes(5)+5));
-catch
-    StimulusPars.height = 32; 
-    StimulusPars.width = 64;
-end
+% try
+%     StimulusPars.height = str2double(stim_description(dashes(5)+1:dashes(5)+2)); 
+%     StimulusPars.width = str2double(stim_description(dashes(5)+4:dashes(5)+5));
+% catch
+%     StimulusPars.height = 32; 
+%     StimulusPars.width = 64;
+% end
 StimulusPars.tstim = 1/120;
-fitframes=stim_length*120/StimulusPars.refreshrate; % seconds * 120 frames per second / interval
+fitframes=stim_length*120; % seconds * 120 frames per second / interval
 
 % Load a bunch of parameters about the GLM fit type, default is rk1 GLM fit
 GLM_pars
@@ -50,6 +50,16 @@ disp('Loading Stimulus Movies')
 [temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/StimulusPars.refreshrate);
 temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
 fitmovie_color=zeros(width,height,3,fitframes);
+
+try
+    StimulusPars.height = str2double(stim_description(dashes(5)+1:dashes(5)+2)); 
+    StimulusPars.width = str2double(stim_description(dashes(5)+4:dashes(5)+5));
+catch
+    StimulusPars.height =height; 
+    StimulusPars.width = width;
+end
+
+
 for i=1:fitframes
     fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/StimulusPars.refreshrate));
 end
