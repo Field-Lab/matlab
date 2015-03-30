@@ -1,5 +1,4 @@
-
-function [spkCondCollGLM,h]=plot_GLM_prediction_pc2015_03_09_2(cellID,condMov,GLMPath)
+function [spkCondCollGLM,h]=plot_GLM_prediction_movie_scaled_pc2015_03_09_2(cellID,condMov,GLMPath,mov_scales)
 
 col='krkrkrkrkrkrkr';
 
@@ -11,7 +10,10 @@ spkCondCollGLM=cell(nmov,1);
 xx=cell(nmov,1);
 yy=cell(nmov,1);
 for imov=1:nmov
-x=GLM_predict(fittedGLM, condMov{imov}, nTrials);
+    fittedGLM_scaled = fittedGLM;
+    fittedGLM_scaled.linearfilters.Stimulus.Filter=fittedGLM_scaled.linearfilters.Stimulus.Filter*mov_scales(imov);
+    fittedGLM_scaled.linearfilters.Stimulus.space_rk1 = fittedGLM_scaled.linearfilters.Stimulus.space_rk1*mov_scales(imov);
+x=GLM_predict(fittedGLM_scaled, condMov{imov}, nTrials);
 %plotraster(x,fittedGLM,'labels',true,'raster_length',24)
 [xx{imov},yy{imov}]=plotSpikeRaster(x.rasters.glm_sim==1,'PlotType','vertline');
 xx{imov}=xx{imov}*x.rasters.bintime;

@@ -64,6 +64,11 @@ else
  cell_params2.use_fits=2; % Clipped
 end
 
+if(exist('sta_spatial_method','var'))
+cell_params2.sta_spatial_method=sta_spatial_method;%1,2 ,3,4
+else
+cell_params2.sta_spatial_method=4;
+end
 
 cell_params2.STAlen=14;
 cell_params2.stas=stas_big2;
@@ -74,16 +79,33 @@ if(exist('mov_type_null_touse','var'))
 else
 mov_params2.mov_type='bw'
 end
-mov_params2.movie_time=120*10;
+
 mov_params2.mean=0.5*255;
 mov_params2.deviation=0.48*255;
-mov_params2.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
+%mov_params2.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
 mov_params2.stixel=10;
 
-if(exist('mdf_file','var'))
-mov_params2.mdf_file=mdf_file %'/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111-32x32.xml';
+mov_params2.post_process_method = 'scale'; % or, 'stretch'
+mov_params2.scale = 0.48/0.48;
+mov_params2.interval=interval;
+if(exist('interval','var'))
+mov_params2.interval=interval; %'/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111-32x32.xml';
+else
+ mov_params2.interval=1;
 end
-solver=3;
+mov_params2.movie_time=120*10/mov_params2.interval;
+
+if(exist('mdf_file','var'))
+mov_params2.mdf_file=mdf_file; %'/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111-32x32.xml';
+end
+
+
+if(exist('solver_use','var'))
+solver=solver_use; %'/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111-32x32.xml';
+else
+solver=8;
+end
+
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params2,mov_params2,solver);
 
 % Write movies
@@ -111,3 +133,4 @@ end
 
 
 display(sprintf('Movie Length %d',size(movie_full,3)));
+raw_mov_len = size(movie_full,3);

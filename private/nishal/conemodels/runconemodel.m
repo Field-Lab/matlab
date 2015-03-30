@@ -18,9 +18,9 @@ function pAmpmovie = runconemodel(model_name, movie_rstar_frame, framedur, binsp
 %%%
 %%
 if strcmp(model_name, 'model1')
-    path('./model1_Juan_20140122', path)
-    load('./model1_Juan_20140122/EyeMovements_092413Fc12.mat')
-    load('./model1_Juan_20140122/DimFlash_092413Fc12.mat')
+    path('../conemodels/model1_Juan_20140122', path)
+    load('../conemodels/model1_Juan_20140122/EyeMovements_092413Fc12.mat')
+    load('../conemodels/model1_Juan_20140122/DimFlash_092413Fc12.mat')
 end
 pAmpmovie = zeros(size(movie_rstar_frame));
 

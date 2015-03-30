@@ -1,5 +1,5 @@
 function h3=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM)
-
+col='krkrkrkrkrkrkrkrkr';
 nmov = length(spkCondColl);
 
 
@@ -19,16 +19,18 @@ end
 h3= figure;
 subplot(2,1,1);
 jump=0;
+icnt=0;
 for imov=nmov:-1:1
     
     % Simulated
-   
-    plot(xx{imov},yy{imov}+jump);
+   icnt=icnt+1;
+    plot(xx{imov},yy{imov}+jump,col(icnt));
     hold on;
     jump=jump+max(yy{imov});
     
-    % Recorded    
-    plot(spkCondColl(imov).xPoints/20000,spkCondColl(imov).yPoints+jump)
+    % Recorded 
+    icnt=icnt+1;
+    plot(spkCondColl(imov).xPoints/20000,spkCondColl(imov).yPoints+jump,col(icnt));
     hold on
     jump = jump + max(spkCondColl(imov).yPoints);
 

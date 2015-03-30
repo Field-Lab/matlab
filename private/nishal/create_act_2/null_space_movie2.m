@@ -254,7 +254,7 @@ x_k_1(x_k_1<-maxClip)=-maxClip;
 mov=mov + x_k_1 - mov_modify_new;
 
 % Need to change post processing!!
-togo = input('Continue Iterating?');
+togo = violations>0 % input('Continue Iterating?');
     end
     
 end

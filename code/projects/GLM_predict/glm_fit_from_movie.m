@@ -1,4 +1,4 @@
-function fittedGLM=glm_fit_from_WNrun(cells, dataset, stim_description, stim_length, d_save)
+function fittedGLM=glm_fit_from_movie(cells, dataset, stim_description, stim_length, d_save,movie)
 % glm_fit_from_classrun(cells, dataset, stim_description, optional: stim_length, d_save)
 % dataset='2014-11-05-2/data009_nps';
 % cells={2372,2523}
@@ -16,7 +16,7 @@ end
 %% Stimulus and GLM parameters
 
 % Get stimulus parameters from descriptor
-xml_file=['/Volumes/Analysis/stimuli/white-noise-xml/' stim_description '.xml'];
+%xml_file=['/Volumes/Analysis/stimuli/white-noise-xml/' stim_description '.xml'];
 dashes=find(stim_description=='-');
 StimulusPars.type=stim_description(1:dashes(1)-1);
 StimulusPars.pixelsize = str2double(stim_description(dashes(1)+1:dashes(2)-1));
@@ -47,8 +47,23 @@ GLMType.d_save = d_save;
 
 %% Load Movie
 disp('Loading Stimulus Movies')
-[temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/StimulusPars.refreshrate);
-temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
+%[temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/2);
+
+if(length(size(movie))==3) % 3D movie, make it 4D
+dummovie=zeros(size(movie,1),size(movie,2),3,size(movie,3));
+    for itime=1:size(movie,3)
+        dummovie(:,:,1,itime)=movie(:,:,itime);
+        dummovie(:,:,2,itime)=movie(:,:,itime);
+        dummovie(:,:,3,itime)=movie(:,:,itime);
+    end
+movie=dummovie;    
+end
+
+temp_fitmovie=movie; % 4D movie. x*y*3*time
+height=size(temp_fitmovie,2);
+width=size(temp_fitmovie,1);
+
+%temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
 fitmovie_color=zeros(width,height,3,fitframes);
 for i=1:fitframes
     fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/StimulusPars.refreshrate));

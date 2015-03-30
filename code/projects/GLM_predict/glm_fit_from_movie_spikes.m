@@ -1,11 +1,11 @@
-function fittedGLM=glm_fit_from_WNrun(cells, dataset, stim_description, stim_length, d_save)
+function fittedGLM=glm_fit_from_movie_spikes(cells,dataset, stim_description, stim_length, d_save,movie,spikes_rec)
 % glm_fit_from_classrun(cells, dataset, stim_description, optional: stim_length, d_save)
 % dataset='2014-11-05-2/data009_nps';
 % cells={2372,2523}
 % stim_description 'RGB-10-2-0.48-11111-32x32'
 % stim_length, optional, default 30 min
 % dsave, optional, where to save the fit
-
+% spikes_rec must be a list of spikes in seconds
 if nargin==3
     stim_length=1800; 
     d_save='/Volumes/Analysis/nishal/colorglmfits';
@@ -16,7 +16,7 @@ end
 %% Stimulus and GLM parameters
 
 % Get stimulus parameters from descriptor
-xml_file=['/Volumes/Analysis/stimuli/white-noise-xml/' stim_description '.xml'];
+%xml_file=['/Volumes/Analysis/stimuli/white-noise-xml/' stim_description '.xml'];
 dashes=find(stim_description=='-');
 StimulusPars.type=stim_description(1:dashes(1)-1);
 StimulusPars.pixelsize = str2double(stim_description(dashes(1)+1:dashes(2)-1));
@@ -47,11 +47,26 @@ GLMType.d_save = d_save;
 
 %% Load Movie
 disp('Loading Stimulus Movies')
-[temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/StimulusPars.refreshrate);
-temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
+%[temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes/2);
+
+if(length(size(movie))==3) % 3D movie, make it 4D
+dummovie=zeros(size(movie,1),size(movie,2),3,size(movie,3));
+    for itime=1:size(movie,3)
+        dummovie(:,:,1,itime)=movie(:,:,itime);
+        dummovie(:,:,2,itime)=movie(:,:,itime);
+        dummovie(:,:,3,itime)=movie(:,:,itime);
+    end
+movie=dummovie;    
+end
+
+temp_fitmovie=movie; % 4D movie. x*y*3*time
+height=size(temp_fitmovie,2);
+width=size(temp_fitmovie,1);
+
+%temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
 fitmovie_color=zeros(width,height,3,fitframes);
 for i=1:fitframes
-    fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/StimulusPars.refreshrate));
+    fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/StimulusPars.refreshrate)); % DOUBT .. ceil(i/2)? TODO
 end
 clear temp_fitmovie height width i
 % testmovie = get_rawmovie(raw_file, testframes);
@@ -89,24 +104,25 @@ for i_cell = 1:length(cells)
         clear RGB
         
         % Spike loading
-        spikes=datarun.spikes{master_idx};
+%        spikes=datarun.spikes{master_idx};
         glm_cellinfo.WN_STA = datarun.stas.stas{master_idx};
         clear cell_savename
         
         % Align the spikes and the movies;
-        spikes_adj=spikes;
-        n_block=0;
-        for i=1:(length(datarun.triggers)-1)
-            actual_t_start=datarun.triggers(i);
-            supposed_t_start=n_block*100/120;
-            idx1=spikes > actual_t_start;
-            idx2=spikes < datarun.triggers(i+1);
-            spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
-            n_block=n_block+1;
-        end
-        clear spikes
-        spike.home=spikes_adj;
-        clear spikes_adj;
+%         spikes_adj=spikes;
+%         n_block=0;
+%         for i=1:(length(datarun.triggers)-1)
+%             actual_t_start=datarun.triggers(i);
+%             supposed_t_start=n_block*100/120;
+%             idx1=spikes > actual_t_start;
+%             idx2=spikes < datarun.triggers(i+1);
+%             spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
+%             n_block=n_block+1;
+%         end
+%         clear spikes
+%         spike.home=spikes_adj;
+%        clear spikes_adj;
+        spike.home=spikes_rec;
         
         % Execute GLM
         tic

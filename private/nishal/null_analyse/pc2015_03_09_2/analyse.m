@@ -1,7 +1,7 @@
 addpath(genpath('../null_analyse/'));
 addpath(genpath('../null_analyse/analyse_functions'));
-startup_null_analyse_tenessee
-%startup_null_analyse_bertha
+%startup_null_analyse_tenessee
+startup_null_analyse_bertha
 
 %%
 % Condition strings
@@ -57,7 +57,7 @@ for imov=[1,2,4,6,8,10]
     for iframe=1:size(qq,3)
         for irepeat=1:interval
             ifcnt=ifcnt+1;
-            condMov{icnt}(:,:,ifcnt)=qq(:,:,iframe);
+            condMov{icnt}(:,:,ifcnt)=qq(:,:,iframe)+0.5; % cond mov is between 0 and 1 now!
         end
         
     end
@@ -92,12 +92,12 @@ for imov=[1,2,4,6,8,10]
 end
 
 s=hgexport('readstyle','cMap');
-hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data038/cMap.eps'),s);
+hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/cMap.eps'),s);
 
 
 % make cone movies
-
-rawMovFrames=1272/(2);
+interval=2;
+rawMovFrames=1272/(interval);
 icnt=0;
 coneMov=cell(1,1);
 h=figure('Color','w');
@@ -114,20 +114,22 @@ for imov=[1,2,4,6,8,10]
     qq=permute(movie,[2,3,1]);
     
     coneMov{icnt} = movie_cone(qq,interval);
-
-    figure;
-    for itime=size(qq,3)
-    subplot(1,2,1);
-    imagesc(qq(:,:,itime));
-    colormap gray
-    caxis([-0.5,0.5]);
-    
-    subplot(1,2,2);
-    imagesc(coneMov{icnt}(:,:,itime));
-    colormap gray
-    caxis([min(coneMov{icnt}(:)) , max(coneMov{icnt}(:))]);
-    pause(1/120);
-    end
+% 
+%     figure;
+%     for itime=1:size(qq,3)
+%     subplot(1,2,1);
+%     imagesc(qq(:,:,itime));
+%     colormap gray
+%     colorbar
+%     caxis([-0.5,0.5]);
+%     
+%     subplot(1,2,2);
+%     imagesc(coneMov{icnt}(:,:,itime));
+%     colormap gray
+%     colorbar
+%     caxis([min(coneMov{icnt}(:)) , max(coneMov{icnt}(:))]);
+%     pause(1/120);
+%     end
 end
 
 %% data041 from data031
@@ -169,11 +171,11 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     
     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
     InterestingCell_vis_id(ref_cell_number)
-    if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data041/CellType_%s',datarun.cell_types{cellTypeId}.name)))
-        mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data041/CellType_%s',datarun.cell_types{cellTypeId}.name));
+    if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s',datarun.cell_types{cellTypeId}.name)))
+        mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s',datarun.cell_types{cellTypeId}.name));
     end
     s=hgexport('readstyle','ras_mos4');
-    hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
     
     %testsuite_prediction
     %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
@@ -195,7 +197,7 @@ datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
 
-cellTypeId=[2]; % 1 for On Parasols, 2 for Off parasols
+cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
 InterestingCell_vis_id=[];
 for icellType=cellTypeId
     icellType
@@ -209,40 +211,335 @@ NullCells3=[2596,1232,7172,842,4547,5911];
 NullCells4=datarun.cell_types{2}.cell_ids;
 NullCells5=[5768];
 
- InterestingCell_vis_id = NullCells2;
+ InterestingCell_vis_id = [4548]%[662,6826,4548] %NullCells1;
 condDuration=10.6;
 nConditions=6;
+GLM_fit_link= '/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_ON parasol/';
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
+    
+    
     cellID=InterestingCell_vis_id(ref_cell_number);
+    
+    % make directory
+       if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number))))
+        mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)));
+       end
+       
+    % Plot recorded raster
     % [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_2(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
     [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light(cellID,nConditions,condDuration,cond_str,neuronPath);
     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+    s=hgexport('readstyle','ras_mos4');
+    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+
+      
     
+    % GLM predictions
     figure;
-    [spkCondCollGLM,h2]=plot_GLM_prediction_pc2015_03_09_2(cellID,condMov,'/Volumes/Analysis/nishal/analyse_2015_03_09_2/data038/CellType_OFF parasol/');
+    [spkCondCollGLM,h2]=plot_GLM_prediction_pc2015_03_09_2(cellID,condMov,GLM_fit_link);
     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
     
     h3=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
-    
-    InterestingCell_vis_id(ref_cell_number)
-%     if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data042/CellType_%s',datarun.cell_types{cellTypeId}.name)))
-%         mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data042/CellType_%s',datarun.cell_types{cellTypeId}.name));
-%     end
-%     s=hgexport('readstyle','ras_mos4');
-%     hgexport(h,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
-%     
-
-    if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data042/CellType_%s/GLM_pred',datarun.cell_types{cellTypeId}.name)))
-        mkdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data042/CellType_%s/GLM_pred',datarun.cell_types{cellTypeId}.name));
-    end
     s=hgexport('readstyle','ras_mos4');
-    hgexport(h3,sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data042/CellType_%s/GLM_pred/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+    hgexport(h3,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/GLM_pred_recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+  
+    % GLM prediction magnified - for contrast studies.
+      figure;
+      mov_scales=[10,50,50,10,10,1];
+    [spkCondCollGLM,h7]=plot_GLM_prediction_movie_scaled_pc2015_03_09_2(cellID,condMov,GLM_fit_link,mov_scales);
+    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
     
-    %testsuite_prediction
-    %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
-    pause
+    h8=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
+    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+    
+%     % Cone run
+%     [rec_rast_tv,sim_rast,h,x_log]=cone_run_spatial_pc2015_03_09_2(cellID,GLM_fit_link,spkCondColl,1,WN_datafile)
+%     s=hgexport('readstyle','model_run');
+%     hgexport(h5,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/model_run_cone.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+%     save (sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/data_cone.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),'rec_rast_tv','sim_rast','spkCondColl','spkCondCollGLM','model_run_pred_log');
+% %
+   
+
+
+
+% Model run
+%     applyconeNL=0;
+%     [rec_rast_tv,sim_rast,h4,model_run_pred_log]= model_run_spatial_pc2015_03_09_2(cellID,GLM_fit_link,applyconeNL,spkCondColl,30)
+%     
+%     s=hgexport('readstyle','model_run');
+%     hgexport(h4,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/model_run.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+%     
+%     save (sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/data.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),'rec_rast_tv','sim_rast','spkCondColl','spkCondCollGLM','model_run_pred_log');
+%   
+
+
+   
+     InterestingCell_vis_id(ref_cell_number)
+    %  pause
 end
 
-%
+%% Refine data038/data042 analysis - number of trials was wrong .. so take care of that ,, 
+cellID=662;
+load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/data.mat','ON parasol',cellID))
+nTrials=29;
+sim_rast_tv1=[];
+sim_rast_tv2=[];
+
+GLM_fit_link= sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_ON parasol/CellID_%d.mat',cellID);
+load(GLM_fit_link)
+for imodel_run=1:30
+spks_sim = model_run_pred_log{imodel_run}.rasters.glm_sim;
+spks_sim=spks_sim(1:nTrials,:);
+
+rec_rast=spks_sim;
+calculate_psth
+
+cond_int = max(time)/2;
+cond_times1 = time>=cond_int*0 & time<cond_int*1;
+cond_times2 = time>=cond_int*1 & time<cond_int*2;
+
+sim_rast_tv1(imodel_run)=sqrt(var(PSTH_rec(cond_times1)));
+sim_rast_tv2(imodel_run)=sqrt(var(PSTH_rec(cond_times2)));
+
+
+end
+
+sim_rast.cond1=sim_rast_tv1;
+sim_rast.cond2=sim_rast_tv2;
+
+
+close all
+leg_arr=cell(length(spkCondColl)+2,1);
+   col='cgkmbry';
+   h=figure;
+   [N1,X1] = hist(sim_rast.cond1);
+   [N2,X2] = hist(sim_rast.cond2);
+   bar(X1,N1,'r');
+   alpha(0.3)
+   hold on;
+   leg_arr{1}='Original';
+   bar(X2,N2,'k');
+   leg_arr{2}='Null';
+   
+   hold on;
+   for icond=1:length(spkCondColl)
+   plot([rec_rast_tv(icond),rec_rast_tv(icond)],[0,1],col(icond),'LineWidth',2);
+   leg_arr{icond+2} = sprintf('Condition %d',icond);
+   end
+  h_leg= legend(leg_arr,'Location','best');
+   set(h_leg,'FontSize',8);
+   
+       s=hgexport('readstyle','model_run');
+    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_ON parasol/CellID_%d/model_run_29trials.eps',cellID),s);
+    
+    
+    
+%% data038,042, cone analysis 
+cellID=6826;
+load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/data_cone.mat','ON parasol',cellID))
+nTrials=29;
+sim_rast_tv1=[];
+sim_rast_tv2=[];
+
+GLM_fit_link= sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_ON parasol/CellID_%d.mat',cellID);
+load(GLM_fit_link)
+for imodel_run=1:1
+spks_sim = model_run_pred_log{imodel_run}.rasters.glm_sim;
+spks_sim=spks_sim(1:nTrials,:);
+
+rec_rast=spks_sim;
+calculate_psth
+
+
+cond_int = max(time)/2;
+cond_times1 = time>=cond_int*0.1 & time<cond_int*1;
+cond_times2 = time>=cond_int*1 & time<cond_int*2;
+
+sim_rast_tv1(imodel_run)=sqrt(var(PSTH_rec(cond_times1)));
+sim_rast_tv2(imodel_run)=sqrt(var(PSTH_rec(cond_times2)));
+
+
+end
+
+figure;
+plotSpikeRaster(logical(spks_sim),'PlotType','vertline');
+
+[x1,y1]=plotSpikeRaster(logical(spks_sim(:,cond_times1)),'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(logical(spks_sim(:,cond_times2)),'PlotType','vertline');
+
+figure;
+subplot(2,1,1);
+plot(x2/1200,y2,'k');
+hold on;
+plot(x1/1200,y1+29,'r');
+title('rasters');
+ylim([0,29*2]);
+xlim([0,max(x2(:))/1200]);
+
+subplot(2,1,2);
+plot(PSTH_rec(cond_times1),'r');
+hold on;
+plot(PSTH_rec(cond_times2),'k');
+title('PSTH');
+
+% Make histogram
+   col='rbgcmyk';
+   h=figure;
+   plot([sim_rast_tv1(1),sim_rast_tv1(1)],[0,1],'Color',[0.2,0.5,0.7],'LineWidth',2);
+   hold on;
+   plot([sim_rast_tv2(1),sim_rast_tv2(1)],[0,1],'Color',[0.7,0.2,0.5],'LineWidth',2);
+   leg_arr{1}='Original';
+   leg_arr{2}='Null';
+   hold on;
+ 
+   for icond=1:length(spkCondColl)
+     plot([rec_rast_tv(icond),rec_rast_tv(icond)],[0,1],col(icond),'LineWidth',2);
+    leg_arr{icond+2} = sprintf('Condition %d',icond);
+   end
+    h_leg= legend(leg_arr,'Location','best');
+    set(h_leg,'FontSize',8);
+   
+   
+%% Refine data038/data042 analysis - model run to ask if linear front end was wrong. Exclude initial response!
+cellID=6826;
+load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/data.mat','ON parasol',cellID))
+nTrials=29;
+sim_rast_tv1=[];
+sim_rast_tv2=[];
+cutofflow=0.1;
+cutoffhigh=0;
+GLM_fit_link= sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_ON parasol/CellID_%d.mat',cellID);
+load(GLM_fit_link)
+for imodel_run=1:30
+spks_sim = model_run_pred_log{imodel_run}.rasters.glm_sim;
+spks_sim=spks_sim(1:nTrials,:);
+
+rec_rast=spks_sim;
+calculate_psth
+% PSTH_rec=smoothen_psth(PSTH_rec);
+cond_int = max(time)/2;
+cond_times1 = time>=cond_int*cutofflow & time<cond_int*(1-cutoffhigh);
+cond_times2 = time>=cond_int*(1+cutofflow)& time<cond_int*(2-cutoffhigh);
+
+sim_rast_tv1(imodel_run)=sqrt(var(PSTH_rec(cond_times1)));
+sim_rast_tv2(imodel_run)=sqrt(var(PSTH_rec(cond_times2)));
+
+
+end
+
+sim_rast.cond1=sim_rast_tv1;
+sim_rast.cond2=sim_rast_tv2;
+
+
+close all
+leg_arr=cell(length(spkCondColl)+2,1);
+   col='cgkmbry';
+   h=figure;
+   [N1,X1] = hist(sim_rast.cond1);
+   [N2,X2] = hist(sim_rast.cond2);
+   bar(X1,N1,'r');
+   alpha(0.3)
+   hold on;
+   leg_arr{1}='Original';
+   bar(X2,N2,'k');
+   leg_arr{2}='Null';
+   
+   hold on;
+   rec_rast_tv=zeros(length(spkCondColl),1);
+   times2=time(1:length(time)/2);
+   time_len = max(times2);
+   
+   cond_times=times2>cutofflow*time_len & times2<(1-cutoffhigh)*time_len;
+   
+   for icond=1:length(spkCondColl)
+       rec_rast= makeSpikeMat(spkCondColl(icond).spksColl,model_run_pred_log{1}.rasters.bintime,size(model_run_pred_log{1}.rasters.glm_sim,2)/2);
+    calculate_psth
+   % PSTH_rec=smoothen_psth(PSTH_rec);
+    rec_rast_tv(icond)=sqrt(var(PSTH_rec(cond_times)));
+    plot([rec_rast_tv(icond),rec_rast_tv(icond)],[0,1],col(icond),'LineWidth',2);
+    leg_arr{icond+2} = sprintf('Condition %d',icond);
+   end
+  h_leg= legend(leg_arr,'Location','best');
+   set(h_leg,'FontSize',8);
+   
+       s=hgexport('readstyle','model_run');
+    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_ON parasol/CellID_%d/model_run_29trials_cutoff_start_%f_end_%f.eps',cellID,cutofflow,cutoffhigh),s);
+    
+    
+    %% 
+    correlation=zeros(2,6,5,3);
+    nullscale_list = [1,5,10,25,50,100];
+    origscale_list = [1,10];
+    convolve_list = [50,100,150,200,400];
+    cutofflow=0.2;
+    cutoffhigh=0.1;
+    for iorigscale=[1]%1:2
+        orig_scale=origscale_list(iorigscale);
+        for inullscale=[1]%1:6
+            null_scale=nullscale_list(inullscale);
+            figure;
+            mov_scales=[orig_scale,null_scale,null_scale,1,1,1];
+            [spkCondCollGLM,h7]=plot_GLM_prediction_movie_scaled_pc2015_03_09_2(cellID,condMov,GLM_fit_link,mov_scales);
+            
+             h8=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
+             plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+              s=hgexport('readstyle','ras_mos4');
+             hgexport(h8,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/contrast_raster_scale_orig_%d_null_%d.eps',datarun.cell_types{cellTypeId}.name,cellID,orig_scale,null_scale),s);
+    
+            h=  figure('Color','w')
+            for icond=1:3
+                for iconvolve=2%1:5
+                   
+                    convolve=convolve_list(iconvolve);
+                    rec_rast=spkCondCollGLM{icond};
+                    [PSTH_rec,time]=calculate_psth_fcn(convolve,fittedGLM,rec_rast);
+                    PSTH_pred = PSTH_rec;
+                    PSTH_pred=PSTH_pred/norm(PSTH_pred);
+                    
+                    rec_rast= makeSpikeMat(spkCondColl(icond).spksColl,model_run_pred_log{1}.rasters.bintime,size(model_run_pred_log{1}.rasters.glm_sim,2)/2);
+                    [PSTH_rec,time]=calculate_psth_fcn(convolve,fittedGLM,rec_rast);
+                    PSTH_rec=PSTH_rec/norm(PSTH_rec);
+                     
+                    times2=time(1:length(time)/2);
+                    time_len = max(times2);
+                    cond_times=times2>cutofflow*time_len & times2<(1-cutoffhigh)*time_len;
+   
+                    PSTH_pred = PSTH_pred(cond_times);
+                    PSTH_rec = PSTH_rec(cond_times);
+                    
+%                   subplot(3,1,icond);
+%                     plot(times2(cond_times),PSTH_pred,'k');
+%                     hold on;
+%                     plot(times2(cond_times),PSTH_rec,'r');
+%                     h_legend=legend('Predicted','Recorded');
+%                     set(h_legend,'FontSize',5,'Location','best');
+%                     
+%                     correlation(iorigscale,inullscale,iconvolve,icond) = (PSTH_pred-mean(PSTH_pred))*(PSTH_rec-mean(PSTH_rec))';
+%                     title(sprintf('Scale : %d Correlation %f',mov_scales(icond),correlation(iorigscale,inullscale,iconvolve,icond)));
+%                     [iorigscale,inullscale,icond,iconvolve,correlation(iorigscale,inullscale,iconvolve,icond)]
+%                     
+
+                    subplot(3,1,icond);
+                    plot(xcorr((PSTH_pred-mean(PSTH_pred)),(PSTH_rec-mean(PSTH_rec))),'r');
+                    h_legend=legend('Cross-Correlation');
+                    set(h_legend,'FontSize',5,'Location','best');
+                    
+                    correlation(iorigscale,inullscale,iconvolve,icond) = (PSTH_pred-mean(PSTH_pred))*(PSTH_rec-mean(PSTH_rec))';
+                    title(sprintf('Scale : %d Correlation %f',mov_scales(icond),correlation(iorigscale,inullscale,iconvolve,icond)));
+                    [iorigscale,inullscale,icond,iconvolve,correlation(iorigscale,inullscale,iconvolve,icond)]
+                    
+                end
+            end
+             
+    s=hgexport('readstyle','psth_conditions');
+    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_ON parasol/CellID_%d/contrast_psth__xcorr_scale_orig_%d_null_%d',cellID,orig_scale,null_scale),s);
+    
+        end
+    end
+   
+    % Experiments
+%     figure;
+%     plot(squeeze(correlation(2,:,2,:)))
+%     legend('Condition 1','Condition 2','Condition 3');

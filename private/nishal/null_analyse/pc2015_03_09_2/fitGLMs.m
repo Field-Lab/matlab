@@ -35,11 +35,12 @@ addpath(genpath('~/Nishal/matlab/code'));
 %     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 % end 
 % 
-% 
+%  %InterestingCell_vis_id=6826;
 % 
 % 
 % for ref_cell_number=1:length(InterestingCell_vis_id); %11
 %     close all
+%     try
 %     cellID=InterestingCell_vis_id(ref_cell_number);
 %    fittedGLM=glm_fit_from_WNrun({cellID}, WN_datafile_short, movie_xml, stim_len);
 %    InterestingCell_vis_id(ref_cell_number)
@@ -48,7 +49,9 @@ addpath(genpath('~/Nishal/matlab/code'));
 %     end
 %  
 %    save(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_2/data038/CellType_%s/CellID_%d.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)));
-%  
+%     catch
+%     display('Error in GLM fitting');    
+%     end
 % end
 % 
 % 
