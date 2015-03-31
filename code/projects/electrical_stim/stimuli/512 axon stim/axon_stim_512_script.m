@@ -9,7 +9,7 @@ clear all
 
 include_single_elecs = true;
 both_polarity_combs = true;
-quadrant = 3;
+quadrant = 4;
 elec_spacing = 60;
 
 % as seen in vision-interactive (EI plot):
@@ -18,7 +18,7 @@ elec_spacing = 60;
 %-----------
 % 3   |   4
 
-pairOrientation = 'horizontal'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
+pairOrientation = 'downright'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 
 delayInMs = 7.5; %interval between pulses
 
@@ -518,16 +518,16 @@ MovieChunksFile=[length(pattern_order_all) MovieChunks]; %only one movie
 
 
 %cd /Applications/MATLAB74/work/Lauren/stimuli/stimulus_files/; 
-if 0
-fid = fopen('axon512_quad3_el','wb','ieee-le.l64')
+if 1
+fid = fopen('axon512_quad4_el','wb','ieee-le.l64')
 fwrite(fid,electrodes,'int32');
 fclose(fid);
 
-fid = fopen('axon512_quad3_pt','wb','ieee-le.l64')
+fid = fopen('axon512_quad4_pt','wb','ieee-le.l64')
 fwrite(fid,array,'double');
 fclose(fid);
 
-fid = fopen('axon512_quad3_mv','wb','ieee-le.l64')
+fid = fopen('axon512_quad4_mv','wb','ieee-le.l64')
 fwrite(fid,MovieChunksFile,'int32');
 fclose(fid); 
 
