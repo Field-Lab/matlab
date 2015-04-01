@@ -85,11 +85,11 @@ troubleshoot.name    = 'singleopt';
 
 BD = NSEM_BaseDirectories;
 
-exptests = [1];
+exptests = [1 2 3 4 ];
 cellselectiontype = 'shortlist';
 troubleshoot.plotdir = BD.GLM_troubleshootplots
 %%
-
+count = 0;
 for i_exp = exptests
     %%
     expnumber = i_exp;
@@ -154,7 +154,6 @@ for i_exp = exptests
     DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
     clear inputs
     
-    s_e = zeros(2, length(cells));
     
     for i_cell = 1:length(cells)
         clear glm_cellstruct
@@ -244,8 +243,11 @@ for i_exp = exptests
             dt = fittedGLM.t_bin;
             time = dt:dt:dt*size(PSTH,2);
             disp('PSTH calculated');
-            % hold on
-            % plot(time, PSTH(1,:)-PSTH(2,:));
+            
+            % Is the amount of error related to the strength of the signal?
+            plot(PSTH(1,:), abs(PSTH(1,:) - PSTH(2,:)),'.');
+            pause()
+           
             
             %% maybe saccade input has to do with change in stimulus in nearby zone?
             
@@ -280,20 +282,27 @@ for i_exp = exptests
                         
             %% are most of the errors even by the saccades?
             
-            sta = fittedGLM.linearfilters.Stimulus.space_rk1;
-            x_coord = fittedGLM.linearfilters.Stimulus.x_coord;
-            y_coord = fittedGLM.linearfilters.Stimulus.y_coord;
-            glm_error = PSTH(1,:) - PSTH(2,:);
-            buffer = 100;
-            saccade_error = 0;
-            for i = 1:28
-                bin_number = round(i / dt);
-                idx = (bin_number-1):(bin_number+buffer);
-                saccade_error = saccade_error + sum(abs(glm_error(idx)));
+            if 0
+                
+                count = count + 1;
+                sta = fittedGLM.linearfilters.Stimulus.space_rk1;
+                x_coord = fittedGLM.linearfilters.Stimulus.x_coord;
+                y_coord = fittedGLM.linearfilters.Stimulus.y_coord;
+                glm_error = PSTH(1,:) - PSTH(2,:);
+                buffer = 100;
+                saccade_error = 0;
+                n_bins = 0;
+                for i = 1:28
+                    bin_number = round(i / dt);
+                    idx = (bin_number-1):(bin_number+buffer);
+                    saccade_error = saccade_error + sum(abs(glm_error(idx)));
+                    n_bins = n_bins + length(idx);
+                end
+                s_e(1,count) = saccade_error/n_bins;
+                s_e(2,count) = sum(abs(glm_error))/length(glm_error);
+                disp(saccade_error/sum(abs(glm_error)))
+                
             end
-            s_e(1,i_cell) = saccade_error;
-            s_e(2,i_cell) = sum(abs(glm_error));
-            disp(saccade_error/sum(abs(glm_error)))
 
             %% Calculate the ETA
             
