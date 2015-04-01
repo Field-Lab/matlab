@@ -86,7 +86,7 @@ troubleshoot.name    = 'singleopt';
 BD = NSEM_BaseDirectories;
 
 exptests = [1];
-cellselectiontype = 'debug';
+cellselectiontype = 'shortlist';
 troubleshoot.plotdir = BD.GLM_troubleshootplots
 %%
 
@@ -153,6 +153,8 @@ for i_exp = exptests
     
     DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
     clear inputs
+    
+    s_e = zeros(2, length(cells));
     
     for i_cell = 1:length(cells)
         clear glm_cellstruct
@@ -247,20 +249,52 @@ for i_exp = exptests
             
             %% maybe saccade input has to do with change in stimulus in nearby zone?
             
+            if 0
+                sta = fittedGLM.linearfilters.Stimulus.space_rk1;
+                x_coord = fittedGLM.linearfilters.Stimulus.x_coord;
+                y_coord = fittedGLM.linearfilters.Stimulus.y_coord;
+                glm_error = PSTH(1,:) - PSTH(2,:);
+                buffer = 1000;
+                figure;
+                hold on
+                for i = 1:28
+                    bin_number = round(i / dt);
+                    frame_number = round(i * 120);
+                    before_stim = sum(sum(double(testmovie{1}.matrix(x_coord, y_coord, frame_number-100))*sta));
+                    after_stim = sum(sum(double(testmovie{1}.matrix(x_coord, y_coord, frame_number+100))*sta));
+                    idx = (bin_number-buffer):(bin_number+buffer);
+                    plot(glm_error(idx));
+                    SI(1,i) = max(abs(glm_error(idx)));
+                    SI(2,i) = abs(after_stim - before_stim);
+                end
+                plot([buffer+1 buffer+1], [-500, 500], 'k')
+                xlabel('Bin')
+                ylabel('GLM PSTH - True PSTH (arb. units)')
+                xlim([0 2*buffer+1])
+                text(1010, 300, 'Time of Saccade')
+                title(cell_savename)
+                hold off
+                pause()
+            end
+            
+                        
+            %% are most of the errors even by the saccades?
+            
             sta = fittedGLM.linearfilters.Stimulus.space_rk1;
             x_coord = fittedGLM.linearfilters.Stimulus.x_coord;
             y_coord = fittedGLM.linearfilters.Stimulus.y_coord;
             glm_error = PSTH(1,:) - PSTH(2,:);
-            buffer = 1000;
+            buffer = 100;
+            saccade_error = 0;
             for i = 1:28
                 bin_number = round(i / dt);
-                frame_number = round(i * 120);
-                before_stim = sum(sum(double(testmovie{1}.matrix(x_coord, y_coord, frame_number-100))*sta));
-                after_stim = sum(sum(double(testmovie{1}.matrix(x_coord, y_coord, frame_number+100))*sta));
-                idx = (bin_number-buffer):(bin_number+buffer);
-                SI(1,i) = max(abs(glm_error(idx)));
-                SI(2,i) = abs(after_stim - before_stim);
+                idx = (bin_number-1):(bin_number+buffer);
+                saccade_error = saccade_error + sum(abs(glm_error(idx)));
             end
+            s_e(1,i_cell) = saccade_error;
+            s_e(2,i_cell) = sum(abs(glm_error));
+            disp(saccade_error/sum(abs(glm_error)))
+
             %% Calculate the ETA
             
             if 0
