@@ -1,4 +1,4 @@
-sdfds% Code to make stimulus to just have white noise over the large cells and a
+sdfdsjhkbhjkglk% Code to make stimulus to just have white noise over the large cells and a
 % gray background everywhere else
 file_path = '/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code/test.m';
 screen_size_y = 320; % vertical size
