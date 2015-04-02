@@ -62,12 +62,12 @@ if ~GLMType.CONVEX
         Xstart_1 = convParams + 1;
         Xend_1   = convParams + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;
         paramind.space1 = [Xstart_1: ((Xstart_1-1) + (GLMPars.stimfilter.ROI_length^2))];
-        paramind.nonconvex.time1  = [(Xstart_1 + GLMPars.stimfilter.ROI_length^2) : Xend_1 ];
+        paramind.time1  = [(Xstart_1 + GLMPars.stimfilter.ROI_length^2) : Xend_1 ]; %paramind.nonconvex.time1
         Xstart_2 = Xend_1 + 1;  
         Xend_2   = Xend_1 + (GLMPars.stimfilter.ROI_length^2) + GLMPars.stimfilter.frames;  
         paramind.space2 = [Xstart_2: ((Xstart_2-1) + (GLMPars.stimfilter.ROI_length^2))];
         paramind.time2  = [(Xstart_2 + GLMPars.stimfilter.ROI_length^2) : Xend_2 ];
-        numParams = convParams  +  GLMPars.stimfilter.ROI_length^2 + GLMPars.stimfilter.frames;
+        numParams = convParams  +  2*(GLMPars.stimfilter.ROI_length^2 + GLMPars.stimfilter.frames);
     end
     paramind.convParams = convParams;
     paramind.convParams_ind = 1:convParams;
