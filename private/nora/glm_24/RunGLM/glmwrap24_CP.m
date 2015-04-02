@@ -40,18 +40,18 @@ GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 %GLMType.k_filtermode = 'OnOff_hardrect_fixedSP_STA'; GLMType.fixedSPlength = 13;  GLMType.fixedSP_nullpoint = 'mean'; 
 GLMType.nullpoint = 'mean'; 
 GLMType.fit_type = 'NSEM'; GLMType.map_type = 'mapPRJ';
-GLMType.debug = true;
+GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.specialchange_name = 'extra_coupling';
 GLMType.CBP=false;
 
-% GLMType.stimfilter_mode = 'rk1';
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.stimfilter_mode = 'rk2';
+%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
 GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
 
-GLMType.CONVEX = true;
+GLMType.CONVEX = false;
 GLMType.DoubleOpt = false;
 %{
 GLMType.stimfilter_mode = 'rk1';
@@ -85,7 +85,7 @@ troubleshoot.name    = 'singleopt';
 
 BD = NSEM_BaseDirectories;
 
-exptests = [4];
+exptests = [1];
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
@@ -224,7 +224,7 @@ for i_exp = exptests
             % DO SOMETHING ABOUT COMPUTED TSTIM!!!
             %% Execute the correct GLM
             tic
-            try
+            %try
                 if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
                     [fittedGLM] =    glm_execute_DoubleOpt_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo, troubleshoot);
                 else
@@ -240,9 +240,9 @@ for i_exp = exptests
             printname = sprintf('%s/DiagPlots_%s', d_save,fittedGLM.cellinfo.cell_savename);
             printglmfit_CP(fittedGLM,datarun_mas,printname)
             
-            catch error
-                disp(error)
-            end
+            %catch error
+            %    disp(error)
+            %end
             
         % NB 06-11-2014
         else
