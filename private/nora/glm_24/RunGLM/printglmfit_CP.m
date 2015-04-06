@@ -124,7 +124,7 @@ for i_trial = 1:trials
 end
 
 orient landscape
-% eval(sprintf('print -dpdf %s.pdf',printname))
+eval(sprintf('print -dpdf %s.pdf',printname))
 
 % NBCoupling
 if GLMType.CouplingFilters
