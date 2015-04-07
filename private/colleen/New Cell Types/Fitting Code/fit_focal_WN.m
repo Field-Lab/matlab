@@ -3,7 +3,7 @@ clear
 %% -----------------INPUTS---------------------------------
 file_name = '2006-06-06-2/data012/data012';
 stixel_size = 10;
-cell_specification = [3963, 2689];
+cell_specification = [2689,5989]; % put cells in same order as Voronoi_stimulus where the mask was generated
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 %% --------------------------------------------------------
 
@@ -63,9 +63,9 @@ for cell = 1:length(cellID)
     
     
     % Outputs the STA
-    [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1);
+    [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1, cell, length(cellID));
 end
-
+return
 %%%%%%% ----------STOP HERE FOR JUST STA WITHOUT FIT--------------------
 cell_indices = get_cell_indices(datarun, cell_specification);
 num_rgcs = length(cell_indices);

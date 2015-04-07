@@ -1,4 +1,4 @@
-function [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting)
+function [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting, cell, num_cells)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %% Requires datarun for the trigger infomation, the mdf_file for the movie, num_frames, the spikes sequence, and a 0 or 1 for if you want plotting
 
@@ -24,13 +24,13 @@ end
 frame_times = frame_times*1000; % in ms
 
 
-
-
+height = height/num_cells;
 % initialize STA
 sta=zeros(height,width,3, num_frames); %height, width, frames back
 tic
 icnt=0;
-spikes = spikes(1:10000);
+% spikes = spikes(1:10000);
+
 for i=spikes'
     % ignore spikes without num_frames preceding it
     start=find(frame_times>i,1)-num_frames;
@@ -42,10 +42,13 @@ for i=spikes'
         
         for j=1:num_frames
             F = round(mvi.getFrame(start+j).getBuffer);
-%             F = F(1:(54*3));
-            sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
-            sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
-            sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
+            pixels = length(F)/num_cells;
+              sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(cell*pixels-pixels+1:3:cell*pixels),width,height)'-0.5); % store the three color channels
+              sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(cell*pixels-pixels+2:3:cell*pixels),width,height)'-0.5);
+              sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(cell*pixels-pixels+3:3:cell*pixels),width,height)'-0.5);
+%             sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
+%             sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
+%             sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
         end
     end
 end
