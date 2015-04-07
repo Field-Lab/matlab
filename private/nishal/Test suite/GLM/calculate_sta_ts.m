@@ -22,7 +22,9 @@ binnedFramesResponse(iframe)=sum(binnedResponses(useTrial,ibin:ibin+binsPerFrame
 ibin=ibin+binsPerFrame;
 end
 
-for iframe=Filtlen+1:max(bin_to_frame)
+idx=1:length(binnedFramesResponse);
+frames = idx(binnedFramesResponse==1);
+for iframe=frames(frames>Filtlen+1)
    if(mod(iframe,1000)==1)
        iframe
    end
@@ -38,6 +40,7 @@ STA=squeeze(sum(STA,3));
  for itime=1:Filtlen
  imagesc(squeeze((STA(:,:,itime)))');colormap gray
  caxis([min(STA(:)),max(STA(:))]);
+ axis image
  colorbar
  pause(1/120)
  end

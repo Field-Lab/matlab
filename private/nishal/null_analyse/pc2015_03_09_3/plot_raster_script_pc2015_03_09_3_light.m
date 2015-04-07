@@ -15,7 +15,7 @@ spks=double(CellSpkTimes);
 rawMovFrames = condDuration*120;
 TTLperCondperTrial=floor(rawMovFrames/100)+1;
 
-nTrials=29%floor(length(TTL)/(TTLperCondperTrial*nConditions));
+nTrials=floor(length(TTL)/(TTLperCondperTrial*nConditions));
 
 spkColl=cell(nTrials,1);
 
@@ -86,7 +86,7 @@ spkCondColl(icond).yPoints=yPoints;
 
 end
 
-col='rkrkrk';
+col='krkrkrk';
 h=figure('Color','w');
 subplot(4,1,[1,2]);
 for icond=1:nConditions
@@ -96,10 +96,10 @@ yPoints = spkCondColl(icond).yPoints;
 nTrials1=max(yPoints(:));
 plot(xPoints*1/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
 hold on
-ylim([0,nConditions*nTrials]);
+ylim([0,nConditions*nTrials+1]);
 %title(sprintf('%s: data%03d vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},imov,InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate,spkCondColl(6).avgSpkRate));
 end
-xlim([0,12]);
+%xlim([0,90.5]);
 %%
 % figure;
 % plotSpikeRaster(spkColl,'PlotType','vertline');

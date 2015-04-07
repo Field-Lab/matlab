@@ -1,4 +1,4 @@
-function fittedGLM=glm_fit_from_movie_spikes(cells,dataset, stim_description, stim_length, d_save,movie,spikes_rec)
+function fittedGLM=glm_fit_from_movie_spikes(cells,dataset, stim_description, stim_length, d_save,movie,spikes_rec,STA)
 % glm_fit_from_classrun(cells, dataset, stim_description, optional: stim_length, d_save)
 % dataset='2014-11-05-2/data009_nps';
 % cells={2372,2523}
@@ -26,8 +26,8 @@ try
     StimulusPars.height = str2double(stim_description(dashes(5)+1:dashes(5)+2)); 
     StimulusPars.width = str2double(stim_description(dashes(5)+4:dashes(5)+5));
 catch
-    StimulusPars.height = 32; 
-    StimulusPars.width = 64;
+    StimulusPars.height = size(movie,1); 
+    StimulusPars.width = size(movie,2);
 end
 StimulusPars.tstim = 1/120;
 fitframes=stim_length*120/StimulusPars.refreshrate; % seconds * 120 frames per second / interval
@@ -105,8 +105,12 @@ for i_cell = 1:length(cells)
         
         % Spike loading
 %        spikes=datarun.spikes{master_idx};
-        glm_cellinfo.WN_STA = datarun.stas.stas{master_idx};
-        clear cell_savename
+if(nargin==8)
+        glm_cellinfo.WN_STA = STA;%datarun.stas.stas{master_idx};
+ else
+        glm_cellinfo.WN_STA =datarun.stas.stas{master_idx};
+end
+clear cell_savename
         
         % Align the spikes and the movies;
 %         spikes_adj=spikes;

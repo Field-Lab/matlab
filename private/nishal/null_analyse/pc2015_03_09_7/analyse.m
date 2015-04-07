@@ -1,7 +1,7 @@
 addpath(genpath('../null_analyse/'));
 addpath(genpath('../null_analyse/analyse_functions'));
-startup_null_analyse_tenessee
-%startup_null_analyse_bertha
+%startup_null_analyse_tenessee
+startup_null_analyse_bertha
 
 %%
 % Condition strings
@@ -87,8 +87,9 @@ datarun=load_params(datarun)
 
 %InterestingCell_vis_id = [5568,1726,5252,3061]; % OFF 
 % InterestingCell_vis_id = [6106,1835,7730]; % ON
-InterestingCell_vis_id = [4501]; % SBC
+%InterestingCell_vis_id = [4501]; % SBC
 
+InterestingCell_vis_id =[5568,6106,1726,1835,5252,7730,3061];
 
 NullCells1=[5568,1726,5252,3061];  % OFF
 NullCells2=[6106,1835,7730];   % ON
@@ -97,12 +98,27 @@ NullCells3=[4501]; % SBC
 cellType_str='SBC'
 condDuration=1270/120;
 nConditions=6;
+ PSTH_var_log=zeros(length(InterestingCell_vis_id),3);
+ firing_rate_log = zeros(length(InterestingCell_vis_id),3);
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
     cellID=InterestingCell_vis_id(ref_cell_number);
     % [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_2(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
  [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_7_light(cellID,nConditions,condDuration,cond_str,neuronPath);
  
+    for icond=1:3
+                    rec_rast= makeSpikeMat(spkCondColl(icond).spksColl,1/120,rawMovFrames);
+                    [PSTH_rec,time]=calculate_psth_fcn2(50,1/120,rawMovFrames,rec_rast);
+                    PSTH_rec=PSTH_rec-mean(PSTH_rec);
+                    PSTH_rec=PSTH_rec/norm(PSTH_rec);
+                    PSTHLen=length(PSTH_rec); idx=1:PSTHLen;
+                    PSTH_rec=PSTH_rec(idx>0.1*PSTHLen & idx<0.9*PSTHLen);
+                    PSTH_var_log(ref_cell_number,icond)=sqrt(var(PSTH_rec));
+                    firing_rate_log(ref_cell_number,icond) = sum(rec_rast(:))/(29*rawMovFrames/120);
+                   figure;
+                    plot(PSTH_rec);
+                    
+    end   
  plot_mosaic_pc2015_03_09_7(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2,NullCells3);
    InterestingCell_vis_id(ref_cell_number)
     if(~isdir(sprintf('/Volumes/Analysis/nishal/analyse_2015_03_09_7/data006/CellType_%s',cellType_str)))

@@ -7,12 +7,19 @@ GLMType.fit_type = 'WN'; GLMType.map_type = 'mapPRJ';
 GLMType.debug = false;
 GLMType.specialchange = false;
 GLMType.CBP=false;
-GLMType.stimfilter_mode = 'rk1';
-%GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+
+% rank 1
+%GLMType.stimfilter_mode = 'rk1'
+%GLMType.CONVEX = false;
+
+% fixed SP
+GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+GLMType.CONVEX = true;
+
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
 GLMType.input_pt_nonlinearity_type = 'raisepower_meanafter';
-GLMType.CONVEX = false;
+
 GLMType.DoubleOpt = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;

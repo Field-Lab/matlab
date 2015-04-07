@@ -1,5 +1,5 @@
 function h3=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM)
-col='krkrkrkrkrkrkrkrkr';
+col='rkrkrkrkrkrkrkrkrkr';
 nmov = length(spkCondColl);
 
 
