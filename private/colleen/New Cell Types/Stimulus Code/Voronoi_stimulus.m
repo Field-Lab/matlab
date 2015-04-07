@@ -6,7 +6,7 @@ clear
 
 
 %% ------------------------------ INPUTS -----------------------------------
-cells = {2689};
+cells = {2689, 4067};
 file_name = '2006-06-06-2/data012/data012';
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 file_path = '/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code/test.m';
@@ -79,21 +79,47 @@ for cell = 1:size(cells,2)
     max_y = max(y);
     num_x = min_x:max_x;
     num_y = min_y:max_y;
-    num_stixels = length(num_x)*length(num_y);
-    large_cell_stixels = zeros(num_stixels,2);
-    n = length(num_y);
-    for i =1 :length(num_x)
-        large_cell_stixels(i*n-n+1:n*i, 1) = repmat(num_x(i), n,1);
+    overall_size(cell, :) = [min_x, max_x, min_y, max_y];
+    num_stixels(cell,:) = length(num_x)*length(num_y);
+    
+end
+diff_x = overall_size(:,2)-overall_size(:,1)+1;
+diff_y = overall_size(:,4)-overall_size(:,3)+1;
+loc_x = max(diff_x);
+loc_y = max(diff_y);
+for k = 1:size(overall_size,1)
+    current = overall_size(k,:)
+    mean_x = mean([current(1), current(2)])
+    mean_y = mean([current(3), current(4)])
+    x_stix(k,:) = round(mean_x-(loc_x-1)/2:mean_x+(loc_x-1)/2);
+    y_stix(k,:) = round(mean_y-(loc_y-1)/2:mean_y+(loc_y-1)/2);
+
+
+
+
+end
+        large_cell_stixels = zeros(length(x_stix(1,:)).*length(y_stix(1,:)),2);
+
+for k = 1:size(overall_size,1)
+    x_stix2 = x_stix(k,:);
+    y_stix2 = y_stix(k,:);
+    n = length(y_stix2);
+    for i =1 :length(x_stix2)
+        large_cell_stixels(i*n-n+1:n*i, 1) = repmat(x_stix2(i), n,1);
     end
-    large_cell_stixels(:,2) = repmat(num_y',length(num_x),1);
-    large_cell_stixels = fliplr(large_cell_stixels);
+    large_cell_stixels(1*[1:loc_x*loc_y],2) = repmat(y_stix2',length(x_stix2),1);
+    large_cell_stixels_final(k*[loc_x*loc_y]- [loc_x*loc_y] + 1:k*[loc_x*loc_y], :) = large_cell_stixels(1*[1:loc_x*loc_y], :);
+end
+
+    large_cell_stixels_final = fliplr(large_cell_stixels_final);
+
     % large_cell_stixels =[y,x]; % horizontal over from top left then vertical down from top corner
     
     % large_cell_stixels = [10,5; 10,10; 2,12]; % horizontal over from top left then vertical down from top corner
-    if max(large_cell_stixels(:,1)*stixel_size) > screen_size_x
+    if max(large_cell_stixels_final(:,1)*stixel_size) > screen_size_x
         disp('error: x dimension of chosen stixels doesn''t fit on screen')
         return
-    elseif max(large_cell_stixels(:,2)*stixel_size) > screen_size_y
+    elseif max(large_cell_stixels_final(:,2)*stixel_size) > screen_size_y
         disp('error: y dimension of chosen stixels doesn''t fit on screen')
         return
     end
@@ -102,14 +128,14 @@ for cell = 1:size(cells,2)
     
     scale_factor_x = screen_size_x/ stixel_size;
     scale_factor_y = screen_size_y/stixel_size;
-    for i = 1:size(large_cell_stixels,1)
+    for i = 1:size(large_cell_stixels_final,1)
        
-        pix_y = (stixel_size*large_cell_stixels(i, 1)-(stixel_size-1)):(stixel_size)*large_cell_stixels(i,1);
-        pix_x = (stixel_size*large_cell_stixels(i,2)-(stixel_size-1)):(stixel_size)*large_cell_stixels(i,2);
+        pix_y = (stixel_size*large_cell_stixels_final(i, 1)-(stixel_size-1)):(stixel_size)*large_cell_stixels_final(i,1);
+        pix_x = (stixel_size*large_cell_stixels_final(i,2)-(stixel_size-1)):(stixel_size)*large_cell_stixels_final(i,2);
         myMap(pix_x,pix_y) = i;
     end
     
-end
+
 
 
 dlmwrite(file_path, myMap, 'delimiter', '\t', 'newline', 'pc');
