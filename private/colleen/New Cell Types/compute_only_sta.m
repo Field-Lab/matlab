@@ -8,7 +8,8 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
     triggers, 1,2);
 
 [mvi] = load_movie(mdf_file, triggers);
-
+% width = 6;
+% height = 9;
 % Compute the time each stimulus frame occurred
 
 bt_triggers = triggers - [0;triggers(1:end-1)];
@@ -41,6 +42,7 @@ for i=spikes'
         
         for j=1:num_frames
             F = round(mvi.getFrame(start+j).getBuffer);
+%             F = F(1:(54*3));
             sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
             sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
             sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
