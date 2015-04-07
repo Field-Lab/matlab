@@ -3,7 +3,7 @@ function plotraster(xval, fittedGLM, varargin)
 p=inputParser;
 addRequired(p,'xval',@isstruct);
 addRequired(p,'fittedGLM', @isstruct);
-addParameter(p,'raster_length',5, @isnumeric); % length of raster in seconds, default 10
+addParameter(p,'raster_length',5, @isnumeric); % length of raster in seconds, default 5
 addParameter(p,'labels',false, @islogical); % display axis ticks and labels if true
 addParameter(p,'separate',false, @islogical); % separate windows (true) or in subplots (false)
 addParameter(p,'PSTH',true, @islogical); % display PSTH if true
