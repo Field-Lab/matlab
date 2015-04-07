@@ -30,7 +30,7 @@ frame_times = frame_times*1000; % in ms
 sta=zeros(height,width,3, num_frames); %height, width, frames back
 tic
 icnt=0;
-
+spikes = spikes(1:10000);
 for i=spikes'
     % ignore spikes without num_frames preceding it
     start=find(frame_times>i,1)-num_frames;

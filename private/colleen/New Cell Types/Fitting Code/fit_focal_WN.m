@@ -3,7 +3,7 @@ clear
 %% -----------------INPUTS---------------------------------
 file_name = '2006-06-06-2/data012/data012';
 stixel_size = 10;
-cell_specification = [2689];
+cell_specification = [3963, 2689];
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 %% --------------------------------------------------------
 
@@ -36,33 +36,35 @@ datarun=load_data(datarun,opt);
 %         end
 %         cell_type_index(num_cell_types) = 0;% couldn't find the right cell type
 %     end
-%     
+%
 % end
 
 % cell_specification = datarun.cell_types{cell_type_index}.cell_ids;
 
 % Find out indices for desired cell type
 cellID = get_cell_indices(datarun, cell_specification);
-spikes=datarun.spikes{cellID};
-spikes = spikes*1000;
-triggers=datarun.triggers; %onsets of the stimulus presentation
-
-[mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
-    triggers, 1,2);
-
-[mvi] = load_movie(mdf_file, triggers);
-
-%% If you wanted to plot STA in with a gray background
-% myMap = load('test.m');
-% [x_loc,y_loc] = find(myMap ~=0);
-% temp = find(x_loc == min(x_loc));
-% xOffset = x_loc(temp(1));
-% temp2 = find(y_loc == min(y_loc));
-% yOffset = y_loc(temp2(1));
-
-
-% Outputs the STA
-[sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1);
+for cell = 1:length(cellID)
+    spikes=datarun.spikes{cellID(cell)};
+    spikes = spikes*1000;
+    triggers=datarun.triggers; %onsets of the stimulus presentation
+    
+    [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
+        triggers, 1,2);
+    
+    [mvi] = load_movie(mdf_file, triggers);
+    
+    %% If you wanted to plot STA in with a gray background
+    % myMap = load('test.m');
+    % [x_loc,y_loc] = find(myMap ~=0);
+    % temp = find(x_loc == min(x_loc));
+    % xOffset = x_loc(temp(1));
+    % temp2 = find(y_loc == min(y_loc));
+    % yOffset = y_loc(temp2(1));
+    
+    
+    % Outputs the STA
+    [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1);
+end
 
 %%%%%%% ----------STOP HERE FOR JUST STA WITHOUT FIT--------------------
 cell_indices = get_cell_indices(datarun, cell_specification);
@@ -76,34 +78,34 @@ for rgc = 1:num_rgcs
     fprintf('fitting the STA for cell %d... \n', datarun.cell_ids(cell_indices(rgc)))
     
     temp_sta = sta;
-
+    
     % fit_surround_sd_scale is necessary for any fitting to occur
-%     temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'initial_n_filters', 10, 'initial_scale_one',0.15,'initial_scale_two',-0.2,'initial_tau_one',5,'initial_tau_two',5, 'fit_surround_sd_scale', true, 'fit_surround', true);
-
-
-
-                    figure
-[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'num_colors',1);
-% Plot result
-%  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
-
-
-% Add raw data to plot
-% hold on
-%         real_stix = significant_stixels(temp_sta);
-%       biggestBlob = ExtractNLargestBlobs(full(real_stix), 1);
-%     real_stix = biggestBlob;
-%     tc = time_course_from_sta(temp_sta, real_stix);
-%     norm_factor = max(abs(reshape(tc, 1, [])));
-%     tc = tc ./ norm_factor;
-%     hold on
-%     subplot(2,1,2)
-%         plot(tc(:,1), 'r', 'linewidth', 2)
-%         plot(tc(:,2), 'g', 'linewidth', 2)
-%         plot(tc(:,3), 'b', 'linewidth', 2)
-
-suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
-  
+    %     temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'initial_n_filters', 10, 'initial_scale_one',0.15,'initial_scale_two',-0.2,'initial_tau_one',5,'initial_tau_two',5, 'fit_surround_sd_scale', true, 'fit_surround', true);
+    
+    
+    
+    figure
+    [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'num_colors',1);
+    % Plot result
+    %  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
+    
+    
+    % Add raw data to plot
+    % hold on
+    %         real_stix = significant_stixels(temp_sta);
+    %       biggestBlob = ExtractNLargestBlobs(full(real_stix), 1);
+    %     real_stix = biggestBlob;
+    %     tc = time_course_from_sta(temp_sta, real_stix);
+    %     norm_factor = max(abs(reshape(tc, 1, [])));
+    %     tc = tc ./ norm_factor;
+    %     hold on
+    %     subplot(2,1,2)
+    %         plot(tc(:,1), 'r', 'linewidth', 2)
+    %         plot(tc(:,2), 'g', 'linewidth', 2)
+    %         plot(tc(:,3), 'b', 'linewidth', 2)
+    
+    suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
+    
     
     if isempty(temp_fit_params)
         temp_id = datarun.cell_ids(cell_indices(rgc));
@@ -112,10 +114,10 @@ suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)
     end
     
     datarun.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
-  
-
-
-
+    
+    
+    
+    
     parameters(rgc,1) = cell_specification(rgc);
     parameters(rgc,2) = cell_indices(rgc);
     parameters(rgc,3) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_x;
@@ -137,14 +139,14 @@ suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)
     parameters(rgc,19) = datarun.matlab.sta_fits{cell_indices(rgc)}.n_filters;
     parameters(rgc,20) = datarun.matlab.sta_fits{cell_indices(rgc)}.frame_number;
     parameters(rgc,21) = datarun.matlab.sta_fits{cell_indices(rgc)}.rmse;
-
-
-
-
-information{3} = parameters;
-information{4} = datarun.matlab.sta_fits;
-% save([dataset,'-', cell_type{1}], 'information')
-
+    
+    
+    
+    
+    information{3} = parameters;
+    information{4} = datarun.matlab.sta_fits;
+    % save([dataset,'-', cell_type{1}], 'information')
+    
 end
 
 figure
@@ -166,7 +168,7 @@ suptitle({information{1}; [num2str(size(information{3},1)), cell_type{1}, ' cell
 
 %scale 1
 scale_one = information{3}(:,15);
-subplot(3,2,1) 
+subplot(3,2,1)
 hist(scale_one);
 title('Scale One');
 
@@ -192,8 +194,8 @@ title('RF Size');
 
 
 
-%% Plot mosaic 
-  figure
+%% Plot mosaic
+figure
 for q = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(q)};
     temp_fit_params = datarun.matlab.sta_fits{cell_indices(q)};
@@ -201,24 +203,24 @@ for q = 1:num_rgcs
     fixed_indices = temp_fit_params.fixed_indices;
     fit_params = temp_fit_params.fit_params;
     fixed_params = temp_fit_params.fixed_params;
-
+    
     all_params(fit_indices) = fit_params;
     all_params(fixed_indices) = fixed_params;
-
+    
     % get sta fit
     sta_fit = sta_fit_function(all_params);
     % spatial fit
-  
-  
+    
+    
     hold on
-%     temp_rf = rf_from_sta(sta);
-%     imagesc(norm_image(temp_rf))
-%     hold on
+    %     temp_rf = rf_from_sta(sta);
+    %     imagesc(norm_image(temp_rf))
+    %     hold on
     h(q) = plot_spatial_sd(all_params);
     set(h(q), 'DisplayName', 'Fitting Code');
     drawnow
 end
-    axis equal
+axis equal
 
 set(gca, 'xlim', [0, datarun.stimulus.field_width]);
 set(gca, 'ylim', [0, datarun.stimulus.field_height]);
@@ -248,7 +250,7 @@ mean(max_diameters)
 zero_crossing = zeros(size(fit_tc,2),1);
 for i = 1:size(fit_tc,2)
     cell_ = fit_tc{i}(:,2)*16.65; % units of ms
-
+    
     [x0,y0] = intersections(1:num_frames,cell_,1:num_frames, zeros(num_frames,1)); % find zero crossing
     zero_crossing(i) = x0(1);
 end
