@@ -63,7 +63,7 @@ GLMType.CONVEX = false;
 GLMType.TonicDrive = true;
 GLMType.StimFilter = true;
 GLMType.PostSpikeFilter = true;
-GLMType.CouplingFilters = false;
+GLMType.CouplingFilters = true;
 GLMType.Subunits = false;
 GLMType.Saccades = false;
 GLMType.color = false;
@@ -85,7 +85,7 @@ troubleshoot.name    = 'singleopt';
 
 BD = NSEM_BaseDirectories;
 
-exptests = [1 2 3 4];
+exptests = [3];
 cellselectiontype = 'debug';
 troubleshoot.plotdir = BD.GLM_troubleshootplots 
 %%
@@ -125,25 +125,25 @@ for i_exp = exptests
     d_save = NSEM_secondaryDirectories('savedir_GLMfit', inputs);  clear inputs;
     display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
     display(sprintf('Save Directory :  %s', d_save));
-    if ~exist(d_save), mkdir(d_save); end
-    GLMType.d_save = d_save;
+    % if ~exist(d_save), mkdir(d_save); end
+    % GLMType.d_save = d_save;
     
     %% Load Movie and Concatenate the Fitting Section
     clear Main_SolPars Other_SolParss
     %%% Load Stimulus   -- insert more frame cutting here!
-    [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , GLMType.fit_type, GLMType.cone_model,'fitmovie');
+    % [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , GLMType.fit_type, GLMType.cone_model,'fitmovie');
     [testmovie] = loadmoviematfile(exp_nm , GLMType.fit_type, GLMType.cone_model,'testmovie');
-    GLMType.fitmoviefile = origmatfile;
-    clear origmatfile
+    % GLMType.fitmoviefile = origmatfile;
+    % clear origmatfile
     %uint8 form to keep data low
     
     
-    concat_fitmovie      = concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv);
-    fitmoviestats.mean   = mean(concat_fitmovie(:));
-    fitmoviestats.minval =  min(concat_fitmovie(:));
-    fitmoviestats.maxval =  max(concat_fitmovie(:));
-    clear blockedmoviecell blockstartframe fitblocks fitframesperblock framenums
-    %}
+%     concat_fitmovie      = concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv);
+%     fitmoviestats.mean   = mean(concat_fitmovie(:));
+%     fitmoviestats.minval =  min(concat_fitmovie(:));
+%     fitmoviestats.maxval =  max(concat_fitmovie(:));
+%     clear blockedmoviecell blockstartframe fitblocks fitframesperblock framenums
+%     %}
     
     %% Load Cell Specific Elements   Spikes and STA
     inputs.exp_nm       = exp_nm;
@@ -159,7 +159,7 @@ for i_exp = exptests
         cid = cells{i_cell};
         [celltype , cell_savename, ~]  = findcelltype(cid, datarun_mas.cell_types);
         
-        if ~exist(sprintf('%s/%s.mat', d_save,cell_savename))
+        % if ~exist(sprintf('%s/%s.mat', d_save,cell_savename))
             glm_cellinfo.cid           = cid;
             glm_cellinfo.exp_nm        = exp_nm;
             glm_cellinfo.celltype      = celltype;
@@ -219,36 +219,35 @@ for i_exp = exptests
                 end
             end
             % end NBCoupling
-            
-            % Prepare the stim
-            % DO SOMETHING ABOUT COMPUTED TSTIM!!!
-            %% Execute the correct GLM
-            tic
-            %try
-                if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                    [fittedGLM] =    glm_execute_DoubleOpt_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo, troubleshoot);
-                else
-                    [fittedGLM]     = glm_execute_CP(GLMType, spikesconcat,neighborspikes, concat_fitmovie, glm_cellinfo);
-                end
 
-            toc
-            % NBCoupling
+            %% Load the correct GLM
+            eval(sprintf('load %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+
+            %% NBCoupling
             xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, StimulusPars.slv, cell_organizedspikes,neighbor_organizedspikes,testmovie);
-            fittedGLM.xvalperformance  = xvalperformance;
-            fittedGLM.d_save           = d_save;
-            eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
-            printname = sprintf('%s/DiagPlots_%s', d_save,fittedGLM.cellinfo.cell_savename);
-            printglmfit_CP(fittedGLM,datarun_mas,printname)
             
-            %catch error
-            %    disp(error)
-            %end
+            %% Calculate the PSTH
+            convolve=100;
+            rec_rast = xvalperformance.rasters.recorded;
+            sim_rast = xvalperformance.rasters.glm_sim;
+            trials = size(rec_rast,1);
+            for i=1:trials
+                PSTH_rec(i,:)=conv(rec_rast(i,:),ones(convolve,1),'same');
+                PSTH_sim(i,:)=conv(sim_rast(i,:),ones(convolve,1),'same');
+            end
+            PSTH = zeros(2, size(PSTH_rec,2));
+            PSTH(1,:) = sum(PSTH_rec);
+            PSTH(2,:) = sum(PSTH_sim);
+            dt = fittedGLM.t_bin;
+            time = dt:dt:dt*size(PSTH,2);
+            disp('PSTH calculated');
             
-        % NB 06-11-2014
-        else
-            error('Previous results still in directory')
-            
-        end
+            %%
+            hold on
+            plot(sum(xvalperformance.sim_drive),PSTH(1,:),'.')
+            plot(sum(xvalperformance.sim_drive),PSTH(2,:),'.')
+            %plot(sum(xvalperformance.sim_drive),PSTH(1,:)-PSTH(2,:),'.')
+
     end
     
 end
