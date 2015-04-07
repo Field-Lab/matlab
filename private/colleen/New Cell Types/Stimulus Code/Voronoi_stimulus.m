@@ -1,4 +1,6 @@
+
 clear
+
 % Code to make stimulus to just have white noise over the large cells and a
 % gray background everywhere else
 
