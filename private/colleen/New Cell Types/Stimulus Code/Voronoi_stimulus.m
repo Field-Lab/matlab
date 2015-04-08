@@ -155,7 +155,6 @@ end
 scale_factor_x = screen_size_x/ stixel_size;
 scale_factor_y = screen_size_y/stixel_size;
 for i = 1:size(large_cell_stixels_final,1)
-    
     pix_y = (stixel_size*large_cell_stixels_final(i, 1)-(stixel_size-1)):(stixel_size)*large_cell_stixels_final(i,1);
     pix_x = (stixel_size*large_cell_stixels_final(i,2)-(stixel_size-1)):(stixel_size)*large_cell_stixels_final(i,2);
     myMap(pix_x,pix_y) = i;
