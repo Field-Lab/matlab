@@ -267,7 +267,7 @@ end
 % get significant stixels if they were not provided
 if isempty(p.Results.sig_stixels)
     if isempty(mark_params)
-        sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 4);
+        sig_stixels = significant_stixels(sta);
     else
         sig_stixels =significant_stixels(sta, mark_params);
     end
@@ -710,7 +710,7 @@ fit_info.initial_params = input_params;
 fit_info.fit_indices = fit_indices;
 
 % Plot result
-% plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices);
+plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices, sig_stixels, 'on');
 
 
 fit_info.fixed_indices = fixed_indices; 

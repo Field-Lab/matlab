@@ -40,7 +40,6 @@ all_params(fixed_indices) = fixed_params;
 
 % get sta fit
 sta_fit = sta_fit_function(all_params);
-
 % plot stuff if verbose is true
 if verbose
     % spatial fit
@@ -65,7 +64,9 @@ if verbose
 %     size(norm_factor)
 %     size(fit_tc)
     fit_tc = fit_tc ./ norm_factor;
+    hold on
     subplot(2,1,2)
+    hold on
     if size(sta_fit, 3) == 3
         plot(fit_tc(:,1), '--r')
         hold on

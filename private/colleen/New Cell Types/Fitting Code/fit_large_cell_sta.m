@@ -1,10 +1,10 @@
 clear
-file_name = '2008-08-27-6/data009-mg/data009';
+file_name = '2006-06-06-2/data003/data003';
 datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
 datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
 
 datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
 interpolate = false;
 % cell_specification = [502,860,1024,1130,2076,2361,2618,2705,3022,3172,3213,3559,4022,4071,4238,4774,4852,5496,6518,6533,6860,7279,7671];
 cell_type = {'on parasol'};
@@ -12,11 +12,11 @@ slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
 dataset(to_replace) = '-';
-num_frames = 20; % both have to be run with the name number of frames
+num_frames = 30; % both have to be run with the name number of frames
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',true);
 opt.load_sta_params.save_rf = 1;
-opt.load_sta_params.frames = 11:30% have to input as a vector list of frames, not the number of frames total, counting backwards
+opt.load_sta_params.frames = 1:30% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
 cell_type_index= zeros(1,size(cell_type,2));

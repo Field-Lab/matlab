@@ -96,7 +96,7 @@ sta=sta/icnt;
 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
 
 % normalize STA color
-sta = norm_image(sta);
+% sta = norm_image(sta);
 
 %% ------------------ Compute the timecourse --------------------------
 [sig_stixels] = significant_stixels(sta);
@@ -105,9 +105,10 @@ sta = norm_image(sta);
 
 if plotting == 1    
     h = plot_time_course_(timecourse, 'colors', ['rgb']', 'foa', 0)
+    title('TimeCourse from MATLAB STA')
     % Show the best frame of the STA
     figure
-    imagesc(squeeze(sta(:,:,:, start_index)));
+    imagesc(squeeze(norm_image(sta(:,:,:, start_index))));
     title(['STA Frame: ' num2str(start_index)]);
 end
 
