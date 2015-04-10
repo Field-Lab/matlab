@@ -18,17 +18,18 @@ CoarseSz = 2;
 
 coarseframeRate = 1;
 
-coarseScaleMax=0.5;
+coarseScaleMax=0.7;
 
-fineScale=0.24;
+fineScale=0.06;
 %% coarseMesh
 
-load('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/matfiles/movie_chunk_1.mat');
+load('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/matfiles/movie_chunk_2.mat');
 movieChunkTime = size(movie,3)/(coarseframeRate*frameRate);
 coarseRepeats = ceil(time / movieChunkTime);
-CoarseMovieFine = repmat(movie,[1,1,coarseRepeats])*coarseScaleMax;
+CoarseMovieFine = repmat(movie,[1,1,coarseRepeats]);
 CoarseMovieFine = (permute (CoarseMovieFine,[2,1,3])/255) - 0.5;
-
+meanCoarseMovie = mean(CoarseMovieFine(:));
+CoarseMovieFine = (CoarseMovieFine - meanCoarseMovie)*coarseScaleMax + meanCoarseMovie;
 %% coarseMovie
 
 MovieFine=fineScale*2*((rand(gridX/fineSz,gridY/fineSz,movieLen)>0.5)-0.5);
@@ -51,9 +52,9 @@ for itime=1:movieLen
     axis image
     
     subplot(1,2,2);
-    imagesc(MovieFine(:,:,itime)');
+    imagesc(Movie_full(:,:,itime)');
     colormap gray
     axis image
     colorbar
-    pause(1)
+    pause(1/120)
 end

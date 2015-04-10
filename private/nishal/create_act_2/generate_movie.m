@@ -59,7 +59,7 @@ end
 % This will take care of initial and final conditions and make proper
 % buffers
 if(isfield(movie_params,'interval'))
-blankFrames = double(uint8(35/movie_params.interval));
+blankFrames = double(uint8(0/movie_params.interval));
 
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames)-0.25*(255);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
@@ -67,7 +67,7 @@ movie_time=movie_time+2*blankFrames;
 movie_params.movie_time=movie_time;
 else
     
-blankFrames = 35;
+blankFrames = 0;
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames)-0.25*(255);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
 movie_time=movie_time+2*blankFrames;
@@ -91,7 +91,7 @@ mov=mov*movie_params.deviation/max(abs(mov(:)));
 % This will take care of initial and final conditions and make proper
 % buffers
 if(isfield(movie_params,'interval'))
-blankFrames = double(uint8(35/movie_params.interval));
+blankFrames = double(uint8(0/movie_params.interval));
 
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
@@ -99,7 +99,7 @@ movie_time=movie_time+2*blankFrames;
 movie_params.movie_time=movie_time;
 else
     
-blankFrames = 35;
+blankFrames = 0;
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
 movie_time=movie_time+2*blankFrames;
@@ -138,7 +138,7 @@ mov=mov*movie_params.deviation/max(abs(mov(:)));
 % This will take care of initial and final conditions and make proper
 % buffers
 if(isfield(movie_params,'interval'))
-blankFrames = double(uint8(35/movie_params.interval));
+blankFrames = double(uint8(0/movie_params.interval));
 
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
@@ -146,7 +146,7 @@ movie_time=movie_time+2*blankFrames;
 movie_params.movie_time=movie_time;
 else
     
-blankFrames = 35;
+blankFrames = 0;
 mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
 mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
 movie_time=movie_time+2*blankFrames;

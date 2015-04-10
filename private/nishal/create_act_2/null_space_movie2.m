@@ -409,7 +409,7 @@ if(solver==15) % Spatial Nulling, WN+Null stimulus
      togo=1;
      
 mov_params2=mov_params;
-mov_params2.movie_time=mov_params.movie_time-70;
+mov_params2.movie_time=mov_params.movie_time;
 mov_params2.mov_type='bw';
 [mov_show,mov_params2]=generate_movie(mov_params2);
 mov_show=0.5*mov_show;
@@ -431,6 +431,84 @@ zk=mov+mov_sta_direction;
   mov=zk-mov_sta_direction;
     maxClip = (0.48/0.5)*127.5;
 [~,mov_modify_new,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+
+mov_modify_new_null = mov_modify_new;
+mov_modify_new = mov_modify_new_null + mov_sta_direction; % xk plus half
+
+
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+
+% Update after projection C
+z_k_half=2*mov_modify_new - zk;
+
+% Projection D
+x_k_1=z_k_half;
+togo_clip=1;
+togo_B=0;
+while(togo_clip==1)
+
+[x_k_1,rat] = scale_pixel_variance(x_k_1,mov_show); % Remove? 
+violations_c = sum(abs(x_k_1(:))>maxClip+0.0001)
+
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+if(violations_c~=0)
+togo_clip=1;
+togo_B=1;
+else
+togo_clip=0;    
+end
+end
+
+% Update after projection D
+zk=zk + x_k_1 - mov_modify_new;
+
+
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001);
+[~,rat] = scale_pixel_variance(mov_modify_new,mov_show); % Remove?
+% Need to change post processing!!
+togo = (togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0.999) % input('Continue Iterating?');
+    end
+    
+mov_orig=mov_show;
+mov_modify_new=mov_modify_new;
+end
+
+
+
+if(solver==16) % Spatio-Temporal 64x32 or 128x128 [Choose and set during the experiment], WN+Null stimulus 
+     togo=1;
+     
+mov_params2=mov_params;
+mov_params2.movie_time=mov_params.movie_time; %-70?
+mov_params2.mov_type='bw';
+[mov_show,mov_params2]=generate_movie(mov_params2);
+mov_show=0.5*mov_show;
+movie_time_show=mov_params2.movie_time;
+
+mov=0.5*mov;
+mov=mov.*repmat(totalMaskAccept,[1,1,size(mov,3)]);
+mov_proj=mov;
+mov_sta_direction = mov_show;
+
+%[~,~,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+%mov_sta_direction = getSTAmovie(mov,sta_spatial); % Implement this function
+
+zk=mov+mov_sta_direction;
+
+    while togo==1
+
+        % projection C
+  mov=zk-mov_sta_direction;
+    maxClip = (0.48/0.5)*127.5;
+
+         [stas128x128,mov128x128]=preprocess128x128(stas,mov);
+         [mov_orig128x128,mov_modify_new128x128]=fourier_project128x128(stas128x128,mov128x128);
+         [~,mov_modify_new] =postprocess128x128(mov_orig128x128,mov_modify_new128x128,mov);
+  
+%               [~,mov_modify_new]=fourier_project(stas,mov);
 
 mov_modify_new_null = mov_modify_new;
 mov_modify_new = mov_modify_new_null + mov_sta_direction; % xk plus half

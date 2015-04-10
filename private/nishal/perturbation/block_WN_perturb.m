@@ -3,24 +3,24 @@
 % Assume a grid of 320x640 
 
 
-gridX=320;
-gridY=640;
+gridX=640;
+gridY=320;
 
 frameRate=120;
-interval=2;
-time=10; % in seconds
+interval=1;
+time=900; % in seconds
 movieLen=time *frameRate/interval;
 
-coarseinterval=10;
+coarseinterval=1;
 fineSz=4;
 
 coarsemovieLen = time*frameRate/interval; 
-CoarseSz = 16;
+CoarseSz = 8;
 
 coarseType='checkerboard';
 coarseframeRate = 1;
 
-coarseScaleMax=0.24;
+coarseScaleMax=0.36;
 coarseScaleMin=0.12;
 
 fineScale=0.12;
@@ -48,10 +48,15 @@ MovieCoarse = MovieCoarse+2*((rand(size(MovieCoarse))>0.5)-0.5).*repmat(coarseSc
 
 
 CoarseMovieFine = zeros(gridX/fineSz,gridY/fineSz,movieLen);
-for icntx=1:size(CoarseMovieFine,1)
-    for icnty=1:size(CoarseMovieFine,2)
-        for itime=1:movieLen
-    CoarseMovieFine(icntx,icnty,itime)=MovieCoarse(floor((icntx-1)*fineSz/CoarseSz)+1,floor((icnty-1)*fineSz/CoarseSz)+1,floor((itime-1)*interval/coarseinterval)+1);
+for itime=1:movieLen
+     
+            if(rem(itime,1000)==1)
+                itime
+            end
+    for icntx=1:size(CoarseMovieFine,1)
+        for icnty=1:size(CoarseMovieFine,2)
+           
+            CoarseMovieFine(icntx,icnty,itime)=MovieCoarse(floor((icntx-1)*fineSz/CoarseSz)+1,floor((icnty-1)*fineSz/CoarseSz)+1,floor((itime-1)*interval/coarseinterval)+1);
         end
     end
 end
@@ -68,17 +73,33 @@ Movie_full = MovieFine+CoarseMovieFine;
 % writeVideo(writerObj,Movie_full+0.5);
 % close(writerObj);
 
+%Extend 
+Movie_full = repmat(Movie_full,[2,2,1]);
+CoarseMovieFine=repmat(CoarseMovieFine,[2,2,1]);
 
-figure;
-for itime=1:movieLen
-    subplot(1,2,1);
-    imagesc(CoarseMovieFine(:,:,itime)');
-    colormap gray
-    axis image
-    
-    subplot(1,2,2);
-    imagesc(Movie_full(:,:,itime)');
-    colormap gray
-    axis image
-    pause(1)
-end
+Movie_full=Movie_full(1:(gridX/fineSz) +16 ,1:(gridY/fineSz) +16 ,:);
+CoarseMovieFine=CoarseMovieFine(1:(gridX/fineSz) +16 ,1:(gridY/fineSz) +16 ,:);
+% 
+% figure;
+% for itime=1:movieLen
+%     subplot(1,2,1);
+%     imagesc(CoarseMovieFine(:,:,itime)');
+%     colormap gray
+%     axis image
+%     
+%     subplot(1,2,2);
+%     imagesc(Movie_full(:,:,itime)');
+%     colormap gray
+%     axis image
+%     pause(1)
+% end
+
+%% 
+mov=uint8((Movie_full+0.5)*255);
+save('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/Movie_full.mat','mov');
+write_movie('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/Movie_full.mat','/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/rawMovies/Movie_full.rawMovie',fineSz);
+
+
+mov=uint8((CoarseMovieFine+0.5)*255);
+save('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/CoarseMovieFine.mat','mov');
+write_movie('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/CoarseMovieFine.mat','/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/rawMovies/CoarseMovieFine.rawMovie',fineSz);

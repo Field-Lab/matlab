@@ -41,7 +41,7 @@ cell_params.sta_spatial_method=4;%1,2 ,3,4
 % STA spatial null Method 3 = low rank, 4 = average waveform and use it ..  
 
 mov_params=struct();
-mov_params.mov_type='bw';
+mov_params.mov_type='bw-precomputed';
 mov_params.movie_time=120*10/1;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.48*255;
@@ -65,4 +65,41 @@ mov_idx=1;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 mov_idx=2;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
+
+%% 
+
+%% WN+NULL spatio-temporal
+
+cell_params=struct();
+cell_params.type_name_inp='userCellList';%'nc2';%'userCellList';
+cell_params.cell_list=[318,2104,2943,3422,5718];%[;%[3888,2825,1820,4129, 5346,5671,5161,1278, 3828,3574,4036,3572, 503,560,797,1009,487,181,901]; % if type_name_inp = 'userCellList' 
+cell_params.use_fits=2;
+cell_params.STAlen=14;
+
+mov_params=struct();
+mov_params.mov_type='bw-precomputed';
+mov_params.movie_time=120*10;
+mov_params.mean=0.5*255;
+mov_params.deviation=0.48*255;
+
+mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-11111.xml';
+mov_params.stixel=8;
+
+
+% Post process. Default is stretch. If using default, need to give only mov_params.scaling_loss parameter.
+mov_params.post_process_method = 'scale'; % or, 'stretch'
+mov_params.scale = 0.48/0.48;
+%mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
+
+solver=16;
+
+[mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+movies{3}=mov_orignial;
+movies{4}=mov_modify_new;
+mov_idx=3;
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
+mov_idx=4;
+write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
+
+%[cMaps,h]=makecMap(destination_mat,movIDs,rawMovFrames)
 
