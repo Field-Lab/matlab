@@ -35,13 +35,13 @@ clear
 %% -----------------INPUTS---------------------------------
 file_name = '2006-06-06-2/data012/data012';
 stixel_size = 10;
-cell_specification = [278 5796]; % put cells in same order as Voronoi_stimulus where the mask was generated
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
+cell_specification = ['all']; % put cells in same order as Voronoi_stimulus where the mask was generated
+mdf_file='/Volumes/Analysis-1/stimuli/white-noise-xml/RGB-10-2-0.48-11111-6x8.xml';
 num_colors = 3;
 %% --------------------------- Load Data -----------------------------
 
-datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
-datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
+datarun.names.rrs_neurons_path=['/Volumes/Analysis-1/', file_name, '.neurons'];
+datarun.names.rrs_params_path=['/Volumes/Analysis-1/', file_name, '.params'];
 
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
@@ -56,7 +56,7 @@ datarun=load_data(datarun,opt);
 %% --------------------------- Get Spikes and Movie -----------------------------
 % Find out indices for desired cell type
 cellID = get_cell_indices(datarun, cell_specification);
-for cell = 1:length(cellID)
+for cell = 3:length(cellID)
     spikes=datarun.spikes{cellID(cell)};
     spikes = spikes*1000;
     triggers=datarun.triggers; %onsets of the stimulus presentation
@@ -70,7 +70,7 @@ for cell = 1:length(cellID)
     
 %% --------------------------- Compute STA of one cell -----------------------------
 
-    [sta{cell}, timecourse{cell}, sig_stixels{cell}] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1, cell, length(cellID));
+    [sta{cell}, timecourse{cell}, sig_stixels{cell}] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1, cell, 1);
 end
 %% --------------------------- Fitting code below, STOP HERE -----------------------------
 % 

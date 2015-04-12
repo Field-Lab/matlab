@@ -36,17 +36,17 @@
 
 clear
 %% ------------------------------ INPUTS -----------------------------------
-cells = {722, 3032};
-file_name = '2006-06-06-2/data003/data003';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
-file_path = '/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code/test.txt';
-screen_size_y =480; % vertical size
-screen_size_x = 640; % hortizontal size
-stixel_size = 16;
+cells = {5329};
+file_name = '2015-04-09-5/data001/data001';
+mdf_file='/Volumes/Analysis-1/stimuli/white-noise-xml/BW-20-8-0.48-22222-16x16.xml';
+file_path = ['/Users/vision/matlab/private/colleen/New Cell Types/Stimulus Code/2014-04-09-5/data001_', num2str(cells{1}), '.txt'];
+screen_size_y =320; % vertical size
+screen_size_x = 320; % hortizontal size
+stixel_size = 20;
 %% ------------------------------- Load Data ------------------------------------------
 
-datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
-datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
+datarun.names.rrs_params_path=['/Volumes/Acquisition/Analysis/', file_name, '.params'];
+datarun.names.rrs_sta_path = ['/Volumes/Acquisition/Analysis/', file_name, '.sta'];
 opt=struct('verbose',1,'load_params',1,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',false);
 opt.load_sta_params.frames = 1:30;% if this line is missing, will error; have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
@@ -154,10 +154,32 @@ end
 %% -------------------------------- Populate the mask --------------------------------------
 scale_factor_x = screen_size_x/ stixel_size;
 scale_factor_y = screen_size_y/stixel_size;
+subdivide = 2;
+count = 1;
 for i = 1:size(large_cell_stixels_final,1)
-    pix_y = (stixel_size*large_cell_stixels_final(i, 1)-(stixel_size-1)):(stixel_size)*large_cell_stixels_final(i,1);
-    pix_x = (stixel_size*large_cell_stixels_final(i,2)-(stixel_size-1)):(stixel_size)*large_cell_stixels_final(i,2);
-    myMap(pix_x,pix_y) = i;
+    
+    subdivide_factor = mod(i,4);
+    pix_y =     stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1);
+    pix_x =    stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2);
+    
+    myMap(pix_x,pix_y) = count;
+    count = count+1;
+    pix_y =     -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1)- stixel_size/subdivide;
+    pix_x =    -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide;
+    
+    myMap(pix_x,pix_y) = count;
+    count = count+1;
+    
+    pix_y =     stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1);
+    pix_x =    -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide;
+    myMap(pix_x,pix_y) = count;
+    count = count+1;
+    
+    pix_y =     -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1)- stixel_size/subdivide;
+    pix_x =    stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2);
+    myMap(pix_x,pix_y) = count;
+    count = count+1;
+    
 end
 
 
