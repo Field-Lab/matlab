@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting, cell, num_cells)
+function [sta_new, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting, cell, num_cells, image, offset_x, offset_y, map, stixel_size, num_colors)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 
 
@@ -46,7 +46,7 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
     triggers, 1,2);
 
 [mvi] = load_movie(mdf_file, triggers);
-
+% mvi = squeeze(mvi(:,:,1,:));
 % Compute the time each stimulus frame occurred
 
 bt_triggers = triggers - [0;triggers(1:end-1)];
@@ -66,8 +66,8 @@ height = height/num_cells; % assume movie file has the STA stacked vertically
 sta=zeros(height,width,3, num_frames); %height, width, frames back
 tic
 icnt=0;
-spikes = spikes(1:10000); % only use for testing parasols
-
+% spikes = spikes(1:10000); % only use for testing parasols
+% spikes = spikes(1:4199);
 %% ---------------------- Use spike times to form STA --------------------------
 for i=spikes'
     % ignore spikes without num_frames preceding it
@@ -79,28 +79,64 @@ for i=spikes'
         end
         
         for j=1:num_frames
+            try
             F = round(mvi.getFrame(start+j).getBuffer);
             pixels = length(F)/num_cells;
             sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(cell*pixels-pixels+1:3:cell*pixels),width,height)'-0.5); % store the three color channels
-            sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(cell*pixels-pixels+2:3:cell*pixels),width,height)'-0.5);
-            sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(cell*pixels-pixels+3:3:cell*pixels),width,height)'-0.5);
+            if num_colors == 3
+                sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(cell*pixels-pixels+2:3:cell*pixels),width,height)'-0.5);
+                sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(cell*pixels-pixels+3:3:cell*pixels),width,height)'-0.5);
+            end
             %             sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
             %             sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
             %             sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
-        end
+            catch
+                a = 1;
+            end
+            
+            end
     end
 end
-sta=sta/icnt;
+if num_colors ==1
+    sta = sta(:,:,1,:);
+end
 
+% need to rearrange the sta to be in the map order
+sta_new = zeros(size(map,1)/stixel_size,size(map,2)/stixel_size,num_colors,num_frames);
+map_x = map(:,1:stixel_size:end);
+map_stix = map_x(1:stixel_size:end,:);
+% sta = permute(sta, [2,1,3,4]); % so that single indexing goes vertically
+for i = 1:height*width
+    [x,y] = find(map_stix == i);
+    down_index = floor((i-1)/width)
+    across_index = mod(i-1,width)
+    sta_new(x,y, :,:) = sta(down_index+1,across_index+1,:,:);
+end
+sta_new=sta_new/icnt;
+
+for i = 1:30
+    if num_colors == 3
+    figure; imagesc(sta_new(:,:,2,i), [0 1])
+    else
+            figure; imagesc(sta_new(:,:,1,i))
+    end
+    
+end
+
+    
+% image(offset_y+1: offset_y+height, offset_x+1:offset_x+width, :,:) = sta;
+
+% sta = image;
 % find best STA frame
-[junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
+[junk,start_index] = max(sum(reshape(sta_new.^2,[],size(sta_new,4)),1));
 
 % normalize STA color
 % sta = norm_image(sta);
-
+close al
 %% ------------------ Compute the timecourse --------------------------
-[sig_stixels] = significant_stixels(sta);
-[timecourse, params] = time_course_from_sta(sta, sig_stixels);
+[sig_stixels] = significant_stixels(sta_new);
+
+[timecourse, params] = time_course_from_sta(sta_new, [18,24])%sig_stixels);
 
 
 if plotting == 1    
@@ -108,7 +144,7 @@ if plotting == 1
     title('TimeCourse from MATLAB STA')
     % Show the best frame of the STA
     figure
-    imagesc(squeeze(norm_image(sta(:,:,:, start_index))));
+    imagesc(squeeze(norm_image(sta_new(:,:,:, start_index))));
     title(['STA Frame: ' num2str(start_index)]);
 end
 

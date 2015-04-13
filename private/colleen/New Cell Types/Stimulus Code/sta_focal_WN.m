@@ -33,30 +33,54 @@
 clear
 
 %% -----------------INPUTS---------------------------------
-file_name = '2006-06-06-2/data012/data012';
+file_name = '2015-04-09-5/data004/data004';
 stixel_size = 10;
-cell_specification = ['all']; % put cells in same order as Voronoi_stimulus where the mask was generated
-mdf_file='/Volumes/Analysis-1/stimuli/white-noise-xml/RGB-10-2-0.48-11111-6x8.xml';
-num_colors = 3;
-%% --------------------------- Load Data -----------------------------
+cell_specification = [7486]; % put cells in same order as Voronoi_stimulus where the mask was generated
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-8-0.48-11111-6x8.xml';
+screen_height = 320;
+screen_width = 320;
+num_colors = 1;
 
-datarun.names.rrs_neurons_path=['/Volumes/Analysis-1/', file_name, '.neurons'];
-datarun.names.rrs_params_path=['/Volumes/Analysis-1/', file_name, '.params'];
+%% --------------------------- Load Data -----------------------------
+% Compute offset
+num_frames = 30; % both have to be run with the name number of frames
+map = load('/Volumes/Analysis/2015-04-09-5/data001_2483.txt');
+[x,y] = find(map>0);
+ offset_y = (x(find(min(x)))-1)/stixel_size;
+ offset_x = (y(find(min(y)))-1)/stixel_size;
+image = zeros(screen_height/stixel_size, screen_width/stixel_size, num_colors, num_frames);
+
+datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
+datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
 
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
 dataset(to_replace) = '-';
-num_frames = 30; % both have to be run with the name number of frames
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits', 0, 'load_sta', 0, 'load_sta_params', 0, 'load_all',true);
 opt.load_sta_params.save_rf = 0;
 opt.load_sta_params.frames = 1:30; % have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
+%  for id = 1:length(cellids_original)
+%         ind = find(datarun.cell_ids == cellids_original(id));
+%         if ind ~= 0
+%             if length(datarun.spikes{ind}) > (length(datarun2.spikes{id})-500)
+%                 if length(datarun2.spikes{id}) > 500
+%                 result(1,id) = 1;
+%                 result(2,id) = length(datarun.spikes{ind});
+%                 result(3,id) = length(datarun2.spikes{id});
+%                 end
+%                 
+%             end
+%         end
+%         
+%  end
+ 
 %% --------------------------- Get Spikes and Movie -----------------------------
 % Find out indices for desired cell type
 cellID = get_cell_indices(datarun, cell_specification);
-for cell = 3:length(cellID)
+for cell = 1:length(cellID)
     spikes=datarun.spikes{cellID(cell)};
     spikes = spikes*1000;
     triggers=datarun.triggers; %onsets of the stimulus presentation
@@ -66,11 +90,11 @@ for cell = 3:length(cellID)
     
     [mvi] = load_movie(mdf_file, triggers);
     
-
+    
     
 %% --------------------------- Compute STA of one cell -----------------------------
 
-    [sta{cell}, timecourse{cell}, sig_stixels{cell}] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1, cell, 1);
+    [sta{cell}, timecourse{cell}, sig_stixels{cell}] = compute_only_sta(datarun, mdf_file, num_frames, spikes, 1, cell, 1,image, offset_x, offset_y, map, stixel_size, num_colors);
 end
 %% --------------------------- Fitting code below, STOP HERE -----------------------------
 % 
