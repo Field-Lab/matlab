@@ -36,28 +36,29 @@
 
 clear
 %% ------------------------------ INPUTS -----------------------------------
-cells = {4921};
-file_name = '2015-04-09-5/data005/data005';
-mdf_file='/Volumes/Analysis-1/stimuli/white-noise-xml/BW-10-8-0.48-11111-8x8.xml';
+cells = {3993};
+file_name = '2015-04-09-5/data001/data001';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-20-8-0.48-11111-16x16.xml';
 file_path = ['/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code/2014-04-09-5/data011_', num2str(cells{1}), '.txt'];
-screen_size_y =320; % vertical size
-screen_size_x = 320; % hortizontal size
-stixel_size = 20;
+screen_width = 320; % in pixels % vertical size
+screen_height = 320; % hortizontal size
+stixels_ref = 20;
+stixels_focal = 5; % must be a factor of stixels_ref
 %% ------------------------------- Load Data ------------------------------------------
 
-datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
-datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
+datarun.names.rrs_params_path=['/Volumes/Acquisition/Analysis/', file_name, '.params'];
+datarun.names.rrs_sta_path = ['/Volumes/Acquisition/Analysis/', file_name, '.sta'];
 opt=struct('verbose',1,'load_params',1,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',false);
 opt.load_sta_params.frames = 1:30;% if this line is missing, will error; have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
 %% ------------------------------- Plot Vision STA -----------------------------
-myMap = zeros(screen_size_y, screen_size_x); % pixesl on the screen
+myMap = zeros(screen_height, screen_width); % pixesl on the screen
 for cell = 1:size(cells,2)
     [cell_numbers, cell_type, cell_type_number] = get_cell_indices(datarun, cells{cell});
     sta = datarun.stas.stas{cell_numbers};
-%     sig_stixels = significant_stixels(sta);
-    sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 0.5)
+    sig_stixels = significant_stixels(sta);
+%     sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 0.5)
     
     % find peak frame
     time_course = time_course_from_sta(sta, sig_stixels);
@@ -126,6 +127,8 @@ for k = 1:size(overall_size,1)
 end
 
 %% ---------------------------- Get all important stixels  --------------------------
+
+
 large_cell_stixels = zeros(length(x_stix(1,:)).*length(y_stix(1,:)),2);
 
 for k = 1:size(overall_size,1)
@@ -138,49 +141,105 @@ for k = 1:size(overall_size,1)
     large_cell_stixels(1*[1:loc_x*loc_y],2) = repmat(y_stix2',length(x_stix2),1);
     large_cell_stixels_final(k*[loc_x*loc_y]- [loc_x*loc_y] + 1:k*[loc_x*loc_y], :) = large_cell_stixels(1*[1:loc_x*loc_y], :);
 end
-
-large_cell_stixels_final = fliplr(large_cell_stixels_final);
+stixels = large_cell_stixels_final;
+% stixels = fliplr(large_cell_stixels_final);
+% stixels = [4,8;5,1; 5,3; 5,2; 8,20]; % down then across
 
 %% --------------------------------- Check if cells are on the screen ------------------------
-if max(large_cell_stixels_final(:,1)*stixel_size) > screen_size_x
-    disp('error: x dimension of chosen stixels doesn''t fit on screen')
-    return
-elseif max(large_cell_stixels_final(:,2)*stixel_size) > screen_size_y
-    disp('error: y dimension of chosen stixels doesn''t fit on screen')
-    return
-end
+% if max(large_cell_stixels_final(:,1)*stixel_size) > screen_size_x
+%     disp('error: x dimension of chosen stixels doesn''t fit on screen')
+%     return
+% elseif max(large_cell_stixels_final(:,2)*stixel_size) > screen_size_y
+%     disp('error: y dimension of chosen stixels doesn''t fit on screen')
+%     return
+% end
 
 
 %% -------------------------------- Populate the mask --------------------------------------
-scale_factor_x = screen_size_x/ stixel_size;
-scale_factor_y = screen_size_y/stixel_size;
-subdivide = 2;
+pix_per_stix = stixels_ref^2/stixels_focal^2;
+
+height_stix = screen_height/stixels_focal;
+width_stix = screen_width/stixels_focal;
+mask = zeros(screen_height, screen_width);
+
+final = zeros(screen_height, screen_width,2);
 count = 1;
-for i = 1:size(large_cell_stixels_final,1)
-    
-    subdivide_factor = mod(i,4);
-    pix_y =     stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1);
-    pix_x =    stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2);
-    
-    myMap(pix_x,pix_y) = count;
-    count = count+1;
-    pix_y =     -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1)- stixel_size/subdivide;
-    pix_x =    -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide;
-    
-    myMap(pix_x,pix_y) = count;
-    count = count+1;
-    
-    pix_y =     stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1);
-    pix_x =    -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide;
-    myMap(pix_x,pix_y) = count;
-    count = count+1;
-    
-    pix_y =     -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1)- stixel_size/subdivide;
-    pix_x =    stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2);
-    myMap(pix_x,pix_y) = count;
-    count = count+1;
-    
+
+for i = 1:screen_height/stixels_ref
+    for j = 1:screen_width/stixels_ref
+        final(i*stixels_ref- stixels_ref+1:i*stixels_ref, j*stixels_ref- stixels_ref+1:j*stixels_ref, 1) = i;
+        final(i*stixels_ref- stixels_ref+1:i*stixels_ref, j*stixels_ref- stixels_ref+1:j*stixels_ref, 2) = j;
+
+%         count = count+1;
+    end
 end
+
+
+flipped_stixels = fliplr(stixels);
+linear_stixels = sub2ind([screen_width/stixels_ref, screen_height/stixels_ref], flipped_stixels(:,1), flipped_stixels(:,2));
+sorted_linear_stixels = sort(linear_stixels, 'ascend');
+[x,y] = ind2sub([screen_width/stixels_ref, screen_height/stixels_ref],sorted_linear_stixels);
+sorted_stixels = fliplr([x,y]);
+pixels = [];
+for i = 1:size(sorted_stixels,1)
+    [x,y] =find(squeeze(final(:,:,1)) == sorted_stixels(i,1) & squeeze(final(:,:,2)) == sorted_stixels(i,2));
+%     for j = 1:length(x)
+            start_x = x(1:stixels_ref);
+            start_y = y(1:stixels_ref:end);
+            start_point_x = start_x(1:stixels_focal:end);
+            start_point_y = start_y(1:stixels_focal:end);
+            [X,Y] = meshgrid(start_point_x, start_point_y);
+            pixels = [pixels; X(:), Y(:)];
+%     end
+    
+%     mask((sorted_stixels(i,1)-1)*(stixels_ref)+1:(sorted_stixels(i,1)-1)*stixels_ref + size(mask_ind,1), (sorted_stixels(i,2)-1)*(stixels_ref)+1:(sorted_stixels(i,2)-1)*stixels_ref + size(mask_ind,2))  = mask_ind;
+end
+
+flipped_pixels = fliplr(pixels);
+linear_pixels = sub2ind([screen_width, screen_height], flipped_pixels(:,1), flipped_pixels(:,2));
+sorted_linear_pixels = sort(linear_pixels, 'ascend');
+[x,y] = ind2sub([screen_width, screen_height],sorted_linear_pixels);
+sorted_pixels = fliplr([x,y]);
+
+for i = 1:size(sorted_pixels,1)
+    mask(sorted_pixels(i,1):sorted_pixels(i,1)+stixels_focal-1,sorted_pixels(i,2):sorted_pixels(i,2)+stixels_focal-1) = i;
+end
+
+figure
+imagesc(mask)
+axis equal
+
+
+%%  old way of doing this with stupid numbering of pixels
+% scale_factor_x = screen_size_x/ stixel_size;
+% scale_factor_y = screen_size_y/stixel_size;
+% subdivide = 2;
+% count = 1;
+% for i = 1:size(large_cell_stixels_final,1)
+%     
+%     subdivide_factor = mod(i,4);
+%     pix_y =     stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1);
+%     pix_x =    stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2);
+%     
+%     myMap(pix_x,pix_y) = count;
+%     count = count+1;
+%     pix_y =     -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1)- stixel_size/subdivide;
+%     pix_x =    -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide;
+%     
+%     myMap(pix_x,pix_y) = count;
+%     count = count+1;
+%     
+%     pix_y =     stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1);
+%     pix_x =    -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide;
+%     myMap(pix_x,pix_y) = count;
+%     count = count+1;
+%     
+%     pix_y =     -stixel_size/subdivide+ stixel_size*large_cell_stixels_final(i, 1) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 1)- stixel_size/subdivide;
+%     pix_x =    stixel_size*large_cell_stixels_final(i, 2) - stixel_size/subdivide + 1: stixel_size*large_cell_stixels_final(i, 2);
+%     myMap(pix_x,pix_y) = count;
+%     count = count+1;
+%     
+% end
 
 
 
