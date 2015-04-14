@@ -92,8 +92,9 @@ mov_params.scale = 0.48/0.48;
 %mov_params.scaling_loss=0.05; % a number in [0,1], fraction of values that is changed by scaling.
 
 solver=16;
-
+tic;
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params,mov_params,solver);
+toc;
 movies{3}=mov_orignial;
 movies{4}=mov_modify_new;
 mov_idx=3;

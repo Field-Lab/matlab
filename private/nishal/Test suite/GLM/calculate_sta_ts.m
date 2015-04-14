@@ -36,14 +36,14 @@ STA=STA/sum(binnedResponses(useTrial,:));
 
 STA=squeeze(sum(STA,3));
 
- figure
- for itime=1:Filtlen
- imagesc(squeeze((STA(:,:,itime)))');colormap gray
- caxis([min(STA(:)),max(STA(:))]);
- axis image
- colorbar
- pause(1/120)
- end
+%  figure
+%  for itime=1:Filtlen
+%  imagesc(squeeze((STA(:,:,itime)))');colormap gray
+%  caxis([min(STA(:)),max(STA(:))]);
+%  axis image
+%  colorbar
+%  pause(1/120)
+%  end
  response.analyse.STA=STA;
  
 end

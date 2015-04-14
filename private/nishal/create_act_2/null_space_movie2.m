@@ -544,10 +544,11 @@ end
 zk=zk + x_k_1 - mov_modify_new;
 
 
-violations = sum(abs(mov_modify_new(:))>maxClip+0.0001);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
 [~,rat] = scale_pixel_variance(mov_modify_new,mov_show); % Remove?
 % Need to change post processing!!
-togo = (togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0.999) % input('Continue Iterating?');
+%togo = (togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0.999) % input('Continue Iterating?');
+togo=input('Continue?');
     end
     
 mov_orig=mov_show;
