@@ -35,8 +35,8 @@ clear
 %% -----------------INPUTS---------------------------------
 file_name = '2015-04-09-5/data004/data004';
 stixel_size = 10;
-cell_specification = [7486]; % put cells in same order as Voronoi_stimulus where the mask was generated
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-8-0.48-11111-6x8.xml';
+cell_specification = [5197]; % put cells in same order as Voronoi_stimulus where the mask was generated
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-8-0.48-11111-8x6.xml';
 screen_height = 320;
 screen_width = 320;
 num_colors = 1;
@@ -44,7 +44,7 @@ num_colors = 1;
 %% --------------------------- Load Data -----------------------------
 % Compute offset
 num_frames = 30; % both have to be run with the name number of frames
-map = load('/Volumes/Analysis/2015-04-09-5/data001_2483.txt');
+map = load('/Volumes/Analysis/2015-04-09-5/data001_5988.txt');
 [x,y] = find(map>0);
  offset_y = (x(find(min(x)))-1)/stixel_size;
  offset_x = (y(find(min(y)))-1)/stixel_size;
