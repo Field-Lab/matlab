@@ -44,7 +44,7 @@ num_colors = 1;
 %% --------------------------- Load Data -----------------------------
 % Compute offset
 num_frames = 30; % both have to be run with the name number of frames
-map = load('/Volumes/Analysis/2015-04-09-5/data001_5988.txt');
+map = load('/Volumes/Analysis/2015-04-09-5/data001_7637.txt');
 [x,y] = find(map>0);
  offset_y = (x(find(min(x)))-1)/stixel_size;
  offset_x = (y(find(min(y)))-1)/stixel_size;

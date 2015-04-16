@@ -36,18 +36,18 @@
 
 clear
 %% ------------------------------ INPUTS -----------------------------------
-cells = {5912};
-file_name = '2015-04-09-5/data008/data008';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-8-0.48-11111-8x6.xml';
+cells = {7637};
+file_name = '2015-04-09-5/data001/data001';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-20-8-0.48-11111-16x16.xml';
 file_path = ['/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code/2014-04-09-5/data011_', num2str(cells{1}), '.txt'];
 screen_width = 320; % in pixels % vertical size
 screen_height = 320; % hortizontal size
 stixels_ref = 20;
-stixels_focal = 5; % must be a factor of stixels_ref
+stixels_focal = 20; % must be a factor of stixels_ref
 %% ------------------------------- Load Data ------------------------------------------
 
-datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
-datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
+datarun.names.rrs_params_path=['/Volumes/Acquisition/Analysis/', file_name, '.params'];
+datarun.names.rrs_sta_path = ['/Volumes/Acquisition/Analysis/', file_name, '.sta'];
 opt=struct('verbose',1,'load_params',1,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',false);
 opt.load_sta_params.frames = 1:30;% if this line is missing, will error; have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
@@ -57,8 +57,8 @@ myMap = zeros(screen_height, screen_width); % pixesl on the screen
 for cell = 1:size(cells,2)
     [cell_numbers, cell_type, cell_type_number] = get_cell_indices(datarun, cells{cell});
     sta = datarun.stas.stas{cell_numbers};
-%     sig_stixels = significant_stixels(sta);
-    sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 0.5)
+    sig_stixels = significant_stixels(sta);
+%     sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 0.5)
     
     % find peak frame
     time_course = time_course_from_sta(sta, sig_stixels);
@@ -111,6 +111,7 @@ for cell = 1:size(cells,2)
     num_stixels(cell,:) = length(num_x)*length(num_y);
     
 end
+% overall_size(2,:) = [min_x-1, max_x+1, min_y-1, max_y+1];
 %% --------------------------- Compute size of white noise patch (matches for all cells) ---------------------
 % Chose largest width and height
 % Add to the right edge for cells missing odd number of stixels
