@@ -26,7 +26,7 @@ BASEDIR.BlockedSpikes         = '/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedS
 BASEDIR.Cell_Selection        = '/Volumes/Lab/Users/akheitman/NSEM_Home/Cell_Selection';
 BASEDIR.GLM_output_raw        = '/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw';
 BASEDIR.GLM_output_analysis   = '/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Analysis';
-BASEDIR.GLM_codehome          = '/Users/Nora/Documents/MATLAB/matlab/code/glm/';
+BASEDIR.GLM_codehome          = '/Users/Nora/Documents/MATLAB/matlab/code/projects/glm/';
 BASEDIR.GLM_troubleshootplots = sprintf('%s/troubleshootingplots', BASEDIR.GLM_codehome); 
 
 % 

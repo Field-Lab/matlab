@@ -12,6 +12,14 @@
 % glm_execute along with glm_core 
 %    which has no additional code dependencies, no loading of matfiles
 
+% INPUTS
+% exps: an array of which exps to run (1-4)
+% stimtypes: 1 = WN, 2=NSEM
+% celltypes: 1 = ON, 2 = OFF parasols
+% cell_subset: 'all' 'shortlist' or 'debug'
+% glm_settings: optional
+% runoptions: optional
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Wrap_bookeeping Calls %
