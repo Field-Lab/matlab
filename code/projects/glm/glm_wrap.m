@@ -174,6 +174,7 @@ for i_exp = exps
                             glm_cellinfo.pair_savename{i_pair}  = sprintf('%s_%d', celltype,glm_cellinfo.pairs(i_pair));
                             eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir,  glm_cellinfo.pair_savename{i_pair}));
                             neighborspikes.home{i_pair} = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
+                            neighborspikes.test{i_pair} = subR_createraster(organizedspikes.block, StimulusPars.slv);
                             % neighbor_organizedspikes{j}=organizedspikes;
                         end
                     end
