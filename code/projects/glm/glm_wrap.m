@@ -187,7 +187,7 @@ for i_exp = exps
                             fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
                     else
                         [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo, neighborspikes); % NBCoupling 2015-04-20
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     end
                     duration = toc(tStart);
                     display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
@@ -306,6 +306,7 @@ end
 %NBCoupling 2015-04-20
 function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
     
+     GLMPars = GLMParams;
      NumCells = length(cell_ids);
      distance=zeros(NumCells,1);
      
@@ -319,7 +320,7 @@ function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
      
      % Choose the closest cells
      [~,indices]=sort(distance);
-     paired_cells=cell_ids(1,indices(1:6));
+     paired_cells=cell_ids(1,indices(1:GLMPars.spikefilters.cp.n_couplings));
 
 end
 

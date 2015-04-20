@@ -62,6 +62,7 @@ GLMPars.spikefilters.cp.bstretch     = .05;
 GLMPars.spikefilters.cp.alpha        = 0;
 GLMPars.spikefilters.ps.fratio = .5  ;  % legacy afraid to take out
 GLMPars.spikefilters.cp.fratio = .4  ;  % legacy afraid to take out
+GLMPars.spikefilters.cp.n_couplings = 6  ;
 
 
 
