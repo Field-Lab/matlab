@@ -17,7 +17,7 @@
 %  prep_stimcelldependentGPXV
 
 
-function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,troubleshoot)
+function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
 
 
 %% Setup Covariates
@@ -67,15 +67,24 @@ if GLMType.PostSpikeFilter
     basis         = ps_basis';
     PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
 end
+% NBCoupling 05-28-14
 if GLMType.CouplingFilters;
+    n_couplings=length(neighborspikes.home);
     basis = cp_basis';
-    display('figure out coupling here!  CP_bin');
+    for j_pair=1:n_couplings
+        %spikes of neighbor neurons NB
+        neighbor_sptimes = neighborspikes.home{j_pair}';
+        neighbor_spbins  = ceil(neighbor_sptimes / t_bin);
+        neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
+        CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
+    end
+else n_couplings=0;
 end
+% end NBCoupling
 
 if GLMType.TonicDrive
     MU_bin = ones(1,bins);
 end
-
 
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 

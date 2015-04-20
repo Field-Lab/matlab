@@ -18,6 +18,16 @@ if GLMType.PostSpikeFilter
 	paramind.PS = [PSstart  : PSend];
 	numParams = numParams + GLMPars.spikefilters.ps.filternumber;
 end
+% NBCoupling 2015-04-20
+if GLMType.CouplingFilters
+    for j_params=1:GLMPars.spikefilters.cp.n_couplings
+        CPstart = numParams + 1;  CPend = numParams + GLMPars.spikefilters.cp.filternumber;
+        paramind.CP{j_params} = [CPstart  : CPend]; % paramind.CP has numbers for each coupled cell
+        numParams = numParams + GLMPars.spikefilters.cp.filternumber;
+    end
+end
+% end NBCoupling
+
 
 % Assign indices to the stim filter
 % If CONVEX assign here
