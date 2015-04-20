@@ -78,7 +78,7 @@ for i_exp = exps
         if i_stimtype == 1, stimtype = 'WN';   end
         if i_stimtype == 2, stimtype = 'NSEM'; end
         GLMType.fit_type = stimtype;
-        
+   
         % Load and process stimulus
         [StimulusPars, exp_info] = StimulusParams(exp_nm, stimtype, GLMType.map_type);
         [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'fitmovie');
@@ -107,9 +107,9 @@ for i_exp = exps
             if i_celltype == 2; cellgroup = allcells{i_exp}.OFFP; celltype = 'OFFPar'; end
             if strcmp(cell_subset,'all')
                 candidate_cells = [allcells{i_exp}.ONP allcells{i_exp}.OFFP]
-            elseif strcmp(cell_subset,'shortlist') || strcmp(cell_subset, 'debug') 
-                [~,candidate_cells,~]  = cell_list(i_exp, cell_subset); 
-                candidate_cells = cell2mat(candidate_cells) ; 
+            elseif strcmp(cell_subset,'shortlist') || strcmp(cell_subset, 'debug')
+                [~,candidate_cells,~]  = cell_list(i_exp, cell_subset);
+                candidate_cells = cell2mat(candidate_cells) ;
             elseif strcmp(cell_subset,'glmconv_4pct')
                 eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));              
                 conv_column = 2; 
@@ -117,13 +117,19 @@ for i_exp = exps
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
             end
+            % NBCoupling 2015-04-20
+            if GLMType.CouplingFilters
+                cells_to_pair = repmat(cellgroup,2,1);
+                for i_pair = 1:length(cellgroup)
+                    cells_to_pair(2,i_pair) = find(datarun_master.cell_ids == cellgroup(i_pair));
+                end
+            end 
             cellgroup = intersect(candidate_cells, cellgroup)
-            if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end           
+            if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end
             
-
             for i_cell = 1:length(cellgroup)
-                cid = cellgroup(i_cell); 
-                cell_savename = sprintf('%s_%d', celltype,cid);             
+                cid = cellgroup(i_cell);
+                cell_savename = sprintf('%s_%d', celltype,cid);
                 if ~exist(sprintf('%s/%s.mat', Dirs.fittedGLM_savedir,cell_savename)) || (exist('replace_existing','var') && replace_existing)
                     % Create cell information structure
                     glm_cellinfo.cid            = cid;
@@ -139,11 +145,19 @@ for i_exp = exps
                     master_idx         = find(datarun_master.cell_ids == cid);
                     stafit_centercoord = ( datarun_master.vision.sta_fits{master_idx}.mean );
                     stafit_sd          = ( datarun_master.vision.sta_fits{master_idx}.sd   );
-                    slvdim.height      = StimulusPars.slv.height; 
-                    slvdim.width       = StimulusPars.slv.width; 
+                    slvdim.height      = StimulusPars.slv.height;
+                    slvdim.width       = StimulusPars.slv.width;
                     [center_coord,sd]  = subR_visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, StimulusPars.master, slvdim);
                     glm_cellinfo.WN_STA = STAandROI.STA;
                     glm_cellinfo.slave_centercoord = center_coord;
+                    
+                    % NBCoupling 06-10-2014
+                    if GLMType.CouplingFilters==true
+                        glm_cellinfo.pairs=subR_pick_neighbor_cells(stafit_centercoord, cells_to_pair, datarun_master.vision.sta_fits);
+                    else
+                        glm_cellinfo.pairs=0;
+                    end
+                    % end NBCoupling
                     
                     % Load Blocked-Spikes from preprocessing
                     eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir, cell_savename));
@@ -152,7 +166,20 @@ for i_exp = exps
                     fitspikes_concat.home  = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
                     testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
                     
-                    % Call appropriate glm_execute                   
+                    % NBCoupling 2014-04-20
+                    if GLMType.CouplingFilters
+                        n_couplings=length(glm_cellinfo.pairs); % number of cells to couple to
+                        % loading the neighboring spikes to neighborspikes.home
+                        for i_pair=1:n_couplings
+                            glm_cellinfo.pair_savename{i_pair}  = sprintf('%s_%d', celltype,glm_cellinfo.pairs(i_pair));
+                            eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir,  glm_cellinfo.pair_savename{i_pair}));
+                            neighborspikes.home{i_pair} = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
+                            % neighbor_organizedspikes{j}=organizedspikes;
+                        end
+                    end
+                    % end NBCoupling
+                    
+                    % Call appropriate glm_execute
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
                     if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
@@ -160,10 +187,10 @@ for i_exp = exps
                             fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
                     else
                         [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo);            
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo, neighborspikes); % NBCoupling 2015-04-20
                     end
                     duration = toc(tStart);
-                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic                                      
+                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                 end
             end
         end
@@ -275,6 +302,27 @@ sd.xdir = round( stafit_sd(1)* (slvdim.width   / masterdim.width)  );
 sd.ydir = round( stafit_sd(2)* (slvdim.height  / masterdim.height)  );
 
 end
+
+%NBCoupling 2015-04-20
+function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
+    
+     NumCells = length(cell_ids);
+     distance=zeros(NumCells,1);
+     
+     % Calculate distance between RFs
+     for i_pair=1:NumCells
+         distance(i_pair)=norm(sta_fits{cell_ids(2,i_pair),1}.mean-mean);
+         if distance(i_pair)==0
+             distance(i_pair)=NaN;
+         end
+     end
+     
+     % Choose the closest cells
+     [~,indices]=sort(distance);
+     paired_cells=cell_ids(1,indices(1:6));
+
+end
+
 
 
 
