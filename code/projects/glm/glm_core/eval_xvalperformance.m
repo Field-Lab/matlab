@@ -8,7 +8,7 @@
 % VERSION 1 includes edit to make sure NSEM for experiment 4 works fine
 % VERSION 1 : 2015-01-20
 
-function [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes,testmovie,inputstats)
+function [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes,testmovie,inputstats,testneighborspikes)
 %%
 bpf               = fittedGLM.bins_per_frame;
 params.bindur     = fittedGLM.t_bin;
@@ -30,13 +30,26 @@ for i_blk = 1 : params.trials
 end 
 clear i_blk spt sptimes
 
+% NBCoupling 2015-04-20
+if fittedGLM.GLMType.CouplingFilters
+    for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+        pairspike{pair} = zeros(params.trials,params.bins) ;
+        for i_blk = 1 : params.trials
+            spt = testneighborspikes{pair}{i_blk};
+            binnumber = ceil(spt / params.bindur );
+            pairspike{pair}( i_blk, binnumber )  =  pairspike{pair}( i_blk,binnumber ) + 1;
+        end
+        clear i_blk spt sptimes
+    end
+end
+
+
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
 [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord) ;
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
-
 
   
     %% Set up CIF Components
@@ -46,6 +59,11 @@ MU = fittedGLM.linearfilters.TonicDrive.Filter;
 if GLMType.PostSpikeFilter
     PS = fittedGLM.linearfilters.PostSpike.Filter;
 end
+% NBCoupling 06-23-2014
+if GLMType.CouplingFilters
+    CP = fittedGLM.linearfilters.Coupling.Filter;
+end
+% NBcoupling
 K  = fittedGLM.linearfilters.Stimulus.Filter;
 
 % HUGE HACK AKHeitman 2014-10-21
@@ -99,13 +117,20 @@ lcif_kx0 = reshape( repmat(lcif_kx_frame, bpf, 1) , 1 , params.bins);
 lcif_mu0 = MU * ones (1,params.bins);     
 lcif_mu = repmat(lcif_mu0 , params.trials, 1);
 lcif_kx = repmat(lcif_kx0 , params.trials, 1);    
-clear sbpf;   
+clear sbpf;  
+lcif = lcif_mu + lcif_kx;
 if GLMType.PostSpikeFilter
     lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
-    lcif = lcif_mu + lcif_kx + lcif_ps;
-else
-    lcif = lcif_mu + lcif_kx;
+    lcif = lcif + lcif_ps; 
 end
+% NBCoupling 06-23-2014
+if GLMType.CouplingFilters
+    for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+        lcif_cp = fastconv(pairspike{pair} , [0; CP{pair}]', size(pairspike{pair},1), size(pairspike{pair},2) );
+        lcif = lcif + lcif_cp;
+    end
+end
+% end NBCoupling
 glm_ratepersec  = exp(lcif);
 glm_rateperbin  = params.bindur * glm_ratepersec;
     
@@ -147,11 +172,11 @@ lcif_const  = lcif_kx0 + lcif_mu0;
 logical_sim = zeros(params.trials, params.bins);
 
 
-if GLMType.PostSpikeFilter
+if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
     cif_psgain = exp(PS);
     ps_bins     = length(cif_psgain);
     for i_trial = 1 : size(logicalspike,1)
-        cif0         = exp(lcif_const);         
+        cif0         = exp(lcif_const);
         cif_ps       = cif0;
         binary_simulation = zeros(1,params.bins);
         for i = 1 : params.bins- ps_bins;
@@ -164,11 +189,64 @@ if GLMType.PostSpikeFilter
         logical_sim(i_trial,:) = binary_simulation ;
     end
     
-   
+    
+    % NBCoupling
+elseif GLMType.CouplingFilters && ~GLMType.PostSpikeFilter
+    for i=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+        cif_cpgain{i} = exp(CP{i});
+    end
+    cp_bins     = length(cif_cpgain{1});
+    for i_trial = 1 : size(pairspike{pair},1)
+        cif0         = exp(lcif_const);
+        cif_cp       = cif0;
+        binary_simulation = zeros(1,params.bins);
+        for i = 1 : params.bins- cp_bins;
+            roll = rand(1);
+            if roll >  exp(-params.bindur*cif_cp(i));
+                binary_simulation(i)= 1;
+            end
+            for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+                if pairspike{pair}(i_trial,i)
+                    cif_cp(i+1: i + cp_bins) =  cif_cp(i+1: i + cp_bins) .* (cif_cpgain{pair}');
+                end
+            end
+        end
+        logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_cp;
+    end
+    
+elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
+    for i=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+        cif_cpgain{i} = exp(CP{i});
+    end
+    cif_psgain = exp(PS);
+    ps_bins     = length(cif_psgain);
+    cp_bins     = length(cif_cpgain{1});
+    for i_trial = 1 : size(pairspike{pair},1)
+        cif0         = exp(lcif_const);
+        cif_ps_cp       = cif0;
+        binary_simulation = zeros(1,params.bins);
+        for i = 1 : params.bins- cp_bins;
+            roll = rand(1);
+            if roll >  exp(-params.bindur*cif_ps_cp(i));
+                cif_ps_cp(i+1: i + ps_bins) =  cif_ps_cp(i+1: i + ps_bins) .* (cif_psgain');
+                binary_simulation(i)= 1;
+            end
+            for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+                if pairspike{pair}(i_trial,i)
+                    cif_ps_cp(i+1: i + cp_bins) =  cif_ps_cp(i+1: i + cp_bins) .* (cif_cpgain{pair}');
+                end
+            end
+        end
+        logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_ps_cp;
+    end
+    % end NBCoupling
+    
     
 else
     for i_trial = 1 : size(logicalspike,1)
-        cif         = exp(lcif_const);         
+        cif         = exp(lcif_const);
         binary_simulation = zeros(1,params.bins);
         for i = 1 : params.bins;
             roll = rand(1);
