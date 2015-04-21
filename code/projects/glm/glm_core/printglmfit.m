@@ -46,8 +46,6 @@ set(gca, 'fontsize', 10);
 imagesc(K_space1);
 title('Space Filter'); axis off
 
-
-
 LW = 2;
 subplot(5,4,[6,10])
 set(gca, 'fontsize', 10);
