@@ -7,7 +7,7 @@ datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
 interpolate = false;
 % cell_specification = [502,860,1024,1130,2076,2361,2618,2705,3022,3172,3213,3559,4022,4071,4238,4774,4852,5496,6518,6533,6860,7279,7671];
-cell_type = {'on parasol'};
+cell_type = {'on large fast'};
 slashes = strfind(datarun.names.rrs_neurons_path, '/');
 dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
@@ -33,7 +33,8 @@ for num_cell_types = 1:size(cell_type,2)
 end
 
 cell_specification = datarun.cell_types{cell_type_index}.cell_ids;
-% cell_specification = [6241];
+% cell_specification = 1562;
+cell_specification = [6143];
 
 % Find out indices for desired cell type
 
@@ -78,7 +79,7 @@ for rgc = 1:num_rgcs
 
 
                     
-[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', false, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames);
+[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames);
 % Plot result
 %  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
 
