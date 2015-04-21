@@ -119,62 +119,6 @@ end
 orient landscape
 eval(sprintf('print -dpdf %s.pdf',printname))
 
-if 0 % need to do some more work (like load the datarun) 2015-04-20
-    % NBCoupling 
-    if GLMType.CouplingFilters
-        figure;
-        clf
-        subplot(6,6,1)
-        set(gca, 'fontsize', 10, 'XTick',[],'YTick',[]);
-        axis off;
-        bins    = [1:length(CP{1})];
-        time_msec = 1000*dt*bins ;
-        oneline = ones(1,length(time_msec));
-        for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
-            subplot(6,6,2*pair-1+6)
-            set(gca, 'fontsize', 10);
-            axis off;
-            plot_rf_fit(datarun_slv, info.pairs(1:6),'edge',true)
-            plot_rf_fit(datarun_slv, info.pairs(pair), 'fill_color',[1 0 0],'fill',true,'edge',false)
-            plot_rf_fit(datarun_slv, info.cid,'fill',true)
-            
-            subplot(6,6,2*pair+6)
-            set(gca, 'fontsize', 10);
-            plot(time_msec, oneline, 'k-'); hold on
-            plot(time_msec, exp(CP{pair}),'color', 'b','linewidth', LW);
-            xlim([0, time_msec(end)]);
-            ylim([0, 2]);
-            ylabel('gain'); xlabel('msec');
-            %text(0,0,info.pair_savename{pair});
-        end
-        subplot(6,6,19)
-        set(gca, 'fontsize', 10, 'XTick',[],'YTick',[]);
-        axis off;
-        text(0,0,sprintf('OFF-%s: %s %d: %s-Fit', info.celltype))
-        for pair=7:12
-            
-            subplot(6,6,2*pair-1+12)
-            set(gca, 'fontsize', 10);
-            axis off;
-            plot_rf_fit(datarun_slv, info.pairs(7:12),'edge',true)
-            plot_rf_fit(datarun_slv, info.pairs(pair), 'fill_color',[1 0 0],'fill',true,'edge',false)
-            plot_rf_fit(datarun_slv, info.cid,'fill',true)
-            
-            subplot(6,6,2*pair+12)
-            set(gca, 'fontsize', 10);
-            plot(time_msec, oneline, 'k-'); hold on
-            plot(time_msec, exp(CP{pair}),'color', 'b','linewidth', LW);
-            xlim([0, time_msec(end)]);
-            ylim([0, 2]);
-            ylabel('gain'); xlabel('msec');
-            %text(0,0,info.pair_savename{pair});
-        end
-        
-        orient landscape
-        eval(sprintf('print -dpdf %s.pdf',[printname 'Coupling']))
-    end
-    % end NBCoupling
-end
 end
 
     
