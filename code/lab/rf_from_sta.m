@@ -131,7 +131,7 @@ frames = parse_frame_spec(params.frames,size(sta,4));
 sta = sta(:,:,:,frames);
 % get significant stixels, if needed
 if isempty(params.sig_stixels)
-params.sig_stixels = significant_stixels(sta,'select', 'thresh', 'thresh', 2.0);
+params.sig_stixels = significant_stixels(sta);
 end
 % get timecourse of each color
 timecourse = time_course_from_sta(sta,params.sig_stixels);
