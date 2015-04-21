@@ -33,10 +33,10 @@
 clear
 
 %% -----------------INPUTS---------------------------------
-file_name = '2015-04-09-5/data004/data004';
-stixel_size = 10;
-cell_specification = [5197]; % put cells in same order as Voronoi_stimulus where the mask was generated
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-8-0.48-11111-8x6.xml';
+file_name = '2015-04-14-2/data011/data011';
+stixel_size = 20;
+cell_specification = [7356]; % put cells in same order as Voronoi_stimulus where the mask was generated
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-20-8-0.48-11111-5x5-7357.xml';
 screen_height = 320;
 screen_width = 320;
 num_colors = 1;

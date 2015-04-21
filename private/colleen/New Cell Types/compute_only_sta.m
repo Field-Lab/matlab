@@ -114,9 +114,9 @@ for i = 1:height*width
 end
 sta_new=sta_new/icnt;
 
-for i = 1:30
+for i = 24:30
     if num_colors == 3
-    figure; imagesc(sta_new(:,:,2,i), [0 1])
+    figure; imagesc(sta_new(:,:,2,i))
     else
             figure; imagesc(sta_new(:,:,1,i))
     end
