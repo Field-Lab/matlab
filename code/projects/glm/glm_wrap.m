@@ -177,6 +177,9 @@ for i_exp = exps
                             neighborspikes.test{i_pair} = subR_createraster(organizedspikes.block, StimulusPars.slv);
                             % neighbor_organizedspikes{j}=organizedspikes;
                         end
+                    else
+                        neighborspikes.home = 0;
+                        neighborspikes.test = 0;
                     end
                     % end NBCoupling
                     
