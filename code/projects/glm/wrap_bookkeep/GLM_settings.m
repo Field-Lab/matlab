@@ -150,10 +150,18 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             end
         end
         
+        if strcmp(change.type, 'CouplingFilters')
+            if strcmp(change.name, 'ON')
+                GLMType.CouplingFilters = true;
+            end
+        end
+        
         if strcmp(change.type, 'specialchange')
             GLMType.specialchange = true;
             GLMType.specialchange_name = change.name;
         end
+        
+
         
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
