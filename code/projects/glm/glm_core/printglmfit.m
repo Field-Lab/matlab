@@ -11,6 +11,11 @@ end
 if GLMType.PostSpikeFilter
     PS = fittedGLM.linearfilters.PostSpike.Filter;
 end
+% NBCoupling
+if GLMType.CouplingFilters
+    CP = fittedGLM.linearfilters.Coupling.Filter;
+end
+% end NBCoupling
 
 K        = fittedGLM.linearfilters.Stimulus.Filter;
 K_time1  = fittedGLM.linearfilters.Stimulus.time_rk1; 
@@ -41,8 +46,6 @@ set(gca, 'fontsize', 10);
 imagesc(K_space1);
 title('Space Filter'); axis off
 
-
-
 LW = 2;
 subplot(5,4,[6,10])
 set(gca, 'fontsize', 10);
@@ -64,22 +67,33 @@ if GLMType.PostSpikeFilter
     time_msec = 1000*dt*bins ;
     oneline = ones(1,length(time_msec)); 
     plot(time_msec, oneline, 'k-'); hold on
-    plot(time_msec, exp(PS),'color', 'b','linewidth', LW); 
+    plot(time_msec, exp(PS),'color', 'b','linewidth', LW);
     xlim([0, time_msec(end)]);
     ylim([0, max(1.5, max(exp(PS)))]);
     ylabel('gain'); xlabel('msec'); title('Post Spike Filter')
 end
 
 
-subplot(5,4,[8,12]);
-text(.3,.5,'CP here'); axis off
+% NBCoupling
+if GLMType.CouplingFilters
+    subplot(5,4,[8,12])
+    set(gca, 'fontsize', 10);
+    plot(time_msec, oneline, 'k-'); hold on
+    for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+        plot(time_msec, exp(CP{pair}));
+    end
+    xlim([0, time_msec(end)]);
+    ylim([0, 2]);
+    ylabel('gain'); xlabel('msec'); title('Coupling Filters')
+end
+% end NBCoupling
 
 subplot(5,1,[4,5]);
 
 secs     = 8;
 bins     = 120 * 8 * fittedGLM.bins_per_frame;
 rec_rast = fittedGLM.xvalperformance.rasters.recorded(:,1:bins);
-sim_rast = fittedGLM.xvalperformance.rasters.glm_sim(:,1:bins); 
+sim_rast = fittedGLM.xvalperformance.rasters.glm_sim(:,1:bins);
 trials   = size(rec_rast,1);
 time     = dt*[1:bins];
 xlim([0, ceil(time(end))]);
@@ -93,21 +107,16 @@ for i_trial = 1:trials
     
     plot(rec1, i_trial, 'k.')
     
-    if length(sim1) < 4*length(rec1) 
+    if length(sim1) < 4*length(rec1)
         if length(sim1) > 0
             plot(sim1, i_trial + trials, 'r.')
         end
     end
 end
-    
-    
-    
-
-
-
 
 orient landscape
 eval(sprintf('print -dpdf %s.pdf',printname))
+
 end
 
     

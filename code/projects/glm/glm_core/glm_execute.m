@@ -17,7 +17,7 @@
 %  prep_stimcelldependentGPXV
 
 
-function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,troubleshoot)
+function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
 
 
 %% Setup Covariates
@@ -67,15 +67,22 @@ if GLMType.PostSpikeFilter
     basis         = ps_basis';
     PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
 end
+% NBCoupling 05-28-14
 if GLMType.CouplingFilters;
     basis = cp_basis';
-    display('figure out coupling here!  CP_bin');
+    for j_pair=1:GLMPars.spikefilters.cp.n_couplings
+        %spikes of neighbor neurons NB
+        neighbor_sptimes = neighborspikes.home{j_pair}';
+        neighbor_spbins  = ceil(neighbor_sptimes / t_bin);
+        neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
+        CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
+    end
 end
+% end NBCoupling
 
 if GLMType.TonicDrive
     MU_bin = ones(1,bins);
 end
-
 
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
@@ -146,8 +153,11 @@ if GLMType.CONVEX
     if isfield(paramind, 'PS')
         glm_covariate_vec( paramind.PS , : ) = PS_bin;
     end
+    % NBCoupling 05-28-14
     if isfield(paramind, 'CP')
-        glm_covariate_vec( paramind.CP , : ) = CP_bin;
+        for j_pair=1:GLMPars.spikefilters.cp.n_couplings
+            glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
+        end
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,8 +183,11 @@ if ~GLMType.CONVEX
     if isfield(paramind, 'PS')
         convex_cov( paramind.PS , : ) = PS_bin;
     end
+    % NBCoupling
     if isfield(paramind, 'CP')
-        convex_cov( paramind.CP , : ) = CP_bin;
+        for j_pair=1:GLMPars.spikefilters.cp.n_couplings
+            convex_cov( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
+        end
     end
     filtertype = GLMType.stimfilter_mode;
     
@@ -204,16 +217,22 @@ if isfield(paramind, 'PS')
         linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
         linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
 end
+% NBCoupling 05-28-14
 if isfield(paramind, 'CP')
-        rawfit.cp_basis = cp_basis;
-        error('need to fill in coupling..  Nice way to handle it')
+    rawfit.cp_basis = cp_basis;
+    for j_pair=1:GLMPars.spikefilters.cp.n_couplings
+        linearfilters.Coupling.Filter{j_pair}     = cp_basis * pstar(paramind.CP{j_pair});
+    end
+    linearfilters.Coupling.startbin   = 1;
+    linearfilters.Coupling.note = 'Filter starts at "startbin" bins after the spikebin';
 end
+% end NBCoupling
 
 % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
 center_coord    = glm_cellinfo.slave_centercoord;
 ROI_length      = GLMPars.stimfilter.ROI_length;
 stimsize.width  = size(fitmovie,1);
-stimsize.height = size(fitmovie,2); 
+stimsize.height = size(fitmovie,2);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
@@ -299,7 +318,7 @@ fittedGLM.fit_time = datestr(clock);
 fittedGLM.writingcode = mfilename('fullpath');
 
 %% Evaluate cross-validated fits,  Print and Save
-[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats)
+[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
 fittedGLM.xvalperformance  = xvalperformance; 
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
