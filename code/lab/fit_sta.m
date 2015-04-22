@@ -268,6 +268,8 @@ end
 if isempty(p.Results.sig_stixels)
     if isempty(mark_params)
         sig_stixels = significant_stixels(sta);
+        
+        %         sig_stixels = significant_stixels(sta, 'select', 'thresh', 'thresh', 3);
     else
         sig_stixels =significant_stixels(sta, mark_params);
     end
