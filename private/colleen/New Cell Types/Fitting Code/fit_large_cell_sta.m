@@ -1,28 +1,56 @@
 clear
-file_name = '2006-06-06-2/data003/data003';
+file_name = '2006-06-06-2/data003/wrongMovie/wrongMovie';
 datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
 datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
 
 datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
-interpolate = false;
-% cell_specification = [502,860,1024,1130,2076,2361,2618,2705,3022,3172,3213,3559,4022,4071,4238,4774,4852,5496,6518,6533,6860,7279,7671];
-cell_type = {'on large fast'};
-slashes = strfind(datarun.names.rrs_neurons_path, '/');
-dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
-to_replace = strfind(dataset, '/');
-dataset(to_replace) = '-';
-num_frames = 30; % both have to be run with the name number of frames
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-11111.xml';
 
-opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',true);
+file_name2 = '2006-06-06-2/data003/data003';
+datarun2.names.rrs_neurons_path=['/Volumes/Analysis/', file_name2, '.neurons'];
+datarun2.names.rrs_params_path=['/Volumes/Analysis/', file_name2, '.params'];
+
+datarun2.names.rrs_sta_path = ['/Volumes/Analysis/', file_name2, '.sta'];
+mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
+
+
+cell_type = {'on parasol'};
+interpolate = false;
+num_frames = 30; % both have to be run with the name number of frames
+false_stixels = 0.5;
+% cell_specification = 1562; %ON parasol
+% cell_specification = 1622; %OFF parasol
+
+% cell_specification = [6143];
+%% END OF INPUT
+
+
+%% Load Data1
+opt=struct('verbose',1,'load_params',0,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',0);
 opt.load_sta_params.save_rf = 1;
 opt.load_sta_params.frames = 1:30% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
+%% Load Data2
+slashes = strfind(datarun2.names.rrs_neurons_path, '/');
+dataset = datarun2.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
+to_replace = strfind(dataset, '/');
+dataset(to_replace) = '-';
+
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',true);
+opt.load_sta_params.save_rf = 1;
+opt.load_sta_params.frames = 1:30% have to input as a vector list of frames, not the number of frames total, counting backwards
+datarun2=load_data(datarun2,opt);
+
+
+
+
+%% Cell indicies
+
 cell_type_index= zeros(1,size(cell_type,2));
 for num_cell_types = 1:size(cell_type,2)
-    for i = 1:size(datarun.cell_types,2)
-        right_cell_type = strcmpi(datarun.cell_types{i}.name, cell_type{num_cell_types}); % case insensitive
+    for i = 1:size(datarun2.cell_types,2)
+        right_cell_type = strcmpi(datarun2.cell_types{i}.name, cell_type{num_cell_types}); % case insensitive
         if right_cell_type == 1;
             cell_type_index(num_cell_types) = i;
             break
@@ -31,20 +59,17 @@ for num_cell_types = 1:size(cell_type,2)
     end
     
 end
-
-cell_specification = datarun.cell_types{cell_type_index}.cell_ids;
-% cell_specification = 1562;
-cell_specification = [6143];
-
-% Find out indices for desired cell type
+cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
+%  cell_specification = [6661]
 
 
-triggers=datarun.triggers; %onsets of the stimulus presentation
+%% Movie for right STAs
+triggers=datarun2.triggers; %onsets of the stimulus presentation
 
-[mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
+[mov,height,width,duration,refresh] = get_movie_ath(mdf_file2,...
     triggers, 1,2);
 
-[mvi] = load_movie(mdf_file, triggers);
+[mvi] = load_movie(mdf_file2, triggers);
 
 
 % check that stas have been loaded into datarun
@@ -61,25 +86,32 @@ elseif ~isfield(datarun.matlab, 'sta_fits')
 end
 
 
-cell_indices = get_cell_indices(datarun, cell_specification);
+cell_indices = get_cell_indices(datarun2, cell_specification);
 num_rgcs = length(cell_indices);
 parameters= zeros(num_rgcs,21);
 variables = {'cell_specification', 'cell_indices', 'center_point_x', 'center_point_y', 'center_sd_x', 'center_sd_y', 'center_rotation_angle', 'color_weight_a', 'color_weight_b', 'color_weight_c', 'x_dim', 'y_dim', 'surround_sd_scale', 'surround_amp_scale', 'scale_one', 'scale_two', 'tau_one', 'tau_two','n_filters', 'frame_number', 'rmse'};
 information{1} = dataset;
 information{2} = variables;
+
+
+
 for rgc = 1:num_rgcs
     
-    fprintf('fitting the STA for cell %d... \n', datarun.cell_ids(cell_indices(rgc)))
     
     temp_sta = datarun.stas.stas{cell_indices(rgc)};
 
-    % fit_surround_sd_scale is necessary for any fitting to occur
-%     temp_fit_params = fit_sta(temp_sta, 'fit_n_filters', true, 'initial_n_filters', 10, 'initial_scale_one',0.15,'initial_scale_two',-0.2,'initial_tau_one',5,'initial_tau_two',5, 'fit_surround_sd_scale', true, 'fit_surround', true);
-
-
 
                     
-[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames);
+[threshold] = significant_stixels_threshold_calc(temp_sta, false_stixels);
+mark_params.select = 'thresh';
+mark_params.thresh = threshold;
+
+    fprintf('fitting the STA for cell %d... \n', datarun2.cell_ids(cell_indices(rgc)))
+
+    temp_sta = datarun2.stas.stas{cell_indices(rgc)};
+
+[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'mark_params', mark_params);
+
 % Plot result
 %  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
 
@@ -143,6 +175,10 @@ information{4} = datarun.matlab.sta_fits;
 
 end
 
+
+return;
+
+% stop here for now
 figure
 for q = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(q)};
