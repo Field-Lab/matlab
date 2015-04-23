@@ -96,7 +96,7 @@ clear WN_STA center_coord
 %% Set up the parameter index
 % NBCoupling
 [paramind] =  prep_paramindGP_CP(GLMType, GLMPars, n_couplings); 
-p_init     =  .01* ones(paramind.paramcount,1);
+p_init     =  .01* rand(paramind.paramcount,1);
 
 optim_struct = optimset(...
    'derivativecheck','off',...

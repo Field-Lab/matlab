@@ -155,3 +155,27 @@ end
 
 %%
 
+%             params = fittedGLM.rawfit.opt_params;
+%             t1_idx = fittedGLM.rawfit.paramind.time1;
+%             t2_idx = fittedGLM.rawfit.paramind.time2;
+%             s1_idx = fittedGLM.rawfit.paramind.space1;
+%             s2_idx = fittedGLM.rawfit.paramind.space2;
+%             time = (1:length(t1_idx))*1/120*1000;
+%             figure('Position', [100 100 700 200]);
+%             subplot(1,3,1)
+%             plot(time, params(t1_idx))
+%             hold on
+%             plot(time, params(t2_idx))
+%             title(cell_savename)
+%             xlim([0 250])
+%             xlabel('Time (ms)')
+%             subplot(1,3,2)
+%             imagesc(reshape(params(s1_idx),11,11))
+%             caxis([0 0.5])
+%             axis image
+%             subplot(1,3,3)
+%             imagesc(reshape(params(s2_idx),11,11))
+%             caxis([0 0.5])
+%             axis image
+%             print(['Users/Nora/Desktop/' cell_savename '.eps'], 'eps')
+
