@@ -160,7 +160,6 @@ NullCells3=[2461,1021,7188,767,4502,5911];
 NullCells4=datarun.cell_types{2}.cell_ids;
 NullCells5=[5732];
 
-
 condDuration=10.6;
 nConditions=6;
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
@@ -168,16 +167,33 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     cellID=InterestingCell_vis_id(ref_cell_number);
     % [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_2(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
     [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light(cellID,nConditions,condDuration,cond_str,neuronPath);
-    
-    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
+   
+    % plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells2);
+   
     InterestingCell_vis_id(ref_cell_number)
-    if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s',datarun.cell_types{cellTypeId}.name)))
-        mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s',datarun.cell_types{cellTypeId}.name));
-    end
-    s=hgexport('readstyle','ras_mos4');
-    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
     
-    %testsuite_prediction
+    if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number))))
+        mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)));
+    end
+   % s=hgexport('readstyle','ras_mos4');
+   % hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+       
+   event_tol=0.09;
+   thr=0.4;
+    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+   s=hgexport('readstyle','event');
+   hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+   save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+    
+    event_tol=0.15;
+   thr=0.4;
+    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+   s=hgexport('readstyle','event');
+   hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+   save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+
+   
+   %testsuite_prediction
     %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
     % pause
 end
@@ -211,7 +227,7 @@ NullCells3=[2596,1232,7172,842,4547,5911];
 NullCells4=datarun.cell_types{2}.cell_ids;
 NullCells5=[5768];
 
- InterestingCell_vis_id = [4548]%[662,6826,4548] %NullCells1;
+% InterestingCell_vis_id = [4548]%[662,6826,4548] %NullCells1;
 condDuration=10.6;
 nConditions=6;
 GLM_fit_link= '/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_ON parasol/';
@@ -229,30 +245,29 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     % Plot recorded raster
     % [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_2(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
     [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light(cellID,nConditions,condDuration,cond_str,neuronPath);
-    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
-    s=hgexport('readstyle','ras_mos4');
-    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+%    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+%     s=hgexport('readstyle','ras_mos4');
+%     hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
 
-      
-    
-    % GLM predictions
-    figure;
-    [spkCondCollGLM,h2]=plot_GLM_prediction_pc2015_03_09_2(cellID,condMov,GLM_fit_link);
-    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
-    
-    h3=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
-    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
-    s=hgexport('readstyle','ras_mos4');
-    hgexport(h3,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/GLM_pred_recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
-  
-    % GLM prediction magnified - for contrast studies.
-      figure;
-      mov_scales=[10,50,50,10,10,1];
-    [spkCondCollGLM,h7]=plot_GLM_prediction_movie_scaled_pc2015_03_09_2(cellID,condMov,GLM_fit_link,mov_scales);
-    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
-    
-    h8=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
-    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+   
+%     % GLM predictions
+%     figure;
+%     [spkCondCollGLM,h2]=plot_GLM_prediction_pc2015_03_09_2(cellID,condMov,GLM_fit_link);
+%     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+%     
+%     h3=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
+%     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+%     s=hgexport('readstyle','ras_mos4');
+%     hgexport(h3,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/GLM_pred_recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
+   
+%     % GLM prediction magnified - for contrast studies.
+%       figure;
+%       mov_scales=[10,50,50,10,10,1];
+%     [spkCondCollGLM,h7]=plot_GLM_prediction_movie_scaled_pc2015_03_09_2(cellID,condMov,GLM_fit_link,mov_scales);
+%     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
+%     
+%     h8=plot_record_prediction_pc2015_03_09_2(spkCondColl,spkCondCollGLM);
+%     plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
     
 %     % Cone run
 %     [rec_rast_tv,sim_rast,h,x_log]=cone_run_spatial_pc2015_03_09_2(cellID,GLM_fit_link,spkCondColl,1,WN_datafile)
@@ -274,8 +289,21 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
 %     save (sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/data.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),'rec_rast_tv','sim_rast','spkCondColl','spkCondCollGLM','model_run_pred_log');
 %   
 
+        
+   event_tol=0.03;
+   thr=0.4;
+    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+   s=hgexport('readstyle','event');
+   hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+   save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+    
+    event_tol=0.05;
+   thr=0.4;
+    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+   s=hgexport('readstyle','event');
+   hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+   save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
 
-   
      InterestingCell_vis_id(ref_cell_number)
     %  pause
 end
@@ -543,3 +571,241 @@ leg_arr=cell(length(spkCondColl)+2,1);
 %     figure;
 %     plot(squeeze(correlation(2,:,2,:)))
 %     legend('Condition 1','Condition 2','Condition 3');
+
+%% Event analysis 1 - 5
+
+% get some cell IDs
+WN_datafile = '2015-03-09-2/data031/data031';
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+% cellTypeId=[2]; % 1 for On Parasols, 2 for Off parasols
+% InterestingCell_vis_id=[];
+% for icellType=cellTypeId
+%     icellType
+%     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
+% end
+InterestingCell_vis_id = [46,106,767,1021,1066,1111,1591,1968,2461,3721,3961,4502,5296,5522,5911,6291,7188,7502,7697];
+
+WN_datafile = '2015-03-09-2/streamed/data038/data038';
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+cellTypeId=[2]; % 1 for On Parasols, 2 for Off parasols
+InterestingCell_vis_id2=[];
+for icellType=cellTypeId
+    icellType
+    InterestingCell_vis_id2=[InterestingCell_vis_id2,datarun.cell_types{icellType}.cell_ids];
+end
+% Map cell IDs
+data1 = '/Volumes/Analysis/2015-03-09-2/data031/';
+data2 = '/Volumes/Analysis/2015-03-09-2/streamed/data038/';
+neuronPairsRefVsNew = crossIdentifyNeuronIDs(data1,data2, InterestingCell_vis_id,InterestingCell_vis_id2);
+
+data1_cid = InterestingCell_vis_id;
+data2_cid = neuronPairsRefVsNew(:,2);
+data42_150ms=[];
+data42_050ms=[];
+data41_050ms=[];
+data41_150ms=[];
+
+for icell=1:length(data1_cid)
+    data2_cid(icell)
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_OFF parasol/CellID_%d/events_thr_0.40_event_tol_0.15.mat',data2_cid(icell)));
+data42_150ms(icell) = x.eventOverlap(1,5);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_OFF parasol/CellID_%d/events_thr_0.40_event_tol_0.05.mat',data2_cid(icell)));
+data42_050ms(icell) = x.eventOverlap(1,5);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_OFF Parasol/CellID_%d/events_thr_0.40_event_tol_0.05.mat',data1_cid(icell)));
+data41_050ms(icell) = x.eventOverlap(1,5);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_OFF Parasol/CellID_%d/events_thr_0.40_event_tol_0.15.mat',data1_cid(icell)));
+data41_150ms(icell) = x.eventOverlap(1,5);
+end
+
+figure('Color','w');
+plot(data42_050ms,data41_150ms,'*');
+hold on;
+plot([0,1],[0,1],'g');
+xlabel('NDF0');
+ylabel('NDF2');
+
+
+data42_030ms=[];
+data41_090ms=[];
+for icell=1:length(data1_cid)
+    data2_cid(icell)
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_OFF parasol/CellID_%d/events_thr_0.40_event_tol_0.03.mat',data2_cid(icell)));
+data42_030ms(icell) = x.eventOverlap(1,5);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_OFF Parasol/CellID_%d/events_thr_0.40_event_tol_0.09.mat',data1_cid(icell)));
+data41_090ms(icell) = x.eventOverlap(1,5);
+end
+
+figure('Color','w');
+plot(data42_030ms,data41_090ms,'*');
+hold on;
+plot([0,1],[0,1],'g');
+xlabel('NDF0');
+ylabel('NDF2');
+
+
+%% 
+
+
+
+data1_cid = [2461,1021,7188,767,4502,5911];
+data2_cid = [2596,1232,7172,842,4547,5911];
+data42_150ms=[];
+data42_050ms=[];
+data41_050ms=[];
+data41_150ms=[];
+
+for icell=1:length(data1_cid)
+    data2_cid(icell)
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_OFF parasol/CellID_%d/events_thr_0.40_event_tol_0.15.mat',data2_cid(icell)));
+data42_150ms(icell) = x.eventOverlap(1,4);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_OFF parasol/CellID_%d/events_thr_0.40_event_tol_0.05.mat',data2_cid(icell)));
+data42_050ms(icell) = x.eventOverlap(1,4);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_OFF Parasol/CellID_%d/events_thr_0.40_event_tol_0.05.mat',data1_cid(icell)));
+data41_050ms(icell) = x.eventOverlap(1,4);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_OFF Parasol/CellID_%d/events_thr_0.40_event_tol_0.15.mat',data1_cid(icell)));
+data41_150ms(icell) = x.eventOverlap(1,4);
+end
+
+figure('Color','w');
+plot(data42_050ms,data41_150ms,'*');
+hold on;
+plot([0,1],[0,1],'g');
+xlabel('NDF0');
+ylabel('NDF2');
+
+
+data42_030ms=[];
+data41_090ms=[];
+for icell=1:length(data1_cid)
+    data2_cid(icell)
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_OFF parasol/CellID_%d/events_thr_0.40_event_tol_0.03.mat',data2_cid(icell)));
+data42_030ms(icell) = x.eventOverlap(1,4);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_OFF Parasol/CellID_%d/events_thr_0.40_event_tol_0.09.mat',data1_cid(icell)));
+data41_090ms(icell) = x.eventOverlap(1,4);
+end
+
+figure('Color','w');
+plot(data42_030ms,data41_090ms,'*');
+hold on;
+plot([0,1],[0,1],'g');
+xlabel('NDF0');
+ylabel('NDF2');
+
+%% Event analysis 1-3
+
+% get some cell IDs
+WN_datafile = '2015-03-09-2/data031/data031';
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+% cellTypeId=[2]; % 1 for On Parasols, 2 for Off parasols
+% InterestingCell_vis_id=[];
+% for icellType=cellTypeId
+%     icellType
+%     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
+% end
+InterestingCell_vis_id = [303,338,961,1008,1068,1682,1757,2206,3122,3331,3796,4773,6212,6261,6661,6826,7430,7743];
+
+WN_datafile = '2015-03-09-2/streamed/data038/data038';
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
+InterestingCell_vis_id2=[];
+for icellType=cellTypeId
+    icellType
+    InterestingCell_vis_id2=[InterestingCell_vis_id2,datarun.cell_types{icellType}.cell_ids];
+end
+% Map cell IDs
+data1 = '/Volumes/Analysis/2015-03-09-2/data031/';
+data2 = '/Volumes/Analysis/2015-03-09-2/streamed/data038/';
+neuronPairsRefVsNew = crossIdentifyNeuronIDs(data1,data2, InterestingCell_vis_id,InterestingCell_vis_id2);
+
+data1_cid = InterestingCell_vis_id;
+data2_cid = neuronPairsRefVsNew(:,2);
+data42_150ms=[];
+data42_050ms=[];
+data41_050ms=[];
+data41_150ms=[];
+
+for icell=1:length(data1_cid)
+    data2_cid(icell)
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_ON parasol/CellID_%d/events_thr_0.40_event_tol_0.05.mat',data2_cid(icell)));
+data42_050ms(icell) = x.eventOverlap(1,3);
+
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_ON Parasol/CellID_%d/events_thr_0.40_event_tol_0.15.mat',data1_cid(icell)));
+data41_150ms(icell) = x.eventOverlap(1,3);
+end
+
+figure('Color','w');
+plot(data42_050ms,data41_150ms,'*');
+hold on;
+plot([0,1],[0,1],'g');
+xlabel('NDF0');
+ylabel('NDF2');
+
+
+data42_030ms=[];
+data41_090ms=[];
+for icell=1:length(data1_cid)
+    data2_cid(icell)
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_ON parasol/CellID_%d/events_thr_0.40_event_tol_0.03.mat',data2_cid(icell)));
+data42_030ms(icell) = x.eventOverlap(1,3);
+
+x=load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_ON Parasol/CellID_%d/events_thr_0.40_event_tol_0.09.mat',data1_cid(icell)));
+data41_090ms(icell) = x.eventOverlap(1,3);
+end
+
+figure('Color','w');
+plot(data42_030ms,data41_090ms,'*');
+hold on;
+plot([0,1],[0,1],'g');
+xlabel('NDF0');
+ylabel('NDF2');
+
+
+%% have spkCondColl, spike rate during spiking event of originial conditions
+
+ref_cond=1;
+null_cond=3;
+null_event_rate=[];
+ref_event_rate=spkCondColl(ref_cond).events_spks;
+bin_select=zeros(size(spkCondColl(ref_cond).rec_rast,2),1);
+
+for ievent=1:length(spkCondColl(ref_cond).events_list_start)
+bin_start = spkCondColl(ref_cond).events_bin_start(ievent);
+bin_end = spkCondColl(ref_cond).events_bin_end(ievent);
+bin_select(bin_start:bin_end)=1;
+
+null_event_rate(ievent)=sum(sum(spkCondColl(null_cond).rec_rast(:,bin_start:bin_end)))/(size(spkCondColl(null_cond).rec_rast,1)*spkCondColl(ref_cond).events_list_length(ievent));
+end
+
+figure;
+hist(null_event_rate,20);
+xlim([0,80])
+
+ref_cond=3;
+null_cond=1;
+null_event_rate=[];
+ref_event_rate=spkCondColl(ref_cond).events_spks;
+
+for ievent=1:length(spkCondColl(ref_cond).events_list_start)
+bin_start = spkCondColl(ref_cond).events_bin_start(ievent);
+bin_end = spkCondColl(ref_cond).events_bin_end(ievent);
+
+null_event_rate(ievent)=sum(sum(spkCondColl(null_cond).rec_rast(:,bin_start:bin_end)))/(size(spkCondColl(null_cond).rec_rast,1)*spkCondColl(ref_cond).events_list_length(ievent));
+end
+figure;
+hist(null_event_rate,20);
+xlim([0,80])
+

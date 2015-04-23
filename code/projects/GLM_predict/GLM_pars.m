@@ -9,12 +9,12 @@ GLMType.specialchange = false;
 GLMType.CBP=false;
 
 % rank 1
-%GLMType.stimfilter_mode = 'rk1'
-%GLMType.CONVEX = false;
+GLMType.stimfilter_mode = 'rk1'
+GLMType.CONVEX = false;
 
 % fixed SP
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
-GLMType.CONVEX = true;
+% GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
+% GLMType.CONVEX = true;
 
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';

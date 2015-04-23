@@ -22,6 +22,8 @@ StimulusPars.type=stim_description(1:dashes(1)-1);
 StimulusPars.pixelsize = str2double(stim_description(dashes(1)+1:dashes(2)-1));
 StimulusPars.refreshrate = str2double(stim_description(dashes(2)+1:dashes(3)-1));
 StimulusPars.RNG = str2double(stim_description(dashes(3)+1:dashes(4)-1));
+
+movie = permute(movie,[2,1,3,4]);
 try
     StimulusPars.height = str2double(stim_description(dashes(5)+1:dashes(5)+2)); 
     StimulusPars.width = str2double(stim_description(dashes(5)+4:dashes(5)+5));

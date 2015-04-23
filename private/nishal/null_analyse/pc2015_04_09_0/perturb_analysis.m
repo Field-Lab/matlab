@@ -13,75 +13,75 @@ startup_null_analyse_bertha
 % rgb 7, 12
 
 %% Load movie
-% interval=2;
-% rawMovFrames=108000/(2);
-% [perturbed,height,width,header_size] = get_raw_movie('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/rawMovies_final/perturbed_f4c8i1s900.rawMovie',rawMovFrames,1);
-% perturbed=permute(perturbed,[2,3,1]);
-%  
-% [base,height,width,header_size] = get_raw_movie('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/rawMovies_final/base_f4c8i1s900.rawMovie',rawMovFrames,1);
-% base=permute(base,[2,3,1]);
-% 
-% %Repeat frames. 
-% mov=perturbed;
-% mov_rep=zeros(size(mov,1),size(mov,2),size(mov,3)*interval);
-% icnt=0;
-% for itime=1:size(mov,3)
-%     if(rem(itime,1000)==1)
-%     itime
-%     end
-%     for iint=1:interval
-%     icnt=icnt+1;
-%     
-%     mov_rep(:,:,icnt)=mov(:,:,itime);
-%     end
-% end
-% perturbed_rep=mov_rep;
-% 
-% %Repeat frames. 
-% mov=base;
-% mov_rep=zeros(size(mov,1),size(mov,2),size(mov,3)*interval);
-% icnt=0;
-% for itime=1:size(mov,3)
-%     if(rem(itime,1000)==1)
-%     itime
-%     end
-%     for iint=1:interval
-%     icnt=icnt+1;
-%     mov_rep(:,:,icnt)=mov(:,:,itime);
-%     end
-% end
-% base_rep=mov_rep;
-% 
-% clear mov mov_rep
-% 
-% 
-% movie = perturbed_rep;
-% movieLen=size(movie,3);
-%    movie4D = zeros(size(movie,1),size(movie,2),3,movieLen);
-%     for iframe=1:size(movie,3);
-%         if(rem(iframe,1000)==1)
-%         iframe
-%         end
-%         
-%     movie4D(:,:,1,iframe)=movie(:,:,iframe);
-%     movie4D(:,:,2,iframe)=movie(:,:,iframe);
-%     movie4D(:,:,3,iframe)=movie(:,:,iframe);
-%     end
-% perturbed_rep_4D = movie4D;
-% 
-% movie = base_rep;
-% movieLen=size(movie,3);
-%    movie4D = zeros(size(movie,1),size(movie,2),3,movieLen);
-%     for iframe=1:size(movie,3);
-%         if(rem(iframe,1000)==1)
-%         iframe
-%         end
-%         
-%     movie4D(:,:,1,iframe)=movie(:,:,iframe);
-%     movie4D(:,:,2,iframe)=movie(:,:,iframe);
-%     movie4D(:,:,3,iframe)=movie(:,:,iframe);
-%     end
-% base_rep_4D = movie4D;
+interval=2;
+rawMovFrames=108000/(2);
+[perturbed,height,width,header_size] = get_raw_movie('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/rawMovies_final/perturbed_f4c8i1s900.rawMovie',rawMovFrames,1);
+perturbed=permute(perturbed,[2,3,1]);
+ 
+[base,height,width,header_size] = get_raw_movie('/Volumes/Lab/Users/bhaishahster/NSbrownian_code_modifiable/rawMovies_final/base_f4c8i1s900.rawMovie',rawMovFrames,1);
+base=permute(base,[2,3,1]);
+
+%Repeat frames. 
+mov=perturbed;
+mov_rep=zeros(size(mov,1),size(mov,2),size(mov,3)*interval);
+icnt=0;
+for itime=1:size(mov,3)
+    if(rem(itime,1000)==1)
+    itime
+    end
+    for iint=1:interval
+    icnt=icnt+1;
+    
+    mov_rep(:,:,icnt)=mov(:,:,itime);
+    end
+end
+perturbed_rep=mov_rep;
+
+%Repeat frames. 
+mov=base;
+mov_rep=zeros(size(mov,1),size(mov,2),size(mov,3)*interval);
+icnt=0;
+for itime=1:size(mov,3)
+    if(rem(itime,1000)==1)
+    itime
+    end
+    for iint=1:interval
+    icnt=icnt+1;
+    mov_rep(:,:,icnt)=mov(:,:,itime);
+    end
+end
+base_rep=mov_rep;
+
+clear mov mov_rep
+
+
+movie = perturbed_rep;
+movieLen=size(movie,3);
+   movie4D = zeros(size(movie,1),size(movie,2),3,movieLen);
+    for iframe=1:size(movie,3);
+        if(rem(iframe,1000)==1)
+        iframe
+        end
+        
+    movie4D(:,:,1,iframe)=movie(:,:,iframe);
+    movie4D(:,:,2,iframe)=movie(:,:,iframe);
+    movie4D(:,:,3,iframe)=movie(:,:,iframe);
+    end
+perturbed_rep_4D = movie4D;
+
+movie = base_rep;
+movieLen=size(movie,3);
+   movie4D = zeros(size(movie,1),size(movie,2),3,movieLen);
+    for iframe=1:size(movie,3);
+        if(rem(iframe,1000)==1)
+        iframe
+        end
+        
+    movie4D(:,:,1,iframe)=movie(:,:,iframe);
+    movie4D(:,:,2,iframe)=movie(:,:,iframe);
+    movie4D(:,:,3,iframe)=movie(:,:,iframe);
+    end
+base_rep_4D = movie4D;
 
 %save('/Volumes/Lab/Users/bhaishahster/analyse_2015_04_09_0/movies.mat','base_rep_4D','perturbed_rep_4D','-v7.3');
 
@@ -441,3 +441,40 @@ caxis([min(b(:)),max(b(:))]);
 imagesc(sum(b.^2,3));
 colormap gray
 colorbar
+
+
+
+%% fit GLM to coarse stimulus
+base_rep_subsample_4D = base_rep_4D(1:2:end,1:2:end,:,:);
+mov = 0.5+(base_rep_subsample_4D -127.5)/255;
+% mov=permute(mov,[2,1,3,4]); % Doubt!
+%%
+WN_datafile = '2015-04-09-0/stix16-norefit/data007-from-data010_data013_data014_data015_data011_data007_data012/data007-from-data010_data013_data014_data015_data011_data007_data012';
+Null_datafile = '/Volumes/Analysis/2015-04-09-0/stix16-norefit/data014-from-data010_data013_data014_data015_data011_data007_data012';
+neuronPath = [Null_datafile,sprintf('/data014-from-data010_data013_data014_data015_data011_data007_data012.neurons')];
+
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+
+cellTypeId=[1]; % 1 for On Parasols, 2 for Off parasols
+InterestingCell_vis_id=[];
+for icellType=cellTypeId
+    icellType 
+    InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
+end
+
+%for ref_cell=1:length(InterestingCell_vis_id);
+%cellID=InterestingCell_vis_id(ref_cell)
+  cellID=1805;  
+load(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_04_09_0/data014/%d.mat',cellID));
+fittedGLM=glm_fit_from_movie_spikes({cellID},WN_datafile, 'RGB-16-1-0.48-11111', 900,'/Volumes/Lab/Users/bhaishahster/analyse_2015_04_09_0/data014/GLM',mov,home_spbins/120,WNSTA(1:2:end,1:2:end,:,:));
+% Error in this!
+% end
+
+%glm_fit_from_WNrun({cellID}, WN_datafile, 'RGB-16-2-0.48-11111', 900, '/Volumes/Lab/Users/bhaishahster/analyse_2015_04_09_0/data007/GLM')
+
+
+gmail('bhaishahster@gmail.com', 'A cell done');
+
+%end
+  gmail('bhaishahster@gmail.com', 'data007 GLM fits done')

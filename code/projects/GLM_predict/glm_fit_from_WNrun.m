@@ -101,6 +101,8 @@ for i_cell = 1:length(cells)
         % Spike loading
         spikes=datarun.spikes{master_idx};
         glm_cellinfo.WN_STA = datarun.stas.stas{master_idx};
+        % make STA 3D ? 
+        %glm_cellinfo.WN_STA = squeeze(sum(glm_cellinfo.WN_STA,3)); % Doubt!!!!!!!
         clear cell_savename
         
         % Align the spikes and the movies;

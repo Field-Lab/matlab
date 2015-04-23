@@ -1,5 +1,5 @@
 
-function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light(cellID,nConditions,condDuration,cond_str,neuronPath)
+function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_04_14_1_light(cellID,nConditions,condDuration,cond_str,neuronPath)
 %%
 %neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full, Null_datafile,InterestingCell_vis_id);
 %ref_cells=neuronPairsRefVsNew(:,2);

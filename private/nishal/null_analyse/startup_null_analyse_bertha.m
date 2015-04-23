@@ -12,7 +12,10 @@ addpath(genpath('~/Nishal/matlab/code'));
 
 
 addpath(genpath('~/Nishal/matlab/private/nishal/plotSpikeRaster_v1'));
-
+addpath(genpath('~/Nishal/matlab/private/nishal/Test suite/'))
 % set some default plot 
 set(0, 'DefaultAxesFontSize', 18, 'DefaultAxesFontName', 'Helvetica')
 
+
+addpath(genpath('/Volumes/Lab/Users/bhaishahster/cvx'))
+cvx_setup
