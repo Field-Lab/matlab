@@ -1,16 +1,47 @@
-function [amps channelsWithStim stimAmpVectors channelsConnected] = getStimAmps(dataPath, patternNumber, movieNumber)
+function [amps channelsWithStim stimAmpVectors channelsConnected elecCurrentStep currentRangesUsed] = getStimAmps(dataPath, patternNumber, movieNumber,varargin)
 
 % arguments
 %   dataPath: path from current directory to pattern definitions file
-%
-%
-%
+%   patternNumber: 
+%   movieNumber: 
+% optional: numElectrodes 512 or 61; 
+
+% Default stim system
+numElectrodes = 512;
+% disp('Default is the 512-stim system'); 
+
+% Read in optional input arguments
+nbin = length(varargin);
+if mod(nbin,2)==1
+    err = MException('MATLAB:InvArgIn', ...
+        'Unexpected number of arguments');
+    throw(err);
+end
+
+for kk=1:(nbin/2)
+    if ~ischar(varargin{kk*2-1})
+        err = MException('MATLAB:InvArgIn',...
+            'Unexpected additional property');
+        throw(err);
+    end
+    
+    switch lower(varargin{kk*2-1})
+        case 'numelectrodes'
+            numElectrodes = varargin{kk*2};
+        otherwise
+            err = MException('MATLAB:InvArgIn',...
+                'Unknown parameter specified');
+            throw(err);
+    end
+end
+
+
 
 if isnumeric(patternNumber)
     patternNumber = num2str(patternNumber);
 end
 
-NS_GlobalConstants=NS_GenerateGlobalConstants(61);
+NS_GlobalConstants=NS_GenerateGlobalConstants(numElectrodes);
 
 if exist([dataPath filesep 'status_files'], 'file') 
     FullName_status = [dataPath filesep 'status_files' filesep 'status_m' num2str(movieNumber)];
@@ -71,8 +102,10 @@ nElecInPattern = length(thisPattern);
 currentRanges = NS_GlobalConstants.CurrentRanges;
 
 elecCurrentStep = zeros(1, nElecInPattern);
+currentRangesUsed = zeros(1, nElecInPattern);
 for i = 1:nElecInPattern
     elecCurrentStep(i) = currentRanges(status.ChannelsStatus(thisPattern(i).channel).range + 1)/127;
+    currentRangesUsed(i) = currentRanges(status.ChannelsStatus(thisPattern(i).channel).range + 1);
 end
 
 %get channel numbers from thisPattern and finds where they are within argument "channels"

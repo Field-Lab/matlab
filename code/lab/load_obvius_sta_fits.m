@@ -46,7 +46,7 @@ params = p.Results;
 disp('load obvius STA fits')
 
 if ~isempty(datarun.names.obvius_fit_path)
-    sta_fit_full_path = datarun.names.obvius_fit_path;
+    sta_fit_full_path = datarun.names.obvius_fit_path
 end
 
 

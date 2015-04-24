@@ -2,7 +2,7 @@
 % Trying to make performance evaluation more robust.
 % CALLS eval_rasterlogprob
 
-function xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, SPars, organizedspikes,neighborspikes, testmovie)
+function xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, SPars, organizedspikes, neighborspikes, testmovie)
 %%
 
 bpf = fittedGLM.bins_per_frame;
@@ -166,6 +166,7 @@ xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
 %%
 lcif_const  = lcif_kx0 + lcif_mu0;
 logical_sim = zeros(params.trials, params.bins);
+drive = zeros(params.trials, params.bins);
 
 
 if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
@@ -183,6 +184,7 @@ if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_ps;
     end
     
     % NBCoupling
@@ -207,6 +209,7 @@ elseif GLMType.CouplingFilters && ~GLMType.PostSpikeFilter
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_cp;
     end
     
 elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
@@ -233,6 +236,7 @@ elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_ps_cp;
     end
     % end NBCoupling
 else
@@ -246,6 +250,7 @@ else
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif;
     end
 end
 
@@ -253,6 +258,7 @@ end
 xvalperformance.rasters.recorded = logicalspike;
 xvalperformance.rasters.glm_sim  = logical_sim;
 xvalperformance.rasters.bintime  = params.bindur;
+xvalperformance.sim_drive = drive;
 
 
 end
