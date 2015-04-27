@@ -12,10 +12,12 @@ testmovie_filename='/Volumes/Data/2014-11-05-2/visual/18.rawMovie';
 testmovie=get_rawmovie(testmovie_filename,5760);
 testmovie=permute(testmovie,[2 3 1]);
 
-%% Load the datarun to compare (where the above movie was actually run)
+%% If you want to compare to a datarun
 datarun=load_data('2014-11-05-2/data010_from_data009_nps');
 datarun=load_neurons(datarun);
-
-%% Evaluate the GLM fit and plot the rasters
-x=GLM_predict(fittedGLM, datarun, testmovie, 30);
+x=GLM_predict(fittedGLM, testmovie, 30, datarun);
 plotraster(x,fittedGLM,'labels',true,'raster_length',12)
+
+%% If you just want to make a prediction
+x=GLM_predict(fittedGLM, testmovie, 30);
+plotraster(x,fittedGLM,'labels',true,'raster_length',12, 'start_time',12)
