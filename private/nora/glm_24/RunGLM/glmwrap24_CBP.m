@@ -145,7 +145,7 @@ cells={1772};
     DirPars.WN_STAdir   = NSEM_secondaryDirectories('WN_STA', inputs);
     inputs.stim_type    = GLMType.fit_type;
 
-    DirPars.organizedspikesdir=['/Volumes/Analysis/nora/NSEM/CBPBlockedSpikes/' inputs.exp_nm '/' GLMType.fit_type '_' GLMType.map_type];
+    DirPars.organizedspikesdir=['/Volumes/Lab/Users/nora/NSEM/CBPBlockedSpikes/' inputs.exp_nm '/' GLMType.fit_type '_' GLMType.map_type];
     clear inputs
     
     for i_cell = 1:length(cells)

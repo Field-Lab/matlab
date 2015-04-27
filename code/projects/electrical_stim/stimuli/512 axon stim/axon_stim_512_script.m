@@ -1,16 +1,10 @@
 % script used in 2012-09 stim512/519 experiments
+% Changes to this script in April 2015 allow it to be used to generate 2
+% electrode current ratios as done in 2015-04-14-0 LG
 
 % SET TRIGGER INTERVAL TO 0.5 SECONDS
 
 clear all
-
-% cd('/Users/lhruby/MATLAB_code/stimuli/stimulus_files_test')
-
-
-include_single_elecs = true;
-both_polarity_combs = true;
-quadrant = 3;
-elec_spacing = 60;
 
 % as seen in vision-interactive (EI plot):
 % 
@@ -18,14 +12,20 @@ elec_spacing = 60;
 %-----------
 % 3   |   4
 
-pairOrientation = 'horizontal'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
-
+%% Define inputs
+include_single_elecs = false;
+both_polarity_combs = true;
+quadrant = 1;
+elec_spacing = 60;
+same_polarity = false; % Set to true to use only negative pairs. 
+use_ratios = true;
+scale_factor = -4; %Set scale factor to determine 2-elec ratio to use
+pairOrientation = 'downright'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 delayInMs = 7.5; %interval between pulses
-
-
+saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
+saveName = 'axon512_quad1'; %Descriptive name for the stimulus files 
 
 %%
-
 if elec_spacing == 60
     elec_coords = electrode_positions(512);
 elseif elec_spacing == 30
@@ -59,9 +59,7 @@ end
 
 %%
 
-
 nSamples=10000; %0.5 s
-%Array=eye(64);
 
 timeShift=0;
 delay=delayInMs*20;
@@ -136,7 +134,6 @@ end
 % spacings apart
 
 % break into 8 groups and select randomly from a sequence of groups
-
 if elec_spacing == 60
     x_coords_range = [min(elec_coords(electrodes,1)) max(elec_coords(electrodes,1))];
     boundaries = x_coords_range(1)+(x_coords_range(2)-x_coords_range(1))*[0.125 0.25 0.375 0.5 0.625 0.75 0.875];
@@ -515,21 +512,29 @@ end
 MovieChunksFile=[length(pattern_order_all) MovieChunks]; %only one movie
 
 
-%%
+if same_polarity
+    figure; subplot(1,2,1); imagesc(array); title('opp polarity pairs')
+    array(find(array == -1)) = 1; 
+    subplot(1,2,2); imagesc(array); title('same polarity pairs');
+end
 
-
-%cd /Applications/MATLAB74/work/Lauren/stimuli/stimulus_files/; 
-if 0
-fid = fopen('axon512_quad3_el','wb','ieee-le.l64')
-fwrite(fid,electrodes,'int32');
-fclose(fid);
-
-fid = fopen('axon512_quad3_pt','wb','ieee-le.l64')
-fwrite(fid,array,'double');
-fclose(fid);
-
-fid = fopen('axon512_quad3_mv','wb','ieee-le.l64')
-fwrite(fid,MovieChunksFile,'int32');
-fclose(fid); 
-
+if use_ratios
+    figure; subplot(1,2,1); imagesc(array); title('opp polarity pairs')
+    array(find(array == 1)) = -scale_factor; 
+    subplot(1,2,2); imagesc(array); title('ratio');
+end
+%% Save files
+% cd /Users/grosberg/Desktop/; 
+if saveFiles
+    fid = fopen([saveName '_el'],'wb','ieee-le.l64');
+    fwrite(fid,electrodes,'int32');
+    fclose(fid);
+    
+    fid = fopen([saveName '_pt'],'wb','ieee-le.l64');
+    fwrite(fid,array,'double');
+    fclose(fid);
+    
+    fid = fopen([saveName '_mv'],'wb','ieee-le.l64');
+    fwrite(fid,MovieChunksFile,'int32');
+    fclose(fid);
 end
