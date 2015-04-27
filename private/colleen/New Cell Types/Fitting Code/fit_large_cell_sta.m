@@ -1,17 +1,12 @@
 clear
-file_name = '2006-06-06-2/data003/wrongMovie/wrongMovie';
-datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
-datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
 
-datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-11111.xml';
+% Wrong Movie Information 
+file_name = '2006-06-06-2/data008/wrongMovie/wrongMovie';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-22222.xml';
 
-file_name2 = '2006-06-06-2/data003/data003';
-datarun2.names.rrs_neurons_path=['/Volumes/Analysis/', file_name2, '.neurons'];
-datarun2.names.rrs_params_path=['/Volumes/Analysis/', file_name2, '.params'];
-
-datarun2.names.rrs_sta_path = ['/Volumes/Analysis/', file_name2, '.sta'];
-mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
+% Right Movie Information 
+file_name2 = '2006-06-06-2/data008/data008';
+mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-11111.xml';
 
 
 cell_type = {'on parasol'};
@@ -23,6 +18,16 @@ false_stixels = 0.5;
 
 % cell_specification = [6143];
 %% END OF INPUT
+
+% Wrong Movie
+datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
+datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
+datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
+
+% Right Movie
+datarun2.names.rrs_neurons_path=['/Volumes/Analysis/', file_name2, '.neurons'];
+datarun2.names.rrs_params_path=['/Volumes/Analysis/', file_name2, '.params'];
+datarun2.names.rrs_sta_path = ['/Volumes/Analysis/', file_name2, '.sta'];
 
 
 %% Load Data1

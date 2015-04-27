@@ -1,14 +1,14 @@
 % ds_cells
-run_opt.data_set = '2008-04-30-1';
+run_opt.data_set = '2015-04-14-2';
 run_opt.data_run = 3; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-if strcmp(run_opt.data_set, '2008-04-30-1')
-    datarun{1}.names.rrs_params_path='/Volumes/Analysis/2008-04-30-1/data009/data009-map/data009-from-data005.params';
-    datarun{2}.names.rrs_neurons_path=('/Volumes/Analysis/2008-04-30-1/data009/data009-map/data009-map.neurons');
-    datarun{2}.names.stimulus_path=('/Volumes/Archive/2005-01-21-0/Visual/s03');
+if strcmp(run_opt.data_set, '2015-04-14-2')
+    datarun{1}.names.rrs_params_path='/Volumes/Analysis/2015-04-14-2/data003-mapped-data002/data003-mapped-data002.params';
+    datarun{2}.names.rrs_neurons_path=('/Volumes/Analysis/2015-04-14-2/data003-mapped-data002/data003-mapped-data002.neurons');
+    datarun{2}.names.stimulus_path=('/Volumes/Data/2015-04-14-2/Visual/s03');
 end
-% opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
-% datarun=load_data(datarun,opt);
-% datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
+datarun=load_data(datarun,opt);
+datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
 datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0);
 
 % k=1; kmin=1; kmax=size(datarun{2}.stimulus.trials,2); hk=loop_slider(k,kmin,kmax);
