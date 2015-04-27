@@ -15,7 +15,17 @@
 
 % choose 1-3 electrodes (can be on edge of the array, but can't be 2nd nearest-neighbors)
 %Requirements for clusters of electrodes: must be non-overlapping
-centerElectrodes = [69]; 
+
+centerElectrodes = [57 171 446]; %2015-03-09-0
+% Electrode 446    Targeting cells: 6543, 6676, 6798
+% Electrode 57      Targeting cells 721, 782, 844
+% Electrode 171    Targeting cells 2673, 2675
+
+% centerElectrodes = [181 370 34]; 
+% % Targeted cells
+% % 352: 5330 5372
+% % 187: 2929 2795 3047 2948
+% % 147: 2198 2045(?) 2193
 TimeShiftInMs = 0; %offset the first stimulus from the beginning movie chunk
 arraySpacing = 60; %30 or 60 micron spacing
 includeAnodalPrimary = true; %otherwise, all combinations use primary electrode as cathodal only. setting to true gives 2x as many stimuli
