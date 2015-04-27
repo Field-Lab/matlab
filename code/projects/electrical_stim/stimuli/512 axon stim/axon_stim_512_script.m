@@ -220,6 +220,7 @@ if elec_spacing == 60
     end
     
     if both_polarity_combs
+        keyboard; 
         for ii = 1:32
             pInd = find(elec_1==pattern_order1(ii) & stim_type==2);
             if ~isempty(pInd)
