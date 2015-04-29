@@ -3,9 +3,9 @@ axonBundleThresholds = temp.axonBundleThresholds_byPattern_2012_09_24_3_data008;
 
 i = 1;
 estimates = [];
-for i = 1:368
+for i = var(18:end)
     
-    bundleMeans = abs(getBundleVoltagesAStar('/Volumes/Analysis/2014-11-24-2/data007/', i, false));
+    bundleMeans = abs(getBundleVoltagesAStar('/Volumes/Analysis/2015-04-09-2/data003/', i, false));
     avg = mean(bundleMeans(1:5, 1));
     index = find(bundleMeans(:,1) > 20, 1, 'first');
     %index = find(bundleMeans(:,1) > 5 * avg, 1, 'first');

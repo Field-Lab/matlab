@@ -1,17 +1,9 @@
 function plotBundleVoltage(path, patternNos, display)
 bundleMeans = getBundleVoltagesAStar(path, patternNos, display);%getBundleVoltages(patternNos, display);
-temp = load('~/git_code/matlab/private/lauren/MATLAB_code/analysis/dataset-specific/axonBundleThresholds_byPattern_2012_09_24_3_data008.mat');
-axonBundleThresholds = temp.axonBundleThresholds_byPattern_2012_09_24_3_data008;
-figure; xlabel('Stimulation amplitude (uA)'); ylabel('Average bundle voltage (mV)'); whitebg('black'); set(gcf, 'InvertHardCopy', 'off');
+
+figure; xlabel('Stimulation amplitude (uA)'); ylabel('Average bundle voltage (mV)'); set(gcf, 'InvertHardCopy', 'off');
 for patternIndex = 1:size(patternNos, 2)
     hold on; scatter(abs(bundleMeans(:, 2, patternIndex)), abs(bundleMeans(:, 1, patternIndex)));
-    x=[axonBundleThresholds(patternNos(patternIndex)),axonBundleThresholds(patternNos(patternIndex))];
-    y=[0,300];
-%    hold on; plot(x,y); hold off;
-%     f = @(F,x) (1 +exp(-F(1)*(x - F(2)))).^(-1); % sigmoid
-%     F_fitted = nlinfit(abs(bundleMeans(:, 2, patternIndex)),abs(bundleMeans(:, 1, patternIndex)),f,[1 1]);              
-%     y = f(F_fitted,abs(bundleMeans(:, 2, patternIndex)));
-%     hold on; plot(abs(bundleMeans(:, 2, patternIndex)), y); hold off;
 end
 
 singleAxonVoltage = 16.05148356;
