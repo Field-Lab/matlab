@@ -153,7 +153,8 @@ for i_exp = exps
                     
                     % NBCoupling 06-10-2014
                     if GLMType.CouplingFilters==true
-                        glm_cellinfo.pairs=subR_pick_neighbor_cells(stafit_centercoord, cells_to_pair, datarun_master.vision.sta_fits);
+                        eval(sprintf('load %s/neighbor_cells.mat', BD.Cell_Selection));
+                        %glm_cellinfo.pairs=subR_pick_neighbor_cells(stafit_centercoord, cells_to_pair, datarun_master.vision.sta_fits);
                     else
                         glm_cellinfo.pairs=0;
                     end
@@ -307,26 +308,26 @@ sd.ydir = round( stafit_sd(2)* (slvdim.height  / masterdim.height)  );
 
 end
 
-%NBCoupling 2015-04-20
-function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
-    
-     GLMPars = GLMParams;
-     NumCells = length(cell_ids);
-     distance=zeros(NumCells,1);
-     
-     % Calculate distance between RFs
-     for i_pair=1:NumCells
-         distance(i_pair)=norm(sta_fits{cell_ids(2,i_pair),1}.mean-mean);
-         if distance(i_pair)==0
-             distance(i_pair)=NaN;
-         end
-     end
-     
-     % Choose the closest cells
-     [~,indices]=sort(distance);
-     paired_cells=cell_ids(1,indices(1:GLMPars.spikefilters.cp.n_couplings));
-
-end
+% %NBCoupling 2015-04-20
+% function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
+%     
+%      GLMPars = GLMParams;
+%      NumCells = length(cell_ids);
+%      distance=zeros(NumCells,1);
+%      
+%      % Calculate distance between RFs
+%      for i_pair=1:NumCells
+%          distance(i_pair)=norm(sta_fits{cell_ids(2,i_pair),1}.mean-mean);
+%          if distance(i_pair)==0
+%              distance(i_pair)=NaN;
+%          end
+%      end
+%      
+%      % Choose the closest cells
+%      [~,indices]=sort(distance);
+%      paired_cells=cell_ids(1,indices(1:GLMPars.spikefilters.cp.n_couplings));
+% 
+% end
 
 
 
