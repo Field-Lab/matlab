@@ -188,6 +188,7 @@ for i_exp = exps
                         Dirs.fittedGLM_savedir  = [save_dir '/iteration_' num2str(i_iter)];
                         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end
                         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
+                        glm_cellinfo.d_save         = Dirs.fittedGLM_savedir;
                         
                         % Run the GLM
                         display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
