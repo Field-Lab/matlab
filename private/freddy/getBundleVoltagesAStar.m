@@ -1,11 +1,11 @@
-function bundleMeans = getBundleVoltagesAStar(patternNos, display, exclude)
+function bundleMeans = getBundleVoltagesAStar(path, patternNos, display, exclude)
 %Calculate the average bundle voltage for each movie of each pattern in patternNos, using the A* pathfinding algorithm to locate the bundle.
 movieNo = 0;
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-temp = load('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/freddy/512elecpositions.mat'); % Find a more general location for this or call a different text file.
+temp = load([matlab_code_path() 'private/freddy/512elecpositions.mat']); % Find a more general location for this or call a different text file.
 positions = temp.positions;
 
-if nargin < 3
+if nargin < 4
     exclude = 0;
 end
 
@@ -26,7 +26,7 @@ for patternIndex = 1:size(patternNos, 2)
     movieNos = [];
     patternNo = patternNos(patternIndex);
     disp(['Testing pattern ' num2str(patternNo)]);
-    pathToAnalysisData = '/Volumes/Analysis/2012-09-24-3/data008/';
+    pathToAnalysisData = path; %'/Volumes/Analysis/2012-09-24-3/data008/';
     patternNoString = ['p' num2str(patternNos(patternIndex))];
     files = dir([pathToAnalysisData patternNoString]);
  
@@ -101,7 +101,7 @@ for patternIndex = 1:size(patternNos, 2)
         
         bundleMeans(movieIndex-1, 1, patternIndex) = bundleMean;
         bundleMeans(movieIndex-1, 2, patternIndex) = amps(1);
-        %bundleMeans(movieIndex-1, 3, patternIndex) = bundleTimedCorrectly(bundle);
+        bundleMeans(movieIndex-1, 3, patternIndex) = movieNos(movieIndex);
         
         if display
             cla;
