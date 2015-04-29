@@ -45,7 +45,7 @@ GLMType.specialchange = false;
 GLMType.specialchange_name = 'extra_coupling';
 GLMType.CBP=false;
 
-GLMType.stimfilter_mode = 'rk1';
+GLMType.stimfilter_mode = 'rk2';
 %GLMType.stimfilter_mode = 'fixedSP_rk1_linear';
 GLMType.input_pt_nonlinearity      = false;
 %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
@@ -117,37 +117,38 @@ for i_exp = exptests
         [~ , cell_savename, ~]  = findcelltype(cid, datarun_mas.cell_types);
 
         % Load the correct GLM
-        try
+        % try
             load([d_save '/' cell_savename '.mat'])
             disp('Fitted GLM Loaded');
             count = count+1;
             BPS_rk1(count,1) = fittedGLM.xvalperformance.glm_normedbits;
             BPS_rk1(count,2) = cid ;
-%             params = fittedGLM.rawfit.opt_params;
-%             t1_idx = fittedGLM.rawfit.paramind.time1;
-%             t2_idx = fittedGLM.rawfit.paramind.time2;
-%             s1_idx = fittedGLM.rawfit.paramind.space1;
-%             s2_idx = fittedGLM.rawfit.paramind.space2;
-%             time = (1:length(t1_idx))*1/120*1000;
-%             figure('Position', [100 100 700 200]);
-%             subplot(1,3,1)
-%             plot(time, params(t1_idx))
-%             hold on
-%             plot(time, params(t2_idx))
-%             title(cell_savename)
-%             xlim([0 250])
-%             xlabel('Time (ms)')
-%             subplot(1,3,2)
-%             imagesc(reshape(params(s1_idx),11,11))
-%             caxis([0 0.5])
-%             axis image
-%             subplot(1,3,3)
-%             imagesc(reshape(params(s2_idx),11,11))
-%             caxis([0 0.5])
-%             axis image
+            params = fittedGLM.rawfit.opt_params;
+            t1_idx = fittedGLM.rawfit.paramind.time1;
+            t2_idx = fittedGLM.rawfit.paramind.time2;
+            s1_idx = fittedGLM.rawfit.paramind.space1;
+            s2_idx = fittedGLM.rawfit.paramind.space2;
+            time = (1:length(t1_idx))*1/120*1000;
+            figure('Position', [100 100 700 200]);
+            subplot(1,3,1)
+            plot(time, params(t1_idx))
+            hold on
+            plot(time, params(t2_idx))
+            title(cell_savename)
+            xlim([0 250])
+            xlabel('Time (ms)')
+            subplot(1,3,2)
+            imagesc(reshape(params(s1_idx),11,11))
+            caxis([0 0.5])
+            axis image
+            subplot(1,3,3)
+            imagesc(reshape(params(s2_idx),11,11))
+            caxis([0 0.5])
+            axis image
+            pause()
 %             print(['Users/Nora/Desktop/' cell_savename '.eps'], 'eps')
-        catch
-        end
+        % catch
+        % end
     end
     
 end
