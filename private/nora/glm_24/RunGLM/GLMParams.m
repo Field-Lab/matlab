@@ -45,31 +45,30 @@ GLMPars.optimization.note2 = 'tolx: significant digits of the input variables of
 GLMPars.spikefilters.ps_note = 'parameters regarding the post-spike filter';
 GLMPars.spikefilters.cp_note = 'parameters regaring coupling filters';
 GLMPars.spikefilters.note0 = 'all parameters related to raised sinusoidal humps';
+
 GLMPars.spikefilters.note1 = 'basis built by prep_spikefilterbasisGP / create_histbasis as of 2014-05-3';
 GLMPars.spikefilters.ps.ms  = 100 ;      %% post spike filter time length in millisecs
 GLMPars.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in millisecs
 %GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 %GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMPars.spikefilters.BiDirect_CP = false;
-GLMPars.spikefilters.ps.filternumber = 20;
-GLMPars.spikefilters.cp.filternumber = 8;
-GLMPars.spikefilters.ps.spacing      = pi/2;
-GLMPars.spikefilters.cp.spacing      = pi/2;
-GLMPars.spikefilters.ps.bstretch     = .05;
-GLMPars.spikefilters.ps.alpha        = 0;
-GLMPars.spikefilters.cp.bstretch     = .05;
-GLMPars.spikefilters.cp.alpha        = 0;
+GLMPars.spikefilters.ps.filternumber = 20; %20
+GLMPars.spikefilters.cp.filternumber = 4; %8
+GLMPars.spikefilters.ps.spacing      = pi/2; %pi/2
+GLMPars.spikefilters.cp.spacing      = pi/2; %pi/2
+GLMPars.spikefilters.ps.bstretch     = 0.05; %0.05
+GLMPars.spikefilters.ps.alpha        = 0; %0
+GLMPars.spikefilters.cp.bstretch     = 0.05; %0.05
+GLMPars.spikefilters.cp.alpha        = 0; %0
 GLMPars.spikefilters.ps.fratio = .5  ;  % legacy afraid to take out
 GLMPars.spikefilters.cp.fratio = .4  ;  % legacy afraid to take out
 
-
-
 GLMPars.others.fitblockchange = false;
-
 
 if exist('optional_change','var') && ~isempty(optional_change)
     if strcmp(optional_change, 'ROIlength_9')
         GLMPars.stimfilter.ROI_length = 9;
+    elseif strcmp(optional_change, 'extra_coupling')
     else 
         error('you need to specify how your param changes actually changes the parameters')
     end
