@@ -51,5 +51,6 @@ for electrode = electrodes
         end
     end
 end
+neighbors = cat(2, neighbors, electrodes);
 neighbors = unique(neighbors);
 end

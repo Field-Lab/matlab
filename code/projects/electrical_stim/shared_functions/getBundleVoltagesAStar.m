@@ -54,7 +54,7 @@ for patternIndex = 1:size(patternNos, 2)
         [amps, stimChan, stimAmpVectors] = getStimAmps(pathToAnalysisData,...
             patternNo, movieNos(movieIndex));
         subtractionMatrix = repmat(firstArtifact,[size(dataTraces,1) 1]);
-                
+        
         %for t = 1:30 %size(dataTraces,3)
         [meanData, minIndices] = min(mean(dataTraces(:,:,10:30)-subtractionMatrix(:,:,10:30),1), [], 3);
         
@@ -63,9 +63,9 @@ for patternIndex = 1:size(patternNos, 2)
         bundle(:, 1) = meanData(axonPath);
         bundle(:, 2) = axonPath;
         bundle(:, 3) = minIndices(axonPath);
-        
+                
         for j = 1:size(bundle, 1)
-            if ismember(bundle(j, 2), stimChan) || ismember(bundle(j, 2), hexNeighborsFast(stimChan, hexArray, hexCoords))
+            if ismember(bundle(j, 2), hexNeighborsFast(stimChan, hexArray, hexCoords))
                 bundle(j, 1) = NaN;
             end
         end
