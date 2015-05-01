@@ -47,6 +47,8 @@ for patternIndex = 1:size(patternNos, 2)
         set(f,'Color','white');
     end
     
+    ignore = [];
+    
     for movieIndex = mIndices
         dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
             movieNos(movieIndex), 99999);
@@ -54,6 +56,10 @@ for patternIndex = 1:size(patternNos, 2)
         [amps, stimChan, stimAmpVectors] = getStimAmps(pathToAnalysisData,...
             patternNo, movieNos(movieIndex));
         subtractionMatrix = repmat(firstArtifact,[size(dataTraces,1) 1]);
+        
+        if isempty(ignore)
+            ignore = hexNeighborsFast(stimChan, hexArray, hexCoords);
+        end
         
         %for t = 1:30 %size(dataTraces,3)
         [meanData, minIndices] = min(mean(dataTraces(:,:,10:30)-subtractionMatrix(:,:,10:30),1), [], 3);
@@ -65,7 +71,7 @@ for patternIndex = 1:size(patternNos, 2)
         bundle(:, 3) = minIndices(axonPath);
                 
         for j = 1:size(bundle, 1)
-            if ismember(bundle(j, 2), hexNeighborsFast(stimChan, hexArray, hexCoords))
+            if ismember(bundle(j, 2), ignore)
                 bundle(j, 1) = NaN;
             end
         end
