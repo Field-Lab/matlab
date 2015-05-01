@@ -58,11 +58,11 @@ for patternIndex = 1:size(patternNos, 2)
         %for t = 1:30 %size(dataTraces,3)
         [meanData, minIndices] = min(mean(dataTraces(:,:,10:30)-subtractionMatrix(:,:,10:30),1), [], 3);
         
-        path = findAxonBundlePathFast(meanData, borderElecs, hexCoords, 0, 0, exclude);
-        bundle = zeros(size(path, 2), 3);
-        bundle(:, 1) = meanData(path);
-        bundle(:, 2) = path;
-        bundle(:, 3) = minIndices(path);
+        axonPath = findAxonBundlePathFast(meanData, borderElecs, hexCoords, 0, 0, exclude);
+        bundle = zeros(size(axonPath, 2), 3);
+        bundle(:, 1) = meanData(axonPath);
+        bundle(:, 2) = axonPath;
+        bundle(:, 3) = minIndices(axonPath);
         
         for j = 1:size(bundle, 1)
             if ismember(bundle(j, 2), stimChan) || ismember(bundle(j, 2), hexNeighborsFast(stimChan, hexArray, hexCoords))
