@@ -7,7 +7,7 @@ fittypepath{1}='WN_mapPRJ/';
 BPS_rk2 = zeros(100, 2);
 plottin = 1;
 
-for fittype=1
+for fittype=2
     for exp=1:4
         
         % Get file list
@@ -35,15 +35,20 @@ for fittype=1
                 xlabel('Time (ms)')
                 subplot(1,3,2)
                 imagesc(fittedGLM.linearfilters.Stimulus.space_rk1)
-                caxis([0 0.15])
+                caxis([-0.35 0.35])
                 axis image
+                colormap gray
+                colorbar 
                 subplot(1,3,3)
                 imagesc(fittedGLM.linearfilters.Stimulus.space_rk2)
-                caxis([0 0.15])
+                caxis([-0.35 0.35])
+                colormap gray
+                colorbar
                 axis image
+                % pause()
                 set(gcf,'PaperOrientation','landscape');
                 set(gcf,'PaperPositionMode','auto')
-                print('-dpsc',['/Users/Nora/Desktop/rk2/' exp_names(exp,:) fittedGLM.cellinfo.cell_savename '.ps'])
+                % print('-dpsc',['/Users/Nora/Desktop/rk2/' exp_names(exp,:) fittedGLM.cellinfo.cell_savename '.ps'])
             end
             
         end
