@@ -1,38 +1,61 @@
-%% AKHeitman 2014-04-27
-% This will be admittedly long and ugly.  But more self contained.
-% GLMPars = GLMParams  or GLMPars = GLMParams(GLMType.specialchange_name)
-% Sensitive to naming changes in GLMParams.
-% Only saves stuff (and calls directories) if we are in a troubleshooting mode
-% Heavily GLMType dependent computations will be carried out here
-% Outsourcable computations will be made into their own functions
-% troubleshoot optional
-% need troublshoot.doit (true or false), 
-% troubleshoot.plotdir,
-% troubleshoot.name
+%% NB 2015-05-01
+% This takes in the stimulus, the spikes, and the location of the cell to
+% fit a GLM. The GLM architecture and settings can be changed in
+% glm_parameters.m
 
 
+function [fittedGLM] = glm_fit(fitspikes, fitmovie, center_coord, varargin)
 
-% CALLS which use GLMType:
-%  prep_paramindGP
-%  prep_stimcelldependentGPXV
+% INPUTS
+%
+%   fitspikes: the spike times of the neuron
 
+%   fitmovie: the movie frame by frame. You should
+%   have a frame for every 1/120 seconds, so if the interval was two, your
+%   fitmovie should have 2 of each frame
+%   OR the xml specification, like RGB-8-1-0.48-11111-32x32
 
-function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
+%   center_coord: the center of the RF
 
+%   WN_STA: optional, To do fixedSP_rk1, you need to input the STA in the same
+%   dimensions as the fitting stimulus
+
+%   neighborspikes: optional, a cell array, where each cell has the spike times of
+%   the neighbor cells
+
+%   Set the specifics of the GLM architecture in GLMSettings.
+
+% Requires matlab/code/projects/glm to be added to your path
+
+% Parse optional input 
+p = inputParser;
+p.addParamValue('WN_STA', 0)
+p.addParamValue('neighborspikes', 0)
+p.parse(varargin{:});
+WN_STA = p.Results.WN_STA;
+neighborspikes = p.Results.neighborspikes;
+clear p
+
+%%
+
+% Check STA input
+% if WN_STA ~= 0
+%     assert(size(fitmovie,1) == size(WN_STA,1) && size(fitmovie,2) == size(WN_STA,2), 'STA and Movie are not the same dimensions')
+% end
 
 %% Setup Covariates
-fittedGLM.cell_savename = glm_cellinfo.cell_savename;
-fittedGLM.d_save        = glm_cellinfo.d_save;
-fittedGLM.cellinfo      = glm_cellinfo;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load up GLMParams compute some universal params
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-GLMPars           = GLMParams;
-if isfield(GLMType, 'specialchange') && GLMType.specialchange
-    GLMPars = GLMParams(GLMType.specialchange_name);
-end
+
+glm_parameters; % GLMType and GLMParams defined here
+
+% if isfield(GLMType, 'specialchange') && GLMType.specialchange
+%     GLMPars = GLMParams(GLMType.specialchange_name);
+% end
 fittedGLM.GLMPars = GLMPars;
 fittedGLM.GLMType = GLMType;
+fittedGLM.center_coord = center_coord;
 if isfield(GLMType, 'debug') && GLMType.debug
     GLMPars.optimization.tolfun = 1; 
 end
@@ -41,7 +64,7 @@ end
 % Timing
 frames = size(fitmovie,3);
 bins   = frames * GLMPars.bins_per_frame;
-t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
+t_bin  = (1/120) / GLMPars.bins_per_frame;
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
 
@@ -54,19 +77,12 @@ if GLMType.PostSpikeFilter
 end
 if GLMType.CouplingFilters
     basis_params  = GLMPars.spikefilters.cp;
-    % cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
-    % Put in PCA for coupling here
-    load('CP_basis.mat');
-    cp_basis = waveform; 
+    cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
 end
 clear bin_size basis_params
 
 % Convolve Spike Times with appropriate basis
-% Think about flushing dt out to the wrapper
-% Take care of all timing in glm_execute or in glmwrap.
-t_bin        = t_bin;
-home_sptimes = fitspikes.home';
-home_spbins  = ceil(home_sptimes / t_bin);
+home_spbins  = ceil(fitspikes / t_bin);
 home_spbins = home_spbins(find(home_spbins < bins) );
 if GLMType.PostSpikeFilter
     basis         = ps_basis';
@@ -76,8 +92,7 @@ end
 if GLMType.CouplingFilters;
     basis = cp_basis';
     for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-        %spikes of neighbor neurons NB
-        neighbor_sptimes = neighborspikes.home{j_pair}';
+        neighbor_sptimes = neighborspikes{j_pair}';
         neighbor_spbins  = ceil(neighbor_sptimes / t_bin);
         neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
         CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
@@ -91,16 +106,13 @@ end
 
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
-%p_init     =  zeros(paramind.paramcount,1);  
-p_init     = .01* ones(paramind.paramcount,1);
-
+p_init     =  0.1*ones(paramind.paramcount,1);  
 
 % ORGANIZE STIMULUS COVARIATES
-center_coord       = glm_cellinfo.slave_centercoord;
-WN_STA             = double(glm_cellinfo.WN_STA);
+inputstats.mu_avgIperpix = mean(fitmovie(:));
+inputstats.range = range(fitmovie(:));
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
-clear WN_STA center_coord
-
+fittedGLM.inputstats = inputstats;
 %
 if ~GLMType.CONVEX
     GLMPars.optimization.tolfun = GLMPars.optimization.tolfun - 1;
@@ -234,14 +246,12 @@ end
 % end NBCoupling
 
 % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
-center_coord    = glm_cellinfo.slave_centercoord;
 ROI_length      = GLMPars.stimfilter.ROI_length;
 stimsize.width  = size(fitmovie,1);
 stimsize.height = size(fitmovie,2);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
-WN_STA           = double(glm_cellinfo.WN_STA); 
 [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
 if GLMType.CONVEX
     if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
@@ -321,12 +331,5 @@ fittedGLM.linearfilters = linearfilters;
 fittedGLM.note = 'in theory, linearfilters and t_bin/ binsperframe is sufficient for xval and simulation'; 
 fittedGLM.fit_time = datestr(clock);
 fittedGLM.writingcode = mfilename('fullpath');
-
-%% Evaluate cross-validated fits,  Print and Save
-[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
-fittedGLM.xvalperformance  = xvalperformance; 
-eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
-printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
-printglmfit(fittedGLM,printname)
 
 end
