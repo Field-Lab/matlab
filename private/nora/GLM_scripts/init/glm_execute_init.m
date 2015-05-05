@@ -87,7 +87,7 @@ end
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
 %p_init     =  zeros(paramind.paramcount,1);  
-p_init     = .01* rand(paramind.paramcount,1);
+p_init     = 1* rand(paramind.paramcount,1);
 
 
 % ORGANIZE STIMULUS COVARIATES
