@@ -1,5 +1,5 @@
 clear
-datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/';
+datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk2_MU_PS_CP_p8IDp8/standardparams/';
 exp_names=['2012-08-09-3/';'2012-09-27-3/';'2013-08-19-6/';'2013-10-10-0/'];
 fittypepath{2}='NSEM_mapPRJ/';
 fittypepath{1}='WN_mapPRJ/';
@@ -34,5 +34,5 @@ end
 
 xlim([0 57])
 ylim([-1 1])
-title('Fit Rank 1, No Coupling')
+title('Fit Rank 2, Coupling')
 xlabel('Number of Blocks')
