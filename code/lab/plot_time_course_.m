@@ -55,7 +55,7 @@ params = p.Results;
 
 
 % set up plot axes
-plot_axes = set_up_fig_or_axes(params.foa);
+plot_axes = set_up_fig_or_axes(params.foa, 0);
 
 % plot each color
 hold on
