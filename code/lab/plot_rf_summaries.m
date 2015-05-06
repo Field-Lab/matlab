@@ -269,7 +269,7 @@ end
 % PLOT FITS
 
 if params.plot_fits
-    figure
+%     figure
     % 2D Gaussian fits
     
     % go through each cell
@@ -308,7 +308,7 @@ if params.plot_fits
 %         if any(isnan([X Y]));continue;end
         
         % transform to desired coordinates
-        [X, Y] = tformfwd(coord_tform, X, Y);
+%         [X, Y] = tformfwd(coord_tform, X, Y);
 
         % plot the points and fill
         
