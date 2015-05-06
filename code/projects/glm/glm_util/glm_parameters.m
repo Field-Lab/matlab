@@ -2,7 +2,7 @@
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-GLMType.stimfilter_mode = 'fixedSP_rk1_linear'; GLMType.CONVEX = true;
+% GLMType.stimfilter_mode = 'fixedSP_rk1_linear'; GLMType.CONVEX = true;
 % GLMType.stimfilter_mode = 'rk1'; GLMType.CONVEX = false; 
 % GLMType.stimfilter_mode = 'rk2'; GLMType.CONVEX = false;
 
