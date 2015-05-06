@@ -3,8 +3,8 @@
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
 % GLMType.stimfilter_mode = 'fixedSP_rk1_linear'; GLMType.CONVEX = true;
-GLMType.stimfilter_mode = 'rk1'; GLMType.CONVEX = false; 
-% GLMType.stimfilter_mode = 'rk2'; GLMType.CONVEX = false;
+% GLMType.stimfilter_mode = 'rk1'; GLMType.CONVEX = false; 
+GLMType.stimfilter_mode = 'rk2'; GLMType.CONVEX = false;
 
 % Coupling on or off?
 GLMType.CouplingFilters = false;
@@ -35,7 +35,7 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 % STA and Spatial Filter Size
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
-GLMPars.stimfilter.ROI_length = 13;  
+GLMPars.stimfilter.ROI_length = 5;  
 GLMPars.stimfilter.frames = 30;  % orig 30
 GLMPars.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMPars.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
@@ -59,7 +59,7 @@ GLMPars.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in milli
 %GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 %GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMPars.spikefilters.BiDirect_CP     = false;
-GLMPars.spikefilters.ps.filternumber = 10;
+GLMPars.spikefilters.ps.filternumber = 20;
 GLMPars.spikefilters.cp.filternumber = 8;
 GLMPars.spikefilters.ps.spacing      = pi/2;
 GLMPars.spikefilters.cp.spacing      = pi/2;
