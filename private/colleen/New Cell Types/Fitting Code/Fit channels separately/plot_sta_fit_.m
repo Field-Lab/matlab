@@ -60,11 +60,11 @@ hold on
 
 
 
-%% RED
-    fit_params = fit{2}.fit_params;
-fixed_params = fit{2}.fixed_params;
-fit_indices = fit{2}.fit_indices;
-fixed_indices = fit{2}.fixed_indices;
+%% RED  % Plot fit from whole curve fit because fit to just red is too noisy
+    fit_params = fit{1}.fit_params;
+fixed_params = fit{1}.fixed_params;
+fit_indices = fit{1}.fit_indices;
+fixed_indices = fit{1}.fixed_indices;
 
 % combine the fixed and free (fit) parameters
 all_params(fit_indices) = fit_params;
@@ -78,7 +78,7 @@ sta_fit = sta_fit_function(all_params);
 %    fit_tc = fit_tc ./ norm_factor;
     subplot(2,1,2)
 hold on
-        plot(linspace(1,all_params(20),all_params(20)), fit_tc*scale/max(fit_tc), '--r')
+        plot(linspace(1,all_params(20),all_params(20)), fit_tc(:,1)*scale/max(fit_tc(:,1)), '--r')
 
 
 

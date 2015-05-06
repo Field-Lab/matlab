@@ -562,7 +562,9 @@ for i =1:4
     final_params(fit_indices) = final_fit_params;
     sta_fit = sta_fit_function(final_params);
     
-    
+%     figure; 
+%     plot_sta_fit_(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices, sig_stixels);
+
     
     %% parse the output and organize into a structure
     
@@ -732,6 +734,6 @@ for i =1:4
 end
 
 % Plot result
-% plot_sta_fit(sta, final_fit_params, input_params(fixed_indices), fit_indices, fixed_indices, sig_stixels);
+plot_sta_fit_(sta_full,fit_info, sig_stixels);
 
 

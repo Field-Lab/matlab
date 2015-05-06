@@ -44,10 +44,10 @@ temp_stix = sig_stixels;
 
         subplot(2,1,2)
     if size(sta_fit, 3) == 3
-        plot(linspace(1,size(sta,4),size(fit_tc,1)), fit_tc(:,1), ':r')
+        plot(linspace(1,size(sta,4),size(fit_tc,1)), fit_tc(:,1), '--r')
         hold on
-        plot(linspace(1,size(sta,4),size(fit_tc,1)), fit_tc(:,2), ':g')
-        plot(linspace(1,size(sta,4),size(fit_tc,1)), fit_tc(:,3), ':b')
+        plot(linspace(1,size(sta,4),size(fit_tc,1)), fit_tc(:,2), '--g')
+        plot(linspace(1,size(sta,4),size(fit_tc,1)), fit_tc(:,3), '--b')
     elseif size(sta_fit, 3) == 1
         plot(linspace(1,size(sta,4),size(fit_tc,1)),fit_tc, '--k')
         hold on
@@ -61,9 +61,9 @@ temp_stix = sig_stixels;
     norm_factor = max(abs(reshape(tc, 1, [])));
     tc = tc ./ norm_factor;
     if size(sta_fit, 3) == 3
-        plot(linspace(1,size(sta,4),size(tc,1)),tc(:,1), '--r')
-        plot(linspace(1,size(sta,4),size(tc,1)),tc(:,2), '--g')
-        plot(linspace(1,size(sta,4),size(tc,1)),tc(:,3), '--b')
+        plot(linspace(1,size(sta,4),size(tc,1)),tc(:,1), 'r')
+        plot(linspace(1,size(sta,4),size(tc,1)),tc(:,2), 'g')
+        plot(linspace(1,size(sta,4),size(tc,1)),tc(:,3), 'b')
     elseif size(sta_fit,3) == 1
         plot(linspace(1,size(sta,4),size(tc,1)), tc, 'k')
         hold off

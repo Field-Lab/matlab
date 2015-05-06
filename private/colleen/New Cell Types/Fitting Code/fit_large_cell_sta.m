@@ -1,16 +1,25 @@
 clear
 
 % Wrong Movie Information 
-file_name = '2006-06-06-2/data008/wrongMovie/wrongMovie';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-22222.xml';
+file_name = '2015-04-14-2/data000/wrongMovie/wrongMovie';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-1-0.48-22222-40x40.xml';
 
 % Right Movie Information 
-file_name2 = '2006-06-06-2/data008/data008';
-mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-11111.xml';
+file_name2 = '2015-04-14-2/data000/data000';
+mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-1-0.48-11111-40x40.xml';
 
 
-cell_type = {'on parasol'};
+date='2015-04-14-2';
+concatname='data000';
+
+
+
+
+
+
+cell_type = {'on midget'};
 interpolate = false;
+independent_fit = 0;
 num_frames = 30; % both have to be run with the name number of frames
 false_stixels = 0.5;
 % cell_specification = 1562; %ON parasol
@@ -18,6 +27,12 @@ false_stixels = 0.5;
 
 % cell_specification = [6143];
 %% END OF INPUT
+folder = cell_type{1};
+% file path to save pictures
+filepath=['/Users/colleen/Desktop/Fitting/',date,'/',concatname,'/'];
+    if ~exist([filepath,folder],'dir')
+        mkdir([filepath,folder]);
+    end
 
 % Wrong Movie
 datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
@@ -65,7 +80,6 @@ for num_cell_types = 1:size(cell_type,2)
     
 end
 cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
-%  cell_specification = [6661]
 
 
 %% Movie for right STAs
@@ -107,15 +121,26 @@ for rgc = 1:num_rgcs
 
 
                     
-[threshold] = significant_stixels_threshold_calc(temp_sta, false_stixels);
+[threshold] = sig_stixels_threshold(temp_sta, false_stixels);
 mark_params.select = 'thresh';
 mark_params.thresh = threshold;
 
     fprintf('fitting the STA for cell %d... \n', datarun2.cell_ids(cell_indices(rgc)))
 
     temp_sta = datarun2.stas.stas{cell_indices(rgc)};
+if independent_fit
+    [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta_(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'mark_params', mark_params);
+    print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]));
 
+else
+    
 [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'mark_params', mark_params);
+plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'on');
+suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
+
+print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(datarun.cell_ids(cell_indices(rgc)))]));
+
+end
 
 % Plot result
 %  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
@@ -135,7 +160,6 @@ mark_params.thresh = threshold;
 %         plot(tc(:,2), 'g', 'linewidth', 2)
 %         plot(tc(:,3), 'b', 'linewidth', 2)
 
-suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
   
     
     if isempty(temp_fit_params)
@@ -148,34 +172,34 @@ suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)
   
 
 
-
-    parameters(rgc,1) = cell_specification(rgc);
-    parameters(rgc,2) = cell_indices(rgc);
-    parameters(rgc,3) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_x;
-    parameters(rgc,4) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_y;
-    parameters(rgc,5) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_sd_x;
-    parameters(rgc,6) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_sd_y;
-    parameters(rgc,7) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_rotation_angle;
-    parameters(rgc,8) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_a;
-    parameters(rgc,9) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_b;
-    parameters(rgc,10) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_c;
-    parameters(rgc,11) = datarun.matlab.sta_fits{cell_indices(rgc)}.x_dim;
-    parameters(rgc,12) = datarun.matlab.sta_fits{cell_indices(rgc)}.y_dim;
-    parameters(rgc,13) = datarun.matlab.sta_fits{cell_indices(rgc)}.surround_sd_scale;
-    parameters(rgc,14) = datarun.matlab.sta_fits{cell_indices(rgc)}.surround_amp_scale;
-    parameters(rgc,15) = datarun.matlab.sta_fits{cell_indices(rgc)}.scale_one;
-    parameters(rgc,16) = datarun.matlab.sta_fits{cell_indices(rgc)}.scale_two;
-    parameters(rgc,17) = datarun.matlab.sta_fits{cell_indices(rgc)}.tau_one;
-    parameters(rgc,18) = datarun.matlab.sta_fits{cell_indices(rgc)}.tau_two;
-    parameters(rgc,19) = datarun.matlab.sta_fits{cell_indices(rgc)}.n_filters;
-    parameters(rgc,20) = datarun.matlab.sta_fits{cell_indices(rgc)}.frame_number;
-    parameters(rgc,21) = datarun.matlab.sta_fits{cell_indices(rgc)}.rmse;
-
-
-
-
-information{3} = parameters;
-information{4} = datarun.matlab.sta_fits;
+% 
+%     parameters(rgc,1) = cell_specification(rgc);
+%     parameters(rgc,2) = cell_indices(rgc);
+%     parameters(rgc,3) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_x;
+%     parameters(rgc,4) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_point_y;
+%     parameters(rgc,5) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_sd_x;
+%     parameters(rgc,6) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_sd_y;
+%     parameters(rgc,7) = datarun.matlab.sta_fits{cell_indices(rgc)}.center_rotation_angle;
+%     parameters(rgc,8) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_a;
+%     parameters(rgc,9) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_b;
+%     parameters(rgc,10) = datarun.matlab.sta_fits{cell_indices(rgc)}.color_weight_c;
+%     parameters(rgc,11) = datarun.matlab.sta_fits{cell_indices(rgc)}.x_dim;
+%     parameters(rgc,12) = datarun.matlab.sta_fits{cell_indices(rgc)}.y_dim;
+%     parameters(rgc,13) = datarun.matlab.sta_fits{cell_indices(rgc)}.surround_sd_scale;
+%     parameters(rgc,14) = datarun.matlab.sta_fits{cell_indices(rgc)}.surround_amp_scale;
+%     parameters(rgc,15) = datarun.matlab.sta_fits{cell_indices(rgc)}.scale_one;
+%     parameters(rgc,16) = datarun.matlab.sta_fits{cell_indices(rgc)}.scale_two;
+%     parameters(rgc,17) = datarun.matlab.sta_fits{cell_indices(rgc)}.tau_one;
+%     parameters(rgc,18) = datarun.matlab.sta_fits{cell_indices(rgc)}.tau_two;
+%     parameters(rgc,19) = datarun.matlab.sta_fits{cell_indices(rgc)}.n_filters;
+%     parameters(rgc,20) = datarun.matlab.sta_fits{cell_indices(rgc)}.frame_number;
+%     parameters(rgc,21) = datarun.matlab.sta_fits{cell_indices(rgc)}.rmse;
+% 
+% 
+% 
+% 
+% information{3} = parameters;
+% information{4} = datarun.matlab.sta_fits;
 % save([dataset,'-', cell_type{1}], 'information')
 
 end
