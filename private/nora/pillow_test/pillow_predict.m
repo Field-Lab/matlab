@@ -11,9 +11,13 @@ RGB = RGB_weights(datarun_mas,datarun_mas.cell_ids == cid);
 master_idx         = find(datarun.cell_ids == cid);
 
 % Turn RGB movie into greyscale movie
-testmovie=squeeze(RGB(1)*testmovie_color(:,:,1,:)+ ...
-    RGB(2)*testmovie_color(:,:,2,:)+ ...
-    RGB(3)*testmovie_color(:,:,3,:));
+if strcmp(stim_description(1:2), 'BW')
+    testmovie = squeeze(testmovie_color(:,:,1,:));
+else
+    testmovie=squeeze(RGB(1)*testmovie_color(:,:,1,:)+ ...
+        RGB(2)*testmovie_color(:,:,2,:)+ ...
+        RGB(3)*testmovie_color(:,:,3,:));
+end
 
 %% Get the test spikes
 
