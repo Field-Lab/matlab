@@ -2,12 +2,24 @@
 % This takes in the stimulus, the spikes, and the location of the cell to
 % fit a GLM. The GLM architecture and settings can be changed in
 % glm_parameters.m
+%
+% PATHS NEEDED
+% Vision.jar, such as javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar')
+% The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
+% The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
+
+% TROUBLESHOOTING
+% If it isn't working, use STA_Test(fitspikes, fitmovie, center_coord) to
+% make sure your timing and indexing is right.
 
 
-function [fittedGLM] = glm_fit(fitspikes, fitmovie, center_coord, varargin)
+function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 
 % INPUTS
 %
+
+% REQUIRED
+
 %   fitspikes: the spike times of the neuron
 
 %   fitmovie: the movie frame by frame. You should
@@ -17,15 +29,13 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center_coord, varargin)
 
 %   center_coord: the center of the RF (eg from the vision sta fit)
 
+% OPTIONAL
+
 %   WN_STA: optional, To do fixedSP_rk1, you need to input the STA in the same
 %   dimensions as the fitting stimulus
 
 %   neighborspikes: optional, a cell array, where each cell has the spike times of
 %   the neighbor cells
-
-%   Set the specifics of the GLM architecture in GLMSettings.
-
-% Requires matlab/code/projects/glm to be added to your path
 
 % Parse optional input 
 p = inputParser;
@@ -36,30 +46,30 @@ WN_STA = p.Results.WN_STA;
 neighborspikes = p.Results.neighborspikes;
 clear p
 
-%%
-
-% Check STA input
-% if WN_STA ~= 0
-%     assert(size(fitmovie,1) == size(WN_STA,1) && size(fitmovie,2) == size(WN_STA,2), 'STA and Movie are not the same dimensions')
-% end
-
 %% Setup Covariates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load up GLMParams compute some universal params
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-glm_parameters; % GLMType and GLMParams defined here
+[GLMT, GLMP] = glm_parameters; % GLMType and GLMParams defined here
 
-% if isfield(GLMType, 'specialchange') && GLMType.specialchange
-%     GLMPars = GLMParams(GLMType.specialchange_name);
-% end
-fittedGLM.GLMPars = GLMPars;
-fittedGLM.GLMType = GLMType;
+fittedGLM.GLMPars = GLMP;
+fittedGLM.GLMType = GLMT;
+GLMPars = GLMP;
+GLMType = GLMT;
+clear GLMP GLMT
+
+center_coord.x_coord = center(2);
+center_coord.y_coord = center(1);
 fittedGLM.center_coord = center_coord;
-if isfield(GLMType, 'debug') && GLMType.debug
-    GLMPars.optimization.tolfun = 1; 
+
+if isfield(fittedGLM.GLMType, 'specialchange') && fittedGLM.GLMType.specialchange
+    GLMPars = GLMParams(GLMType.specialchange_name);
 end
 
+if isfield(fittedGLM.GLMType, 'debug') && fittedGLM.GLMType.debug
+    GLMPars.optimization.tolfun = 1; 
+end
 
 % Timing
 frames = size(fitmovie,3);
@@ -67,7 +77,6 @@ bins   = frames * GLMPars.bins_per_frame;
 t_bin  = (1/120) / GLMPars.bins_per_frame;
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
-
 
 % Make Coupling and Post Spike Filter Bases
 bin_size      = t_bin;

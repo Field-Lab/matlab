@@ -8,7 +8,7 @@ function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 % INPUTS
 % 
 % fittedGLM structure
-% testmovie 
+% testmovie should be in stim size x time (NO RGB!)
 %
 % OPTIONAL
 % testspikes, which should be in cells, with each cell a repeat
