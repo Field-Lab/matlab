@@ -11,6 +11,7 @@
 % TROUBLESHOOTING
 % If it isn't working, use STA_Test(fitspikes, fitmovie, center_coord) to
 % make sure your timing and indexing is right.
+% This also only works for greyscale movies! It is not set up for color!
 
 
 function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
@@ -36,14 +37,19 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 
 %   neighborspikes: optional, a cell array, where each cell has the spike times of
 %   the neighbor cells
+%
+%   monitor_refresh: usually should be 120Hz. This is NOT the interval!
+%   Just the monitor speed!
 
 % Parse optional input 
 p = inputParser;
 p.addParamValue('WN_STA', 0)
 p.addParamValue('neighborspikes', 0)
+p.addParameter('monitor_refresh', 120)
 p.parse(varargin{:});
 WN_STA = p.Results.WN_STA;
 neighborspikes = p.Results.neighborspikes;
+monitor_refresh = p.Results.monitor_refresh;
 clear p
 
 %% Setup Covariates
@@ -74,7 +80,7 @@ end
 % Timing
 frames = size(fitmovie,3);
 bins   = frames * GLMPars.bins_per_frame;
-t_bin  = (1/120) / GLMPars.bins_per_frame;
+t_bin  = (1/monitor_refresh) / GLMPars.bins_per_frame;
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
 
