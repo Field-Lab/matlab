@@ -5,6 +5,9 @@
 % If you already have the movie loaded up, you can specify stim as that instead of a
 % string.
 %
+% If you give an RGB movie, it will be converted to BW by taking RGB
+% weights from the STA and making a psuedoBW movie.
+%
 % The GLM architecture and settings can be changed in
 % glm_parameters.m
 %
@@ -33,17 +36,21 @@ function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim, varargin)
 % OPTIONAL KEYWORDS
 % stim_length, optional, default 15 min
 % dsave, optional, where to save the fit. If no path is given, the fit will
-% not be saved to disk
-%
+%   not be saved to disk
+% monitor_refresh: usually should be 120Hz. This is NOT the interval!
+%   Just the monitor speed!
 
 % Parse optional input
 p = inputParser;
 p.addParameter('stim_length', 900)
 p.addParameter('d_save', 0)
+p.addParameter('monitor_refresh', 120)
 p.parse(varargin{:});
 stim_length = p.Results.stim_length;
 d_save = p.Results.d_save;
+monitor_refresh = p.Results.monitor_refresh;
 clear p
+frames_per_trigger = 100;
 
 % Load datarun
 datarun=load_data(dataset);
@@ -63,7 +70,7 @@ if isstr(stim)
     dashes=find(stim=='-');
     WN_type=stim(1:dashes(1)-1);
     interval = str2double(stim(dashes(2)+1:dashes(3)-1));
-    fitframes=stim_length*120/interval;
+    fitframes=stim_length*monitor_refresh/interval;
     disp('Loading Stimulus Movies')
     [temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes);
     fitmovie_color=zeros(height,width,3,fitframes);
@@ -128,7 +135,7 @@ for i_cell = 1:length(cells)
     n_block=0;
     for i=1:(length(datarun.triggers)-1)
         actual_t_start=datarun.triggers(i);
-        supposed_t_start=n_block*100/120;
+        supposed_t_start=n_block*frames_per_trigger/monitor_refresh;
         idx1=spikes > actual_t_start;
         idx2=spikes < datarun.triggers(i+1);
         spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
@@ -142,7 +149,7 @@ end
 
 % Execute and save GLM
 tic
-fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA);
+fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh);
 toc
 if isstr(d_save)
     eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
