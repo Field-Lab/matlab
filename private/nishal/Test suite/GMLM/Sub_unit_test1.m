@@ -199,7 +199,7 @@ title(sprintf('GMLM Filter: %d',ifilt));
 end
 
 %% EM like Max Expected Likelihood .. 
- [fitGLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov,7,4);
+ [fitGLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov,7,4);    
 %% Test on a WN movie
 nTrials=50;
 mov_orig2=(rand(6,6,2000)>0.5) -0.5;
