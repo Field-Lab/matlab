@@ -12,7 +12,7 @@ for i_frame = 1:frames
     hold on
     idx = (i_frame-1)*10+(1:10);
     response = sum(res.spikes(:,idx),2);
-    scatter(res.centers(:,2), res.centers(:,1), 1+100*response, 'r');
+    scatter(res.centers(:,2), res.centers(:,1), 1+10*response, 'r', 'filled');
     F = getframe;
     writeVideo(writerObj, F);
     clf
