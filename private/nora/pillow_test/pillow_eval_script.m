@@ -1,4 +1,4 @@
-path = '/Volumes/Lab/Users/Nora/pillow_test/';
+path = '/Volumes/Lab/Users/Nora/pillow_test_CP/';
 files = dir(path);
 
 load('testmovie.mat');
@@ -27,3 +27,4 @@ for i_file = 1:length(files)
         close all
     end
 end
+
