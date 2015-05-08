@@ -13,3 +13,4 @@ datarun = load_params(datarun);
 on_par = datarun.vision.cell_types{1,33}.cell_ids;
 
 fittedGLM = glm_fit_from_WN_CP(on_par, '2005-04-26-1/data005-pca/data005/data005', 'BW-20-1-0.48-11111', 'stim_length', 1200, 'd_save', '/Volumes/Lab/Users/Nora/pillow_test_CP');
+
