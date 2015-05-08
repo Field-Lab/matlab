@@ -18,9 +18,13 @@
 % Vision.jar, such as javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar')
 % The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
 % The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
+%
+% COUPLING
+% You need to have the cells classified in the dataset you want. It only
+% couples within cell type
 
 
-function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim, varargin)
+function [fittedGLM] = glm_fit_from_WN_CP(cells, dataset, stim, varargin)
 
 % INPUTS
 
@@ -89,12 +93,14 @@ clear temp_fitmovie height width i
 for i_cell = 1:length(cells)
     cid = cells(i_cell);
     
-    % Cell Info
-    glm_cellinfo.cid           = cid;
-    glm_cellinfo.cell_savename = num2str(cid);
-    master_idx         = find(datarun.cell_ids == cid);
     
-    % Make the movie psuedo BW if it isn't already BW
+    % Cell Info
+    % glm_cellinfo.cid           = cid;
+    % glm_cellinfo.cell_savename = num2str(cid);
+    master_idx         = datarun.cell_nums(cid);
+   
+        
+        % Make the movie psuedo BW if it isn't already BW
     if ~exist('fitmovie', 'var')
         [RGB, fitmovie] = RGB_to_BW(datarun, master_idx, 'color_movie', fitmovie_color);
     end
@@ -102,9 +108,6 @@ for i_cell = 1:length(cells)
     % Check the size of the movie
     size_fitmovie = size(fitmovie);
     assert(length(size_fitmovie) == 3, ['The movie size is ' num2str(size_fitmovie)])
-    
-    % Spike loading
-    spikes = datarun.spikes{master_idx};
     
     % Load the STA and check the size
     WN_STA = datarun.stas.stas{master_idx};
@@ -130,30 +133,80 @@ for i_cell = 1:length(cells)
     center(2) = size(fitmovie,1) - round(center_coord(2)); %x_coord
     clear cell_savename
     
-    % Align the spikes and the movies to the triggers;
-    spikes_adj=spikes;
-    n_block=0;
-    for i=1:(length(datarun.triggers)-1)
-        actual_t_start=datarun.triggers(i);
-        supposed_t_start=n_block*frames_per_trigger/monitor_refresh;
-        idx1=spikes > actual_t_start;
-        idx2=spikes < datarun.triggers(i+1);
-        spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
-        n_block=n_block+1;
+    % Find neighbors and load spikes if that's whats up
+    [GLMT, GLMP] = glm_parameters;
+    if GLMT.CouplingFilters
+        type = 1; type_found = false;
+        while ~type_found
+            if any(datarun.cell_types{type}.cell_ids == cid)
+                type_found = true;
+            else
+                type = type + 1;
+            end
+        end
+        cells_to_pair = full(datarun.cell_nums(datarun.cell_types{type}.cell_ids));
+        paired_cells=subR_pick_neighbor_cells(center_coord, cells_to_pair, datarun.vision.sta_fits, GLMP.spikefilters.cp.n_couplings);
+        for i = 1:GLMP.spikefilters.cp.n_couplings
+            neighbor_spikes{i} = align_spikes(datarun.spikes{paired_cells(i)}, datarun.triggers, frames_per_trigger/monitor_refresh);
+        end
+    else
+        neighbor_spikes = 0;
     end
-    clear spikes
-    fitspikes=spikes_adj;
-    clear spikes_adj;
+    
+    % Spike loading
+    fitspikes = align_spikes(datarun.spikes{master_idx}, datarun.triggers, frames_per_trigger/monitor_refresh);
     
 end
 
 % Execute and save GLM
 tic
-fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh);
+fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh, 'neighborspikes', neighbor_spikes);
 toc
+
+% Save some other stuff
+if GLMT.CouplingFilters
+    fittedGLM.cellinfo.pairs = datarun.cell_ids(paired_cells);
+end
+fittedGLM.cid = cid;
+
 if isstr(d_save)
     eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
 end
 
+
+end
+
+function adjusted_spikes = align_spikes(spikes, triggers, time_per_trigger)
+    % Align the spikes and the movies to the triggers;
+    adjusted_spikes=spikes;
+    n_block=0;
+    for i=1:(length(triggers)-1)
+        actual_t_start=triggers(i);
+        supposed_t_start=n_block*time_per_trigger;
+        idx1=spikes > actual_t_start;
+        idx2=spikes < triggers(i+1);
+        adjusted_spikes(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
+        n_block=n_block+1;
+    end
+end
+
+%NBCoupling 2015-04-20
+function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits, n_couplings)
+    
+     GLMPars = GLMParams;
+     NumCells = length(cell_ids);
+     distance=zeros(NumCells,1);
+     
+     % Calculate distance between RFs
+     for i_pair=1:NumCells
+         distance(i_pair)=norm(sta_fits{cell_ids(i_pair),1}.mean-mean);
+         if distance(i_pair)==0
+             distance(i_pair)=NaN;
+         end
+     end
+     
+     % Choose the closest cells
+     [~,indices]=sort(distance);
+     paired_cells=cell_ids(indices(1:n_couplings));
 
 end
