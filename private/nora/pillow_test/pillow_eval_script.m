@@ -14,7 +14,7 @@ trial_starts = all_trial_starts(1:25);
 
 for i_file = 1:length(files)
     filename = files(i_file).name;
-    if ~strcmp(filename(1),'.')
+    if ~strcmp(filename(1),'.') && strcmp(filename(end), 't')
         cid = str2double(filename(1:(end-4)));
         load([path filename])
         xval = pillow_predict(fittedGLM, cid, testmovie_color, datarun, datarun_mas, trial_starts);
@@ -24,5 +24,6 @@ for i_file = 1:length(files)
         set(gcf, 'PaperSize', [20 4]);    
         set(gcf, 'Position', [0 0 1500 200])
         print(gcf,'-dpsc2',[path num2str(cid) '.eps']);
+        close all
     end
 end
