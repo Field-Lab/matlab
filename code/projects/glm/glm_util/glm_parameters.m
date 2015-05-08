@@ -3,9 +3,9 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-% GLMType.stimfilter_mode = 'fixedSP_rk1_linear'; GLMType.CONVEX = true;
+% GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
 GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
-% GLMType.stimfilter_mode = 'rk2'; GLMType.CONVEX = false;
+% GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
 GLMT.CouplingFilters = false;
@@ -28,7 +28,7 @@ GLMT.specialchange = false;
 % Timing
 GLMP.bins_per_frame = 10; %orig 10
 GLMP.approx_refresh_hz  = 120;
-%GLMPars.dt             = GLMPars.tstim / GLMPars.bins_per_frame;
+%GLMP.dt             = GLMPars.tstim / GLMPars.bins_per_frame;
 GLMP.timenotes_0    = 'tstim is ~time in seconds of frame refresh,  dt is the ~time per GLM bin';
 GLMP.timenotes_1    = 'True tstim is usually .0083275' ;
 GLMP.timenotes_2    = 'true tstim is measured from the triggers in each datarun, usually by the Directories_Params function';
@@ -57,8 +57,8 @@ GLMP.spikefilters.note0 = 'all parameters related to raised sinusoidal humps';
 GLMP.spikefilters.note1 = 'basis built by prep_spikefilterbasisGP / create_histbasis as of 2014-05-3';
 GLMP.spikefilters.ps.ms  = 100 ;      %% post spike filter time length in millisecs
 GLMP.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in millisecs
-%GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
-%GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
+%GLMP.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
+%GLMP.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMP.spikefilters.BiDirect_CP     = false;
 GLMP.spikefilters.ps.filternumber = 10;
 GLMP.spikefilters.cp.filternumber = 8;
