@@ -91,16 +91,15 @@ clear temp_fitmovie height width i
 
 %% Load Cell Specific Elements Spikes and STA
 for i_cell = 1:length(cells)
-    cid = cells(i_cell);
-    
+    cid = cells(i_cell)
     
     % Cell Info
-    % glm_cellinfo.cid           = cid;
-    % glm_cellinfo.cell_savename = num2str(cid);
+    glm_cellinfo.cid           = cid;
+    glm_cellinfo.cell_savename = num2str(cid);
     master_idx         = datarun.cell_nums(cid);
-   
-        
-        % Make the movie psuedo BW if it isn't already BW
+    
+    
+    % Make the movie psuedo BW if it isn't already BW
     if ~exist('fitmovie', 'var')
         [RGB, fitmovie] = RGB_to_BW(datarun, master_idx, 'color_movie', fitmovie_color);
     end
@@ -133,7 +132,7 @@ for i_cell = 1:length(cells)
     center(2) = size(fitmovie,1) - round(center_coord(2)); %x_coord
     clear cell_savename
     
-    % Find neighbors and load spikes if that's whats up
+    % Find neighbors and load spikes if thats whats up
     [GLMT, GLMP] = glm_parameters;
     if GLMT.CouplingFilters
         type = 1; type_found = false;
@@ -156,23 +155,22 @@ for i_cell = 1:length(cells)
     % Spike loading
     fitspikes = align_spikes(datarun.spikes{master_idx}, datarun.triggers, frames_per_trigger/monitor_refresh);
     
+    % Execute and save GLM
+    tic
+    fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh, 'neighborspikes', neighbor_spikes);
+    toc
+    
+    % Save some other stuff
+    if GLMT.CouplingFilters
+        fittedGLM.cellinfo.pairs = datarun.cell_ids(paired_cells);
+    end
+    fittedGLM.cid = cid;
+    
+    if isstr(d_save)
+        eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+    end
+    
 end
-
-% Execute and save GLM
-tic
-fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh, 'neighborspikes', neighbor_spikes);
-toc
-
-% Save some other stuff
-if GLMT.CouplingFilters
-    fittedGLM.cellinfo.pairs = datarun.cell_ids(paired_cells);
-end
-fittedGLM.cid = cid;
-
-if isstr(d_save)
-    eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
-end
-
 
 end
 

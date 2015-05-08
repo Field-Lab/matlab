@@ -2,7 +2,7 @@ function [testmovie, res] = res_spikes_raster(exp,celltype)
 threshold = 0.1;
 stimtype = 'NSEM';
 
-datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk2_MU_PS_noCP_p8IDp8_shortlist/standardparams/NSEM_mapPRJ/';
+datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/fixedSP_rk1_linear_MU_PS_CP_p8IDp8/standardparams/NSEM_mapPRJ/';
 exp_names=['2012-08-09-3/';'2012-09-27-3/';'2013-08-19-6/';'2013-10-10-0/'];
 
 % Get all fits of that cell type
@@ -30,6 +30,7 @@ res.spikes = zeros(n_cells, 10*length(testmovie));
 res.cells = zeros(n_cells, 1);
 res.centers = zeros(n_cells, 2);
 for i_cell = 1:n_cells
+    disp(i_cell)
     % Load fittedGLM
     load([datapath exp_names(exp,:) matfiles(i_cell).name]);
     % Load up neighbor spikes
