@@ -90,9 +90,11 @@ if GLMType.CouplingFilters
     plot(time_msec, oneline, 'k-'); hold on
     bins    = [1:length(CP{1})];
     time_msec = 1000*dt*bins ;
+    hold on
     for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
         plot(time_msec, exp(CP{pair}));
     end
+    hold off
     xlim([0, time_msec(end)]);
     ylim([0, 2]);
     ylabel('gain'); xlabel('msec'); title('Coupling Filters')

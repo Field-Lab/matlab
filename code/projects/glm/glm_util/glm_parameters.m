@@ -4,11 +4,11 @@ function [GLMT, GLMP] = glm_parameters
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
 % GLMType.stimfilter_mode = 'fixedSP_rk1_linear'; GLMType.CONVEX = true;
-GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
-% GLMType.stimfilter_mode = 'rk2'; GLMType.CONVEX = false;
+% GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
+GLMType.stimfilter_mode = 'rk2'; GLMType.CONVEX = false;
 
 % Coupling on or off?
-GLMT.CouplingFilters = false;
+GLMT.CouplingFilters = true;
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
