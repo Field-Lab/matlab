@@ -30,6 +30,7 @@ res.spikes = zeros(n_cells, 10*length(testmovie));
 res.cells = zeros(n_cells, 1);
 res.centers = zeros(n_cells, 2);
 for i_cell = 1:n_cells
+    disp(i_cell)
     % Load fittedGLM
     load([datapath exp_names(exp,:) matfiles(i_cell).name]);
     % Load up neighbor spikes
