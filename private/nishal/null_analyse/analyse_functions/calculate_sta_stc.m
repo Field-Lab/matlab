@@ -1,5 +1,5 @@
-function [STA,STC] = calculate_sta_stc(spksGen,mov,Filtlen)
-
+function [STA,STC] = calculate_sta_stc(spksGen,mov,Filtlen,ifSTC)
+% ifSTC added later on. Some old code using this function might not work.
 
 Filtdim1=size(mov,1);
 Filtdim2=size(mov,2);
@@ -10,13 +10,17 @@ Len = length(spksGen);
 % My own STA code 
 
 STA=zeros(Filtdim1,Filtdim2,3,Filtlen);
+idx = 1:Len;
+spkbin=idx(binnedResponses==1 & idx'>Filtlen);
 
-
-for ibin=Filtlen+1:Len
+for ibin=spkbin
    if(mod(ibin,1000)==1)
        ibin
    end
+   if(ibin<size(mov,4))
 STA=STA+mov(:,:,:,ibin:-1:ibin-Filtlen+1)*binnedResponses(ibin);
+
+   end
 end
 
 STA=STA/sum(binnedResponses);
@@ -34,10 +38,12 @@ STA=squeeze(sum(STA,3));
  imagesc(squeeze((STA(:,:,itime)))');colormap gray
  caxis([min(STA(:)),max(STA(:))]);
  colorbar
- pause(1/120)
+ pause(1/120);
  end
 
 %% STC calculation 
+STC=[]; % incase ifSTC=0, then 
+if(ifSTC==1)
 display('STC calculation');
 rSTA=STA(r,c,:); % Doubt!
 
@@ -113,6 +119,6 @@ colormap gray
 itime
 pause(1);
 end
-
+end
 
 end

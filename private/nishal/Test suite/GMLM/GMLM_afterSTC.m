@@ -5,7 +5,7 @@ global_vars_GMLM_afterSTC
 %% spontaneous activity
 mu=x(end);
 mu=0; %% mu stuff!
-
+display('ALERT : NoMu');
 %% Stimulus filters
 x=x(1:end-1);
 
@@ -25,6 +25,8 @@ grad1_mu=-(size(mov_filtered,2))*0.0083; %(dt = 0.0083)
 
 % grad 2 terms
 tsp = find(binnedResponses_global~=0);
+y_tsp = binnedResponses_global(binnedResponses_global~=0)';
+
 kx_sum=0*kx{1}(tsp);
 for ifilter=1:nFrontEnds
 kx_sum = kx_sum + kx{ifilter}(tsp);
@@ -34,9 +36,9 @@ kx_sum=kx_sum+mu;
 grad2=cell(nFrontEnds,1);
 mov_filtered_spiked = mov_filtered(:,tsp);
 for ifilter=1:nFrontEnds
-grad2{ifilter}= sum(repmat((kx{ifilter}(tsp)./kx_sum),[filteredStimDim,1]).*mov_filtered_spiked,2);
+grad2{ifilter}= sum(repmat((y_tsp.*kx{ifilter}(tsp)./kx_sum),[filteredStimDim,1]).*mov_filtered_spiked,2);
 end
-grad2_mu = sum((1./kx_sum),2);
+grad2_mu = sum((y_tsp./kx_sum),2);
 
 
 
@@ -49,10 +51,13 @@ grad_K(nFrontEnds*filteredStimDim+1) = grad1_mu+grad2_mu;
 Grad=-grad_K;
 
 grad_norm= norm(Grad);
+lam=kx{1};
+for ik=2:length(kx)
+lam=lam+kx{ik};
+end
+lam=lam+mu;
 
-
-lam=(kx{1}+kx{2}+kx{3}+kx{4}+mu);
-likelihood = sum(-lam*0.0083) + sum(log(lam(tsp)));
+likelihood = sum(-lam*0.0083) + sum(y_tsp.*log(lam(tsp)));
 fval=-likelihood;
 
 end

@@ -1,41 +1,21 @@
-function [fitGLM,output] = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits)
+function [fitGLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,mov,filteredStimDim2,nFrontEnds2)
 
 
 global_vars_GMLM_afterSTC
 binnedResponses_global=binnedResponses; 
-%%
-nSTCs=3;
-
-%% Normalize STA and STC 
-
-WNSTA=WNSTA/norm(WNSTA(:)); % Normalize
-for istc=1:nSTCs
-    WN_uSq{istc} = WN_uSq{istc}/norm(WN_uSq{istc}(:)); % Normalize
-end
+ filteredStimDim=filteredStimDim2;
+ nFrontEnds=nFrontEnds2;
 
 %% Doubt! 
-mov_filtered = squeeze(convn(mov,WNSTA,'valid'))';
-for istc=1:nSTCs
-
-    mov_filtered(istc+1,:)=squeeze(convn(mov,WN_uSq{istc},'valid'))';
-end
-
-binnedResponses_global=binnedResponses(end-size(mov_filtered,2)+1:end);
-
-%mov_filtered=[mov_filtered;ones(1,size(mov_filtered,2))]; % Add DC 1?
-
-filteredStimDim=size(mov_filtered,1);
-nFrontEnds=4;
-temporalCouplingLen=0;
-
+mov_filtered=mov;
 % spikeTriggeredSubUnitInput(binnedResponses_global,mov_filtered')
 
 %% Filter with common temporal waveform ??? Better to debug, if we work with spatial part only ? .. valid/same .. doubtful! .. take from SpatialSTC code.. 
 %% Fit GMM and find cluster centers
-
-gm = fitGMM(binnedResponses_global,mov_filtered');
-mu2=gm.mu';
-initialFilters = mu2(:);
+% 
+% gm = fitGMM(binnedResponses_global,mov_filtered');
+% mu2=gm.mu';
+% initialFilters = mu2(:);
 
 %% Initialize with sub-units to check if the sub-units are optimal weights
 % 
@@ -65,8 +45,8 @@ initialFilters = mu2(:);
 % initialFilters = (1/nFrontEnds)*ones(filteredStimDim*nFrontEnds,1);
 
 %%  Random initialization
-%initialFilters = (2/nFrontEnds)*(rand(filteredStimDim*nFrontEnds,1)-0.5);
-%initialFilters = 2*(rand(filteredStimDim*nFrontEnds,1)-0.5);
+initialFilters = (2/nFrontEnds)*(rand(filteredStimDim*nFrontEnds,1)-0.5);
+initialFilters = 2*(rand(filteredStimDim*nFrontEnds,1)-0.5);
 
 %% Random equi-norm initialization
 %  initialFilters=zeros(filteredStimDim*nFrontEnds,1);
@@ -97,7 +77,7 @@ optim_struct = optimset(...
    'Hessian','off');
  [x,fval,exitflag,output,grad,hessian]  = fminunc(@GMLM_afterSTC,initialFilters,optim_struct);
 
- change_from_initial = norm(initialFilters-x)
+ change_from_initial = norm(initialFilters-x)/norm(initialFilters)
  mu = x(end)
 
  fitGLM.Linear.filter=cell(4,1);
@@ -106,83 +86,5 @@ fitGLM.Linear.filter{ifilter}=x((ifilter-1)*filteredStimDim+1:ifilter*filteredSt
 end
 
 fitGLM.mu=mu;
-fitGLM.WN_uSq=WN_uSq;
-fitGLM.WNSTA=WNSTA;
-
-
-FrontEnds=cell(4,1);
-for ifilter=1:nFrontEnds
-FrontEnds{ifilter}=fitGLM.Linear.filter{ifilter}(1)*WNSTA;
-for iSTC=1:nSTCs
-    FrontEnds{ifilter} = FrontEnds{ifilter} + fitGLM.Linear.filter{ifilter}(iSTC+1)*WN_uSq{iSTC};
-end
 end
 
-
-
-%% Plot Subunits
-figure;
-for ifilter=1:nFrontEnds
-subplot(3,2,ifilter);
-imagesc(subunits{ifilter}(:,:,4));
-colormap gray
-colorbar
-axis image
-title('Sub-units');
-end
-
-%% Plot STC+STA
-figure;
-subplot(3,2,1);
-imagesc(WNSTA(:,:,4));
-colormap gray
-colorbar
-axis image
-title('STA');
-
-for iSTC=1:nSTCs
-subplot(3,2,iSTC+1);
-imagesc(WN_uSq{iSTC}(:,:,4));
-colormap gray
-colorbar
-axis image
-title('STC');
-end
-
-%% Initial filter
-
-fitGLM.Linear.initfilter=cell(4,1);
-for ifilter=1:nFrontEnds
-fitGLM.Linear.initfilter{ifilter}=initialFilters((ifilter-1)*filteredStimDim+1:ifilter*filteredStimDim);
-end
-
-initFrontEnds=cell(4,1);
-for ifilter=1:nFrontEnds
-initFrontEnds{ifilter}=fitGLM.Linear.initfilter{ifilter}(1)*WNSTA;
-for iSTC=1:nSTCs
-    initFrontEnds{ifilter} = initFrontEnds{ifilter} + fitGLM.Linear.initfilter{ifilter}(iSTC+1)*WN_uSq{iSTC};
-end
-end
-
-figure;
-for ifilter=1:nFrontEnds
-subplot(3,2,ifilter);
-imagesc(initFrontEnds{ifilter}(:,:,4));
-colormap gray
-colorbar
-axis image
-title('Initial filters');
-end
-
-%% Plot derived filters
-figure;
-for ifilter=1:nFrontEnds
-subplot(3,2,ifilter);
-imagesc(FrontEnds{ifilter}(:,:,4));
-colormap gray
-colorbar
-axis image
-title('GMLM filters');
-end
-
-end

@@ -173,11 +173,33 @@ WNSTC=reSTC;
 WN_uSq=uSq;
 reconstruct_using_STC_STA;
 %reconstruct_using_STC;
+%% Fit GMLM_afterSTC1 - detailed version .. 
+%fitGLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
 
 %% Train GMLM..
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+ [fitGLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,maskedMov,7,4);
+ 
+ 
+% Show learned filters;
+sta_dim1 = size(mask,1);
+sta_dim2 = size(mask,2);
+indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
+masked_frame = indexedframe(logical(mask));
 
-fitGLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
+figure;
+for ifilt=1:4
+subplot(2,2,ifilt)
+u_spatial = -reshape_vector(fitGLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+imagesc(u_spatial);
+colormap gray
+colorbar
+title(sprintf('GMLM Filter: %d',ifilt));
+end
 
+%% EM like Max Expected Likelihood .. 
+ [fitGLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov,7,4);
 %% Test on a WN movie
 nTrials=50;
 mov_orig2=(rand(6,6,2000)>0.5) -0.5;
@@ -259,58 +281,6 @@ null_compute_using_STC_STA_test
 
 nTrials=50;
 analyse_null_subUnit_ts
-
-
-
-
-
-%% Contrast Stuff
-numberFilters=[];
-sd_orig_log=[];
-sd_null_log=[];
-spkRateOrig_log=[];
-spkRateNull_log=[];
-pixMax=[];
-
-for numFilters=1:4
-movieLen=120*30;
-%null_compute_usingSTC_test
-null_compute_using_STC_STA_test
-
-nTrials=50;
-analyse_null_subUnit_ts
-
-
-%% Contrast
-Contrast_subunit;
-numberFilters = [numberFilters;numFilters];
-sd_orig_log=[sd_orig_log;sd_orig];
-sd_null_log=[sd_null_log;sd_null];
-spkRateNull_log=[spkRateNull_log;spkRateNull];
-spkRateOrig_log=[spkRateOrig_log;spkRateOrig];
-pixMax =[pixMax;mean(max((pixCourse(:,:))))];
-end
-figure('Color','w');
-subplot(3,1,1);
-plot(numberFilters,spkRateOrig_log,numberFilters,spkRateNull_log);
-title('Number of filters v/s spk Rate');
-legend('Original','Null');
-xlabel('Number of filters');
-ylabel('Spike Rate');
-
-subplot(3,1,2)
-plot(numberFilters,sd_orig_log,numberFilters,sd_null_log);
-title('Number of filters v/s pixel-wise contrast');
-legend('Original','Null');
-xlabel('Number of filters');
-ylabel('Pixel s.d.');
-
-subplot(3,1,3);
-plot(numberFilters,pixMax);
-title('Number of Filters v/s max pixel values in each frame of Null movie');
-xlabel('Number of Filters');
-ylabel('Max pixel value');
-legend('Null');
 
  %% Experiment 1
  
@@ -414,37 +384,22 @@ reconstruct_using_STC_STA;
 
 % calculate re-STA/STC .. 
 
-%% Quadratic approximation to sub-unit non-linearity
-input = cell_resp(:,1);
-X = [input,input.^2];
-y=f(input);
-a=X\(X'\(X'*y));
-
-figure;
-[x,NN]=hist(input,100);
-plot(NN,(x/sum(x)) * 500,'b');
-hold on;
-plot(NN,f(NN),'r');
-hold on;
-plot(NN,[NN',NN'.^2]*a,'k');
-legend('Input data histogram','sub-unit Nonlinearity','Quadratic approximation');
-
-f_old=f;
-f_new=@(x) (a(1)*x+a(2)*x.^2);
-f=f_new;
-
-%% Generate WN movie
-%% Generate response 
-%% 
+%% STA/STC calculations
 idx=1:length(binnedResponses);
 Filtlen=30;
 ifSTC=0;
 spksGen = binnedResponses;
-mov2=zeros(6,6,3,size(mov,3));
-mov2(:,:,1,:)=mov;
-mov2(:,:,2,:)=mov;
-mov2(:,:,3,:)=mov;
+mov3=zeros(6,6,3,size(mov,3)+Filtlen-1);
+mov3(:,:,1,:)=mov2;
+mov3(:,:,2,:)=mov2;
+mov3(:,:,3,:)=mov2;
 
-   [STA,STC] = calculate_sta_stc(spksGen,mov2,Filtlen,ifSTC);
-   
-         [STA_spatial,STC_spatial,u_coll] = calculate_stc_spatial(spksGen,mov2,STA,mask,squeeze(tf));
+mov4=zeros(6,6,3,size(mov,3));
+mov4(:,:,1,:)=mov;
+mov4(:,:,2,:)=mov;
+mov4(:,:,3,:)=mov;
+
+[STA,STC] = calculate_sta_stc(spksGen,mov4,Filtlen,ifSTC);
+ 
+[STA_spatial,STC_spatial,u_coll,data] = calculate_stc_spatial(spksGen,mov3,STA,mask,squeeze(tf));
+

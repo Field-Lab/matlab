@@ -4,7 +4,7 @@ cell_resp=zeros(movieLen,nSubunits);
 sz=max(size(mov2,3)-size(subunits{1},4) + 1, 0);
 for isubunit=1:nSubunits
     isubunit
-cell_resp(:,isubunit)=reshape(convn(mov2,subunits{isubunit}(end:-1:1,end:-1:1,:),'valid'),[sz,1]);
+cell_resp(:,isubunit)=reshape(convn(mov2(:,:,:),squeeze(subunits{isubunit}(end:-1:1,end:-1:1,1,:)),'valid'),[sz,1]);
 end
 
 figure;

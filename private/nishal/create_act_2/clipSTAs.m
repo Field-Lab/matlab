@@ -14,7 +14,7 @@ for icell=1:nCells
 dummySTA= stas{icell};
 
 
-[sig_stixels, params, rf_strength_out] = significant_stixels(dummySTA,'select','thresh','thresh',1);
+[sig_stixels, params, rf_strength_out] = significant_stixels(dummySTA,'select','thresh','thresh',2);
 % figure;
 % imagesc(sig_stixels)    
 
