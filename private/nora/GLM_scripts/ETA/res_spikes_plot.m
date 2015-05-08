@@ -1,10 +1,11 @@
 function res_spikes_plot(testmovie, res)
 
 frames = length(testmovie);
-writerObj = VideoWriter('/Users/Nora/Desktop/res_Spikes.avi');
+writerObj = VideoWriter('/Volumes/Lab/Users/Nora/res_Spikes.avi');
 open(writerObj);
 
 for i_frame = 1:frames
+    disp(i_frame)
     imagesc(testmovie(:,:,i_frame)')
     axis image
     colormap gray
