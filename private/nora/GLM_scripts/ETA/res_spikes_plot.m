@@ -1,7 +1,8 @@
 function res_spikes_plot(testmovie, res)
 
 frames = length(testmovie);
-writerObj = VideoWriter('/Users/Nora/Desktop/res_Spikes.avi');
+writerObj = VideoWriter('/Users/Nora/Desktop/glm_OFF_ResSpikes_WN.avi');
+writerObj.FrameRate = 20;
 open(writerObj);
 
 for i_frame = 1:frames
@@ -12,7 +13,7 @@ for i_frame = 1:frames
     hold on
     idx = (i_frame-1)*10+(1:10);
     response = sum(res.spikes(:,idx),2);
-    scatter(res.centers(:,2), res.centers(:,1), 1+10*response, 'r', 'filled');
+    scatter(res.centers(:,2), res.centers(:,1), 1+0.1*response, 'r', 'filled');
     F = getframe;
     writeVideo(writerObj, F);
     clf
