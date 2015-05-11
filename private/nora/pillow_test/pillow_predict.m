@@ -22,9 +22,15 @@ end
 %% Get the test spikes
 
 rawspikes = datarun.spikes{datarun.cell_ids == cid};
-test_spikes = get_raster(rawspikes, trial_starts);
+test_spikes = get_raster(rawspikes, trial_starts, 'plot', false);
+
+%% Get neighbor spikes
+paired_cells = fittedGLM.cellinfo.pairs;
+for i = 1:length(paired_cells)
+    neighbor_spikes{i} = get_raster(datarun.spikes{datarun.cell_ids == paired_cells(i)}, trial_starts, 'plot', false);
+end
 
 %%
-xvalperformance = glm_predict(fittedGLM, testmovie, 'testspikes', test_spikes); 
+xvalperformance = glm_predict(fittedGLM, testmovie, 'testspikes', test_spikes, 'neighborspikes', neighbor_spikes); 
 
 end
