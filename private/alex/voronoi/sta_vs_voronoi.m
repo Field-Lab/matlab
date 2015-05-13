@@ -915,7 +915,7 @@ sta_params.offset = 0;
 offset = 0;
 sta_length=2;
 
-for datarunID = 36:311
+for datarunID = 45:311
     
     visionID = datarun.cell_ids(datarunID);
     [folder, my_type] = find_cell_type(datarun, visionID);
