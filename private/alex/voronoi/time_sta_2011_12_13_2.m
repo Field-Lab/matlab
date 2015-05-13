@@ -73,11 +73,10 @@ for datarunID = 1:311
         spikes=ceil((vorrun.spikes{datarunID}-vorrun.triggers(1))*1000/(refresh_v)); % spikes in frames
         spike_rate=zeros(size(inputs_v,2),1);
         
-        k = [sta_params.length-sta_params.offset, 100:100:54000];
+        k = [sta_params.length-sta_params.offset, 300:300:54000];
         vorsta_tmp = zeros(600,600,length(k));
         clear nsp
         for cnt1 = 1:length(k)-1
-            cnt1
             spikes_tmp = spikes(spikes>k(cnt1) & spikes <=k(cnt1+1));
             nsp(cnt1) = length(spikes_tmp);
             while ~isempty(spikes_tmp)
