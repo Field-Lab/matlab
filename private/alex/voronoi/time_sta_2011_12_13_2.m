@@ -40,7 +40,7 @@ for datarunID = 1:311
         for cnt1 = 1:length(ksta)-1            
             spike_tmp = spikes(spikes>ksta(cnt1) &spikes<=ksta(cnt1+1));
             spike_tmp(spike_tmp<sta_length-offset)=[];
-            nsp(cnt1) = length(spikes_tmp);
+            nsp(cnt1) = length(spike_tmp);
             while ~isempty(spike_tmp)
                 [c, ia, ic] = unique(spike_tmp);
                 spike_rate(spike_tmp(ia))=spike_rate(spike_tmp(ia))+1;
