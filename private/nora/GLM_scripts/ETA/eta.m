@@ -1,6 +1,6 @@
-ROI = 5;
-ETA = zeros(2*ROI+1, 2*ROI+1, 30);
-avg_image = zeros(2*ROI+1, 2*ROI+1, 30);
+ROI = 11;
+ETA = zeros(2*ROI+1, 2*ROI+1, 90);
+avg_image = zeros(2*ROI+1, 2*ROI+1, 90);
 edge = 0;
 n_bins = length(res.spikes);
 
@@ -10,9 +10,9 @@ for i_cell = 1:length(res.cells)
         relevant_stim = double(testmovie((res.centers(2)-ROI):(res.centers(2)+ROI), (res.centers(1)-ROI):(res.centers(1)+ROI), :));
         for i_bin = 1:n_bins
             frame = ceil(i_bin/10);
-            if frame >29
-                ETA = ETA + res.spikes(i_cell, i_bin)*relevant_stim(:,:,(frame-29):frame);
-                avg_image = avg_image + relevant_stim(:,:,(frame-29):frame);
+if frame > 89
+                ETA = ETA + res.spikes(i_cell, i_bin)*relevant_stim(:,:,(frame-89):frame);
+                avg_image = avg_image + relevant_stim(:,:,(frame-89):frame);
             end
         end
     catch
@@ -21,10 +21,11 @@ for i_cell = 1:length(res.cells)
     end
     disp(i_cell)
 end
-save('/Users/Nora/Desktop/ETA11.mat', 'ETA')
-save('/Users/Nora/Desktop/avg11.mat', 'avg_image')
+save('/Volumes/Lab/Users/Nora/OFFETA11_90.mat', 'ETA')
+save('/Users/Nora/Desktop/OFFavg11_90.mat', 'avg_image')
 
 %%
+if 0
 for i = 1:30
     subplot(1,2,1)
     imagesc(-ETA(:,:,i))
@@ -39,4 +40,5 @@ for i = 1:30
     caxis([1.85 2.65])
     title('Average Image')
     pause(0.1)
+end
 end
