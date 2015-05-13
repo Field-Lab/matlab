@@ -1,28 +1,33 @@
-ROI = 11;
-ETA = zeros(2*ROI+1, 2*ROI+1, 90);
-avg_image = zeros(2*ROI+1, 2*ROI+1, 90);
-edge = 0;
-n_bins = length(res.spikes);
+function [ETA] = ETA(xval, movie, threshold)
 
-for i_cell = 1:length(res.cells)
-    center = res.centers(i_cell);
-    try
-        relevant_stim = double(testmovie((res.centers(2)-ROI):(res.centers(2)+ROI), (res.centers(1)-ROI):(res.centers(1)+ROI), :));
-        for i_bin = 1:n_bins
-            frame = ceil(i_bin/10);
-if frame > 89
-                ETA = ETA + res.spikes(i_cell, i_bin)*relevant_stim(:,:,(frame-89):frame);
-                avg_image = avg_image + relevant_stim(:,:,(frame-89):frame);
-            end
+n_blocks = length(movie);
+stim_size = size(movie{1,1}.matrix);
+
+n_spikes = 0;
+ETA = zeros(stim_size(1), stim_size(2), 90);
+%avg = zeros(stim_size(1), stim_size(2), 30);
+
+for i_block = 1:n_blocks
+    mov = movie{i_block}.matrix;
+    res_spikes = find(logical(xval{i_block}.rasters.recorded) & (xval{i_block}.glm_rateperbin < threshold*mean(xval{i_block}.glm_rateperbin)));
+ %   avg_stim = find(xval{i_block}.glm_rateperbin < threshold*mean(xval{i_block}.glm_rateperbin));
+    
+    n_spikes = n_spikes + length(res_spikes);
+    for i_spike = 1:length(res_spikes)
+        frame = ceil(res_spikes(i_spike)/10);
+        if frame>89
+            ETA = ETA + double(mov(:,:,(frame-89):frame));
         end
-    catch
-        edge = edge +1;
-        warning(['cell ' num2str(i_cell) ' is too close to edge of stim'])
     end
-    disp(i_cell)
+%     for i_spike = 1:length(avg_stim)
+%         frame = ceil(avg_stim(i_spike)/10);
+%         if frame>29
+%             avg = avg + double(mov(:,:,(frame-29):frame));
+%         end
+%     end
+%     
 end
-save('/Volumes/Lab/Users/Nora/OFFETA11_90.mat', 'ETA')
-save('/Users/Nora/Desktop/OFFavg11_90.mat', 'avg_image')
+
 
 %%
 if 0
@@ -42,3 +47,22 @@ for i = 1:30
     pause(0.1)
 end
 end
+
+disp(n_spikes)
+
+min1 = min(ETA(:));
+max1 = max(ETA(:));
+
+for i = 1:90
+    
+    imagesc(ETA(:,:,i)');
+    axis image;
+    colormap gray;
+    caxis([min1 max1])
+    title('Residual STA')
+    pause(0.1)
+
+end
+
+end
+
