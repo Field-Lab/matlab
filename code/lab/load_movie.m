@@ -27,7 +27,7 @@ sampling_frequency = VisionParams.SAMPLES_PER_MILLISECOND * 1000;
 if ~exist(mdf_file,'file')
   error(['generate_movie: movie xml file does not exist']);
 end
-
+ 
 % convert to integers
 triggers = int32(triggers * sampling_frequency);
 

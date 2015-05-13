@@ -21,7 +21,7 @@ cone_inputs = zeros(length(stimindices), size(Wc,2), 'single');
 for ss = 1:length(stimindices)
     T = text_waitbar(T, ss/length(stimindices) - 0.01);
     
-    % note which stim
+    % note which stim 
     this_stim = stimindices(ss);
     
     % get new frame

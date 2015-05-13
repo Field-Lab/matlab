@@ -1474,13 +1474,13 @@ for i=1:length(ncells)
    
 end
 
-save('/Volumes/Analysis/alex/subunits_weights.mat', 'subUnitID','subsweights', 'nsubunits')
+save('/Users/alexth/Analysis/subunits_weights.mat', 'subUnitID','subsweights', 'nsubunits')
 
 
-load('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID')
-load('/Volumes/Analysis/alex/cr_white_noise_incl_mode.mat', 'ncones')
-load('/Volumes/Analysis/alex/myRFfit_incl_mode.mat', 'myrfweights')
-load('/Volumes/Analysis/alex/subunits_weights.mat', 'subUnitID','subsweights')
+load('/Users/alexth/Analysis/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID')
+load('/Users/alexth/Analysis/cr_white_noise_incl_mode.mat', 'ncones')
+load('/Users/alexth/Analysis/myRFfit_incl_mode.mat', 'myrfweights')
+load('/Users/alexth/Analysis/subunits_weights.mat', 'subUnitID','subsweights')
 
 
 top_cells=[2 3];

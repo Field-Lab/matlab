@@ -20,19 +20,22 @@ for cc = 1:length(cell_indices)
  
     % bin up spikes for entire duration
     spike_rate_ = histc(datarun.spikes{cell_index}, bins);
- 
-    % take spikes just from the relevant subset and time-shift to align peak frame with stimulus
-    spike_rate_ = spike_rate_(stims);
- 
-    % translate to spike times (with duplicates for multiple spikes per time bin)
-    spike_times_ = [];
-    for nn = 1:max(spike_rate_)
-        spike_times_ = [spike_times_; find( spike_rate_ > (nn-1) )];
-    end
     
-    % put into storage variables
-    spike_rate(cc,:) = spike_rate_;
-    spike_times{cc} = sort(spike_times_);
+    if ~isempty(spike_rate_)
+        
+        % take spikes just from the relevant subset and time-shift to align peak frame with stimulus
+        spike_rate_ = spike_rate_(stims);
+        
+        % translate to spike times (with duplicates for multiple spikes per time bin)
+        spike_times_ = [];
+        for nn = 1:max(spike_rate_)
+            spike_times_ = [spike_times_; find( spike_rate_ > (nn-1) )];
+        end
+        
+        % put into storage variables
+        spike_rate(cc,:) = spike_rate_;
+        spike_times{cc} = sort(spike_times_);
+    end
 end
 
 datarun.spike_rate(cell_indices,:) = spike_rate;

@@ -11,6 +11,8 @@ phlMatlabPath = '/Users/peterli/Dropbox/matlab';
 addpath(genpath2(phlMatlabPath, {'.svn' '.git'}));
 addpath('/Users/peterli/MATLAB', '-begin');
 
+addpath(genpath('/Users/alexth/test4/matlab/private/alex'))
+
 %Local Java builds: Vision, Cell-Finder
 vislocal();
 

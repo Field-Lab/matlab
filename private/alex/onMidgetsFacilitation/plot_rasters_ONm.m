@@ -22,6 +22,7 @@ datarun = load_neurons(datarun);
 stimulus=read_stim_lisp_output_ath('2011-12-13-2','s07');
 parsed=parse_stim_rgbs_ath(stimulus);
 map=load(parsed.mappath);
+map=load('/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_1234/map-0000.txt');
 figure
 imagesc(map)
 % find stimuli patterns
@@ -44,6 +45,12 @@ for i=1:length(a)
         break
     end
 end
+% 
+% datarunsta = load_sta(datarunsta,'load_sta',6601);
+% sta=squeeze(datarunsta.stas.stas{myCellSTA});
+% figure
+% colormap gray
+% imagesc(sta(:,:,5))
 
 
 for myCell=271:280

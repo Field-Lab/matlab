@@ -21,7 +21,9 @@ datarun.stimulus.wc_preprocess = @wc_preprocess_javamovie_rawmovie;
 if ~isfield(datarun, 'duration')
     datarun = load_neurons(datarun, 'load_spikes', []);
 end
-datarun.stimulus.duration = datarun.duration;
+datarun.stimulus.duration = min(max(cell2mat(datarun.spikes)), datarun.duration);
+
+
 
 datarun = cone_preprocess(datarun, varargin{:});
 

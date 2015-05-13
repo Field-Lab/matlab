@@ -1,9 +1,9 @@
 %% Input here
 
 % main parameters
-piece = '2012-09-24-5';
-run = 'data003';
-movie_descr = 'BW-2-5-0.48-22222-300x300-60.35.xml';
+piece = '2012-09-13-2';
+run = 'data001';
+movie_descr = 'BW-2-5-0.48-11111-300x300-60.35.xml';
 online = false;  % look in online folder (/Volumes/Acquisition/date)
 streamed = true;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
 
@@ -19,7 +19,9 @@ cell_types = {1,2,3,4,5}; % to analyze for cone finding
 % load data
 path2data = find_data(piece, run, streamed, online);
 datarun = load_data(path2data);
-datarun = load_data('/Volumes/Analysis/2012-09-24-5/d03-06-07-norefit/data003/data003');
+% datarun = load_data('/Volumes/Analysis/2012-09-24-5/d03-06-07-norefit/data003/data003');
+datarun = load_data('/Volumes/Analysis/2012-09-24-5/d00_06-norefit/data003-from-d00_06/data003-from-d00_06');
+datarun = load_data('/Volumes/Analysis/2012-09-13-2/d01_09-norefit/data001-from-d01_09/data001-from-d01_09');
 
 datarun.names.nickname = nickname;
 datarun.piece.rig = rig;
@@ -110,7 +112,7 @@ hist(m,0:0.5:35)
 axis([0 35 0 Inf])
 title('Nearest Neighbor distance for cones. SET PRIOR!')
 
-myPrior=[2.25,3]; % L-M cones prior
+myPrior=[2.75,3.25]; % L-M cones prior
 
 myPrior=[4.0,5.0]; % S cones prior
 
@@ -266,11 +268,30 @@ choose_magic_number(datarun,bcf,bcf_params);
 
 
 %%
-magic_number = 2
+magic_number = 15
 extra_dirname_info='';
 save_bayesian_cones(datarun, bcf, bcf_params, magic_number, ['all_',extra_dirname_info], false, [], 'fit_foa', [], 'robust_std_method', 1);
 
+%%
 
+datarun = load_data('/Volumes/Analysis/2012-09-24-5/d00_06-norefit/data003-from-d00_06/data003-from-d00_06');
+datarun = load_params(datarun,'verbose',1);
+datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
+datarun = set_polarities(datarun);
+datarun = load_neurons(datarun);
+load('/Volumes/Analysis/2012-09-24-5/cone_data/d00_06-norefit_d-bayes-msf_15.00-all_/parameters.mat')
+load('/Volumes/Analysis/2012-09-24-5/cone_data/d00_06-norefit_d-bayes-msf_15.00-all_/results.mat')
+
+nickname = '';
+rig = 'A';
+optical_path_direction = 'below';
+display_type = 'oled';
+cell_types = {1,2,3,4,5}; % to analyze for cone finding
+
+datarun.names.nickname = nickname;
+datarun.piece.rig = rig;
+datarun.piece.optical_path_direction = optical_path_direction;
+datarun.piece.display = display_type;
 
 %% Save out stuff for Jeremy Freeman's analysis
 datarun = load_cones_ath(datarun,'d03'); % load_cones(datarun, 'Analysis');
