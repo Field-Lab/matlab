@@ -33,7 +33,7 @@ for datarunID = 1:311
         spikes=ceil((datarun.spikes{datarunID}-datarun.triggers(1))*1000/refresh); % spikes in frames
         
         spike_rate=zeros(duration,1);
-        my_sta=zeros(length(myinds),sta_length);
+        my_sta=zeros(300*300,sta_length);
         ksta = [sta_params.length-sta_params.offset, 100:100:18000];
         sta_tmp = zeros(300,300,length(ksta)-1);
         nsp = zeros(1,length(ksta)-1);
@@ -49,7 +49,7 @@ for datarunID = 1:311
                 end
                 spike_tmp(ia)=[];
             end
-            tmp = reshape(my_sta,length(my_bs),length(my_as),2);
+            tmp = reshape(my_sta,300,300,2);
             
             sta_tmp(:,:,cnt1) = tmp(:,:,2)';
         end
