@@ -1,2 +1,2 @@
 % global_vars_GMLM_afterSTC
-global mov_filtered binnedResponses_global nFrontEnds filteredStimDim subunits lam
+global mov_filtered binnedResponses_global nFrontEnds filteredStimDim hInp

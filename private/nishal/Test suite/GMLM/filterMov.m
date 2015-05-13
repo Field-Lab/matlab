@@ -8,7 +8,7 @@ movieLen=size(mov,3);
 mov2=zeros(Filtdim1 ,Filtdim2,movieLen+Filtlen-1);
 mov2(:,:,Filtlen:movieLen+Filtlen-1)=mov; % Append zeros before the movie
 
-mov3=zeros(6,6,3,size(mov,3)+Filtlen-1);
+mov3=zeros(Filtdim1,Filtdim2,3,size(mov,3)+Filtlen-1);
 mov3(:,:,1,:)=mov2;
 mov3(:,:,2,:)=mov2;
 mov3(:,:,3,:)=mov2;

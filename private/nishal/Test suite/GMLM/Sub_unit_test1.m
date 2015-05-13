@@ -82,7 +82,7 @@ f= @(x) double(x>0).*(1.6*x);
 %f=@(x) exp(0.6*x);
 % Ganglion cell non-linearity
 %N= @(x) exp(0.15*(x));
-N=@(x) double(x>0)*(0.02).*(3.4*x).^2; % use it!
+N=@(x) double(x>0)*(0.02).*(3.4*x).^2 +1; % use it! , 2 is DC current
 %N=@(x) x-min(x(:));
 %N = @(x) 15./(1+exp(-1.5*(x-5)));
 % 
@@ -143,6 +143,7 @@ SubUnit_Response_test_movie_script
 
 % Spike triggered sub-unit Input 
 spikeTriggeredSubUnitInput(binnedResponses,cell_resp)
+
  %% Calculate STA
 
 
@@ -163,26 +164,21 @@ figure
  pause(1/120)
  end
  
-movie_new_len = size(mov,3);
-mov_new2=mov;
-reSTC_SubUnit_subtractSTA % Calculate STA and STC .. 
-%reSTC_SubUnit; % Do not subtract/remove STA
-WNSTA=reSTA;
-WNSTC=reSTC;
-
-WN_uSq=uSq;
-reconstruct_using_STC_STA;
-%reconstruct_using_STC;
 %% Fit GMLM_afterSTC1 - detailed version .. 
-%fitGLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
+%fitGMLM = fitGMLM_afterSTC(binnedResponses,mov,WN_uSq,WNSTA,subunits);
 
 %% Train GMLM..
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
- [fitGLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,maskedMov,7,4);
+% [fitGMLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,maskedMov,7,4);
  
- 
-% Show learned filters;
+ %% EM like Max Expected Likelihood .. 
+ interval=1;
+ [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov,7,4,interval);   
+ idx=1:length(binnedResponses);
+ spk_time = idx(binnedResponses>0)/120;
+ [fitGMLM_full,output]= fitGMLM_full(fitGMLM,spk_time,maskedMov);
+ %% Show learned filters;
 sta_dim1 = size(mask,1);
 sta_dim2 = size(mask,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
@@ -191,215 +187,115 @@ masked_frame = indexedframe(logical(mask));
 figure;
 for ifilt=1:4
 subplot(2,2,ifilt)
-u_spatial = -reshape_vector(fitGLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+u_spatial = -reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
 imagesc(u_spatial);
 colormap gray
 colorbar
 title(sprintf('GMLM Filter: %d',ifilt));
 end
 
-%% EM like Max Expected Likelihood .. 
- [fitGLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov,7,4);    
-%% Test on a WN movie
-nTrials=50;
-mov_orig2=(rand(6,6,2000)>0.5) -0.5;
-movie_new_len=size(mov_orig2,3);
-mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
-mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
-SubUnit_Response_test_movie_script
-spkRateOrig = avgSpkRate;
-binnedResponseOrig=binnedResponses;
-psth_orig=psth_resp;
-time_log_orig = timeLog;
-cell_resp_orig=cell_resp;
+ 
+%% Generate white noise movie
+ movieLen=120*10;
+mov=zeros(Filtdim1,Filtdim2,movieLen);
+movie_idx=2; 
+if(movie_idx==1)
+mov(319-310,158-150,:)=0.5; % Stimulate a sub-unit
+mov(320-310,160-150,:)=0.5;
+mov=mov+rand(Filtdim1,Filtdim2,movieLen)*0.3;
+end
 
+if(movie_idx==2)
+mov=double(rand(Filtdim1,Filtdim2,movieLen)>0.5)-0.5;
+end
 
-nTrials=50;
-ModelbinnedresponseOrig = predictGMLM_afterSTC(fitGLM,mov2,nTrials);
-Modelbinnedresponse2 = predictGMLM_afterSTC(fitGLM2,mov2,nTrials);
+mov(:,:,1:30)=0;
 
-figure
-[x1,y1]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
-[x2,y2]=plotSpikeRaster(ModelbinnedresponseOrig'>0,'PlotType','vertline');
-[x3,y3]=plotSpikeRaster(Modelbinnedresponse2'>0,'PlotType','vertline');
-step=max(y2);
 figure;
-subplot(2,1,1);
-plot(x1,y1,'k');
-hold on
-plot(x2,y2-step,'r');
-hold on
-plot(x2,y2-2*step,'m');
-legend('Subunit','Fit model','Fit model2');
+for itime=40:50
+   
+imagesc(mov(:,:,itime));
+colormap gray
+colorbar
+axis image
+caxis([-0.5,0.5]);
+pause(0.01)
+end
 
-%% Null Test on a stimulus with Model
+%% Generate responses
+% Calculate filter output for each sub-unit for each frame and calculate
+% number of spikes for each frame-bin (binned response) .. So that would be
+% used for STA calculation ? 
+
+
+
+mov2=zeros(Filtdim1 ,Filtdim2,movieLen+Filtlen-1);
+mov2(:,:,Filtlen:movieLen+Filtlen-1)=mov; % Append zeros before the movie
+nTrials=30;
+SubUnit_Response_test_movie_script
+
+%% Predict response using model
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+nTrials=30;
+ predictedResponses = predictGMLM(fitGMLM,maskedMov,nTrials);
+ 
+ % Compare actual and predicted
+figure;
+[x1,y1]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
+
+[x2,y2]=plotSpikeRaster(predictedResponses'>0,'PlotType','vertline');
+figure;
+plot(x1,y1+max(y2),'k');
+hold on;
+plot(x2,y2,'r');
+legend('Recorded','Predicted');
+
+%% Nulling experiment with GMLM
 movieLen=120*15;
 null_compute_subUnit_test
  
 nTrials=50;
 analyse_null_subUnit_ts
 
-ModelbinnedresponseOrig = predictGMLM_afterSTC(fitGLM2,movOrig,nTrials);
-ModelbinnedresponseNull = predictGMLM_afterSTC(fitGLM2,movNull,nTrials);
-figure
-[x1,y1]=plotSpikeRaster(binnedResponseNull'>0,'PlotType','vertline');
-[x2,y2]=plotSpikeRaster(binnedResponseOrig'>0,'PlotType','vertline');
-[x3,y3]=plotSpikeRaster(ModelbinnedresponseOrig'>0,'PlotType','vertline');
-[x4,y4]=plotSpikeRaster(ModelbinnedresponseNull'>0,'PlotType','vertline');
+% Compare actual and predicted for original movie.
+mov=movOrig(:,:,Filtlen:movie_new_len+Filtlen-1);
+binnedResponses = binnedResponseOrig;
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+nTrials=50;
+ predictedResponses = predictGMLM(fitGMLM,maskedMov,nTrials);
+ 
 
-step=max(y3);
+[x1,y1]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
+
+[x2,y2]=plotSpikeRaster(predictedResponses'>0,'PlotType','vertline');
+
+ % Compare actual and predicted for Null movie.
+mov=movNull(:,:,Filtlen:movie_new_len+Filtlen-1);
+binnedResponses = binnedResponseNull;
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+nTrials=50;
+ predictedResponses = predictGMLM(fitGMLM,maskedMov,nTrials);
+ 
+[x3,y3]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
+
+[x4,y4]=plotSpikeRaster(predictedResponses'>0,'PlotType','vertline');
+
+ % Compare actual and predicted for Original movie
+
 figure;
-subplot(2,1,1);
-plot(x1,y1,'k');
-hold on
-plot(x2,y2+step,'r');
-%xlim([0 max(time_log_orig)]);
-%ylim([0,2*max(y2)]);
-hold on 
-plot(x3,y3-step,'r');
-hold on
-plot(x4,y4-2*step,'k');
+plot(x1,y1+3*max(y2),'k');
+hold on;
+plot(x2,y2+2*max(y2),'r');
+hold on;
 
+hold on;
+plot(x3,y3+max(y2),'b');
+hold on;
+plot(x4,y4,'m');
 
-title('Rasters');
-legend('Null','Original','Model Orig','Model Null');
-
-subplot(2,1,2);
-plot(time_log_null,psth_null,'k');
-hold on
-plot(time_log_orig,psth_orig,'r');
-xlim([0,max(time_log_null)]);
-legend('Null','Original');
-title('PSTH')
-% 
-%% Experiment 0 - Null using WN-STC, and see response.
-movieLen=120*10;
-
-%null_compute_usingSTC_test
-numFilters=4;
-null_compute_using_STC_STA_test
-
-nTrials=50;
-analyse_null_subUnit_ts
-
- %% Experiment 1
- 
-% Calculate null space stimulus
-
-
-movieLen=120*30*60;
-null_compute_subUnit_test
-
-
-nTrials=1;
-analyse_null_subUnit_ts
-
-% Fit model using original run and null run
-[fitGLM1,output] = fitGMLM_afterSTC(binnedResponseOrig,movOrig,WN_uSq,WNSTA,subunits)
-pause(1)
-[fitGLM2,output] = fitGMLM_afterSTC(binnedResponseNull,movNull,WN_uSq,WNSTA,subunits)
-
-% Generate raster !
-nTrials=50;
-mov_orig2=(rand(6,6,2000)>0.5) -0.5;
-movie_new_len=size(mov_orig2,3);
-mov2=zeros(Filtdim1 ,Filtdim2,movie_new_len+Filtlen-1);
-mov2(:,:,Filtlen:movie_new_len+Filtlen-1)=mov_orig2; % Append zeros before the movie
-SubUnit_Response_test_movie_script
-spkRateOrig = avgSpkRate;
-binnedResponseOrig2=binnedResponses;
-psth_orig=psth_resp;
-time_log_orig = timeLog;
-cell_resp_orig=cell_resp;
-
-
-nTrials=50;
-[ModelbinnedresponseOrig , mov_filtered] = predictGMLM_afterSTC(fitGLM1,mov2,nTrials);
-[Modelbinnedresponse2 , mov_filtered] = predictGMLM_afterSTC(fitGLM2,mov2,nTrials);
-
-figure
-[x1,y1]=plotSpikeRaster(binnedResponseOrig2'>0,'PlotType','vertline');
-[x2,y2]=plotSpikeRaster(ModelbinnedresponseOrig'>0,'PlotType','vertline');
-[x3,y3]=plotSpikeRaster(Modelbinnedresponse2'>0,'PlotType','vertline');
-step=max(y2);
-figure;
-subplot(2,1,1);
-plot(x1,y1,'k');
-hold on
-plot(x2,y2-step,'r');
-hold on
-plot(x2,y2-2*step,'m');
-legend('Subunit','Fit model','Fit model2');
-
-subplot(2,1,2);
-plot(cell_resp_orig);
-
-%% Experiment 2
- 
-% Calculate null space stimulus
-
-
-movieLen=120*15;
-null_compute_subUnit_test
- 
-nTrials=50;
-analyse_null_subUnit_ts
-
-%% 
-reconstruct_using_STC;
-
-%% 
-reconstruct_using_STC_STA;
-%%
-% % addpath('../code_stc');
-% % 
-% %  mov_stc=zeros(size(mov,3),Filtdim1*Filtdim2);
-% %  for itime=1:size(mov,3)
-% %  xx=squeeze(mov(:,:,itime));
-% %  mov_stc(itime,:)=xx(:)';
-% %  end
-% %  
-% %  
-% %  [STA,STC] = simpleSTC(mov_stc, binnedResponses, 50);
-% %  STAr=reshape(STA,[30,Filtdim1,Filtdim2]);
-% %  
-% %  figure
-% %  for itime=[1:50]
-% %  imagesc(squeeze(STAr(itime,:,:)));colormap gray
-% %  caxis([min(STAr(:)),max(STAr(:))]);
-% %  colorbar
-% %  pause
-% %  end
-% % %  figure;
-% % %  [u,s,v]=svds(STC,5);
-% % %  plot(diag(s),'*')
-% % %  
-% % %  uSq=reshape(u(:,2),[30,Filtdim1,Filtdim2]);
-% % %  
-% % %  figure
-% % %  imagesc(squeeze(uSq(4,:,:)));
-% % %  colormap gray
-
-% Take responses
-
-% calculate re-STA/STC .. 
-
-%% STA/STC calculations
-idx=1:length(binnedResponses);
-Filtlen=30;
-ifSTC=0;
-spksGen = binnedResponses;
-mov3=zeros(6,6,3,size(mov,3)+Filtlen-1);
-mov3(:,:,1,:)=mov2;
-mov3(:,:,2,:)=mov2;
-mov3(:,:,3,:)=mov2;
-
-mov4=zeros(6,6,3,size(mov,3));
-mov4(:,:,1,:)=mov;
-mov4(:,:,2,:)=mov;
-mov4(:,:,3,:)=mov;
-
-[STA,STC] = calculate_sta_stc(spksGen,mov4,Filtlen,ifSTC);
- 
-[STA_spatial,STC_spatial,u_coll,data] = calculate_stc_spatial(spksGen,mov3,STA,mask,squeeze(tf));
+title('Original & Null movie');
+legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
 
