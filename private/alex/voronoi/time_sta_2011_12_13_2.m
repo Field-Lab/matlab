@@ -7,6 +7,7 @@ datarun = set_polarities(datarun);
 wn_movie_name = 'BW-2-6-0.48-11111-300x300-60.35.xml';
 [inputs, refresh, duration] = get_wn_movie_ath(datarun, wn_movie_name);
 
+vormap = load('/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt');
 
 vorrun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data009-from-d08_11/data009-from-d08_11');
 vorrun = load_params(vorrun,'verbose',1);
