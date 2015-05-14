@@ -20,7 +20,7 @@ celldat.mainAnalPath = dat.mainAnalPath;
 celldat.mainFigurePath = dat.mainFigurePath;
 celldat.computer = dat.computer;
 celldat.locations = dat.locations;
- 
+  
 if celldat.loadType == 1
   ids = getTypeIds(dat.cellTypes,celldat.cellType);
   cellInd = getCellInds(dat.rgcIds,ids(celldat.cellNum));

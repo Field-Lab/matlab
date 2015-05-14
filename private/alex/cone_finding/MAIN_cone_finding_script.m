@@ -1,11 +1,11 @@
 %% Input here
 
 % main parameters
-piece = '2012-09-13-2';
-run = 'data001';
-movie_descr = 'BW-2-5-0.48-11111-300x300-60.35.xml';
+piece = '2011-12-13-2';
+run = 'data008-from-d08_11';
+movie_descr = 'BW-2-6-0.48-11111-300x300-60.35.xml';
 online = false;  % look in online folder (/Volumes/Acquisition/date)
-streamed = true;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
+streamed = false;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
 
 % additionbal parameters
 nickname = '';
@@ -19,9 +19,11 @@ cell_types = {1,2,3,4,5}; % to analyze for cone finding
 % load data
 path2data = find_data(piece, run, streamed, online);
 datarun = load_data(path2data);
-% datarun = load_data('/Volumes/Analysis/2012-09-24-5/d03-06-07-norefit/data003/data003');
-datarun = load_data('/Volumes/Analysis/2012-09-24-5/d00_06-norefit/data003-from-d00_06/data003-from-d00_06');
-datarun = load_data('/Volumes/Analysis/2012-09-13-2/d01_09-norefit/data001-from-d01_09/data001-from-d01_09');
+% % datarun = load_data('/Volumes/Analysis/2012-09-24-5/d03-06-07-norefit/data003/data003');
+% datarun = load_data('/Volumes/Analysis/2012-09-24-5/d00_06-norefit/data003-from-d00_06/data003-from-d00_06');
+% datarun = load_data('/Volumes/Analysis/2012-09-13-2/d01_09-norefit/data001-from-d01_09/data001-from-d01_09');
+
+datarun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11');
 
 datarun.names.nickname = nickname;
 datarun.piece.rig = rig;
@@ -268,9 +270,9 @@ choose_magic_number(datarun,bcf,bcf_params);
 
 
 %%
-magic_number = 15
+magic_number = 10
 extra_dirname_info='';
-save_bayesian_cones(datarun, bcf, bcf_params, magic_number, ['all_',extra_dirname_info], false, [], 'fit_foa', [], 'robust_std_method', 1);
+save_bayesian_cones(datarun, bcf, bcf_params, magic_number, [extra_dirname_info], false, [], 'fit_foa', [], 'robust_std_method', 1);
 
 %%
 
@@ -294,7 +296,7 @@ datarun.piece.optical_path_direction = optical_path_direction;
 datarun.piece.display = display_type;
 
 %% Save out stuff for Jeremy Freeman's analysis
-datarun = load_cones_ath(datarun,'d03'); % load_cones(datarun, 'Analysis');
+datarun = load_cones_ath(datarun,'d08-11-norefit_d08-bayes-msf_5.00'); % load_cones(datarun, 'Analysis');
 datarun = load_neurons(datarun);
-datarun = conepreprocess_wnm(datarun, 'cone_data_ind', 'd03');
+datarun = conepreprocess_wnm(datarun, 'cone_data_ind', 'd08');
 conepreprocess_save(datarun, 'cone_data_ind', 'bayes');

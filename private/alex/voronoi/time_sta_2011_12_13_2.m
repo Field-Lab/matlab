@@ -4,8 +4,8 @@ datarun = load_sta(datarun);
 datarun = load_neurons(datarun);
 datarun = set_polarities(datarun);
 
-wn_movie_name = 'BW-2-6-0.48-11111-300x300-60.35.xml';
-[inputs, refresh, duration] = get_wn_movie_ath(datarun, wn_movie_name);
+% wn_movie_name = 'BW-2-6-0.48-11111-300x300-60.35.xml';
+% [inputs, refresh, duration] = get_wn_movie_ath(datarun, wn_movie_name);
 
 vormap = load('/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt');
 
@@ -61,7 +61,7 @@ if 0
 end
 
 
-for datarunID = 1:311
+for datarunID = 160:311
     
     visionID = datarun.cell_ids(datarunID);
     [folder, my_type] = find_cell_type(datarun, visionID);

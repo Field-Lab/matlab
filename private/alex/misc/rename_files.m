@@ -1,10 +1,10 @@
-path2data='/Volumes/Analysis/2011-10-25-0/d01-06-norefit/';
+path2data='/Volumes/Analysis/2008-03-25-4/d03-13-norefit/';
 
-name_extension='-from-data001_data002_data003_data004_data005_data006';
+name_extension='-from-data003_data004_data005_data006_data007_data008_data009_data010_data011_data012_data013';
 
-add_extension='-from-d01_06';
+add_extension='-from-d03_13';
 
-range = 1:6;
+range = 3:13;
 % rename files
 for i=range
    tmp=['00', int2str(i)];
