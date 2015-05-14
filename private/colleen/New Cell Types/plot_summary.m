@@ -1,5 +1,5 @@
 %% ------- INPUTS -------
-date='2008-12-12-1';
+date='2009-04-13-7';
 concatname='data006-nwpca/data006';
 staruns='data006'; % long WN runs for STA low to high NDF
 
