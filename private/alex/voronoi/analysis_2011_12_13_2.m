@@ -27,21 +27,20 @@ for i=1:max(tmp_map(:))
 end
 
 cell_type = 4;
-offm = datarun.cell_types{4}.cell_ids;
 bords = 30;
 figure
 set(gcf, 'position', [58 102 1182 996])
 cnt=1;
 tmp = zeros(600,600,3);
 tmp(:,:,2) = tmp_map;
-%[27 31 37 43] good off midgets
-for i=1:9%find(ww./pixn<5)
-    visionID = datarun.cell_types{4}.cell_ids(i);
-    cellInd = find(datarun.cell_ids == visionID);
-    sta = imresize(double(datarun.stas.stas{cellInd}(:,:,1,4)),600/datarun.stimulus.field_height,'nearest');
-    sta1 = imresize(double(datarun1.stas.stas{cellInd}(:,:,1,4)),600/datarun1.stimulus.field_height,'nearest');
+
+for i=49%find(ww./pixn<5)
+    visionID = datarun.cell_types{cell_type}.cell_ids(i);
+    datarunID = find(datarun.cell_ids == visionID);
+    sta = imresize(double(datarun.stas.stas{datarunID}(:,:,1,4)),600/datarun.stimulus.field_height,'nearest');
+    sta1 = imresize(double(datarun1.stas.stas{datarunID}(:,:,1,4)),600/datarun1.stimulus.field_height,'nearest');
     
-    if datarun.stas.polarities{cellInd} == 1
+    if datarun.stas.polarities{datarunID} == 1
         [tt, ind] = max(sta(:));
         [tt1, ~] = max(sta1(:));
     else
@@ -59,7 +58,7 @@ for i=1:9%find(ww./pixn<5)
     subplot(3,3,cnt)
     imagesc(tmp)
     axis([b-bords b+bords a-bords a+bords])    
-    title(['cell ID ', int2str(cellInd), ', vision ID ', int2str(visionID), ', i=', int2str(i)])
+    title(['cell ID ', int2str(datarunID), ', vision ID ', int2str(visionID), ', i=', int2str(i)])
     
 %     tt = unique(vormap(find(sta>0.4)));
 %     tt(tt==0)=[];
@@ -82,19 +81,21 @@ for i=1:9%find(ww./pixn<5)
     cnt = cnt+1;
 end
 
-good_cells = [27 31 37 43];
+% good_cells = [27 31 37 43]; % old classification
+good_cells = [49];
 
 %% preliminary, biased sta
 
-my_cell = 27;
+datarunID = 168;
+
+visionID = datarun.cell_ids(datarunID);
 
 sta_params.length = 15;
 sta_params.offset = 0;
 
 my_sta=zeros(size(inputs,1),sta_params.length);
 
-cellInd = find(datarun.cell_ids == datarun.cell_types{4}.cell_ids(my_cell));
-spikes=ceil((vorrun.spikes{cellInd}-vorrun.triggers(1))*1000/(refresh)); % spikes in frames
+spikes=ceil((vorrun.spikes{datarunID}-vorrun.triggers(1))*1000/(refresh)); % spikes in frames
 spikes(spikes<sta_params.length-sta_params.offset)=[];
 nspikes = numel(spikes);
 
@@ -150,16 +151,16 @@ end
 figure
 plot(my_sta')
 % cones with real center input
-sel_cones.real = find(my_sta(:,3)<-0.041);
+sel_cones.real = find(my_sta(:,3)<-0.065);
 % cones with surround input
-sel_cones.sur = find(my_sta(:,3)>0.017);
+sel_cones.sur = [];%find(my_sta(:,3)>0.017);
 % cones with no iput (furthest away)
 realX = mean(coneX(sel_cones.real));
 realY = mean(coneY(sel_cones.real));
 tmp = pdist2([realX, realY], [coneX coneY]);
 [~, ic] = sort(tmp);
 ic(isnan(tmp(ic))) = [];
-sel_cones.far = ic(end-25:end)';
+sel_cones.far = ic(end-9:end)';
 
 cones = [sel_cones.far; sel_cones.real; sel_cones.sur];
 vorsta_select_cones=zeros(600,600);
@@ -178,6 +179,7 @@ plot(my_sta(cones,:)')
 title([int2str(length(cones)), ' cones'])
 
 subplot(1,2,2)
+figure(30)
 colormap gray
 imagesc(vorsta_select_cones)
 hold on
@@ -189,22 +191,25 @@ clear realX realY duration a b tmp tmp_map tt
 
 %% unbiased sta/GS
 
-spikes=ceil((vorrun.spikes{cellInd}-vorrun.triggers(1))*1000/(refresh)); % spikes in frames
+spikes=ceil((vorrun.spikes{datarunID}-vorrun.triggers(1))*1000/(refresh)); % spikes in frames
 spikes(spikes<sta_params.length-sta_params.offset)=[];
 fraction = 0.9;
-cones_to_plot = 26:26+9;
+cones_to_plot = 1:length(cones);
 frames2take = floor(size(inputs,2)/2);
 
-% sel_cones.far = [];
-% sel_cones.sur = [];
-% cones = [sel_cones.far; sel_cones.real; sel_cones.sur];
-% cones_to_plot = 1:9
 [stas, mean_bins, mean_nl, spike_rate]=partial_sta(inputs(cones,1:frames2take), spikes, fraction, sta_params, sel_cones, cones_to_plot);
 
 mean_sta = mean(stas,3);
 
 figure
 plot(mean_sta')
+
+load('/Users/alexth/Desktop/tmp.mat')
+y = a(:,1);
+% a = squeeze(mean(cone2_effect_neg(:,:,put_c),2));
+% y = a(:,1);
+% x = 1:8;
+% save('/Users/alexth/Desktop/tmp.mat', 'a','x')
 
 %% 
 

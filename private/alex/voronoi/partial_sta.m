@@ -9,8 +9,9 @@ while ~isempty(spikes_tmp)
     spike_rate(spikes_tmp(ia))=spike_rate(spikes_tmp(ia))+1;
     spikes_tmp(ia)=[];
 end
+clear spikes_tmp
 
-bin_ng = 10;
+bin_ng = 8;
 n_sta = round(1/(1 - fraction));
 bin = floor(size(inputs,2)/n_sta);
 stas = zeros(size(inputs,1),sta_params.length, n_sta);
@@ -77,24 +78,28 @@ end
 far_cones = 1:length(sel_cones.far);
 real_center_cones = (1:length(sel_cones.real)) + length(sel_cones.far);
 real_sur_cones = (1:length(sel_cones.sur)) + length(sel_cones.far) + length(sel_cones.real);
+all_cones = [sel_cones.far; sel_cones.real; sel_cones.sur];
+bin_ng = 8;
+frac = 20; % in %
 
 % Estimate zero response bin
+prc = 100/frac;
 for cone1 = cones_to_plot
     
     figure(cone1)
-    set(gcf, 'Name',['Cone1 - ', int2str(cone1)])
+    set(gcf, 'Name',['Cone1 - ', int2str(all_cones(cone1))])
     
     max_input = length(bin_points)-sta_params.length-5;
-    cone2_effect_pos = zeros(10, n_sta, size(inputs,1));% bins, sta_trial, n of cones
+    cone2_effect_pos = zeros(bin_ng, n_sta, size(inputs,1));% bins, sta_trial, n of cones
     cone2_effect_neg = cone2_effect_pos;
     cone2_effect_aver = cone2_effect_pos;
     
     for sta_trial = 1:n_sta
         % bin cone1 input
         cone1_input = my_filtered_inputs(cone1,1:max_input,sta_trial);  % this is independent of sta
-        n_gs=floor(length(cone1_input)/10);
+        n_gs=floor(length(cone1_input)/bin_ng);
         tmp=sort(cone1_input);
-        my_bins=[min(cone1_input) tmp(n_gs:n_gs:n_gs*10)];
+        my_bins=[min(cone1_input) tmp(n_gs:n_gs:n_gs*bin_ng)];
         my_bins(end)=max(cone1_input)+1;
         
         for cone2 = 1:size(inputs,1)
@@ -104,13 +109,11 @@ for cone1 = cones_to_plot
                 % find 10% of most negative, positive, and near 0 input of cone2
                 cone2_input = my_filtered_inputs(cone2,1:max_input,sta_trial);
                 tmp = sort(cone2_input);
-                cone2_neg_gs = find(cone2_input<tmp(ceil(length(tmp)/10)));
-                cone2_pos_gs = find(cone2_input>tmp(ceil(length(tmp)/10*9)));
+                cone2_neg_gs = find(cone2_input<tmp(ceil(length(tmp)/prc)));
+                cone2_pos_gs = find(cone2_input>tmp(ceil(length(tmp)/prc*(prc-1))));
                 aver = ceil(length(tmp)/2);
-                bord = ceil(length(tmp)/20);
-                cone2_aver_gs = find( cone2_input>tmp(aver+2*bord) & cone2_input<tmp(aver+4*bord));
-                
-                
+                bord = ceil(length(tmp)/(prc*2));
+                cone2_aver_gs = find( cone2_input>tmp(aver+2*bord) & cone2_input<tmp(aver+4*bord)); 
                 
                 clear max_neg max_pos max_aver
                 for i=1:length(my_bins)-1
@@ -139,6 +142,12 @@ for cone1 = cones_to_plot
     end
     
     
+%     a = squeeze(mean(cone2_effect_neg(:,:,put_c),2));
+%     y = a(:,1);
+%     x = 1:8;
+%     save('/Users/alexth/Desktop/tmp.mat', 'a','x')
+    
+    
     my_cones = 1:size(inputs,1);
     my_cones(cone1) = [];
     put_c = intersect(my_cones, far_cones);
@@ -162,7 +171,8 @@ for cone1 = cones_to_plot
     plot(squeeze(mean(cone2_effect_aver(:,:,put_c),2)))
     plot(squeeze(mean(cone2_effect_aver(:,:,real_cones),2)),'linewidth',2)
     plot(squeeze(mean(cone2_effect_aver(:,:,sur_cone),2)),'rx-','linewidth',2)
-    plot(mean(squeeze(mean(cone2_effect_aver(:,:,put_c),2)),2),'kx-','linewidth',4)
+    legend(int2str(all_cones([put_c real_cones sur_cone])))
+    plot(mean(squeeze(mean(cone2_effect_aver(:,:,put_c),2)),2),'kx-','linewidth',4)    
     title('cone2 near 0 resp')
     axis tight
     ylims = [ylims get(gca, 'YLim')];
@@ -173,7 +183,7 @@ for cone1 = cones_to_plot
     plot(squeeze(mean(cone2_effect_pos(:,:,put_c),2)))
     plot(squeeze(mean(cone2_effect_pos(:,:,real_cones),2)),'linewidth',2)
     plot(squeeze(mean(cone2_effect_pos(:,:,sur_cone),2)),'rx-','linewidth',2)
-    plot(mean(squeeze(mean(cone2_effect_pos(:,:,put_c),2)),2),'kx-','linewidth',4)
+    plot(mean(squeeze(mean(cone2_effect_pos(:,:,put_c),2)),2),'kx-','linewidth',4)    
     title('cone2 max positive')
     axis tight
     ylims = [ylims get(gca, 'YLim')];
@@ -183,6 +193,7 @@ for cone1 = cones_to_plot
         subplot(1,3,i)
         axis([xlims(1) xlims(2) min(ylims(:)), max(ylims(:))])
     end
-
+    
+    drawnow
 
 end

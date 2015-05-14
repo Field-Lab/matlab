@@ -61,7 +61,7 @@ if 0
 end
 
 
-for datarunID = 160:311
+for datarunID = 188:311
     
     visionID = datarun.cell_ids(datarunID);
     [folder, my_type] = find_cell_type(datarun, visionID);
