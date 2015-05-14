@@ -6,7 +6,8 @@ all_params(fixed_indices) = fixed_params;
 % get sta fit
 sta_fit = sta_fit_function(all_params);
 
-temp_stix = significant_stixels(sta, 'time', 'std', 'select', 'thresh', 'thresh', 4.0); %changed from 3.5 to 3.0
+temp_stix = sig_stixels;
+% temp_stix = significant_stixels(sta); %changed from 3.5 to 3.0
 % biggestBlob = ExtractNLargestBlobs(full(temp_stix), 1);
 % temp_stix = biggestBlob;
 % temp_stix = sig_stixels
@@ -29,21 +30,21 @@ end
 
 if plot_raw
 % Raw Data
-tc = time_course_from_sta(sta, temp_stix);
-
-norm_factor = max(abs(reshape(tc, 1, [])));
-tc = tc ./ norm_factor;
-if size(sta_fit, 3) == 3
-    hold on 
-    plot(linspace(1,size(sta,4),size(tc,1)), tc(:,1), ':r')
-    hold on
-    plot(linspace(1,size(sta,4),size(tc,1)),tc(:,2), ':g')
-    plot(linspace(1,size(sta,4),size(tc,1)),tc(:,3), ':b')
-elseif size(sta_fit, 3) == 1
-    plot(linspace(1,size(sta,4),size(tc,1)), tc, '--k')
-    hold on
-else
-    error('dimensions of sta color is not recognized')
-end
+% tc = time_course_from_sta(sta, temp_stix);
+% 
+% norm_factor = max(abs(reshape(tc, 1, [])));
+% tc = tc ./ norm_factor;
+% if size(sta_fit, 3) == 3
+%     hold on 
+%     plot(linspace(1,size(sta,4),size(tc,1)), tc(:,1), ':r')
+%     hold on
+%     plot(linspace(1,size(sta,4),size(tc,1)),tc(:,2), ':g')
+%     plot(linspace(1,size(sta,4),size(tc,1)),tc(:,3), ':b')
+% elseif size(sta_fit, 3) == 1
+%     plot(linspace(1,size(sta,4),size(tc,1)), tc, '--k')
+%     hold on
+% else
+%     error('dimensions of sta color is not recognized')
+% end
 end
 

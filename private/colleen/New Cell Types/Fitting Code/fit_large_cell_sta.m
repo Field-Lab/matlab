@@ -17,12 +17,12 @@ concatname='data000';
 
 
 
-cell_type = {'on midget'};
+cell_type = {'ON parasol'};
 interpolate = false;
 independent_fit = 0;
 num_frames = 30; % both have to be run with the name number of frames
 false_stixels = 0.5;
-% cell_specification = 1562; %ON parasol
+cell_specification = 796; %ON parasol
 % cell_specification = 1622; %OFF parasol
 
 % cell_specification = [6143];
@@ -79,7 +79,7 @@ for num_cell_types = 1:size(cell_type,2)
     end
     
 end
-cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
+% cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
 
 
 %% Movie for right STAs
@@ -120,10 +120,10 @@ for rgc = 1:num_rgcs
     temp_sta = datarun.stas.stas{cell_indices(rgc)};
 
 
-                    
-[threshold] = sig_stixels_threshold(temp_sta, false_stixels);
-mark_params.select = 'thresh';
-mark_params.thresh = threshold;
+
+    [threshold] = sig_stixels_threshold(temp_sta, false_stixels);
+    mark_params.select = 'thresh';
+    mark_params.thresh = threshold;
 
     fprintf('fitting the STA for cell %d... \n', datarun2.cell_ids(cell_indices(rgc)))
 
@@ -134,12 +134,19 @@ if independent_fit
 
 else
     
-[temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'mark_params', mark_params);
-plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'on');
+[temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params);
+flip = strfind(lower(cell_type{1}), 'off');
+if flip == 1
+plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
+else
+    plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'on');
+
+end
+
 suptitle({dataset; sprintf('Fit for cell %d', datarun.cell_ids(cell_indices(rgc)))})
 
 print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(datarun.cell_ids(cell_indices(rgc)))]));
-
+save_sig_stixels{rgc} = sig_stixels;
 end
 
 % Plot result
@@ -168,7 +175,7 @@ end
         warning(warn_message)
     end
     
-    datarun.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
+    datarun2.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
   
 
 
@@ -205,59 +212,59 @@ end
 end
 
 
-return;
+% return;
 
-% stop here for now
 figure
 for q = 1:num_rgcs
-    temp_sta = datarun.stas.stas{cell_indices(q)};
-    temp_fit_params = datarun.matlab.sta_fits{cell_indices(q)};
-    fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params, sig_stixels, 1); % plot_raw = 1
+    temp_sta = datarun2.stas.stas{cell_indices(q)};
+    temp_fit_params = datarun2.matlab.sta_fits{cell_indices(q)};
+    fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params, save_sig_stixels{rgc}, 1); % plot_raw = 1
     hold on
 end
 title({['Fits of ' num2str(length(cell_specification)), ' ', cell_type{1}, ' Cells']; dataset})
 xlabel('Time')
 ylabel('Amplitude')
 
+print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],[cell_type{1}, ' Timecourses']));
 
 
 %% Look at the results
-figure
-suptitle({information{1}; [num2str(size(information{3},1)), cell_type{1}, ' cells']})
-
-%scale 1
-scale_one = information{3}(:,15);
-subplot(3,2,1) 
-hist(scale_one);
-title('Scale One');
-
-scale_two = information{3}(:,16);
-subplot(3,2,2) ; hist(scale_two);
-title('Scale Two');
-
-tau_one = information{3}(:,17);
-subplot(3,2,3) ; hist(tau_one);
-title('Tau One');
-
-tau_two = information{3}(:,18);
-subplot(3,2,4) ; hist(tau_two);
-title('Tau Two');
-
-n = information{3}(:,19);
-subplot(3,2,5) ; hist(n);
-title('N Filters');
-
-area = information{3}(:,5).*information{3}(:,6)*pi;
-subplot(3,2,6) ; hist(area);
-title('RF Size');
+% figure
+% suptitle({information{1}; [num2str(size(information{3},1)), cell_type{1}, ' cells']})
+% 
+% %scale 1
+% scale_one = information{3}(:,15);
+% subplot(3,2,1) 
+% hist(scale_one);
+% title('Scale One');
+% 
+% scale_two = information{3}(:,16);
+% subplot(3,2,2) ; hist(scale_two);
+% title('Scale Two');
+% 
+% tau_one = information{3}(:,17);
+% subplot(3,2,3) ; hist(tau_one);
+% title('Tau One');
+% 
+% tau_two = information{3}(:,18);
+% subplot(3,2,4) ; hist(tau_two);
+% title('Tau Two');
+% 
+% n = information{3}(:,19);
+% subplot(3,2,5) ; hist(n);
+% title('N Filters');
+% 
+% area = information{3}(:,5).*information{3}(:,6)*pi;
+% subplot(3,2,6) ; hist(area);
+% title('RF Size');
 
 
 
 %% Plot mosaic 
   figure
 for q = 1:num_rgcs
-    temp_sta = datarun.stas.stas{cell_indices(q)};
-    temp_fit_params = datarun.matlab.sta_fits{cell_indices(q)};
+    temp_sta = datarun2.stas.stas{cell_indices(q)};
+    temp_fit_params = datarun2.matlab.sta_fits{cell_indices(q)};
     fit_indices = temp_fit_params.fit_indices;
     fixed_indices = temp_fit_params.fixed_indices;
     fit_params = temp_fit_params.fit_params;
@@ -281,8 +288,8 @@ for q = 1:num_rgcs
 end
     axis equal
 
-set(gca, 'xlim', [0, datarun.stimulus.field_width]);
-set(gca, 'ylim', [0, datarun.stimulus.field_height]);
+set(gca, 'xlim', [0, datarun2.stimulus.field_width]);
+set(gca, 'ylim', [0, datarun2.stimulus.field_height]);
 set(gca,'YDir','reverse');
 %% compare mosaic to that from vision
 % datarun=load_data('2010-09-24-0/data001-nwpca-cr');
@@ -291,27 +298,28 @@ set(gca,'YDir','reverse');
 % datarun=load_neurons(datarun);
 % datarun=set_polarities(datarun);
 hold on
-h(rgc+1) = plot_rf_summaries(datarun,{cell_type_index}, 'plot_fits',1,'label',0, 'foa', -1, 'clear', 0); %looking at the data type 8 is on large
+h(rgc+1) = plot_rf_summaries(datarun2,{cell_type_index}, 'plot_fits',1,'label',0, 'foa', -1, 'clear', 0); %looking at the data type 8 is on large
 set(h(rgc+1), 'DisplayName', 'Vision')
 legend(h(end-1:end));
-title({['STA Fitting Code:  ', cell_type{1}] ; 'Clean Spike Sorting'; dataset})
+title({['STA Fitting Code:  ', cell_type{1}] ; dataset})
+print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],[cell_type{1}, ' Mosaic']));
 
 
-
-area  = parameters(:,5) .* parameters(:,6) .* pi;
-diameters = 2*[parameters(:,5) , parameters(:,6)];
-column1_larger = find(diameters(:,1)>diameters(:,2));
-column2_larger = find(diameters(:,1)<=diameters(:,2));
-max_diameters = [diameters(column1_larger,1); diameters(column2_larger,2)];
-disp('Mean RF diameter')
-mean(max_diameters)
-%% Calculate zero crossing
-zero_crossing = zeros(size(fit_tc,2),1);
-for i = 1:size(fit_tc,2)
-    cell_ = fit_tc{i}(:,2)*16.65; % units of ms
-
-    [x0,y0] = intersections(1:num_frames,cell_,1:num_frames, zeros(num_frames,1)); % find zero crossing
-    zero_crossing(i) = x0(1);
-end
-information{5} = zero_crossing;
-save([dataset,'-', cell_type{1}], 'information')
+% 
+% area  = parameters(:,5) .* parameters(:,6) .* pi;
+% diameters = 2*[parameters(:,5) , parameters(:,6)];
+% column1_larger = find(diameters(:,1)>diameters(:,2));
+% column2_larger = find(diameters(:,1)<=diameters(:,2));
+% max_diameters = [diameters(column1_larger,1); diameters(column2_larger,2)];
+% disp('Mean RF diameter')
+% mean(max_diameters)
+% %% Calculate zero crossing
+% zero_crossing = zeros(size(fit_tc,2),1);
+% for i = 1:size(fit_tc,2)
+%     cell_ = fit_tc{i}(:,2)*16.65; % units of ms
+% 
+%     [x0,y0] = intersections(1:num_frames,cell_,1:num_frames, zeros(num_frames,1)); % find zero crossing
+%     zero_crossing(i) = x0(1);
+% end
+% information{5} = zero_crossing;
+% save([dataset,'-', cell_type{1}], 'information')
