@@ -29,8 +29,9 @@ function full_fit = sta_fit_function(params)
 % 16 scale_two
 % 17 tau_one
 % 18 tau_two
-% 19 n-filters
+% 19 n-one-filters
 % 20 frame_number
+% 21 n-two-filters
 %
 % Author: GDF 
 % Data: 2011-06-10
@@ -76,7 +77,7 @@ end
 %%%%
 t_points = (1:1:params(20))-1;
 t_filter_one = params(15) .* (t_points ./ params(17)).^params(19) .* exp(-params(19)*((t_points ./ params(17)) - 1));
-t_filter_two = params(16) .* (t_points ./ params(18)).^params(19) .* exp(-params(19)*((t_points ./ params(18)) - 1));
+t_filter_two = params(16) .* (t_points ./ params(18)).^params(21) .* exp(-params(21)*((t_points ./ params(18)) - 1));
 tc = t_filter_one + t_filter_two;
 tc = tc(params(20):-1:1);
 %tc = abs(params(15)) .* (tc ./ abs(ext(tc)));
@@ -124,8 +125,9 @@ end
 % 16 scale_two
 % 17 tau_one
 % 18 tau_two
-% 19 n-filters
+% 19 n-one-filters
 % 20 frame_number
+% 21 n-two-filters
 
 
 

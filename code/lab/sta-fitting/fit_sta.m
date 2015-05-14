@@ -58,7 +58,8 @@ function [fit_info , sta, sig_stixels] = fit_sta(sta, varargin)
 %   fit_scale_two                   true
 %   fit_tau_one                     true
 %   fit_tau_two                     true
-%   fit_n_filters                   false
+%   fit_n_one_filters                   false
+%   fit_n_two_filters                   false
 %
 %   fit_color_weight_a              true    unless STA is BW
 %   fit_color_weight_b              true    unless STA is BW
@@ -174,14 +175,16 @@ p.addParamValue('initial_scale_one', [], @isnumeric);
 p.addParamValue('initial_scale_two', [], @isnumeric);
 p.addParamValue('initial_tau_one', [], @isnumeric);
 p.addParamValue('initial_tau_two', [], @isnumeric);
-p.addParamValue('initial_n_filters', 6, @isnumeric);
+p.addParamValue('initial_n_one_filters', 6, @isnumeric);
+p.addParamValue('initial_n_two_filters', 6, @isnumeric);
 
 % time course parameters to vary
 p.addParamValue('fit_scale_one', true, @islogical);
 p.addParamValue('fit_scale_two', true, @islogical);
 p.addParamValue('fit_tau_one', true, @islogical);
 p.addParamValue('fit_tau_two', true, @islogical);
-p.addParamValue('fit_n_filters', false, @islogical);
+p.addParamValue('fit_n_one_filters', false, @islogical);
+p.addParamValue('fit_n_two_filters', false, @islogical);
 
 % fit_only_sig stixels
 p.addParamValue('fit_sig_stixels_only', false, @islogical);
@@ -208,7 +211,8 @@ initial_scale_one = p.Results.initial_scale_one;
 initial_scale_two = p.Results.initial_scale_two;
 initial_tau_one = p.Results.initial_tau_one;
 initial_tau_two = p.Results.initial_tau_two;
-initial_n_filters = p.Results.initial_n_filters;
+initial_n_one_filters = p.Results.initial_n_one_filters;
+initial_n_two_filters = p.Results.initial_n_two_filters;
 
 
 fit_center_point_x = p.Results.fit_center_point_x;
@@ -226,7 +230,8 @@ fit_scale_one = p.Results.fit_scale_one;
 fit_scale_two = p.Results.fit_scale_two;
 fit_tau_one = p.Results.fit_tau_one;
 fit_tau_two = p.Results.fit_tau_two;
-fit_n_filters = p.Results.fit_n_filters;
+fit_n_one_filters = p.Results.fit_n_one_filters;
+fit_n_two_filters = p.Results.fit_n_two_filters;
 
 verbose = p.Results.verbose;
 fit_sig_stixels_only = p.Results.fit_sig_stixels_only;
@@ -342,7 +347,7 @@ if isempty(initial_scale_two)
 end
 
 if isempty(initial_tau_one)
-    initial_tau_one = peak_frame * 1.05;
+    initial_tau_one = peak_frame *1.05;
 end
 
 % initial tau_two depends a bit on  trough_scale
@@ -470,8 +475,9 @@ input_params = [...
     initial_scale_two,...
     initial_tau_one,...
     initial_tau_two,...
-    initial_n_filters,...
+    initial_n_one_filters,...
     frame_number,...
+    initial_n_two_filters,...
     ];
     
 % make a logical matrix that identifies which parameters are free
@@ -494,8 +500,9 @@ fit_list = [...
     fit_scale_two,...
     fit_tau_one,...
     fit_tau_two,...
-    fit_n_filters,...
+    fit_n_one_filters,...
     false,... % frame number is not fit
+    fit_n_two_filters,...
     ];   
 
 

@@ -22,7 +22,7 @@ interpolate = false;
 independent_fit = 0;
 num_frames = 30; % both have to be run with the name number of frames
 false_stixels = 0.5;
-cell_specification = 796; %ON parasol
+% cell_specification = 796; %ON parasol
 % cell_specification = 1622; %OFF parasol
 
 % cell_specification = [6143];
@@ -48,7 +48,7 @@ datarun2.names.rrs_sta_path = ['/Volumes/Analysis/', file_name2, '.sta'];
 %% Load Data1
 opt=struct('verbose',1,'load_params',0,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',0);
 opt.load_sta_params.save_rf = 1;
-opt.load_sta_params.frames = 1:30% have to input as a vector list of frames, not the number of frames total, counting backwards
+opt.load_sta_params.frames =1:30% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
 %% Load Data2
@@ -79,7 +79,7 @@ for num_cell_types = 1:size(cell_type,2)
     end
     
 end
-% cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
+cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
 
 
 %% Movie for right STAs
@@ -108,7 +108,7 @@ end
 cell_indices = get_cell_indices(datarun2, cell_specification);
 num_rgcs = length(cell_indices);
 parameters= zeros(num_rgcs,21);
-variables = {'cell_specification', 'cell_indices', 'center_point_x', 'center_point_y', 'center_sd_x', 'center_sd_y', 'center_rotation_angle', 'color_weight_a', 'color_weight_b', 'color_weight_c', 'x_dim', 'y_dim', 'surround_sd_scale', 'surround_amp_scale', 'scale_one', 'scale_two', 'tau_one', 'tau_two','n_filters', 'frame_number', 'rmse'};
+variables = {'cell_specification', 'cell_indices', 'center_point_x', 'center_point_y', 'center_sd_x', 'center_sd_y', 'center_rotation_angle', 'color_weight_a', 'color_weight_b', 'color_weight_c', 'x_dim', 'y_dim', 'surround_sd_scale', 'surround_amp_scale', 'scale_one', 'scale_two', 'tau_one', 'tau_two','n_one_filters', 'frame_number', 'n_two_filters','rmse'};
 information{1} = dataset;
 information{2} = variables;
 
@@ -129,12 +129,12 @@ for rgc = 1:num_rgcs
 
     temp_sta = datarun2.stas.stas{cell_indices(rgc)};
 if independent_fit
-    [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta_(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'mark_params', mark_params);
+    [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta_(temp_sta, 'fit_n_one_filters', true,'fit_n_two_filters', true, 'fit_surround_sd_scale', false, 'initial_n_one_filters', 20, 'initial_n_two_filters', 20,'fit_surround', false, 'initial_n_filters', 8, 'interpolate', false, 'frame_number', num_frames, 'mark_params', mark_params);
     print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]));
 
 else
     
-[temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params);
+[temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', true, 'fit_n_two_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params);
 flip = strfind(lower(cell_type{1}), 'off');
 if flip == 1
 plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
