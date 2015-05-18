@@ -152,7 +152,7 @@ for icellType=cellTypeId
     icellType
     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end
-
+InterestingCell_vis_id=[1008],
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 NullCells1=[2206,4773,1008]; % cell : 6826 ?
 NullCells2=datarun.cell_types{1}.cell_ids;
@@ -192,7 +192,8 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
    hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
    save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
 
-   
+    [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light_fig(cellID,nConditions,condDuration,cond_str,neuronPath,[1,4]);
+     [h] = plot_psth_pc2015_03_09_2(spkCondColl,condDuration,thr,[1,4]) 
    %testsuite_prediction
     %[timeLogData,psthData] = psth_variability(spkCondColl,nConditions,condMovies,cond_str,InterestingCell_vis_id,imov,ref_cell_number,interestingConditions);
     % pause
@@ -219,7 +220,7 @@ for icellType=cellTypeId
     icellType
     InterestingCell_vis_id=[InterestingCell_vis_id,datarun.cell_types{icellType}.cell_ids];
 end
-
+InterestingCell_vis_id = 662;
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 NullCells1=[2206,4548,6826,662]; % cell : 6826 ?
 NullCells2=datarun.cell_types{1}.cell_ids;
@@ -300,11 +301,14 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     event_tol=0.05;
    thr=0.4;
     [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+    
    s=hgexport('readstyle','event');
    hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
    save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
 
-     InterestingCell_vis_id(ref_cell_number)
+    [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light_fig(cellID,nConditions,condDuration,cond_str,neuronPath,[1,4]);
+     [h] = plot_psth_pc2015_03_09_2(spkCondColl,condDuration,thr,[1,4]) 
+    InterestingCell_vis_id(ref_cell_number)
     %  pause
 end
 

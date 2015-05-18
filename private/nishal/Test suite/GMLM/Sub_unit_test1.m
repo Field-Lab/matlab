@@ -82,7 +82,7 @@ f= @(x) double(x>0).*(1.6*x);
 %f=@(x) exp(0.6*x);
 % Ganglion cell non-linearity
 %N= @(x) exp(0.15*(x));
-N=@(x) double(x>0)*(0.02).*(3.4*x).^2 +1; % use it! , 2 is DC current
+N=@(x) double(x>0)*(0.02).*(3.4*x).^2 ; % use it! , 2 is DC current
 %N=@(x) x-min(x(:));
 %N = @(x) 15./(1+exp(-1.5*(x-5)));
 % 
@@ -174,7 +174,7 @@ figure
  
  %% EM like Max Expected Likelihood .. 
  interval=1;
- [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov,7,4,interval);   
+ [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov2,8,4,interval);   
  idx=1:length(binnedResponses);
  spk_time = idx(binnedResponses>0)/120;
  [fitGMLM_full,output]= fitGMLM_full(fitGMLM,spk_time,maskedMov);
@@ -248,7 +248,7 @@ figure;
 figure;
 plot(x1,y1+max(y2),'k');
 hold on;
-plot(x2,y2,'r');
+plot(x2/10,y2,'r');
 legend('Recorded','Predicted');
 
 %% Nulling experiment with GMLM
@@ -264,7 +264,7 @@ binnedResponses = binnedResponseOrig;
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=50;
- predictedResponses = predictGMLM(fitGMLM,maskedMov,nTrials);
+ predictedResponses = predictGMLM(fitGMLM,maskedMov2,nTrials);
  
 
 [x1,y1]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
@@ -277,7 +277,7 @@ binnedResponses = binnedResponseNull;
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=50;
- predictedResponses = predictGMLM(fitGMLM,maskedMov,nTrials);
+ predictedResponses = predictGMLM(fitGMLM,maskedMov2,nTrials);
  
 [x3,y3]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
 
@@ -286,16 +286,19 @@ nTrials=50;
  % Compare actual and predicted for Original movie
 
 figure;
-plot(x1,y1+3*max(y2),'k');
+plot(x1,y1+3*max(y2),'r');
 hold on;
-plot(x2,y2+2*max(y2),'r');
+plot(x2/10,y2+2*max(y2),'k');
 hold on;
 
 hold on;
-plot(x3,y3+max(y2),'b');
+plot(x3,y3+max(y2),'r');
 hold on;
-plot(x4,y4,'m');
-
+plot(x4/10,y4,'k');
+ylim([0,4*max(y2)])
+xlim([0,max(x1)]);
 title('Original & Null movie');
+set(gca,'ytick',[]);
+set(gca,'xtick',[]);
 legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
 

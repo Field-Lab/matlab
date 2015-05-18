@@ -1,6 +1,6 @@
 function [fitGLM,f_val] = fitGMLM_MEL_EM(binnedResponses,mov,filteredStimDim2,nFrontEnds2,interval)
 
-%% Works only for gaussian stimuli with 
+%% Works only for gaussian stimuli and no bias inside exponential 
  
 %% Data
 global_vars_GMLM_afterSTC
@@ -36,7 +36,7 @@ togo=1;
 f_val=Inf;
 tol=1e-5;
 % make 0 mean. 
-Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2);
+Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2)
 Sigmainv=inv(Sigma);
 
 f_val_log=[]; icnt=0;
