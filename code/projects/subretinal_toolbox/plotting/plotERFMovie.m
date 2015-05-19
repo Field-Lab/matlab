@@ -141,7 +141,7 @@ for kk=1:min(nFrames,maxNumberOfFrames)
     frame = getframe(fh);
     im = frame2im(frame);
     [imind, cm] = rgb2ind(im, 256);
-    
+
     % Saving
     if kk==1
         imwrite(imind, cm, fileName, 'gif', 'Loopcount', inf, 'DelayTime', 0.2);

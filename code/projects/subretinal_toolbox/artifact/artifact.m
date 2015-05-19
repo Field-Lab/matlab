@@ -5,7 +5,7 @@ classdef artifact < handle
     % It provides with a method to remove that average trace from raw data.
     % See the accompanying processData.m file for more information.
     %
-    % Version: 6.02 - 27/03/2013
+    % Version: 5.00 - 10/08/2012
     %   
     
     % Class properties
@@ -22,8 +22,7 @@ classdef artifact < handle
         Fs                      % sampling frequency in the original bin file
         FExperiment             % Frequency of the TTL pulses in the experiment
         saveData                % Boolean, 1 if we save the artifact, 0 (default) otherwise
-        useSmoothing            % Boolean, 1 if you want to smooth beginning and ending of pulse, 0 (default) otherwise
-        blankOnly               % Boolean, 1 if you only want to blank the artefact and not subtract it, 0 (default) otherwise
+        useSmoothing            % 1 if you want to smooth beginning and ending of pulse, 0 otherwise
     end % public properties
     properties (SetAccess = private)
         avTrace                 % the actual artifact
@@ -32,7 +31,6 @@ classdef artifact < handle
         nSamplesPulse           % number of samples in a pulse (pulse can correspond to several TTLs)
         nSamplesArtifact        % number of samples in the artifact
         electrodeRef            % electrode on which the maximal deflection is found
-        trigToPulseDelay;       % Delay between leading edge of the trigger and leading edge of the pulse in number of samples
     end % read-only properties
     properties (GetAccess = private)
         dataReference           % 3-character string that indicates which file is being processed
@@ -40,6 +38,7 @@ classdef artifact < handle
     properties (Constant)
         avTraceOffset = 80;                 % Number of samples taken into account before the beginning of the pulse
         nSamplesSmoothMin = 30;             % Minimum number of samples over which the data is blanked if smoothing is enabled
+        trigToPulseDelay = 2;               % Delay between leading edge of the trigger and leading edge of the pulse in number of samples
         maxFractionPulseProcessed = 0.995   % Maximum fraction of a pulse used to estimate an artifact
         minNumSamplesBetweenArtefacts = 200 % Minimum number of samples between two artefacts (should be enough to handle trigger jitter)
     end % constant properties
@@ -69,8 +68,6 @@ classdef artifact < handle
             end
             obj.saveData = 0;
             obj.useSmoothing = 0;
-            obj.blankOnly = 0;
-            obj.trigToPulseDelay = 2;
             
             % Checking the optional parameters
             nbin = length(varargin);
@@ -111,10 +108,6 @@ classdef artifact < handle
                         obj.saveData = varargin{kk*2};
                     case 'usesmoothing'
                         obj.useSmoothing = varargin{kk*2};
-                    case 'blankonly'
-                        obj.blankOnly = varargin{kk*2};
-                    case 'trigtopulsedelay'
-                        obj.trigToPulseDelay = varargin{kk*2};
                     otherwise
                         err = MException('MATLAB:InvArgIn',...
                             'Unknown parameter specified');
@@ -160,16 +153,17 @@ classdef artifact < handle
             obj.Fs = header.getSamplingFrequency();
             
             % Setting the number of samples in a trial
-            nSamplesBetweenTTLPulses = round(obj.Fs/obj.FExperiment);
+            nSamplesBetweenTTLPulses = obj.Fs/obj.FExperiment;
             obj.nSamplesPulse = int32(nSamplesBetweenTTLPulses*obj.ttlPerArtifact);
             
             % Setting the number of samples in the artifact
             % It will cover n-1 TTL pulses fully and the last one partially
             % as well.
-            obj.nSamplesArtifact = (obj.ttlPerArtifact-1)*nSamplesBetweenTTLPulses + ... % n-1 pulses
-                min(nSamplesBetweenTTLPulses - obj.minNumSamplesBetweenArtefacts, ...    % empirical formula which seems to work
-                    max(2500, obj.pulseTimes(end)*obj.Fs/1000 + ...
-                        obj.pulseDurations(end)*obj.Fs/1000*10));
+            obj.nSamplesArtifact = (obj.ttlPerArtifact-1)*nSamplesBetweenTTLPulses + ...
+                min(nSamplesBetweenTTLPulses - obj.minNumSamplesBetweenArtefacts, ...
+                      max(2500, obj.pulseTimes(end)*obj.Fs/1000 + ...
+                                obj.pulseDurations(end)*obj.Fs/1000*10));
+%             obj.nSamplesArtifact = min(max(2500,obj.pulseDuration*obj.Fs/1000*60),floor(0.8*obj.Fs/obj.FExperiment));
             
             % Setting the number of electrodes
             obj.nElectrodes = header.getNumberOfElectrodes();
@@ -218,7 +212,7 @@ classdef artifact < handle
             %
             
             DELAY_FOR_TRIG_SEARCH = 0.1;
-            TARGET_TRIG_POS = 300;                   % Desired trigger position in data, should be larger than trig pos in artifact
+            TARGET_TRIG_POS = 3000;
             TARGET_TRIG_POS_IN_ARTIFACT = 100;
             REBUILT_TTL_WIDTH = 11;
             
@@ -239,7 +233,7 @@ classdef artifact < handle
                 triggerPosition = find(trig_data<(mean(trig_data)-400),1,'first');
             end
             if triggerPosition~=TARGET_TRIG_POS
-                startSample = startSample + triggerPosition(1) - TARGET_TRIG_POS;
+                startSample = startSample + triggerPosition - TARGET_TRIG_POS;
             end
             
             while nn<obj.nTrials
@@ -255,7 +249,7 @@ classdef artifact < handle
                 
                 % Checking that the pulse has no shifted
                 if triggerPosition~=TARGET_TRIG_POS
-                    startSample = startSample + triggerPosition(1) - TARGET_TRIG_POS;
+                    startSample = startSample + triggerPosition - TARGET_TRIG_POS;
                 end
 
                 % If there was one, aligning the data on the trigger pulse and
@@ -308,7 +302,7 @@ classdef artifact < handle
             rawFile.close();
         end % compute
         
-        function procData = processData(obj, rawData, ttlPos)
+        function procData = processData(obj,rawData,ttlPos)
             % Removes the average artifact from rawData and returns a
             % cleaned version of the data in procData.
             %
@@ -317,66 +311,47 @@ classdef artifact < handle
             % position.
             %
             
-            % Rebuild TTL trace if TTL position was specified
             if exist('ttlPos','var')
-                rawData = obj.rebuildTTLPos(rawData, ttlPos);
-            end
-            
-            % Remove the artifact
-            if ~obj.blankOnly
-                [procData, posEst] = obj.removeFromData(rawData);
+                [procData,posEst] = obj.removeFromDataWithKnownTTLPos(rawData, ttlPos);
             else
-                % If we don't remove the artefact, we still need to make
-                % sure the smoothing method will run if required.
-                procData = rawData;
-                posEst = 1;
+                [procData,posEst] = obj.removeFromData(rawData);
             end
-            
-            % Smoothe the data
             if obj.useSmoothing
                 procData = obj.smootheData(procData,posEst);
             end
             
         end % processData
     end % methods
-    
     methods (Access = private)
-        
         function findPulsePos(obj)
             % Computes the position of each artifact in the average trace.
-            % Can help in blanking things more accurately.
-            % 
+            %
             
+            % Computing the position of each pulse in the artifact
+            % (by thresholding the first derivative of the pulse at 10% its 
+            % maximum absolute value)
+            % We look only at 1/10 of the artifact length
+            avTraceGrad = abs(diff(obj.avTrace(1:(obj.avTraceOffset+floor(obj.nSamplesArtifact/10)),:,:),1,1));
             obj.pulsePos = zeros(obj.nElectrodes,1);
+            for nn=1:obj.nElectrodes
+                obj.pulsePos(nn) = find(avTraceGrad(:,nn)>=.10*max(avTraceGrad(:,nn)),1,'first');
+            end
+            obj.pulsePos = obj.pulsePos+1;
             
-            if ~isempty(obj.avTrace)
-                % Computing the position of each pulse in the artifact
-                % (by thresholding the first derivative of the pulse at 10% its 
-                % maximum absolute value)
-                % We look only at 1/10 of the artifact length
-                avTraceGrad = abs(diff(obj.avTrace(1:(obj.avTraceOffset+floor(obj.nSamplesArtifact/10)),:,:),1,1));
+            % Checking that no pulse was found before the trigger 
+            % (can happen for very small amplitudes)
+            posTrigger = obj.pulsePos(1,:);
+            
+            if obj.pulsePos(obj.electrodeRef)<posTrigger(1)
                 for nn=1:obj.nElectrodes
-                    obj.pulsePos(nn) = find(avTraceGrad(:,nn)>=.10*max(avTraceGrad(:,nn)),1,'first');
-                end
-                obj.pulsePos = obj.pulsePos+1;
-
-                % Checking that no pulse was found before the trigger 
-                % (can happen for very small amplitudes)
-                posTrigger = obj.pulsePos(1,:);
-
-                if obj.pulsePos(obj.electrodeRef)<posTrigger(1)
-                    for nn=1:obj.nElectrodes
-                        obj.pulsePos(nn) = posTrigger(1);
-                    end
-                else
-                    for nn=1:obj.nElectrodes
-                        if obj.pulsePos(nn)<posTrigger(1)
-                            obj.pulsePos(nn) = obj.pulsePos(obj.electrodeRef);
-                        end
-                    end
+                    obj.pulsePos(nn) = posTrigger(1);
                 end
             else
-                obj.pulsePos(:) = obj.avTraceOffset;
+                for nn=1:obj.nElectrodes
+                    if obj.pulsePos(nn)<posTrigger(1)
+                        obj.pulsePos(nn) = obj.pulsePos(obj.electrodeRef);
+                    end
+                end
             end
             
         end % findPulsePos
@@ -389,7 +364,7 @@ classdef artifact < handle
             
         end % findElectrodeRef
 
-        function [procData, posEst] = removeFromData(obj, rawData)
+        function [procData,posEst] = removeFromData(obj,rawData)
             % Actual removal method.
             % Returns the cleaned version of the data as well as posEst
             % which is an indicator of where the artifact was found inside the raw recording.. This
@@ -479,17 +454,7 @@ classdef artifact < handle
 
         end % removeFromDataWithKnownTTLPos 
         
-        function rawData = rebuildTTLPos(obj, rawData, ttlPulsePos)
-            % Rebuilds the trigger trace in the raw data by placing a
-            % trigger pulse at the position specified in ttlPulsePos.
-            
-            REBUILT_TTL_WIDTH = 10;
-            rawData(:,1) = 0;
-            rawData(ttlPulsePos + (1:REBUILT_TTL_WIDTH), 1) = int16(-2048);
-            
-        end % rebuildTTLPos
-        
-        function procData = smootheData(obj, rawData, posEst)
+        function procData = smootheData(obj,rawData,posEst)
             % Smoothes the beginning and ending of the pulse detected at
             % posEst by setting all the values of the recording to the 
             % average dc offset over a period of time that depends on the
@@ -511,26 +476,25 @@ classdef artifact < handle
 
                 % Smoothing around artifact edges 
                 for nn=2:obj.nElectrodes
+                    % TTL pulse pos
+%                     thisTTLPos = obj.pulsePos(nn) + posEst;
+%                     thisTTLPos = thisTTLPos + obj.trigToPulseDelay;
                     
                     for kk=1:length(ttlPos)
-                        
-                        thisTTLPos = ttlPos(kk);
-                        
+                        thisTTLPos = ttlPos(kk) + obj.trigToPulseDelay;
                         for ll=1:length(obj.pulseDurations)
                             thisPulsePosStart = thisTTLPos + obj.pulseTimes(ll)*obj.Fs/1000 ...
                                 + obj.trigToPulseDelay;
-                            thisPulsePosEnd = thisPulsePosStart + obj.pulseDurations(ll)*obj.Fs/1000;
+                            thisPulsePosEnd = thisTTLPos + (obj.pulseTimes(ll) + obj.pulseDurations(ll))*obj.Fs/1000;
                             
 %                             procData(max((thisPulsePosStart-obj.nSamplesSmoothMin),1):...
 %                                      (thisPulsePosEnd+obj.nSamplesSmoothMin),nn)...
 %                                            = dcOffset(1,nn-1);
                             procData(max((thisPulsePosStart-obj.nSamplesSmoothMin),1):...
                                      (thisPulsePosEnd+obj.nSamplesSmoothMin),nn)...
-                                           = mean(procData(max((thisPulsePosStart-obj.nSamplesSmoothMin-1),1) + (1:10),nn));
+                                           = procData(max((thisPulsePosStart-obj.nSamplesSmoothMin),1),nn);
                         end
-                        
                     end
-                    
                 end
             end
         end % smootheData

@@ -10,6 +10,7 @@ datarun1 = load_sta(datarun1);
 
 vormap = load('/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt');
 figure
+colormap gray
 imagesc(vormap)
 
 
@@ -39,6 +40,10 @@ for i=49%find(ww./pixn<5)
     datarunID = find(datarun.cell_ids == visionID);
     sta = imresize(double(datarun.stas.stas{datarunID}(:,:,1,4)),600/datarun.stimulus.field_height,'nearest');
     sta1 = imresize(double(datarun1.stas.stas{datarunID}(:,:,1,4)),600/datarun1.stimulus.field_height,'nearest');
+    
+%     figure
+%     colormap gray
+%     imagesc(sta)
     
     if datarun.stas.polarities{datarunID} == 1
         [tt, ind] = max(sta(:));
@@ -149,7 +154,7 @@ end
 
 %plot sta to find the threshold
 figure
-plot(my_sta')
+plot(my_sta(:,end:-1:1)')
 % cones with real center input
 sel_cones.real = find(my_sta(:,3)<-0.065);
 % cones with surround input
@@ -175,7 +180,7 @@ end
 
 figure
 subplot(1,2,1)
-plot(my_sta(cones,:)')
+plot(my_sta(cones,end:-1:1)')
 title([int2str(length(cones)), ' cones'])
 
 subplot(1,2,2)
@@ -205,11 +210,9 @@ figure
 plot(mean_sta')
 
 load('/Users/alexth/Desktop/tmp.mat')
-y = a(:,1);
-% a = squeeze(mean(cone2_effect_neg(:,:,put_c),2));
-% y = a(:,1);
-% x = 1:8;
-% save('/Users/alexth/Desktop/tmp.mat', 'a','x')
+
+ fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.4,8,5]);
+       
 
 %% 
 

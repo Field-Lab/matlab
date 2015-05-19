@@ -18,23 +18,19 @@ function [M, param_names] = parsewaveformstring(string)
 M = {};
 param_names = {'Pulse duration',...
                'Pulse times',...
-               'Irradiance'};
+               'Frac. of max. irradiance'};
            
 delimiters = strfind(string,';');
-waveformregexp = '\[(.*?)\]';
 
 % Parsing all the fields in order, starting by 'Start time'. 
 
 % Pulse duration
-[startind, endind] = regexp(string(1:delimiters(1)), waveformregexp);
-M{1} = str2num(string(startind:endind));                                   %#ok<ST2NM>
+M{1} = str2num(string(1:delimiters(1)-19));                                 %#ok<ST2NM>
 
 % Pulse time
-[startind, endind] = regexp(string(delimiters(1):delimiters(2)), waveformregexp);
-M{2} = str2num(string((startind:endind) + delimiters(1) - 1));             %#ok<ST2NM>
+M{2} = str2num(string(delimiters(1)+15:delimiters(2)-16));                  %#ok<ST2NM>
 
 % Frac of max irradiance
-[startind, endind] = regexp(string(delimiters(2):end), waveformregexp);
-M{3} = str2num(string((startind:endind) + delimiters(2) - 1));             %#ok<ST2NM>
+M{3} = str2num(string(delimiters(2)+2:end-24));                             %#ok<ST2NM>
 
 end % parselogfileline

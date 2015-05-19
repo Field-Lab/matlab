@@ -1,22 +1,15 @@
 clear;
 
 neuronList = [];
-psthStatsFolder = '/media/MEA_PROCESSED_8/2014-01-16-0/data/data001/statistics/all';
-modulationStatsOutputFolder = '/media/MEA_PROCESSED_8/2014-01-16-0/data/data001/statistics/alternation_modulation';
-alternationLogfilePath = '/media/MEA_PROCESSED_8/2014-01-16-0/logfiles/gratings_logfile001.log';
-outputFolderFigures = '/media/MEA_PROCESSED_8/2014-01-16-0/data/data001/figures/alternation_modulation';
+psthStatsFolder = '/media/MEA_PROCESSED_8/2014-01-17-0/data/data001/statistics/all';
+modulationStatsOutputFolder = '/media/MEA_PROCESSED_8/2014-01-17-0/data/data001/statistics/alternation_modulation';
+alternationLogfilePath = '/media/MEA_PROCESSED_8/2014-01-17-0/logfiles/gratings_logfile001.log';
+outputFolderFigures = '/media/MEA_PROCESSED_8/2014-01-17-0/data/data001/figures/alternation_modulation';
 
 %% Computing statistics
 
-% For visible light data, reasonable optional arguments seem to be:
-%   - 'psthSplitOffset': 100
-%   - 'endStimulationPeak': 200
-
-
 stimNeuronList = computeAmplitudeModulation(psthStatsFolder, alternationLogfilePath, ...
-    modulationStatsOutputFolder,...
-    'psthSplitOffset', 100, ...
-    'endStimulationPeak', 250);
+    modulationStatsOutputFolder);
 
 %% Plotting
 

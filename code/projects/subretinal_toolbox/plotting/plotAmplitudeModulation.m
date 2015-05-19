@@ -1,9 +1,6 @@
 function allThresholds = plotAmplitudeModulation(modulationStatsFolder, outputFolderFigures, varargin)
 % plotAmplitudeModulation(modulationStatsFolder, outputFolderFigures)
 %
-% Plots the neural response to contrast reversal for gratings of increasing
-% size. Also fits a function to the response.
-%
 % Parameters:
 %   - modulationStatsFolder
 %   - outputFolderFigures

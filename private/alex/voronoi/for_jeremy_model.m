@@ -3,6 +3,7 @@ datarun1 = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data008-from
 datarun1 = load_params(datarun1,'verbose',1);
 datarun1 = load_sta(datarun1);
 datarun1 = set_polarities(datarun1);
+datarun1 = load_neurons(datarun1);
 
 % wn_movie_name = 'BW-2-6-0.48-11111-300x300-60.35.xml';
 % [inputs, refresh, duration] = get_wn_movie_ath(datarun, wn_movie_name);

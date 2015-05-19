@@ -2,7 +2,7 @@ clear;
 dbstop if error;
 
 if isunix
-    visionPath = '/home/ggoetz/Research/Vision/UCSC/Vision_8.2.4/Vision.jar'; % Path to Vision - Unix 
+    visionPath = '/home/ggoetz/Research/Vision/Vision815/Vision.jar'; % Path to Vision - Unix 
     visionWritePath = '/home/ggoetz/Research/Eclipse/110314 - Write Data V4/WriteDataFile.jar';
 else
     visionPath = '\\badger\Users\ggoetz\Research\Vision\Vision815\Vision.jar'; 

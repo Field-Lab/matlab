@@ -2,7 +2,7 @@
 % Trying to make performance evaluation more robust.
 % CALLS eval_rasterlogprob
 
-function xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, SPars, organizedspikes,neighborspikes, testmovie)
+function xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, SPars, organizedspikes, neighborspikes, testmovie)
 %%
 
 bpf = fittedGLM.bins_per_frame;
@@ -91,6 +91,14 @@ end
 K  = fittedGLM.linearfilters.Stimulus.Filter;
 K  = reshape(K, [ROI_pixels, length(frame_shifts)]);
 
+% HUGE HACK AKHeitman 2014-10-21
+% rk1 filters are misscaled... too hard to dig out
+% rk1 filters are fit fine
+% this is confirmed to be the correct factor though!
+if strcmp(fittedGLM.GLMType.stimfilter_mode, 'rk1')
+    K = 2*K;
+end
+
 KX = zeros(ROI_pixels, params.frames);
 for i_pixel = 1:ROI_pixels
     X_frame_shift = prep_timeshift(X_frame(i_pixel,:),frame_shifts);
@@ -158,6 +166,7 @@ xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
 %%
 lcif_const  = lcif_kx0 + lcif_mu0;
 logical_sim = zeros(params.trials, params.bins);
+drive = zeros(params.trials, params.bins);
 
 
 if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
@@ -175,6 +184,7 @@ if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_ps;
     end
     
     % NBCoupling
@@ -199,6 +209,7 @@ elseif GLMType.CouplingFilters && ~GLMType.PostSpikeFilter
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_cp;
     end
     
 elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
@@ -225,6 +236,7 @@ elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif_ps_cp;
     end
     % end NBCoupling
 else
@@ -238,6 +250,7 @@ else
             end
         end
         logical_sim(i_trial,:) = binary_simulation ;
+        drive(i_trial, :) = params.bindur*cif;
     end
 end
 
@@ -245,6 +258,7 @@ end
 xvalperformance.rasters.recorded = logicalspike;
 xvalperformance.rasters.glm_sim  = logical_sim;
 xvalperformance.rasters.bintime  = params.bindur;
+xvalperformance.sim_drive = drive;
 
 
 end

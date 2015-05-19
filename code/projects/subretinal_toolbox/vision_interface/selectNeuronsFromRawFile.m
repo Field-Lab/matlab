@@ -1,6 +1,4 @@
 function selectNeuronsFromRawFile(dataFolder, idList)
-% selectNeuronsFromRawFile(dataFolder, idList)
-%
 % This function creates a neuron file by selecting the neurons whose ID is
 % specified in a neurons-raw file. 
 % Warning: if there is a .neurons file in the folder, the function will not
@@ -11,7 +9,7 @@ function selectNeuronsFromRawFile(dataFolder, idList)
 %   - idList: list of neurons to select. Neurons missing from the raw file
 %   will be ignored. 
 %
-% Version: 1.00 - 15/5/2014
+% Version:
 %
 
 %% Reading the input arguments

@@ -1,4 +1,4 @@
-function [allEiAmps, allVals, tempoutput] = genActThreshSpatialMaps(fPath,neuronId, varargin)
+function [allEiAmps, allVals] = genActThreshSpatialMaps(fPath,neuronId, varargin)
 % GENACTTHRESHSPATIALMAPS(...) generates images that represent the
 % activation thresholds of a cell for multiple stimulating electrodes a
 % inputs:   fpath       path to elecResp files
@@ -9,6 +9,7 @@ function [allEiAmps, allVals, tempoutput] = genActThreshSpatialMaps(fPath,neuron
 %              plotResponseCurves plots the sigmoidal activation curve for
 %              each electrode that activeates a cell. could generate a lot
 %              of figures
+%              dispCheckedElecs shows which electrodes were checked
 % outputs:  allEiAmps   matrix with ei info for all cells
 %           allVals     matrix with activation info for all cells
 % usage: genActThreshSpatialMaps('/Volumes/Analysis/2014-08-20-1/data003/', [7652 7473 7443 7427 7321 4366 4066 4007 3950 3946 1202 1096 752 544 256])
@@ -19,8 +20,9 @@ function [allEiAmps, allVals, tempoutput] = genActThreshSpatialMaps(fPath,neuron
 
 % Set up defaults for optional parameters
 printElecs = 0 ;
-saveFiles = 1;
+saveFiles = 0;
 plotResponseCurves = 0;
+dispCheckedElecs = 0; 
 
 nbin = length(varargin);
 if mod(nbin,2)==1
@@ -44,6 +46,8 @@ for kk=1:(nbin/2)
             saveFiles = varargin{kk*2};
         case 'plotresponsecurves'
             plotResponseCurves = varargin{kk*2};
+        case 'dispcheckedelecs'
+            dispCheckedElecs = varargin{kk*2}; 
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -53,10 +57,10 @@ end
 
 dirInfo = dir(fPath);
 for nn = 1:length(neuronId);
-    clear eiamps elVals actThresholds
+    clear eiamps elVals % actThresholds
     neuron = neuronId(nn);
     for  n = 3:size(dirInfo,1) %%106 %
-        if ~dirInfo(n).isdir
+        if ~dirInfo(n).isdir && ~strcmp(dirInfo(n).name,'activationResults.mat')
             fname = dirInfo(n).name;
             i = find(fname=='_',2,'first');
             if strcmp(['n' num2str(neuron)],fname(i(1)+1:i(2)-1))
@@ -81,7 +85,7 @@ for nn = 1:length(neuronId);
                     
                     threshVoltage = xx(find(yy>0.5,1,'first'));
                     actThresholds(elecResp.stimInfo.electrodes) = threshVoltage;
-                    
+%                     actThresholds(elecResp.stimInfo.patternNo) = threshVoltage; %lauren hack 2/19/15
                     %Plotting
                     if plotResponseCurves
                         figure; plot(stimAmps, responseProb,'.'); ylim([0 1])
@@ -92,17 +96,22 @@ for nn = 1:length(neuronId);
                         hold on; plot(threshVoltage,yy(find(yy>0.5,1,'first')),'ro');
                         text(threshVoltage+0.1,0.5,[num2str(threshVoltage) '\muA'])
                     end
+                else
+                    if dispCheckedElecs
+                        actThresholds(elecResp.stimInfo.patternNo) = 10;
+                    end
                 end
             end
         end
-    end
+    end % End search through directory
     %
     elVals = zeros([1 512]);
     try
-    elVals(1:size(actThresholds,2)) = actThresholds;
+        elVals(1:size(actThresholds,2)) = actThresholds;
     catch
         keyboard; 
     end
+    clear actThresholds;
     [~,aL_view] = ei2matrix(elVals);
     allVals(nn,:) = elVals;
     % figure; imagesc(1./aL_view,[0 1.2]); axis image; colorbar; colormap jet;
@@ -111,7 +120,7 @@ for nn = 1:length(neuronId);
     subplot(2,1,1); imagesc(aL_view); axis image; colorbar; colormap hot; axis off;
     % set(gcf,'Position',[25  300  1230 570]);
     title(['50% activation threshold n' num2str(neuron)]);
-    tempoutput = elecResp.cells.mainEI; 
+%     tempoutput = elecResp.cells.mainEI; 
     eiamps = max(elecResp.cells.mainEI') - min(elecResp.cells.mainEI');
     [~,eipic] = ei2matrix(eiamps);
     subplot(2,1,2); imagesc(eipic,[0 max(eiamps)/2]); axis image; colorbar; colormap hot;
@@ -121,9 +130,9 @@ for nn = 1:length(neuronId);
     
     
     if printElecs
-        h = load('/Users/grosberg/matlab/array_matrix_id510'); % Find a more general location for this or call a different text file.
+        fname = fullfile(fileparts(mfilename('fullpath')),'../resources/array_matrix_id510');
+        h = load(fname);
         electrodeMatrix = h.array_matrix_id510; clear h;
-        
         for x = 1:size(electrodeMatrix,2)
             for y = 1:size(electrodeMatrix,1)
                 if y/2 == round(y/2)

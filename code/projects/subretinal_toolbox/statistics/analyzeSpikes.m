@@ -42,8 +42,6 @@ function analyzeSpikes(dataFolder,logFilePath,varargin)
 %   but uses what the user specified. This bin size should be specified in
 %   number of samples, not milliseconds or seconds. Good bin size: 5ms =
 %   100 samples.
-%   - logfileType: either 'labview' or 'matlab', depending on the logfile
-%   generation mechanism.
 %
 % Returns: []
 
@@ -65,7 +63,6 @@ binSize = 100;
 outputPath = [dataFolder 'statistics'];
 neuronDataFolder = dataFolder;
 ttlsPerPulse = 1;
-logfiletype = 'matlab';
 
 % Checking the optional parameters
 nbin = length(varargin);
@@ -95,8 +92,6 @@ for kk=1:(nbin/2)
             ttlsPerPulse = varargin{kk*2};
         case 'outputpath'
             outputPath = varargin{kk*2};
-        case 'logfiletype'
-            logfiletype = varargin{kk*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -147,30 +142,12 @@ clear isNeuronFile
 
 %% Reading the log file and loading the pulse times, if necessary
 
-% Logfile looks different depending on whether Labview or Matlab generated
-% it, eventhough in the end the data in it is pretty much the same.
-switch logfiletype
-    case 'matlab'
-        [M, paramNames, ~, pulseTimes] = readLogFile(logFilePath);
-        
-        stimType = M(:,ismember(paramNames,'Stimulus Type'));
-        nPulses = M(:,ismember(paramNames,'Number of pulses'));
-        nExperiments = size(nPulses,1);
-        FExperiments = M(:,ismember(paramNames,'Frequency'));
-     case 'labview'
-        M = readLogFileLabview(logFilePath);
-        
-        stimType = M.stimulus_type;
-        nPulses = M.number_of_trials/ttlsPerPulse;
-        nExperiments = numel(nPulses);
-        FExperiments = M.frequency;
-    otherwise
-        err = MException('MATLAB:InvArgIn',...
-                'Invalid logfile type.');
-        throw(err);
-end
+[M, paramNames] = readLogFile(logFilePath);
+FExperiments = M(:,ismember(paramNames,'Frequency'));
+nExperiments = length(FExperiments);
+stimType = M(:,ismember(paramNames,'Stimulus Type'));
 
-allPulseTimes = loadAllPulsesTimeFromNeuronFile(neuronFile, nExperiments, FExperiments, Fs);
+allPulseTimes = loadAllPulsesTimeFromNeuronFile(neuronFile, nExperiments, Fs);
 
 %% Basic file information
 
@@ -208,16 +185,16 @@ end
 
 end % analyzeSpikes
 
-function allPTStruct = loadAllPulsesTimeFromNeuronFile(neuronFile, nExperiments, FExperiments, Fs)
+function allPTStruct = loadAllPulsesTimeFromNeuronFile(neuronFile, nExperiments, Fs)
 % This function loads all the TTL pulses information into a matlab
 % structure.
 
-% Assume experiments change when there is a large change in TTL intervals
-thresholdTTLDiff = 10000; 
+% More than two seconds between TTL pulses: assume next experiment.
+thresholdTTLDiff = 2*Fs; 
 
 rawPT = double(neuronFile.getTTLTimes());
-timeDiffDiffTTL = diff(diff(rawPT));
-posStartExp = [0; find(timeDiffDiffTTL>thresholdTTLDiff)+1] + 1;
+timeDiffTTL = diff(rawPT);
+posStartExp = [0; find(timeDiffTTL>thresholdTTLDiff)] + 1;
 % Checking we're seeing the right number of experiments
 if length(posStartExp)~=nExperiments
     err = MException('MATLAB:TTLPulses:InconsistentTTLs',...
@@ -239,8 +216,8 @@ for kk=1:nExperiments
         allPTStruct(kk).TTLTimes = rawPT(posStartExp(kk):end) ...
             - allPTStruct(kk).startSample;
     end
-    % Here: assume there is at least 1 pulse between experiments.
-    allPTStruct(kk).nSamplesExperiment = allPTStruct(kk).TTLTimes(end) + round(Fs/FExperiments(kk));
+    % Here: assume there is at least 1 second between experiments.
+    allPTStruct(kk).nSamplesExperiment = allPTStruct(kk).TTLTimes(end) + Fs;
 end
 
 end

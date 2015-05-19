@@ -1,7 +1,7 @@
 clear;
 
 if isunix
-    visionPath = '/home/ggoetz/Research/Vision/UCSC/Vision_8.2.4/Vision.jar'; % Path to Vision - Unix 
+    visionPath = '/home/ggoetz/Research/Vision/Vision815/Vision.jar'; % Path to Vision - Unix 
     visionWritePath = '/home/ggoetz/Research/Eclipse/110314 - Write Data V4/WriteDataFile.jar';
 else
     visionPath = '\\badger\Users\ggoetz\Research\Vision\Vision815\Vision.jar'; 
@@ -15,16 +15,16 @@ javaaddpath(visionPath);
 %% Neuron statistics computation and plotting
 
 % % path to the folder in which the data000.txt,... logfiles can be found
-logfileRootPath = '/media/MEA_PROCESSED_8/2014-01-16-0/logfiles/';
+logfileRootPath = '/media/MEA_PROCESSED_7/2013-12-04-0/logfiles/';
 % path to the output folder. data000,... subfolders will be created there.
-processedDataRootPath = '/media/MEA_PROCESSED_8/2014-01-16-0/data/';
+processedDataRootPath = '/media/MEA_PROCESSED_7/2013-12-04-0/data/';
 
 % Data files that you want to process
-dataStrs = {'001'};
+dataStrs = {'008'};
 
 for kk=1:length(dataStrs)
-    logfilePath = fullfile(logfileRootPath,  ['logfile' dataStrs{kk} '.txt']);
-    processedDataPath = fullfile(processedDataRootPath,  ['data' dataStrs{kk}]);
+    logfilePath = [logfileRootPath 'logfile' dataStrs{kk} '.txt'];
+    processedDataPath = [processedDataRootPath 'data' dataStrs{kk}];
     
     % Neuron statistics
     analyzeSpikesGratings(processedDataPath,logfilePath,...

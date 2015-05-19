@@ -903,7 +903,7 @@ for cell_type = 1:4
     title(datarun.cell_types{cell_type}.name)
 end
 
-save('/Users/alexth/Desktop/voronoi/2011-12-13-2/mosaics_coordinates.mat', 'my_coords')
+load('/Users/alexth/Desktop/voronoi/2011-12-13-2/mosaics_coordinates.mat', 'my_coords')
 
 
 %% make video
@@ -1078,19 +1078,43 @@ for datarunID = 1:311
 end
 
 
-writerObj = VideoWriter('/Users/alexth/Desktop/voronoi/2011-12-13-2/sta_videos/video168_fast.avi');
+
+sta_params.length = 3;
+sta_params.offset = 0;
+offset = 0;
+sta_length=2;
+
+datarun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11');
+datarun = load_params(datarun,'verbose',1);
+datarun = load_neurons(datarun);
+
+wn_movie_name = 'BW-2-6-0.48-11111-300x300-60.35.xml';
+[inputs, refresh, duration] = get_wn_movie_ath(datarun, wn_movie_name);
+vorrun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data009-from-d08_11/data009-from-d08_11');
+vorrun = load_params(vorrun,'verbose',1);
+vorrun = load_neurons(vorrun);
+[inputs_v, refresh_v, duration_v] = get_wn_movie_ath(vorrun, 'BW-1-2-0.48-11111-937x1-60.35.xml');
+
+ksta = [sta_params.length-sta_params.offset, 100:100:18000];
+k = [sta_params.length-sta_params.offset, 300:300:54000];
+
+
+load('/Volumes/Analysis/2011-12-13-2/sta_time/single_cone_198.mat')
+load('/Volumes/Analysis/2011-12-13-2/sta_time/voronoi_198.mat')
+
+writerObj = VideoWriter('/Users/alexth/Desktop/voronoi/2011-12-13-2/sta_videos/video198_fast.avi');
 writerObj.FrameRate = 10;
 writerObj.Quality=100;
 open(writerObj);
-
 f = figure
 set(gcf, 'position', [147         590        1262         509])
+
 for j=1:length(k)-1
     
     subplot(1,2,1)
     colormap('gray')
     tmp = sta_tmp(:,:,j);
-    imagesc(tmp)
+    imagesc(tmp')
     s = ksta(j+1)*refresh/1000;
     m = floor(s/60);
     if m>0
@@ -1099,11 +1123,11 @@ for j=1:length(k)-1
     else
         str  = [ int2str(s), ' s'];
     end
-    text(25,5, str, 'color',[0.9 0.5 0.5], 'fontsize',28)
+    text(125,25, str, 'color',[0.9 0.5 0.5], 'fontsize',28)
     
     subplot(1,2,2)
     colormap('gray')
-    tmp = vorsta_tmp(my_as*2,my_bs*2,j);
+    tmp = vorsta_tmp(:,:,j);
     imagesc(tmp)
     s = k(j+1)*refresh_v/1000;
     m = floor(s/60);
@@ -1113,7 +1137,7 @@ for j=1:length(k)-1
     else
         str  = [ int2str(s), ' s'];
     end
-    text(25,5, str, 'color',[0.9 0.5 0.5], 'fontsize',28)    
+    text(250,50, str, 'color',[0.9 0.5 0.5], 'fontsize',28)    
     
     movieFrames(j)=getframe(f);
     writeVideo(writerObj,movieFrames(j));

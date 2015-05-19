@@ -40,8 +40,6 @@ createTextFile = false;              % save data as mat and txt or mat only
 pThreshold = 0.01;
 createClassification = true;
 positiveOnly = false;
-logfiletype = 'matlab';
-expIdRefBaseline = 0;
 
 % Checking the optional parameters
 nbin = length(varargin);
@@ -66,10 +64,6 @@ for kk=1:(nbin/2)
             pThreshold = varargin{kk*2};
         case 'positiveonly'
             positiveOnly = varargin{kk*2};
-        case 'logfiletype'
-            logfiletype = varargin{kk*2};
-        case 'useexpidasbaseline'
-            expIdRefBaseline = varargin{kk*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -97,32 +91,14 @@ for kk=1:length(contentsStatsFolder)
     end
 end
 
-%% Read logfile
-
-% Logfile looks different depending on whether Labview or Matlab generated
-% it, eventhough in the end the data in it is pretty much the same.
-switch logfiletype
-    case 'matlab'
-        [M, paramNames, ~, pulseTimes] = readLogFile(logfilePath);
-
-        powerLevels = M(:,ismember(paramNames,'Power'));
-        pulseWidths = M(:,ismember(paramNames,'Pulse Duration'));
-        fStim = M(:,ismember(paramNames,'Frequency'));
-        imProjected = M(:,ismember(paramNames,'Image projected'));
-        nExperiments = length(powerLevels);
-     case 'labview'
-        M = readLogFileLabview(logfilePath);
-
-        powerLevels = M.power;
-        pulseWidths = M.pulse_durations;
-        fStim = M.frequency;
-        imProjected = NaN*zeros(size(M.frequency));
-        nExperiments = length(powerLevels);
-    otherwise
-        err = MException('MATLAB:InvArgIn',...
-                'Invalid logfile type.');
-        throw(err);
+if ~isempty(logfilePath)
+    [M,paramNames] = readLogFile(logfilePath);
 end
+powerLevels = M(:,ismember(paramNames,'Power'));
+pulseWidths = M(:,ismember(paramNames,'Pulse Duration'));
+fStim = M(:,ismember(paramNames,'Frequency'));
+imProjected = M(:,ismember(paramNames,'Image projected'));
+nExperiments = length(powerLevels);
 
 if ~exist(resultFolder,'dir')
     mkdir(resultFolder);
@@ -146,36 +122,22 @@ for kk=1:nNeurons
     activationData.labels = labels;
     activationData.data = zeros(nExperiments,length(labels));
     
-    % If there's an experiment we can use to get baseline activity
-    % information, extract this activity here
-    if expIdRefBaseline
-        startTimeBaseline = round(0.6/fStim(expIdRefBaseline)*1000/5)*5;
-        endTimeBaseline = floor(1/fStim(expIdRefBaseline)*1000/5)*5;
-        [nSpikesBackground, semBackground, nTrials, nBins] = getNumberOfSpikes(...
-            startTimeBaseline, endTimeBaseline, obj.PSTHs(expIdRefBaseline));
-        
-        nSpikesExpected = nSpikesBackground/nBins;
-        varSpikesExpected = nTrials/(nTrials-1)*semBackground*nTrials/nBins;
-    end
-    
     % Computing the number of spikes elicited for each experiment
     for ll=1:nExperiments
-        if ~expIdRefBaseline
-            % Getting the baseline statistics. For now done from last 40%,
-            % but it would be better to have spontaneous data every time. 
-            % startTimeBaseline and endTimeBaseline have to be rounded to the
-            % nearest multiple of 5.
-            startTimeBaseline = round(0.6/fStim(ll)*1000/5)*5;
-            endTimeBaseline = floor(1/fStim(ll)*1000/5)*5;
-            [nSpikesBackground, semBackground, nTrials, nBins] = getNumberOfSpikes(...
-                startTimeBaseline, endTimeBaseline, obj.PSTHs(ll));
-            nSpikesExpected = nSpikesBackground/nBins;
-            % Estimate from SEM is biased, hence the correcting factor.
-            % Other assumption made is that what happens in a bin is
-            % independent from what happens in others, which is an
-            % approximation but should be close to true.
-            varSpikesExpected = nTrials/(nTrials-1)*semBackground*nTrials/nBins;
-        end
+        % Getting the baseline statistics. For now done from last 40%,
+        % but it would be better to have spontaneous data every time. 
+        % startTimeBaseline and endTimeBaseline have to be rounded to the
+        % nearest multiple of 5.
+        startTimeBaseline = round(0.6/fStim(ll)*1000/5)*5;
+        endTimeBaseline = floor(1/fStim(ll)*1000/5)*5;
+        [nSpikesBackground, semBackground, nTrials, nBins] = getNumberOfSpikes(...
+            startTimeBaseline, endTimeBaseline, obj.PSTHs(ll));
+        nSpikesExpected = nSpikesBackground/nBins;
+        % Estimate from SEM is biased, hence the correcting factor.
+        % Other assumption made is that what happens in a bin is
+        % independent from what happens in others, which is an
+        % approximation but should be close to true.
+        varSpikesExpected = nTrials/(nTrials-1)*semBackground*nTrials/nBins;
         
         % Going over all the bins and finding the statistically significant
         % ones, adding their contribution to the number of spikes elicited.

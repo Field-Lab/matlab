@@ -46,7 +46,7 @@ while stim_str~=-1
     delimiters = strfind(stim_str,'::');
 
     % Getting the global stimulus parameters
-    [M1, param_names1] = parsestimulusstringlabview(stim_str(1:delimiters(1)-2));
+    [M1, param_names1] = parsestimulusstringgratings(stim_str(1:delimiters(1)-2));
     num_trials = cell2mat(M1(:,ismember(param_names1,'Number of trials')));
     freq_stimulus = cell2mat(M1(:,ismember(param_names1,'Frequency')));
     wavelength = cell2mat(M1(:,ismember(param_names1,'Wavelength')));
@@ -58,7 +58,7 @@ while stim_str~=-1
     [M2, param_names2] = parsewaveformstring(wave_str);
     pulse_times_ms = cell2mat(M2(:,ismember(param_names2,'Pulse times')));
     pulse_width_seq_ms = cell2mat(M2(:,ismember(param_names2,'Pulse duration')));
-    irradiance = cell2mat(M2(:,ismember(param_names2,'Irradiance')));  % Test: 2013-03-19
+    irradiance = cell2mat(M2(:,ismember(param_names2,'Frac. of max. irradiance')));  % Test: 2013-03-19
     
     switch wavelength
         case 'near-IR'

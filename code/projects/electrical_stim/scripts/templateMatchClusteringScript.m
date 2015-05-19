@@ -1,9 +1,9 @@
 % clear all
 
 params.saveFigures = 0;
-params.shiftLimSpikeMin = [2 35];
+params.shiftLimSpikeMin = [2 40];
 params.shiftStep = 0.25;
-params.residLim  = [6 40]; %stim ends at 250us
+params.residLim  = [6 45]; %stim ends at 250us
 modelType = 'prevArtifact';
 stimSystem = '512'; %'512' or '61'
 % patternNos = 1:303;
@@ -19,9 +19,21 @@ movieInt = 0;
 %% filling elecRespInfo with details for creation of elecResp
 
 % Experiment specific inputs
-elecRespInfo.experimentName = '2014-09-10-0';
-elecRespInfo.dataPath       = '/Volumes/Analysis/2014-09-10-0/data006/';  %Location of raw data chunks
-elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-09-10-0/data000/';  %Location of vision output files
+elecRespInfo.experimentName = '2015-04-14-0';
+elecRespInfo.dataPath       = '/Volumes/Analysis/2015-04-14-0/data001/';  %Location of raw data chunks
+elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-04-14-0/data000/';  %Location of vision output files
+
+% elecRespInfo.experimentName = '2014-11-05-8';
+% elecRespInfo.dataPath       = '/Volumes/Analysis/2014-11-05-8/data003/';  %Location of raw data chunks
+% elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-11-05-8/data001/';  %Location of vision output files
+
+% elecRespInfo.experimentName = '2014-09-10-0';
+% elecRespInfo.dataPath       = '/Volumes/Analysis/2014-09-10-0/data006/';  %Location of raw data chunks
+% elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-09-10-0/data000/';  %Location of vision output files
+
+% elecRespInfo.experimentName = '2012-09-24-3';
+% elecRespInfo.dataPath       = '/Volumes/Analysis/2012-09-24-3/data006/';  %Location of raw data chunks
+% elecRespInfo.analysisPath   = '/Volumes/Analysis/2012-09-24-3/data007/';  %Location of vision output files
 
 % elecRespInfo.experimentName = '2014-08-20-1';
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2014-08-20-1/data003/';  %Location of raw data chunks

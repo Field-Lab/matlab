@@ -1,10 +1,10 @@
-path2data='/Volumes/Analysis/2008-03-25-4/d03-13-norefit/';
+path2data='/Volumes/Analysis/2010-09-24-1/d05-36-norefit/';
 
-name_extension='-from-data003_data004_data005_data006_data007_data008_data009_data010_data011_data012_data013';
+name_extension='-from-data005_data006_data007_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036';
 
-add_extension='-from-d03_13';
+add_extension='-from-d05_36';
 
-range = 3:13;
+range = [5:7 21:36];
 % rename files
 for i=range
    tmp=['00', int2str(i)];
