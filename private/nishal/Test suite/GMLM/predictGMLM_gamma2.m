@@ -1,5 +1,5 @@
 
-function predictedResponse = predictGMLM_gamma2(fitGMLM,maskedMov,nTrials,gamma)
+function [predictedResponse,lam] = predictGMLM_gamma2(fitGMLM,maskedMov,nTrials,gamma,interval)
 filters = fitGMLM.Linear.filter;
 
 nFrontEnds = length(filters);
@@ -16,15 +16,15 @@ for ifilter=1:nFrontEnds
 end
 
 
-
+sub_bin=10;
 lam=kx{1};
 for ik=2:length(kx)
 lam=lam+kx{ik};
 end
 lam=lam+mu;
-l2=repmat(lam,[10,1]);
+l2=repmat(lam,[sub_bin,1]);
 lam=l2(:);
-lam=lam*(1/1200);
+lam=lam*(interval/(120*sub_bin));
 
 predictedResponse = zeros(nTrials,length(lam));
 

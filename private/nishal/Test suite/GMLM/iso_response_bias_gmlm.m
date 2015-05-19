@@ -17,9 +17,17 @@ end
 
 %% Empirical sub-unit activation distribution
 dimensions=[];
-for isu=1:nFrontEnds
+[f,xi]=ecdf(kx{1}); eps=0.05;
+binEdge=[];
+for it=0:eps:1
+binEdge = [binEdge;xi(find(f<=it,1,'last'))];
+end
+Xmesh = repmat(binEdge',[length(binEdge),1]);
+Ymesh = repmat(binEdge,[1,length(binEdge)]);
 
-su_range{isu} = ([(min(kx{isu})):3:(max(kx{isu}))]); %Use freedman - diaconis binning .. new matlab has it .. 
+for isu=1:nFrontEnds
+    
+su_range{isu} =binEdge;%([(min(kx{isu})):3:(max(kx{isu}))]); %Use freedman - diaconis binning .. new matlab has it .. 
 dimensions = [dimensions,length(su_range{isu})];
 end
 
@@ -40,4 +48,9 @@ end
     
 grid=grid./grid_total;
 
+%% Plot
+figure;
+  contourf(Xmesh,Ymesh,grid_total,50);
+  figure; 
+   contourf(Xmesh,Ymesh,grid,50);
 end

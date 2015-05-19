@@ -39,21 +39,21 @@ extract_movie_response;
  binnedResponsesbigd = spksGen;
  mov_use=maskedMovdd;
  filteredStimDim=size(mov_use,1);
- nSU = 3;
- for ifit=1:50
+ nSU = 2;
+ for ifit=1:1
  %[fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
  [fitGMLM,output] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
  %[fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
- fitGMLM_log(ifit).fitGMLM = fitGMLM;
+ fitGMLM_log(ifit).fitGMLM = fitGMLM;  %%
+%  [fitGMLM_full2,output]= fitGMLM_full(fitGMLM,spike.home,mov_use);
+%  figure;
+%  plot(fitGMLM_full2.hist.hexpanded)
  end
 % save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/Cell%d',cellID),'fitGMLM_log','mov_use','binnedResponsesbigd','nSU','filteredStimDim','interval','totalMaskAccept2','totalMaskAccept','x_coord','y_coord');
  
  end
  
-  %%
- [fitGMLM_full2,output]= fitGMLM_full(fitGMLM,spike.home,mov_use);
-figure;
- plot(fitGMLM_full2.hist.hexpanded)
+
   %% Show learned filters;
   mask = totalMaskAccept;
 sta_dim1 = size(mask,1);
@@ -83,8 +83,9 @@ xx=xx(x_coord,y_coord);
 figure;
 imagesc(xx);
 
-%iso_response_bias_gmlm(binnedResponsesbigd,mov_use,fitGMLM);
+iso_response_bias_gmlm(binnedResponsesbigd,mov_use,fitGMLM);
 
+su_activation_plot(fitGMLM,mov_use);
 %% Response prediction 
 
 %% Load different movies
@@ -157,7 +158,8 @@ movd = condMov{icond};
  maskedMov= filterMov(movd,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=50;
- pred{icond}= predictGMLM_bias(fitGMLM2,maskedMov,nTrials)';
+interval=1;
+ pred{icond}= predictGMLM_bias(fitGMLM2,maskedMov,nTrials,interval)';
   %pred{icond}= predictGMLM(fitGMLM,maskedMov,nTrials)';
  % pred{icond}= predictGMLM_gamma2(fitGMLM,maskedMov,nTrials,2)';
 end
