@@ -42,7 +42,9 @@ function [fit_info , sta, sig_stixels] = fit_sta(sta, varargin)
 %   initial_scale_two               []      temporal filter 2 amplitude
 %   initial_tau_one                 []      filter 1 time constant
 %   initial_tau_two                 []      filter 2 time constant
-%   initial_n_filters               6       number of filters in each
+%   initial_n_one_filters               6       number of filters in each
+%   initial_n_two_filters               6       number of filters in each
+
 %                                           cascade
 %   fit_center_point_x              true
 %   fit_center_point_y              true
@@ -280,9 +282,16 @@ if sum(sum(sig_stixels)) == 0
 end
 
 
-% get matrix subscripts to these pixels
-[matrix_subscript_i, matrix_subscript_j] = find(sig_stixels);
-matrix_subscripts = [matrix_subscript_i, matrix_subscript_j];
+% get matrix subscripts to these pixels for the eigenvalue calculation
+biggestBlob = ExtractNLargestBlobs(full(sig_stixels), 1);
+[matrix_subscript_i_eig, matrix_subscript_j_eig] = find(biggestBlob);
+matrix_subscripts_eig = [matrix_subscript_i_eig, matrix_subscript_j_eig];
+
+
+% get matrix subscripts of all sig stixels
+
+% [matrix_subscript_i, matrix_subscript_j] = find(sig_stixels);
+% matrix_subscripts = [matrix_subscript_i, matrix_subscript_j];
 
 
 
@@ -371,20 +380,20 @@ end
 % Get initial center points
 if any(isempty([initial_center_point_x, initial_center_point_y]))
     % compute the initial center of spatial fit
-    if size(matrix_subscripts,1) > 1
-        tmp = centroid(matrix_subscripts);
+    if size(matrix_subscripts_eig,1) > 1
+        tmp = centroid(matrix_subscripts_eig);
         initial_center_point_x = tmp(2);
         initial_center_point_y = tmp(1);
     else
-        initial_center_point_x = matrix_subscripts(2);
-        initial_center_point_y = matrix_subscripts(1);
+        initial_center_point_x = matrix_subscripts_eig(2);
+        initial_center_point_y = matrix_subscripts_eig(1);
     end
 end
   
 % Get initial sigmas (x and y) and rotation angle
-if size(matrix_subscripts,1) >= 3
+if size(matrix_subscripts_eig,1) >= 3
     % base initial conds on PCA permformed on marks
-    [correlation_matrix, ~, eigvalues] = princomp(matrix_subscripts);
+    [correlation_matrix, ~, eigvalues] = princomp(matrix_subscripts_eig);
 
     if isempty(initial_center_rotation_angle)
         initial_center_rotation_angle = pi/2 * correlation_matrix(2);
@@ -676,15 +685,36 @@ else
     fit_info.fit_tau_two = false;
 end
 
-% n filters
+% n one filters
 if fit_list(19)
-    fit_info.n_filters = final_fit_params(temp_pointer);
-    fit_info.fit_n_filters = true;
+    fit_info.n_one_filters = final_fit_params(temp_pointer);
+    fit_info.fit_n_one_filters = true;
     temp_pointer = temp_pointer +1;
 else
     fit_info.n_filters = initial_n_filters;
     fit_info.fit_n_filters = false;
 end
+
+% frame number
+if fit_list(20)
+    fit_info.frame_number = final_fit_params(temp_pointer);
+    fit_info.frame_number = true;
+    temp_pointer = temp_pointer +1;
+else
+    fit_info.frame_number= frame_number;
+    fit_info.fit_frame_number = false;
+end
+
+% n two filters
+if fit_list(21)
+    fit_info.n_two_filters = final_fit_params(temp_pointer);
+    fit_info.fit_n_two_filters = true;
+    temp_pointer = temp_pointer +1;
+else
+    fit_info.n_two_filters = initial_n_two_filters;
+    fit_info.fit_n_two_filters = false;
+end
+
 
 fit_info.fit_surround = fit_surround;
 fit_info.frame_number = frame_number;
