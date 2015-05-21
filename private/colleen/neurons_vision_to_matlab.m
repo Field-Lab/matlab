@@ -3,14 +3,14 @@ clear
 referenceRawDataFilePath = '/Volumes/Archive/2010-08-20-1/data001/';
 rawDataFile = edu.ucsc.neurobiology.vision.io.RawDataFile(referenceRawDataFilePath);
 
-referenceNeuronFilePath = '/Volumes/Analysis/2010-08-20-1/data001-nwpca/data001-nwpca.neurons';
+referenceNeuronFilePath = '/Volumes/Analysis/2010-08-20-1/data001-nwpca-copy/data001-nwpca/data001-nwpca.neurons';
 oldNeuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(referenceNeuronFilePath);
 ttlTimes = oldNeuronFile.getTTLTimes();
 
 newNeuronFilePath = '/Volumes/Analysis/2010-08-20-1/data001-cr/data001-cr.neurons';
 newNeuronFile = initVisionNeuronFile(referenceRawDataFilePath, newNeuronFilePath, ttlTimes);
 
-referenceParamsFilePath = '/Volumes/Analysis/2010-08-20-1/data001-nwpca/data001-nwpca.params';
+referenceParamsFilePath = '/Volumes/Analysis/2010-08-20-1/data001-nwpca-copy/data001-nwpca/data001-nwpca.params';
 datarun.names.rrs_neurons_path=[referenceNeuronFilePath];
 datarun.names.rrs_params_path=[referenceParamsFilePath];
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',false, 'load_sta', 0, 'load_sta_params', 0, 'load_all',false);
@@ -37,7 +37,7 @@ toKeep = [
 for i = 1:length(toKeep)
     spikeTimes = oldNeuronFile.getSpikeTimes(toKeep(i));
     electrode = oldNeuronFile.getNeuronIDElectrode(toKeep(i));
-    newNeuronFile.addNeuron(electrode, get_cell_indices(datarun,toKeep(i)), spikeTimes, length(spikeTimes));
+    newNeuronFile.addNeuron(electrode, toKeep(i), spikeTimes, length(spikeTimes));
 end
 
 newNeuronFile.close();

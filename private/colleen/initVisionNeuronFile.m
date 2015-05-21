@@ -41,7 +41,7 @@ rawDataFile.close();
 % Matlab as there is no public constructor for this class.
 NEURONS_HEADER_CAPACITY = 50000;
 % Same with the Vision Version value (also found in VisionParams)
-VISION_VERSION = 7001002%7003047;%8001010;
+VISION_VERSION = 7001002;%7003047;%8001010;
 % Now the neurons file header version is hidden in:
 %   edu.ucsc.neurobiology.vision.io.NeuronFile.INT_VERSION
 VERSION = 32;
@@ -53,7 +53,7 @@ visionHeader = edu.ucsc.neurobiology.vision.io.VisionHeader();
 % As far as I can tell it's supposed to be:
 %   edu.ucsc.neurobiology.vision.io.ProjectionFile.MAGIC
 % which is currently set to 0xBBBBBB
-MAGIC = 12303291%16448250%hex2dec('BBBBBB'); % 
+MAGIC = 12303291;%16448250%hex2dec('BBBBBB'); % 
 
 % Then some reasonable defaults. Not sure why they're needed but 
 % Vision specifies them and it's not a good idea to not specify what 
