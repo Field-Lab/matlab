@@ -7,7 +7,7 @@ function h = plot_spatial_sd(params)
     
     % get points of an ellipse with these parameters
     [X, Y] = drawEllipse([ctr rad_sd (-1*rot_angle)]);
-    h = plot(X, Y, 'g');
+    h = plot(X, Y, 'k');
     
     % surround
     if params(13) ~= 0
