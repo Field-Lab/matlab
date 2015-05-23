@@ -8,7 +8,7 @@ function [GLMT, GLMP] = glm_parameters
 GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
-GLMT.CouplingFilters = true;
+GLMT.CouplingFilters = false;
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';

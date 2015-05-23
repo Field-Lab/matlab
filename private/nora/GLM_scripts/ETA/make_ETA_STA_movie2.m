@@ -1,21 +1,14 @@
 threshold = 0.5;
-STA = 0;
 MOVIE = 0;
+STA = 1;
 
-for i_cell=1:size(xval,1)
-    
-    disp('Making ETA')
-    eta{i_cell} = RSTA(xval(i_cell,:), movie, threshold);
-    
-    if STA
-        disp('Making STA')
-        sta{i_cell} = RSTA(xval(i_cell,:), movie, 1000);
-        minp = min([eta{i_cell}(:); sta{i_cell}(:)]);
-        maxp = max([eta{i_cell}(:); sta{i_cell}(:)]);
-    else
-        minp = min(eta{i_cell}(:));
-        maxp = max(eta{i_cell}(:));
-    end
+for i_cell=1
+        eta = eta_nocone;
+        sta = eta_cone;
+%         minp1 = min(sta{i_cell}(:));
+%         maxp1 = max(sta{i_cell}(:));
+        minp = min([eta(:); eta_cone(:)]);
+        maxp = max([eta(:); eta_cone(:)]);
     
     if MOVIE
         video_name = ['/Users/Nora/Desktop/RSTA_' num2str(res.cells(i_cell)) '.avi']
@@ -27,18 +20,20 @@ for i_cell=1:size(xval,1)
     
     for i = 1:90
         if STA; subplot(2,1,1); end
-        imagesc(eta{i_cell}(:,:,i)');
+        imagesc(eta(:,:,i)');
         axis image;
         colormap gray;
         caxis([minp maxp])
-        title('Residual STA')
+        title('RSTA')
+        colorbar
         if STA
             subplot(2,1,2)
-            imagesc(sta{i_cell}(:,:,i)');
+            imagesc(sta(:,:,i)');
             axis image;
             colormap gray;
             caxis([minp maxp])
-            title('STA')
+            title('RSTA using cone model')
+            colorbar
         end
         if MOVIE
             F = getframe(h);

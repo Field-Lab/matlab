@@ -62,7 +62,11 @@ if iscell(testspikes)
         for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
             pairspike{pair} = zeros(params.trials,params.bins) ;
             for i_blk = 1 : params.trials
-                spt = neighborspikes{pair}{i_blk};
+                if params.trials == 1
+                    spt = neighborspikes{pair};
+                else
+                    spt = neighborspikes{pair}{i_blk};
+                end
                 binnumber = ceil(spt / params.bindur );
                 pairspike{pair}( i_blk, binnumber )  =  pairspike{pair}( i_blk,binnumber ) + 1;
             end
