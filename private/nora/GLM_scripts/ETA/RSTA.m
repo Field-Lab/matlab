@@ -1,4 +1,4 @@
-function [ETA] = ETA(xval, movie, threshold)
+function [ETA] = RSTA(xval, movie, threshold)
 
 n_blocks = length(movie);
 stim_size = size(movie{1,1}.matrix);
@@ -28,23 +28,24 @@ for i_block = 1:n_blocks
 %     
 end
 disp(n_spikes)
-
-min1 = min(ETA(:));
-max1 = max(ETA(:));
-
-%%
-h = figure(1);
-
-for i = 1:90
-    
-    imagesc(ETA(:,:,i)');
-    axis image;
-    colormap gray;
-    caxis([min1 max1])
-    title('Residual STA')
-    pause(0.1)
-
-end
+ETA = ETA/n_spikes;
+% 
+% min1 = min(ETA(:));
+% max1 = max(ETA(:));
+% 
+% % %%
+% % h = figure(1);
+% % 
+% % % for i = 1:90
+% % %     
+% % %     imagesc(ETA(:,:,i)');
+% % %     axis image;
+% % %     colormap gray;
+% % %     caxis([min1 max1])
+% % %     title('Residual STA')
+% % %     pause(0.1)
+% % % 
+% % % end
 
 
 %%
