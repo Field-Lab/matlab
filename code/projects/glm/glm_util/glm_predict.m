@@ -48,7 +48,7 @@ frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord); 
 
 %%
-if testspikes ~= 0
+if iscell(testspikes)
     logicalspike = zeros(params.trials,params.bins) ;
     for i_blk = 1 : params.trials
         spt = testspikes{i_blk};
@@ -62,7 +62,11 @@ if testspikes ~= 0
         for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
             pairspike{pair} = zeros(params.trials,params.bins) ;
             for i_blk = 1 : params.trials
-                spt = neighborspikes{pair}{i_blk};
+                if params.trials == 1
+                    spt = neighborspikes{pair};
+                else
+                    spt = neighborspikes{pair}{i_blk};
+                end
                 binnumber = ceil(spt / params.bindur );
                 pairspike{pair}( i_blk, binnumber )  =  pairspike{pair}( i_blk,binnumber ) + 1;
             end
@@ -134,7 +138,7 @@ end
 lcif_kx0 = reshape( repmat(lcif_kx_frame, bpf, 1) , 1 , params.bins);
 lcif_mu0 = MU * ones (1,params.bins);
 
-if testspikes ~= 0
+if iscell(testspikes)
     lcif_mu = repmat(lcif_mu0 , params.trials, 1);
     lcif_kx = repmat(lcif_kx0 , params.trials, 1);
     clear sbpf;
@@ -187,6 +191,7 @@ if testspikes ~= 0
     xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
     xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
     xvalperformance.rasters.recorded = logicalspike;
+    xvalperformance.glm_rateperbin  = params.bindur * glm_ratepersec;
 end
 
 %%
