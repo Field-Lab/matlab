@@ -1,16 +1,15 @@
-function [testmovie, res] = res_spikes_raster(exp,celltype)
-threshold = 0.1;
-stimtype = 'NSEM';
+function [testmovie, res] = glmrate_raster(exp,celltype)
 
-datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk2_MU_PS_noCP_p8IDp8_shortlist/standardparams/NSEM_mapPRJ/';
+stimtype = 'NSEM';
+datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk2_MU_PS_CP_p8IDp8/standardparams/NSEM_mapPRJ/';
 exp_names=['2012-08-09-3/';'2012-09-27-3/';'2013-08-19-6/';'2013-10-10-0/'];
 
 % Get all fits of that cell type
-matfiles=dir([datapath exp_names(exp,:) celltype '*.mat']);
+matfiles=dir([datapath exp_names(exp,:) 'conv_blocks_57/' celltype '*.mat']);
 n_cells=length(matfiles);
 
 % Load one fittedGLM to get the experiment info
-load([datapath exp_names(exp,:) matfiles(1).name]);
+load([datapath exp_names(exp,:) 'conv_blocks_57/' matfiles(1).name]);
 GLMType = fittedGLM.GLMType;
 exp_nm = fittedGLM.cellinfo.exp_nm;
 % Load and process stimulus
@@ -26,13 +25,10 @@ Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir)
 Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir);
 
 % Loop through the cells and find the residual spikes for each cell.
-res.spikes = zeros(n_cells, 10*length(testmovie));
-res.cells = zeros(n_cells, 1);
-res.centers = zeros(n_cells, 2);
 for i_cell = 1:n_cells
     disp(i_cell)
     % Load fittedGLM
-    load([datapath exp_names(exp,:) matfiles(i_cell).name]);
+    load([datapath exp_names(exp,:) 'conv_blocks_57/' matfiles(i_cell).name]);
     % Load up neighbor spikes
     if GLMType.CouplingFilters
         n_couplings=length(fittedGLM.cellinfo.pairs);
@@ -44,12 +40,11 @@ for i_cell = 1:n_cells
         neighborspikes = 0;
     end
     % Calculate the rate from GLM
-    rate = glm_rate_raster(fittedGLM, testmovie,inputstats,neighborspikes);
-    spikes = fittedGLM.xvalperformance.rasters.recorded;
-    res.spikes(i_cell,:) = sum(logical(spikes) & (rate < threshold));
-    res.cells(i_cell) = fittedGLM.cellinfo.cid;
-    res.centers(i_cell,1) = fittedGLM.cellinfo.slave_centercoord.y_coord;
-    res.centers(i_cell,2) = fittedGLM.cellinfo.slave_centercoord.x_coord;
+    res.rate{i_cell} = glm_rate_raster(fittedGLM, testmovie,inputstats,neighborspikes);
+    res.cells{i_cell} = fittedGLM.cellinfo.cell_savename;
+    res.exp{i_cell} = fittedGLM.cellinfo.exp_nm;
+    res.centers{i_cell}(1) = fittedGLM.cellinfo.slave_centercoord.y_coord;
+    res.centers{i_cell}(2) = fittedGLM.cellinfo.slave_centercoord.x_coord;
 end
 
 end
