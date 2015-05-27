@@ -103,6 +103,7 @@ rf = std(sta_renorm,1,4);
 % these values are further transformed to p values (chi2cdf), and then normal values (norminv)
 n = size(sta,4);
 rf = norminv(chi2cdf((n-1)*reshape(rf,[],1).^2 ,n-1));
+rf(rf==Inf) = 5.5;
 
 % Fit a normal distribution to the distribution of stixel values
 Pd = fitdist(double(rf),'normal'); 

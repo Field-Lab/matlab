@@ -16,8 +16,37 @@ imagesc(vormap)
 
 vorrun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data009-from-d08_11/data009-from-d08_11');
 vorrun = load_params(vorrun,'verbose',1);
+vorrun = load_sta(vorrun);
 vorrun = load_neurons(vorrun);
 [inputs, refresh, duration] = get_wn_movie_ath(vorrun, 'BW-1-2-0.48-11111-937x1-60.35.xml');
+
+%%
+
+sta = squeeze(vorrun.stas.stas{168});
+tmp_map = vormap;
+tt=0:max(tmp_map(:));
+vorsta=zeros(600,600,30);
+coneX = zeros(max(tmp_map(:)),1);
+coneY = coneX;
+for i=1:937
+    [a, b] = find(tmp_map==tt(i+1));
+    % find center of this cone
+    coneX(i) = mean(a);
+    coneY(i) = mean(b);
+    if ~isempty(a)
+        for j = 1:length(a)
+            vorsta(a(j),b(j),:) = sta(i,:);
+        end
+    end
+end
+
+figure
+for i=1:30
+    subplot(5,6,31-i)
+    colormap gray
+    imagesc(vorsta(:,:,i))
+    title(['frame ',int2str(i)])
+end
 
 
 %% find stable cells

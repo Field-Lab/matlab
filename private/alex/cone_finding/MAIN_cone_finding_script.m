@@ -114,6 +114,8 @@ hist(m,0:0.5:35)
 axis([0 35 0 Inf])
 title('Nearest Neighbor distance for cones. SET PRIOR!')
 
+myPrior=[3.75,4.25];
+
 myPrior=[2.75,3.25]; % L-M cones prior
 
 myPrior=[4.0,5.0]; % S cones prior
