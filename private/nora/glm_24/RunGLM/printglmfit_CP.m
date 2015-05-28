@@ -141,7 +141,7 @@ if GLMType.CouplingFilters
         subplot(6,6,2*pair-1+6)
         set(gca, 'fontsize', 10);
         axis off;
-        plot_rf_fit(datarun_slv, info.pairs(1:12),'edge',true)
+        plot_rf_fit(datarun_slv, info.pairs(1:6),'edge',true)
         plot_rf_fit(datarun_slv, info.pairs(pair), 'fill_color',[1 0 0],'fill',true,'edge',false)
         plot_rf_fit(datarun_slv, info.cid,'fill',true)
         
@@ -163,7 +163,7 @@ if GLMType.CouplingFilters
         subplot(6,6,2*pair-1+12)
         set(gca, 'fontsize', 10);
         axis off;
-        plot_rf_fit(datarun_slv, info.pairs(1:12),'edge',true)
+        plot_rf_fit(datarun_slv, info.pairs(7:12),'edge',true)
         plot_rf_fit(datarun_slv, info.pairs(pair), 'fill_color',[1 0 0],'fill',true,'edge',false)
         plot_rf_fit(datarun_slv, info.cid,'fill',true)
         

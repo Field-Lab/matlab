@@ -134,12 +134,12 @@ end
 
 
 function pth = infer_file_spec(pth)
-splitpath = split(pth, '/');
+splitpath = strsplit(pth, '/');
 
 % If no filespec was given, assume it matches the directory
 if length(splitpath) == 2
     splitpath{end+1} = splitpath{end};
-    pth = join(splitpath, '/');
+    pth = strjoin(splitpath, '/');
 end
 
 

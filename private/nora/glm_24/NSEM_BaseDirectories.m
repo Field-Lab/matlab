@@ -37,22 +37,22 @@ function [BASEDIR] = NSEM_BaseDirectories
 % BASEDIR.NSEM_stimuli = sprintf('%s/Stimuli', BASEDIR.NSEM_home_snleapp);
 
 BASEDIR.note                = 'GLM and NSEM directories.  Code and Data.  Independent of experiment number, parameters, fit types';
-BASEDIR.NSEM_home_snleapp   = '/Volumes/Analysis/nora/NSEM';
+BASEDIR.NSEM_home_snleapp   = '/Volumes/Lab/Users/Nora/NSEM';
 
 BASEDIR.general_codehome = '/Volumes/Lab/Development/matlab-standard/private/nora';
 BASEDIR.analysisdir      = '/Volumes/Analysis';
-BASEDIR.NSEM_home       = '/Volumes/Analysis/nora/NSEM';
+BASEDIR.NSEM_home       = '/Volumes/Lab/Users/Nora/NSEM';
 
 
-BASEDIR.BlockedSpikes   = '/Volumes/Analysis/nora/NSEM/BlockedSpikes';
-BASEDIR.GLM_output      = '/Volumes/Analysis/nora/NSEM/GLM_Output';
+BASEDIR.BlockedSpikes   = '/Volumes/Lab/Users/Nora/NSEM/BlockedSpikes';
+BASEDIR.GLM_output      = '/Volumes/Lab/Users/Nora/NSEM/GLM_Output';
 BASEDIR.GLM_codehome    = '/Volumes/Lab/Development/matlab-standard/private/nora/glm';
-BASEDIR.GLM_troubleshootplots = '/Volumes/Analysis/nora/NSEM/troubleshootingplot';
+BASEDIR.GLM_troubleshootplots = '/Volumes/Lab/Users/Nora/NSEM/troubleshootingplot';
 
 
 %BASEDIR.tempnote = 'temporary directory discrepancies due to Stanford move' ;
-BASEDIR.temp.GLM_output_netappsnle = '/Volumes/Analysis/nora/NSEM/GLM_Output'; 
-BASEDIR.temp.GLM_output_alligator = '/Volumes/Analysis/nora/NSEM/GLM_Output';
+BASEDIR.temp.GLM_output_netappsnle = '/Volumes/Lab/Users/Nora/NSEM/GLM_Output'; 
+BASEDIR.temp.GLM_output_alligator = '/Volumes/Lab/Users/Nora/NSEM/GLM_Output';
 
 % Directories that should follow over
 BASEDIR.NSEM_stimuli = sprintf('%s/Stimuli', BASEDIR.NSEM_home_snleapp);
