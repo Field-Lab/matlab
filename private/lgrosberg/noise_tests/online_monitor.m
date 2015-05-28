@@ -1,9 +1,5 @@
-%%
-
-rawDataDir = '/Volumes/DiskB/2014-12-09-noisetest/';
-datarun = 'data010'; 
-rawDataDir = '/Volumes/Acquisition/Data/2014-12-10-noisetests/';
-datarun = 'data010'; 
+rawDataDir = '/Volumes/Acquisition/Data/2014-12-10-SB1test/';
+datarun = 'data001'; 
 rawDataPath = [rawDataDir datarun];
 rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(rawDataPath);
 header = rawFile.getHeader();
