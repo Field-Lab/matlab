@@ -1,0 +1,11 @@
+function findStimType(datarun, contrast, direction)
+
+patterns = datarun{1,2}.stimulus.trials;
+for i =1:length(patterns)
+    RGB(i, :) = patterns(i).RGB;
+    X_DELTA(i, :) = patterns(i).X_DELTA;
+end
+
+[xC,yC] = find(RGB == repmat(contrast, size(RGB,1),1));
+[xD,yD] = find(patterns.X_DELTA == direction);
+end

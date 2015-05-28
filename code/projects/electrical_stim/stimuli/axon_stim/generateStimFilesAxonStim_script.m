@@ -18,9 +18,11 @@ DelayInMs = 30; %set trigger to 2 s
 
 NumberOfSamples=40000;
 
-
+%%
 [electrodes Array] = generatePatternsAxonStim(CenterElectrodes, 1);
 
+
+%%
 MovieChunksFile = generateMovieAxonStim(NumberOfClusters,Array,TimeShiftInMs,DelayInMs,NumberOfSamples);
 
 keyboard

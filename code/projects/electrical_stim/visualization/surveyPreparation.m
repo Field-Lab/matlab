@@ -22,7 +22,7 @@ function varargout = surveyPreparation(varargin)
 
 % Edit the above text to modify the response to help surveyPreparation
 
-% Last Modified by GUIDE v2.5 20-Aug-2014 22:13:51
+% Last Modified by GUIDE v2.5 23-Feb-2015 11:13:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -173,14 +173,14 @@ if get(handles.showElecs,'Value')
         text(positions(e,1),positions(e,2),num2str(e),'HorizontalAlignment','center'); 
     end
 end
-
+colorsneeded = lines(size(table_data,1)); 
 for n = 1:1:size(table_data,1)
     if table_data{n,5}
         cellID = table_data{n,1}; 
         cellIndex = get_cell_indices(handles.datarun, cellID);
         ei = handles.datarun.ei.eis{cellIndex}'; % squeeze(ei(1,2:end,:))';
         eiAmps = max(ei)-min(ei);
-        scatter(positions(:,1),positions(:,2),3*eiAmps+0.1,'filled');
+        scatter(positions(:,1),positions(:,2),3*eiAmps+0.1,colorsneeded(n,:),'filled');
         elec = table_data{n,2}; 
         text(positions(elec,1),positions(elec,2),num2str(cellID)); 
     end
@@ -289,3 +289,191 @@ function showElecs_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of showElecs
 plotEIs(hObject,handles); 
+
+
+% --- Executes on button press in select_all.
+function select_all_Callback(hObject, eventdata, handles)
+% hObject    handle to select_all (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of select_all
+
+
+% --- Executes on button press in contourmap.
+function contourmap_Callback(hObject, eventdata, handles)
+% hObject    handle to contourmap (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+eis = handles.datarun.ei.eis; 
+sum = zeros(size(eis{1},1),1); 
+table_data = get(handles.uitable1,'Data');
+for n = 1:1:size(table_data,1)
+    cellID = table_data{n,1};
+    cellIndex = get_cell_indices(handles.datarun,cellID); 
+    ei = handles.datarun.ei.eis{cellIndex}';
+    eiAmps = max(ei) - min(ei); 
+    sum = sum + eiAmps';
+end
+figure; axis image; surf(ei2matrix(sum)); 
+figure; axis image; contourf(ei2matrix(sum),24); axis ij; 
+
+
+% --- Executes on button press in deselectall.
+function deselectall_Callback(hObject, eventdata, handles)
+% hObject    handle to deselectall (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if get(hObject,'Value')
+    table_data = get(handles.uitable1,'Data');
+    
+    table_data{:,5} = 0;
+    set(handles.uitable1, 'Data', table_data);
+end
+
+
+% --- Executes on button press in axontraces.
+function axontraces_Callback(hObject, eventdata, handles)
+% hObject    handle to axontraces (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fh = figure; 
+[xc, yc] = getElectrodeCoords512();
+table_data = get(handles.uitable1,'Data');
+colors = lines(size(table_data,1));
+nearby_axons = zeros(1, 512);
+nearby_somas = zeros(1, 512);
+nearby_range = 1; %measured in number of electrode distances, can be fractional
+for n = 1:1:size(table_data,1)
+    cellID = table_data{n,1};
+    cellIndex = get_cell_indices(handles.datarun, cellID);
+    ei = handles.datarun.ei.eis{cellIndex}'; % squeeze(ei(1,2:end,:))';
+    eiAmps = max(ei)-min(ei);
+    thresh = 4;
+    [~,col,~] = find(eiAmps > thresh);
+    aa = round(eiAmps(col))';
+    yy = xc(col)';
+    xx = yc(col)';
+    
+    wy = []; wx = [];
+    % dumb way
+    for i = 1:1:length(aa)
+        tmp = repmat(yy(i),aa(i),1);
+        wy = [wy; tmp];
+        tmp = repmat(xx(i),aa(i),1);
+        wx = [wx; tmp];
+    end
+
+    % vector of 1-D look-up table "x" points
+    XI = linspace(min(xx),max(xx),max(round(abs(min(xx)-max(xx))/120),2));
+    
+    % obtain vector of 1-D look-up table "y" points
+    YI = lsq_lut_piecewise( wx, wy, XI );
+    sortaa = sort(aa,1,'descend'); 
+    largestAmps = sortaa(1:2); 
+    [~,IA,~] = intersect(aa,largestAmps); 
+    
+    COMx = 1/sum(largestAmps) * sum(xx(IA).*aa(IA)); 
+    COMy = 1/sum(largestAmps) * sum(yy(IA).*aa(IA)); 
+       
+%     figure(fh); plot(XI,YI,'*-','Color',colors(n,:)); 
+% %     hold on; scatter(yc(row),xc(row),eiAmps(row)*6,colors(n,:),'filled');   % Plot eis
+% %     hold on; scatter(xx(IA),yy(IA),aa(IA)*6,colors(n,:),'filled'); % largest signals
+%     hold on; scatter(COMx,COMy,6*mean(largestAmps), colors(n,:),'filled');
+%     hold on; plot(XI,YI,'*-'); 
+    
+    figure(fh); plot(YI,XI,'*-','Color',colors(n,:)); 
+%     hold on; scatter(yc(row),xc(row),eiAmps(row)*6,colors(n,:),'filled');   % Plot eis
+    close = zeros(512, 1);
+    for ind = 1:(size(YI, 1)-1)
+        p1 = [YI(ind) XI(ind)]; p2 = [YI(ind+1) XI(ind+1)];
+        vec = [-(p1(2)-p2(2)) p1(1)-p2(1)];
+        vec = vec/norm(vec)*nearby_range*60;
+        c1 = p1+vec;
+        c2 = p1-vec;
+        c3 = p2-vec;
+        c4 = p2+vec;
+        xverts = [c1(1) c2(1) c3(1) c4(1)]; yverts = [c1(2) c2(2) c3(2) c4(2)];
+        contained = find(inpolygon(xc, yc, xverts, yverts));
+        
+        for elec = contained
+            if l2pdist([p1; p2],[xc(elec), yc(elec)]) < 60
+                close(find(close == 0, 1, 'first')) = elec;
+            end
+        end
+    end
+    close(close == 0) = [];
+    close = unique(close);
+    nearby_axons(close) = nearby_axons(close) + 1;
+    close = zeros(512, 1);
+    for ind = 1:size(xc, 2)
+        if pdist([COMy COMx; xc(ind) yc(ind)]) < 60
+            close(find(close == 0, 1, 'first')) = ind;
+        end
+    end
+    close(close == 0) = [];
+    close = unique(close);
+    nearby_somas(close) = nearby_somas(close) + 1;
+    
+
+%     hold on; scatter(xx(IA),yy(IA),aa(IA)*6,colors(n,:),'filled'); % largest signals
+    hold on; scatter(COMy,COMx,6*mean(largestAmps), colors(n,:),'filled');
+    text(double(COMy),double(COMx),num2str(cellID)); 
+    
+%     figure; 
+%     hold on; scatter(xc(col),yc(col),eiAmps(col)*6,colors(n,:),'filled');   % Plot eis
+%     plot(YI,XI,'*-','Color',0.5*colors(n,:)); 
+%     hold on; scatter(COMy,COMx,6*mean(largestAmps), 0.5 * colors(n,:),'filled');
+%     text(double(COMy),double(COMx),num2str(cellID)); 
+end
+axis image; axis off; 
+hold on; scatter(xc,yc,5,'black','filled'); 
+
+figure; scatter(xc,yc,300,nearby_axons,'filled'); colorbar; title('Axons');
+xlabel(['# axons within ' num2str(nearby_range) ' elec distance(s)']);
+axis image; axis off;
+set(findall(gca, 'type', 'text'), 'visible', 'on');
+figure; scatter(xc,yc,300,nearby_somas,'filled'); colorbar; title('Somas');
+xlabel(['# somas within ' num2str(nearby_range) ' elec distance(s)']);
+axis image; axis off;
+set(findall(gca, 'type', 'text'), 'visible', 'on');
+figure; 
+for x = 1:512
+    text(xc(x)+20,yc(x)+20,num2str(x),'HorizontalAlignment','center', 'Color', 'white');
+end
+hold on;
+scatter(xc,yc,300,nearby_somas+nearby_axons,'filled'); colorbar; title('Both');
+xlabel(['# axons+somas within ' num2str(nearby_range) ' elec distance(s)']);
+axis image; axis off;
+set(findall(gca, 'type', 'text'), 'visible', 'on');
+handles.nearby_axons = nearby_axons;
+handles.nearby_somas = nearby_somas;
+guidata(hObject, handles);
+
+% hold on; scatter(xc(elecs),yc(elecs),50,'red','filled'); 
+
+
+% --- Executes on button press in genNearbyFeaturesList.
+function genNearbyFeaturesList_Callback(hObject, eventdata, handles)
+% hObject    handle to genNearbyFeaturesList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Axons = handles.nearby_axons';
+Somas = handles.nearby_somas';
+Both = Axons+Somas;
+
+sortby = Both;
+
+[sorted, Electrodes] = sort(sortby, 1, 'descend');
+
+Axons = Axons(Electrodes);
+Somas = Somas(Electrodes);
+Both = Axons+Somas;
+
+sorted_full = [Electrodes Axons Somas Both];
+cnames = {'Electrode', 'Axons', 'Somas', 'Both'};
+t = uitable(figure(), 'Data', sorted_full, 'ColumnName', cnames);
+
+t.Position(3) = t.Extent(3);
+%table(Electrodes, Axons, Somas, Both);
