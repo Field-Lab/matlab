@@ -60,15 +60,17 @@ if ~suppressPlots
     set(f,'Color','white');
 end
 rawData = zeros(size(dataTraces,1),size(dataTraces,2),size(dataTraces,3),length(mIndices));
+idx = 0; % index for saving rawData output
 for movieIndex = mIndices
+    idx = idx + 1; 
     cla;
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(movieIndex), 99999);
     try
-        rawData(:,:,:,movieIndex) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
+        rawData(:,:,:,idx) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
     catch
         rawData(end,:,:,:) = []; %Sometimes certain movies have fewer repetitions than the first one
-        rawData(:,:,:,movieIndex) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
+        rawData(:,:,:,idx) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
     end
     % get stimulus amplitude
     [amps, stimChan, ~] = getStimAmps(pathToAnalysisData,...

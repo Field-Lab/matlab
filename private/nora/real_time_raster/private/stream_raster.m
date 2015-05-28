@@ -1,34 +1,29 @@
-function stream_raster(rawdatafiledir,thresholding_file, raster_interval, raster_length, number_of_rasters)
+function stream_raster(rawdatafiledir,thresholding_file)
 % stream_raster(rawdatafiledir,thresholding_file,raster_interval,raster_length, number_of_rasters)
 %
 % INPUTS
 % rawdatafiledir can be either the location of the raw data files or one specific
 %           file
 % thresholding_file is the file to read the thresholding data from
-% raster_interval: the number of triggers in between raster starts
-% raster_length: in seconds
-% number_of_rasters: just to preallocate the variable, so overestimats
 %
 % EXAMPLE
-% stream_raster('/Volumes/stream-bertha/Data/9999-99-99-9/data014.bin','thresh.mat',10,2, 100)
-% creates a raster for 9999-99-99-9/data014 using the thresholds in thresh.mat,
-% with 2 sec rasters starting every 10 seconds. If there are more than 100
-% rasters, it will slow down because it will have to reallocate the spikes
-% variable.
-%
-% TRIGGERS
-% In a continuous run, triggers=seconds*120/100
+% stream_raster('/Volumes/stream-bertha/Data/9999-99-99-9/data014.bin','thresh.mat')
+% creates a raster for 9999-99-99-9/data014 using the thresholds in thresh.mat
+% with the time parameters from raster_params
 %
 % COMMON ISSUES
 % Needs your path to include something like Vision.app/Contents/Resources/Java/Vision.jar
 % Run stream_thresh FIRST!
 
 % Allocations and stuff
+raster_params
+number_of_rasters = length(raster_start);
 load(thresholding_file);
 channel_count=length(channels.thresh);
 rdf=edu.ucsc.neurobiology.vision.io.RawDataFile(rawdatafiledir);
 spike=cell(channel_count,number_of_rasters);
 
+% Magic Numbers
 sampling_rate=20000;
 trigger_increment=1.6652e+04; % about where the next trigger is supposed to be! 100 frames later
 
@@ -63,7 +58,7 @@ while ~end_of_streaming
         trigger_count=trigger_count+1;
         
         % if it is a raster start, find the spikes and plot!
-        if ~mod(trigger_count, raster_interval)
+        if trigger_count==raster_start(raster_count+1)
             raster_count=raster_count+1;
             
             disp(['Making Raster ' num2str(raster_count)])
@@ -133,7 +128,7 @@ while ~end_of_streaming
                 hold off
                 ylim([0 raster_count+1])
             end
-        elseif mod(trigger_count,raster_interval)==1
+        elseif trigger_count==(raster_start(raster_count)+1)
             disp('Waiting for more data')
         end
     end
