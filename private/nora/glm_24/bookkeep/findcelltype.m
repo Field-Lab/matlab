@@ -4,7 +4,6 @@ function [ celltype , cell_sname, cell_lname]  = findcelltype(cid, datarun_cell_
 
 
 if  ~isempty(  find(datarun_cell_types{1}.cell_ids == cid) )
-    disp('here')
         celltype = 'ON-Parasol';
         celltype_sname = 'ONPar';
 end

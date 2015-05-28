@@ -14,8 +14,9 @@ system = 'stim512'; %'stim64'; %stim512 or stim64
 % cd /Volumes/Data/2014-07-08-3
 % cd /Volumes/Data/2012-09-24-3/
 % cd /Volumes/Acquisition/Data/2014-07-21-test
-cd /Volumes/Data/2014-07-24-0
+% cd /Volumes/Data/2014-07-24-0
 % cd /Volumes/Data/2012-09-24-0/
+cd /Volumes/Data/2015-03-09-0
 
 % Points to the directory of the output.
 %WritePathBase = '/Analysis/2012-09-18-2/';
@@ -25,11 +26,12 @@ cd /Volumes/Data/2014-07-24-0
 % WritePathBase = '/Volumes/Analysis/2014-07-08-3/';
 % WritePathBase = '/Volumes/Analysis/delete/2012-09-24-3/'; 
 % WritePathBase = '/Volumes/Acquisition/Analysis/2014-07-21-test/';
-WritePathBase = '/Volumes/Analysis/2014-07-24-0/long-chunks/';
+% WritePathBase = '/Volumes/Analysis/2014-07-24-0/long-chunks/';
 % WritePathBase = '/Volumes/Analysis/2012-09-24-0/';
+WritePathBase = '/Volumes/Analysis/2015-03-09-0/'; 
 
 % Appends this number to 'data ---'
-fileNos = [6];
+fileNos = [14];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
