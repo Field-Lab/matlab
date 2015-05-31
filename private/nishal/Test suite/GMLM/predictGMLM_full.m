@@ -1,5 +1,5 @@
 
-function predictedResponse = predictGMLM_full(fitGMLM,mov_use,nTrials)
+function[ predictedResponse,lam] = predictGMLM_full(fitGMLM,mov_use,nTrials)
 filters = fitGMLM.Linear.filter;
 nFrontEnds = length(filters);
 mu=fitGMLM.mu;
@@ -15,9 +15,12 @@ xx=xx(:)';
 mov_use_big(istimdim,:)=xx;
 end
 
+
+if(length(filters{1}) > size(mov_use_big,1)) % Add extra 1 in end.
+    mov_use_big = [mov_use_big',ones(size(mov_use_big,2),1)]';
+end
+
 mov_filtered=mov_use_big;
-
-
 kx=cell(nFrontEnds,1);
 
 for ifilter=1:nFrontEnds

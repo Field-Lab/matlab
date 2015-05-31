@@ -1,7 +1,7 @@
        %% Load alex cone data
-            %load('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/conepreprocess.mat');
+            load('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/conepreprocess.mat');
            close all
-            load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
+           % load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
            % % Good cell - WN , cell ID: 166 thr=0.3
             
            %  load('/Volumes/Analysis/2011-12-13-2/subunits/data009/conepreprocess.mat');
@@ -11,7 +11,7 @@
 
             coneidx=1:size(datarun.cones.weights,1);
 
-            ref_cell=166;% 4 is interesting.
+            ref_cell=2;% 4 is interesting.
             thr=0.3;
             cellID=datarun.cell_ids(ref_cell)
            
@@ -42,21 +42,27 @@
             sta=sta/double(sum(spks));
             h=figure;
             plot(sta');
+            
+           [maxCone,time] = find(abs(sta)== max(max(abs(sta))));
 % 
 %             title(sprintf('CellID: %d',cellID));
 %             hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/STA_%d.eps',cellID));
-
-         
-            % maskedMov= 40*filterMov_cone(X',logical(ones(nc,1)),squeeze(tf));
-            % maskedMov = maskedMov(:,2:end); spks = spks(1:end-1);
-            maskedMov = X(1:end-1,:)'; 
+%%    
+    binnedResponsesbigd = double(spks(1,2:end)');
+    maskedMov = X(1:end-1,:)';       
+  %%
+%             binnedResponsesbigd = double(spks(1,1:end)');
+%             tf=sta(maxCone,end:-1:1);
+%             maskedMov= 40*filterMov_cone(X',logical(ones(nc,1)),squeeze(tf));
+%             % maskedMov = maskedMov(:,2:end); spks = spks(1:end-1);
+            %%
             sd = sqrt(diag(maskedMov*maskedMov'/size(maskedMov,2)));
             maskedMov = maskedMov.*repmat(1./sd,[1,size(maskedMov,2)]);
             
             figure;hist(maskedMov(:));title('Filtered Movie')
             maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 
-            binnedResponsesbigd = double(spks(1,2:end)');
+            
             interval=10;
          
  
@@ -70,8 +76,8 @@
 su_log=zeros(nc,nc);
 fitGMLM_log=cell(50,1);
  for ifit=1:50
- %[fitGMLM,output] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
-  [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
+ % [fitGMLM,output] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
+ [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
 %
 % 
 % spike.home 
@@ -158,16 +164,20 @@ hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_s
 %close all
 
        %% SU activation plot 
-       su=[1,2];
+       su=[2,3];
        su_activation_plot_gamma(fitGMLM,mov_use,2,su);
-       
+       iso_response_gamma(binnedResponsesbigd,mov_use,fitGMLM,2,su)
        %% Predict
-       fitGMLM=fitGMLM_log{6};
-       gamma=2;nTrials=50; 
-       rec=binnedResponsesbigd(1:10000); mov_pred=mov_use(:,1:10000);
-       [pred,lam] = predictGMLM_gamma2(fitGMLM,mov_pred,nTrials,gamma,interval); % interva1=10;
-     % pred = predictGMLM_bias(fitGMLM,mov_pred,nTrials,interval)
-     pred=lam; 
+       R2_log=zeros(50,1);
+       for ifit=1:50
+           ifit
+       fitGMLM=fitGMLM_log{ifit};
+       gamma=2;nTrials=1; 
+       rec=binnedResponsesbigd; mov_pred=mov_use;
+       [pred_trials,lam] = predictGMLM_gamma2(fitGMLM,mov_pred,nTrials,gamma,interval); % interva1=10;
+      %[pred,lam] = predictGMLM_bias(fitGMLM,mov_pred,nTrials,interval);
+    
+        pred=lam; 
      
       pred_ss = zeros(length(pred)/10,1);
        for itime=1:length(pred_ss)
@@ -175,14 +185,20 @@ hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_s
        end
        
        xxx=[pred_ss,rec];
-       norm(double(rec) -double(pred_ss))/norm(double(pred_ss))
-     
-       % R2 value - 
-       y=rec;
-       ybar = mean(y);
-       f=pred_ss;
-       SStot = sum((y-ybar).^2);
-       SSreg = sum((f-ybar).^2);
-       SSres = sum((y-f).^2);
-       R2 = 1 - (SSres/SStot)
+       norm(double(rec) -double(pred_ss))/norm(double(pred_ss));
+      
+%        % R2 value - 
+%        y=rec;
+%        ybar = mean(y);
+%        f=pred_ss;
+%        SStot = sum((y-ybar).^2);
+%        SSreg = sum((f-ybar).^2);
+%        SSres = sum((y-f).^2);
+%        R2 = 1 - (SSres/SStot)
+%        
        
+       % R2 value method 2
+       x1 = pred_ss; y1 = rec; n=length(y1);
+       r = (n*x1'*y1 - sum(x1)*sum(y1))/(sqrt(n*sum(x1.^2) - sum(x1)^2) * sqrt(n*sum(y1.^2) - sum(y1)^2));
+       R2_log(ifit) = r^2;
+       end

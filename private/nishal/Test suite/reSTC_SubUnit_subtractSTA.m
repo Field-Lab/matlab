@@ -57,7 +57,7 @@ framesValid = indx(binnedResponsesTrial(indx)>0);
 
 for iframe=framesValid
     iframe
-  xx= reshape(repmat(mask,[1,1,30]).*mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
+  xx= reshape(mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
 %  mask!
 
 %  xx=  reshape(mov_new2(:,:,iframe:-1:iframe-Filtlen+1),[Filtdim1*Filtdim2*Filtlen,1]);
@@ -71,37 +71,17 @@ end
 reSTC=reSTC / (sum(binnedResponses(:))-1);
 
 [u,s,v]=svds(reSTC,100);
-figure;
+h=figure;
 plot(diag(s),'*')
 %%
- 
-figure;
-for isubunit=1:nSubunits
-subplot(2,2,isubunit);
-imagesc(subunits{isubunit}(:,:,4));
-colormap gray
-colorbar
-end
-
 uSq=cell(4,1); 
-for isub=1:4
+uSq{1} = reshape(reSTA,[Filtdim1,Filtdim2,Filtlen]);
+for isub=2:4
 uSq{isub}=reshape(u(:,isub),[Filtdim1,Filtdim2,Filtlen])%.*repmat(mask,[1,1,Filtlen]);
 end
 
 
- figure
- 
- for itime=4%1:Filtlen
- for isub=1:4
-     subplot(2,2,isub);
-     imagesc(squeeze(uSq{isub}(:,:,itime)));
- colormap gray
- caxis([min(uSq{isub}(:)),max(uSq{isub}(:))])
- colorbar
- %pause
- end
- end
- 
+
 %  figure
 %  for itime=1:Filtlen
 %      itime

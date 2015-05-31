@@ -1,13 +1,19 @@
-function [fitGMLM_f,output]= fitGMLM_full(fitGMLM,spikes,mov_use)
+function [fitGMLM_f,output]= fitGMLM_full(fitGMLM,ss,mov_use)
 
 %% Make finer spikes
+
 stim_length=size(mov_use,2)/120;
-        spksGen = zeros(stim_length*1200,1);
-        for ispike=1:length(spikes)
-            spksGen(floor(spikes(ispike)*1200)+1)=1;
-        end
-        spksGen = spksGen(1:stim_length*1200);
+% idx=1:stim_length*120; 
+% % spikes= idx(binnedspikes==1)/120; % this part of code is wrong! obviously
+% %cannot go from lower resolution to higher resolution !
+%         spksGen = zeros(stim_length*1200,1);
+%         for ispike=1:length(spikes)
+%             spksGen(floor(spikes(ispike)*1200)+1)=1;
+%         end
+%         spksGen2 = spksGen(1:stim_length*1200);
+   
         
+       spksGen=ss;    
 %% Filter spikes and make history input 
 % histBasLen=8;
 % pars.ncols=histBasLen;
@@ -39,9 +45,11 @@ stim_length=size(mov_use,2)/120;
     
     t_bin        = 1/1200;
     bins=stim_length*1200;
-home_sptimes = spikes;
-home_spbins  = ceil(home_sptimes / t_bin);
-home_spbins = home_spbins(find(home_spbins < bins) );
+%  home_sptimes = spikes;
+%  home_spbins  = ceil(home_sptimes / t_bin);
+%  home_spbins = home_spbins(find(home_spbins < bins) );
+idx=1:length(spksGen);
+home_spbins = idx(spksGen>0);
 
     basis         = ihbasis';
    histInp       = prep_convolvespikes_basis(home_spbins,basis,bins);
@@ -67,6 +75,16 @@ nFrontEnds = length(fitGMLM.Linear.filter);
 
 mu=fitGMLM.mu;
 filters=fitGMLM.Linear.filter;
+
+    if(isfield(fitGMLM.Linear,'bias')) % if bias is fitted separately, then fit GMLM with added term.
+        filteredStimDim = filteredStimDim+1;
+        mov_filtered = [mov_filtered',ones(size(mov_filtered,2),1)]';
+
+        for ifilter=1:nFrontEnds
+            filters{ifilter} = [filters{ifilter};fitGMLM.Linear.bias{ifilter}];
+        end
+
+    end
 
 % Approximate h .. based on regression .. 
 h=0.01*ones( histBasLen,1);

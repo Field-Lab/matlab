@@ -1,5 +1,5 @@
 
-function predictedResponse = predictGMLM_bias(fitGMLM,maskedMov,nTrials,interval)
+function [predictedResponse,lam] = predictGMLM_bias(fitGMLM,maskedMov,nTrials,interval)
 
 
 filters = fitGMLM.Linear.filter;
@@ -16,15 +16,15 @@ for ifilter=1:nFrontEnds
 end
 
 
-
+binFrame=10;
 lam=kx{1};
 for ik=2:length(kx)
 lam=lam+kx{ik};
 end
 lam=lam+mu;
-l2=repmat(lam,[10,1]);
+l2=repmat(lam,[binFrame,1]);
 lam=l2(:);
-lam=lam*(interval/1200);
+lam=lam*(interval/(120*binFrame));
 predictedResponse = zeros(nTrials,length(lam));
 
 for itrial=1:nTrials

@@ -6,10 +6,16 @@ Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2);
 %% make joint cdf
 isu=1;
 jsu=2;
+fi = fitGMLM.Linear.filter{isu};
+fj = fitGMLM.Linear.filter{jsu};
+f=[fi,fj];
+fmax = max(f')';
+%f=f.*(f==repmat(fmax,[1,2]));
 
-isig = sqrt(fitGMLM.Linear.filter{isu}'*Sigma*fitGMLM.Linear.filter{isu});
-jsig = sqrt(fitGMLM.Linear.filter{jsu}'*Sigma*fitGMLM.Linear.filter{jsu});
-ijsig = sqrt(fitGMLM.Linear.filter{isu}'*Sigma*fitGMLM.Linear.filter{jsu});
+isig = sqrt(f(:,1)'*Sigma*f(:,1));
+jsig = sqrt(f(:,2)'*Sigma*f(:,2));
+ijsig = sqrt(f(:,1)'*Sigma*f(:,2));
+
 kSig = [isig^2 , ijsig^2;
         ijsig^2 , jsig^2];
 [E,lam] = eig(kSig);
@@ -66,12 +72,20 @@ contourf(xgrid,ygrid,pdf_data,20);
 title('joint pdf su 1 - 2');
 
 subplot(2,2,1);
+p1 = sum(pdf_data,2);
 plot(x,sum(pdf_data,2));
 title('pdf su 1');
 
 subplot(2,2,4);
+p2 = sum(pdf_data,1);
 plot(x,sum(pdf_data,1));
 title('pdf su 2');
 
+subplot(2,2,3);
+xgrid = repmat(x,[length(x),1]);
+ygrid = repmat(x',[1,length(x)]);
+pind = repmat(p1',[length(x),1]) .* repmat(p2',[1,length(x)]);
+contourf(xgrid,ygrid,pind',20);
+title('If sub-units independent');
 
 end
