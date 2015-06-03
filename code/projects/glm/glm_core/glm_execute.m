@@ -37,6 +37,8 @@ if isfield(GLMType, 'debug') && GLMType.debug
     GLMPars.optimization.tolfun = 1; 
 end
 
+
+% Timing
 frames = size(fitmovie,3);
 bins   = frames * GLMPars.bins_per_frame;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
@@ -44,7 +46,7 @@ fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
 
 
-% Perhaps we should combine this! With convolving with spikes !
+% Make Coupling and Post Spike Filter Bases
 bin_size      = t_bin;
 if GLMType.PostSpikeFilter
     basis_params  = GLMPars.spikefilters.ps;
@@ -53,6 +55,9 @@ end
 if GLMType.CouplingFilters
     basis_params  = GLMPars.spikefilters.cp;
     cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
+    % Put in PCA for coupling here
+    % load('CP_basis.mat');
+    % cp_basis = waveform; 
 end
 clear bin_size basis_params
 
