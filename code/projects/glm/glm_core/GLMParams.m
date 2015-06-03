@@ -10,7 +10,7 @@ function GLMPars = GLMParams(optional_change)
 
 
 %%% First Set all of the default Paramaters
-GLMPars.bins_per_frame = 10; 
+GLMPars.bins_per_frame = 10; %orig 10
 GLMPars.approx_refresh_hz  = 120;
 %GLMPars.dt             = GLMPars.tstim / GLMPars.bins_per_frame;
 GLMPars.timenotes_0    = 'tstim is ~time in seconds of frame refresh,  dt is the ~time per GLM bin';
@@ -21,7 +21,7 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
 GLMPars.stimfilter.ROI_length = 13;  
-GLMPars.stimfilter.frames = 30;  
+GLMPars.stimfilter.frames = 30;  % orig 30
 GLMPars.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMPars.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMPars.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
@@ -52,11 +52,13 @@ GLMPars.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in milli
 %GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 %GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMPars.spikefilters.BiDirect_CP     = false;
-GLMPars.spikefilters.ps.filternumber = 20;
+GLMPars.spikefilters.ps.filternumber = 20; %orig 20 %10 with bstretch 0.95 works pretty well
+% GLMPars.spikefilters.ps.filternumber = 1;
+% GLMPars.spikefilters.cp.filternumber = 4;
 GLMPars.spikefilters.cp.filternumber = 8;
 GLMPars.spikefilters.ps.spacing      = pi/2;
 GLMPars.spikefilters.cp.spacing      = pi/2;
-GLMPars.spikefilters.ps.bstretch     = .05;
+GLMPars.spikefilters.ps.bstretch     = 0.05;
 GLMPars.spikefilters.ps.alpha        = 0;
 GLMPars.spikefilters.cp.bstretch     = .05;
 GLMPars.spikefilters.cp.alpha        = 0;
