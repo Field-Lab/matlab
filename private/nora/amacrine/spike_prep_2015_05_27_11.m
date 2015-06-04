@@ -40,12 +40,13 @@ end
 
 clear WN8 WN4 repeats_within_block repeat_starts block_starts
 
-cells{1} = [10 14 45 4];
+%cells{1} = [10 14 45 4];
 cells{2} = [285 268 339 5386];
+cells{1} = [14 4];
 
 %% Load up cell info
 
-for i_cell = 1:length(cells)
+for i_cell = 1%:length(cells)
     
     disp(i_cell)
     cell = cells{i_cell}(1);
@@ -77,6 +78,9 @@ for i_cell = 1:length(cells)
         nspikes{cell} = nconcat_spikes;
     end
 
+    STA = STA_Test(concat_spikes, double(fitmovie), round(center));
     fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'WN_STA', STA, 'neighborspikes', nspikes);
     
 end
+
+% save('/Volumes/Lab/Users/Nora/amacrine.mat','fittedGLM')
