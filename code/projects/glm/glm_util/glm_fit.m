@@ -124,8 +124,8 @@ end
 p_init     =  0.1*ones(paramind.paramcount,1);  
 
 % ORGANIZE STIMULUS COVARIATES
-inputstats.mu_avgIperpix = mean(fitmovie(:));
-inputstats.range = range(fitmovie(:));
+inputstats.mu_avgIperpix = double(mean(fitmovie(:)));
+inputstats.range = double(range(fitmovie(:)));
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 fittedGLM.inputstats = inputstats;
 %
