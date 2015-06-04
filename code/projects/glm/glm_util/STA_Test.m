@@ -4,7 +4,7 @@
 % glm_fit, you should be able to get an STA, with the red dot on the center
 % of the cell's RF
 
-function STA_Test(fitspikes, fitmovie, center_coord)
+function STA = STA_Test(fitspikes, fitmovie, center_coord)
 
 movie_size = size(fitmovie);
 STA = zeros(movie_size(1),movie_size(2),30);
@@ -17,8 +17,9 @@ for i = 1:length(fitspikes)
     end
 end
 
+
 for i = 1:30
-   imagesc(STA(:,:,i))
+   imagesc(STA(:,:,i)')
    colormap gray
    axis image
    hold on

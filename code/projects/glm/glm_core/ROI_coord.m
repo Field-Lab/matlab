@@ -16,8 +16,8 @@ end
 
 % Initial coord
 modvec = -floor(ROI_length/2) : floor(ROI_length/2) ;
-xdim = center.x_coord + modvec;
-ydim = center.y_coord + modvec;
+xdim = center.y_coord + modvec;
+ydim = center.x_coord + modvec;
 
 % Correct if ROI falls off the screen
 if min(xdim)<1
