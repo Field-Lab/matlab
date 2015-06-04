@@ -124,8 +124,8 @@ end
 p_init     =  0.1*ones(paramind.paramcount,1);  
 
 % ORGANIZE STIMULUS COVARIATES
-inputstats.mu_avgIperpix = mean(fitmovie(:));
-inputstats.range = range(fitmovie(:));
+inputstats.mu_avgIperpix = double(mean(fitmovie(:)));
+inputstats.range = double(range(fitmovie(:)));
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 fittedGLM.inputstats = inputstats;
 %
@@ -267,10 +267,9 @@ stimsize.height = size(fitmovie,2);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
-[STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
 if GLMType.CONVEX
     if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
-        
+        [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
         timefilter           = pstar(paramind.X);
         stimfilter           = STA_sp * (timefilter');
         stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);

@@ -1,0 +1,75 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\margl1440\margr1440\vieww20420\viewh16760\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\b\fs24 \cf0 AKHeitman 2015-05-07\
+
+\b0 This folder describes the calculations and measurements made by AKHeitman on December, 2013 while rigA and rigB were still at the Salk (but EJ was already up at Stanford).\
+Scalar measurements of power through the standard optical path carefully, in both rigs, using different focusing lens, with and without the cylinder and with and without a board. AKHeitman also made estimates of the size of a pixel on the board through the 6.5x an approximates between 4.2 and 4.8 microns squared per pixel.\
+\
+All spectrum measurements were done else where  (CRT spectral emissions by GDField in 2007, LMS cone spectral sensitivity from Rieke lab, UDT head sensitivity .. i'm not sure).
+\b \
+\
+\
+
+\b0 Contents:\
+- This ReadMe.rtf\
+- Computing_PhotonAbsorptions.m\
+- spectra_CRTemission.mat\
+- spectra_LMSenergyabsorption.mat\
+- spectra_UDTsensitivity.mat\
+- ScalarPower_nanoWatts_AKHeitman_2013December.pdf
+\b \
+\
+\
+Computing_PhotonAbsorptions.m
+\b0 \
+- Combines Constants (including the cone integrating area), old spectral measurements, scalar power measurement, to obtain a final score of photon absorptions with monitor at Max Red,Max Green, Max Blue, and Max White. \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\b \cf0 ScalarPower_nanoWatts_AKHeitman_2013December.pdf
+\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 - The unit of each recording is nanoWatt.  Many different configurations of rigA and rigB and many different stimulus sizes.  I ended up choosing 240 by 240 pixels because it was the largest for which the image was not cutoff for all focusing lenses in both rig A and rigB.  \
+\
+
+\b Note on cone effective area
+\b0 \
+- According to an email interchange with Professor Fred Rieke, if we shine light through the ganglion cell layer, the effective area should be .6 microns squared.  If we shine light directly to the photoreceptor side than they use .37 microns squared as their estimate.  \
+\
+
+\b Notes on Power Recording Apparatus (used AKHeitman December 2013)
+\f1\b0 \cf2 \
+\pard\pardeftab720\ql\qnatural
+\cf2 Test equipment:\
+Optometer used: UDT Instruments, 350 Linear/Log Optometer\
+Serial number: 15075\
+Calibrated:  29Jan2003\
+Calibration report:  30127\
+* Inferred to be calibrated to read microWatts as the base unit *\
+Sensor head used:  Lab label B\
+Model 268R\
+Serial 16058\
+Cal report: 30127\
+Optometer configuration: \
+Battery power\
+Channel 2 (calibrated channel)\
+Auto zero button: IN.\
+Slow timeconstant button: IN.\
+All other buttons: OUT. \
+Front power meter knob will be adjusted as appropriate to keep signal in range  Mostly at 10^-3 sometimes 10^-2.  Milliwatts will be the defuault standard unit in the spreadsheet.\
+\
+\
+
+\b Monitor Tested in Salk Rig B
+\b0 \
+Monitor serial number: Lab internal id sticker: CRT 2\
+Sony Trinitron Multiscan E100\
+Monitor was allowed to warm up for > 1/2 hour prior to data collection. \
+Scope: Salk Institute property number: N00000186\
+. \
+\
+}
