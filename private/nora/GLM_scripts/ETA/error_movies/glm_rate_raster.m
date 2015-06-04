@@ -31,11 +31,13 @@ end
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
+inputstats.mu_avgIperpix = 64;
+inputstats.range = 255;
 [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord) ;
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
 
-  
+
     %% Set up CIF Components
 MU = fittedGLM.linearfilters.TonicDrive.Filter;
 if GLMType.PostSpikeFilter

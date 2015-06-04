@@ -1,4 +1,7 @@
-function [PA, NA] = threshold(xval, movie)
+function [PA, NA] = threshold_spikes(xval, movie)
+
+max_prob = 0.1;
+min_prob = 0.0;
 
 n_blocks = length(movie);
 stim_size = size(movie{1,1}.matrix);
@@ -13,9 +16,9 @@ NA = zeros(stim_size(1), stim_size(2), 30);
 for i_block = 1:n_blocks
     mov = movie{i_block}.matrix;
     prob_spike = 1 - exp(-xval{i_block}.glm_rateperbin);
-    thresh_pos_spikes = find(logical(xval{i_block}.rasters.recorded) & (prob_spike < 0.7) & (prob_spike > 0.3));
-    thresh_neg_spikes = find(~logical(xval{i_block}.rasters.recorded) & (prob_spike < 0.7) & (prob_spike > 0.3));
-    total_spikes = total_spikes + sum((prob_spike < 0.7) & (prob_spike > 0.3));
+    thresh_pos_spikes = find(logical(xval{i_block}.rasters.recorded) & (prob_spike < max_prob) & (prob_spike > min_prob));
+    thresh_neg_spikes = find(~logical(xval{i_block}.rasters.recorded) & (prob_spike < max_prob) & (prob_spike > min_prob));
+    total_spikes = total_spikes + sum((prob_spike < max_prob) & (prob_spike > min_prob));
     n_spikes_pos = n_spikes_pos + length(thresh_pos_spikes);
     n_spikes_neg = n_spikes_neg + length(thresh_neg_spikes);
     
@@ -42,22 +45,22 @@ max2 = max(NA(:));
 disp(n_spikes_pos)
 disp(n_spikes_neg)
 disp(total_spikes)
-
-for i = 1:30
-    subplot(2,1,1)
-    imagesc(PA(:,:,i)');
-    axis image;
-    colormap gray;
-    caxis([min1 max1])
-    title('Spike')
-    subplot(2,1,2)
-    imagesc(NA(:,:,i)');
-    axis image;
-    colormap gray;
-    caxis([min2 max2])
-    title('No Spike')
-    pause(1)
-end
+% 
+% for i = 1:30
+%     subplot(2,1,1)
+%     imagesc(PA(:,:,i)');
+%     axis image;
+%     colormap gray;
+%     caxis([min1 max1])
+%     title('Spike')
+%     subplot(2,1,2)
+%     imagesc(NA(:,:,i)');
+%     axis image;
+%     colormap gray;
+%     caxis([min2 max2])
+%     title('No Spike')
+%     pause(0.1)
+% end
 
 
 end
