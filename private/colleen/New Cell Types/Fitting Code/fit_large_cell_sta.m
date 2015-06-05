@@ -1,16 +1,18 @@
 clear
 
+date='2010-09-24-0';
+concatname='data001-nwpca';
+
 % Wrong Movie Information
-file_name = '2010-09-24-0/data001-nwpca/wrongMovie/wrongMovie';
+file_name = [date, '/', concatname, '/', '/wrongMovie/wrongMovie'];
 mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-22222-80x60.xml';
 
 % Right Movie Information
-file_name2 = '2010-09-24-0/data001-nwpca/data001-nwpca';
+file_name2 = [date, '/', concatname,'/', concatname];
 mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111-80x60.xml';
 
 
-date='2010-09-24-0';
-concatname='data001-nwpca';
+
 
 % file_name = '2010-09-24-1/d05-36-norefit/data006-from-d05_36/fake_sta/data006-from-d05_36';
 % mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-1-6-0.48-22222.xml';
@@ -30,17 +32,17 @@ concatname='data001-nwpca';
 
 
 
-cell_type = {'ON parasol'};
+cell_type = {'OFF parasol parasol'};
 interpolate = false;
 independent_fit = 0;
 num_frames = 30; % both have to be run with the name number of frames
 false_stixels = 0.5;
 
-select_cells = 0;
+select_cells = 1;
 % cell_specification = [218];%,861,1113,187,1307,1367,1669,1700,1787,1999,2133,2254,2315,2342,2417,2462]; %ON parasol
-% cell_specification = 1622; %OFF parasol
+cell_specification = 2416; %OFF parasol
 
-% cell_specification = [6143];
+% cell_specification = [481];
 %% END OF INPUT
 folder = cell_type{1};
 % file path to save pictures
@@ -81,6 +83,7 @@ datarun2=load_data(datarun2,opt);
 
 
 %% Cell indicies
+
 
 cell_type_index= zeros(1,size(cell_type,2));
 for num_cell_types = 1:size(cell_type,2)
@@ -153,7 +156,7 @@ for rgc = 1:num_rgcs
     else
         
 %         [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', true, 'fit_n_two_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params);
-        [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', true, 'initial_n_one_filters', 8,'initial_n_two_filters', 4,'fit_n_two_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params);
+        [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', true, 'initial_n_one_filters', 4,'initial_n_two_filters', 2,'fit_n_two_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params, 'biggest_blob', true);
        
 flip = strfind(lower(cell_type{1}), 'off');
         if flip == 1
@@ -240,6 +243,7 @@ for q = 1:num_rgcs
     temp_fit_params = datarun2.matlab.sta_fits{cell_indices(q)};
     fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params, save_sig_stixels{rgc}, 1); % plot_raw = 1
     hold on
+
 end
 title({['Fits of ' num2str(length(cell_specification)), ' ', cell_type{1}, ' Cells']; dataset})
 xlabel('Time')
@@ -345,4 +349,4 @@ print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],[cell_type{1}, ' Mo
 % save([dataset,'-', cell_type{1}], 'information')
 fitting_results = datarun2.matlab.sta_fits;
 % [init_mean, init_sd, init_color_weight, init_scale, init_tau, init_n_filters] = computeAverageFittingParameters(fitting_results)
-save([sprintf('%s%s',[filepath,folder,'/']), 'results.mat'], 'fitting_results_off_parasol')
+save([sprintf('%s%s',[filepath,folder,'/']), 'results.mat'], 'fitting_results')
