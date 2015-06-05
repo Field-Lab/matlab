@@ -4,23 +4,23 @@ clear
 % compute_only_sta just does the STA independent of matlab
 %% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2005-04-26-0/data002-nwpca/data002.neurons';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2015-05-27-5/data003/data00.neurons';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111-32x32_cell393.xml';
 num_frames = 30; % both have to be run with the name number of frames
-target_cell = 1023;
-target_cell2 = 2510;
+target_cell = 33;
+% target_cell2 = 3169;
 
 
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 datarun=load_data(datarun,opt);
 
 triggers=datarun.triggers; %onsets of the stimulus presentation
-
+% load triggers
 [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
     triggers, 1,2);
 
 [mvi] = load_movie(mdf_file, triggers);
-
+refresh = 120;
 %frames per trigger
 
 bt_triggers = triggers - [0;triggers(1:end-1)];
@@ -46,7 +46,7 @@ spikes=datarun.spikes{cellID};
 % spikes are in s. convert to ms
 spikes=round(spikes*1000);
 
-sta=zeros(height,width,num_frames); %height, width, frames back
+sta=zeros(height,width,num_frames,3); %height, width, frames back
 % stv=zeros(height,width,num_frames); %height, width, frames back
 sta_store = zeros(height,width, num_frames, length(spikes), 3);
 
@@ -57,10 +57,20 @@ for i=spikes'
     
     start=find(frame_times>i,1)-num_frames;
     if(start>000)
-        icnt=icnt+1
+        icnt=icnt+1;
+        if mod(icnt, 1000) == 0
+            disp(icnt)
+        end
+        
         for j=1:num_frames
             F = round(mvi.getFrame(start+j).getBuffer);
-            sta(:,:,j) = sta(:,:,j) + round(reshape(F(1:3:end),width,height)'-0.5)+round(reshape(F(2:3:end),width,height)'-0.5)+round(reshape(F(3:3:end),width,height)'-0.5);
+%             sta(:,:,j) = sta(:,:,j) + round(reshape(F(1:3:end),width,height)'-0.5)+round(reshape(F(2:3:end),width,height)'-0.5)+round(reshape(F(3:3:end),width,height)'-0.5);
+            sta(:,:,j,1) = sta(:,:,j,1) + round(reshape(F(1:3:end),width,height)'-0.5);
+            sta(:,:,j,2) = sta(:,:,j,2) + round(reshape(F(2:3:end),width,height)'-0.5);
+            sta(:,:,j,3) = sta(:,:,j,3) + round(reshape(F(3:3:end),width,height)'-0.5);
+
+            
+            
             sta_store(:,:,j, icnt,1) = double(round(reshape(F(1:3:end),width,height)'-0.5));
             sta_store(:,:,j, icnt,2)=double(round(reshape(F(2:3:end),width,height)'-0.5));
             sta_store(:,:,j, icnt,3) =double(round(reshape(F(3:3:end),width,height)'-0.5));
@@ -69,20 +79,22 @@ for i=spikes'
 end
 sta=sta/icnt;
 
+% normalize STA color
+sta = norm_image(sta);
+
 % choose first frame to show
 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
 
-% normalize STA color
-sta = norm_image(sta);
+
 
 % create slider control
 %ha = make_loop_slider_list(start_index, 1, size(sta, 3), {@slider_plot, sta});
 
 % plot once before any clicks
 %slider_plot(ha, [], sta);
-sta = repmat(sta, 1,1,1,3);
+% sta = repmat(sta, 1,1,1,3);
 sta = permute(sta,[1 2 4 3]);
-[sig_stixels] = significant_stixels(sta);
+[sig_stixels] = significant_stixels(sta, 'select', 'thresh', 'thresh', 2);
 [row, col] = find(sig_stixels);
 sig_stixels = [row,col];
 % ranges = range(sta,3);
@@ -121,13 +133,26 @@ green_avg = mean(green,1);
 blue_avg = mean(blue,1);
 colors = [red_avg; green_avg; blue_avg];
 
-
+time = -(num_frames-1)*refresh:refresh:0
 colors_flipped = fliplr(colors);
 figure
-plot(time, colors_flipped(1,:), 'r')
+plot(time,colors_flipped(1,:), 'r')
 hold on
-plot(time, colors_flipped(2,:), 'g')
-plot(time, colors_flipped(3,:), 'b')
+plot(time,colors_flipped(2,:), 'g')
+plot(time,colors_flipped(3,:), 'b')
+
+%% normal sta
+figure
+% for j=1:num_frames
+j =  26;
+    imagesc(squeeze(sta(:,:,:,j)));
+    colormap gray
+%     caxis([min(sta(:)),max(sta(:))]);
+    colorbar
+    title(['Normal STA Frame: ' num2str(j)]);
+    pause(10/120);
+    
+% end
 
 % this now gives the timecourse for each color for a different large cell
 % Now analysis the cell you actually care about
