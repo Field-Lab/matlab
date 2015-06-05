@@ -196,6 +196,8 @@ p.addParamValue('verbose', false, @islogical);
 % fiting options
 p.addParamValue('optim',{'TolFun',0.001,'Display','off', 'MaxIter', 10000, 'MaxFunEvals', 10000});
 
+% Sig stixels option
+p.addParamValue('biggest_blob', true, @islogical);
 
 p.parse(sta, varargin{:});
 
@@ -245,6 +247,7 @@ y_dim = p.Results.y_dim;
 num_colors = p.Results.num_colors;
 frame_number = p.Results.frame_number;
 color_to_normalize = p.Results.color_to_normalize;
+biggest_blob = p.Results.biggest_blob; 
 
 optim = p.Results.optim;
 
@@ -283,9 +286,14 @@ end
 
 
 % get matrix subscripts to these pixels for the eigenvalue calculation
-biggestBlob = ExtractNLargestBlobs(full(sig_stixels), 1);
-[matrix_subscript_i_eig, matrix_subscript_j_eig] = find(biggestBlob);
-matrix_subscripts_eig = [matrix_subscript_i_eig, matrix_subscript_j_eig];
+if biggest_blob
+    biggestBlob_stixs = ExtractNLargestBlobs(full(sig_stixels), 1);
+    [matrix_subscript_i_eig, matrix_subscript_j_eig] = find(biggestBlob_stixs);
+    matrix_subscripts_eig = [matrix_subscript_i_eig, matrix_subscript_j_eig];
+else
+    [matrix_subscript_i_eig, matrix_subscript_j_eig] = find(sig_stixels);
+    matrix_subscripts_eig = [matrix_subscript_i_eig, matrix_subscript_j_eig];
+end
 
 
 % get matrix subscripts of all sig stixels
@@ -529,7 +537,7 @@ input_params = double(input_params);
 [final_fit_params, fval] = fminsearch(@(fit_params)sta_fit_error(sta,...
                               fit_params, input_params(fixed_indices),...
                               fit_indices, fixed_indices,...
-                              verbose),...
+                              verbose, mark_params),...
                               input_params(fit_indices),...
                               optimset(optim{:}));
                           
