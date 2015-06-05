@@ -1,22 +1,22 @@
 % ds_cells
 clear
-run_opt.data_set = '2015-04-09-1';
+run_opt.data_set = '2015-05-27-5';
 run_opt.data_run = 3; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-if strcmp(run_opt.data_set, '2015-04-09-1')
-    datarun{1}.names.rrs_params_path='/Volumes/Analysis/2015-04-09-1/data015-mapped-data011/data015-mapped-data011.params';
-    datarun{2}.names.rrs_neurons_path=('/Volumes/Analysis/2015-04-09-1/data015-mapped-data011/data015-mapped-data011.neurons');
-    datarun{2}.names.stimulus_path=('/Volumes/Data/2015-04-09-1/Visual/s15');
+if strcmp(run_opt.data_set, '2015-05-27-5')
+    datarun{1}.names.rrs_params_path='/Volumes/Analysis/2015-05-27-5/data003/data003.params';
+    datarun{2}.names.rrs_neurons_path=('/Volumes/Analysis/2015-05-27-5/data003/data003.neurons');
+    datarun{2}.names.stimulus_path=('/Volumes/Data/2015-05-27-5/Visual/s03');
 end
 opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 datarun=load_data(datarun,opt);
 datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
-datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0, 'trigger_iti_thr', 0.0006); % manually set threshold until got right number of triggers
+datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0, 'trigger_iti_thr', 0.1); % manually set threshold until got right number of triggers
 % Something went wrong with the first two stimuli
 % datarun{2}.stimulus.triggers= [datarun{2}.stimulus.triggers(1:33) 187.0086, datarun{2}.stimulus.triggers(34:70) 396.0097 datarun{2}.stimulus.triggers(71:72) 412.5063 datarun{2}.stimulus.triggers(73:72); % Remove the first trigger
 % datarun{2}.stimulus.trials = datarun{2}.stimulus.trials(3:end); % Remove the first two trials
 
 
-cell_to_run = 889;
+cell_to_run = 5852;
         cell_indices1=get_cell_indices(datarun{1}, [cell_to_run]);
         cell_indices2=get_cell_indices(datarun{2},[cell_to_run]);
 
@@ -25,7 +25,7 @@ cell_to_run = 889;
      tr=datarun{2}.stimulus.triggers; % all start triggers
         run_opt.config_num = 1;
 
-get_stimulus_triggers(datarun)
+% get_stimulus_triggers(datarun)
        
 n = datarun{2}.spikes{cell_indices2(1)}';
 psth_r = [];
