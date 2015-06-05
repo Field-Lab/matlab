@@ -1,12 +1,16 @@
 %% ------- INPUTS -------
-date='2005-04-26-0';
-concatname='data009/';
-staruns='data009'; % long WN runs for STA low to high NDF
+date='2010-09-24-0';
+concatname='data001-nwpca/';
+staruns='data001-nwpca'; % long WN runs for STA low to high NDF
 padding= 10;
-cell_specification = [{'OFF parasol' }, {'OFF parasol'}];
-num_frames = 20;
+cell_specification = [{'OFF parasol parasol'}, {'OFF parasol parasol'}];
+num_frames = 15;
+alpha = 0.15;
 vision =0;
+load(['/Users/colleen/Desktop/Fitting/',date,'/data001-nwpca', '/', cell_specification{1}, '/results.mat']);
+datarun2.matlab.sta_fits = fitting_results;
 %% ------ END OF INPUTS --------
+
 % file path to save pictures
 filepath=['/Users/colleen/Desktop/GrantJuly2015/',date,'/',concatname,'/'];
 if ~exist(filepath,'dir')
@@ -118,10 +122,11 @@ for i=1:size(cell_specification,2)
     blue = sta_tc(:,3:3:end);
     hold on
     h=subplot('position',[0.05+0.3*(i-1), 0.45 0.20,0.20]);
-    plot(h,sta_tc_bins,red,'Color', [1 0 0 0.15]);
+    
+    plot(h,sta_tc_bins,red,'Color', [1 0 0 alpha]);
     hold on
-    plot(h,sta_tc_bins,blue,  'Color', [0 0 1 0.15]);
-    plot(h,sta_tc_bins,green, 'Color', [0 1 0 0.15]);
+    plot(h,sta_tc_bins,blue,  'Color', [0 0 1 alpha]);
+    plot(h,sta_tc_bins,green, 'Color', [0 1 0 alpha]);
     plot(h, sta_tc_bins, zeros(size(sta_tc_bins)), 'k')
     axis tight
     xlabel('Time to spike (ms)')
@@ -177,7 +182,7 @@ if size(cell_numbers,2) > 18
         0.82 0.53, 0.10,0.10;...
         0.82 0.40, 0.10,0.10;...
         0.71 0.40, 0.10,0.10;...
-        0.71 0.53, 0.10,0.10;...
+        0.71 0.53, 0.10,0.10;...i
         0.71 0.66, 0.10,0.10];
 end
 
@@ -234,6 +239,10 @@ for k=1:size(cell_numbers,2)
     %     set(h,'xtick',0,'ytick',0)
     %      tmp = size(sta);
     %         axis([0.5 tmp(1)+0.5 0.5 tmp(2)+0.5])
+    if k == 29
+        break
+    end
+    
 end
 
 
