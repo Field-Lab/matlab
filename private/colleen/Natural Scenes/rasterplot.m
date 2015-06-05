@@ -22,7 +22,7 @@ nin=nargin;
 %%%%%%%%%%%%%% Plot variables %%%%%%%%%%%%%%
 plotwidth=1;     % spike thickness
 plotcolor='k';   % spike color
-trialgap=1.5;    % distance between trials
+trialgap=1.5;    % distance between trials % was 1.5
 defaultfs=1000;  % default sampling rate
 showtimescale=1; % display timescale
 showlabels=0;    % display x and y labels
@@ -68,6 +68,8 @@ end
   xlim=[1,triallen*1000/fs];
 
   axes(hresp);
+%   yy = yy(find(yy ~= 0 & yy~=1));
+%   xx = xx(find(yy ~= 0 & yy~=1));
   h=plot(xx, yy, plotcolor, 'linewidth',plotwidth);
   axis ([xlim,0,(numtrials)*1.5]);  
   
