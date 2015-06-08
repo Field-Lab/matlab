@@ -1,9 +1,10 @@
-function lambda = NewtonMaxLogDet(lambda0,Prods,quad)
+function lambda = NewtonMaxLogDet(input,lambda0,Prods,quad)
 
-beta  = 0.5;
-a     = 0.5;
-dif   = Inf;
-thres = 0.001;
+
+beta   = input.params.initial.Newton.beta;
+a      = input.params.initial.Newton.a;
+thres  = input.params.initial.Newton.thres;
+dif    = Inf;
 
 val = logDetExp(log(lambda0),Prods,quad);
 
@@ -42,7 +43,7 @@ while(true)
     lambdanew = lambda-t*grad;
     val2      = val-a*t*norm(grad)^2; 
 
-    if(logDetExp(lambdanew,Prods,quad) > val2)
+    if(logDetExp(lambdanew,Prods,quad) > val2 || isnan(logDetExp(lambdanew,Prods,quad)))
         t    = beta*t;
         cont = cont+1;
     else
@@ -51,11 +52,14 @@ while(true)
         dif        = val0-val;
         val0       = val;
         t          = 1;
-        
-        disp(['Iteration ' num2str(cont) ' finished'])
-        disp(['Diference in function evaluation with previous iteration = ' num2str(dif)])
-        disp(['Gradient = '])
-        grad
+        if(isnan(dif))
+           5
+           break;
+        end
+        %disp(['Iteration ' num2str(cont) ' finished'])
+        %disp(['Diference in function evaluation with previous iteration = ' num2str(dif)])
+        %disp(['Gradient = '])
+        %grad
         cont       = cont + 1;
         if(abs(dif) < thres)
           return
