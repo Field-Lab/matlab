@@ -90,7 +90,9 @@ subplot(nSubunits,1,isub);
 % xlim(ax(2),[min(cell_resp(:)),max(cell_resp(:))]);
 xlim(ax(1),[-5,5]);
 xlim(ax(2),[-5,5]);
-title(sprintf('Input to sub-unit %d and its non-linearity',isub));
+set(gca,'YTick',[]);
+
+%title(sprintf('Input to sub-unit %d and its non-linearity',isub));
 end
 
 % subunit input time courses

@@ -30,7 +30,7 @@ datarun=load_params(datarun)
 datarun=load_sta(datarun);
 datarun=load_neurons(datarun);
 
-for cellID = 2371 %[datarun.cell_types{12}.cell_ids,datarun.cell_types{1}.cell_ids,datarun.cell_types{2}.cell_ids];
+for cellID = [datarun.cell_types{2}.cell_ids];
     cellID
 %cell_glm_fit = sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_OFF parasol/CellID_%d.mat',cellID);
 %load(cell_glm_fit);
@@ -40,14 +40,14 @@ extract_movie_response2;
  %% EM like Max Expected Likelihood .. 
  interval=1;
 %  idx = [1:end]
-trainData=[1:floor(length(spksGen)*0.8)];
-trainData_hr = [1:floor(length(spksGen_hr)*0.8)];
+trainData=[1:floor(length(spksGen)*1)];
+trainData_hr = [1:floor(length(spksGen_hr)*1)];
 
 testData=[floor(length(spksGen)*0.8)+1 :length(spksGen)];
 testData_hr=[floor(length(spksGen_hr)*0.8)+1 :length(spksGen_hr)];
 
 
- for nSU =1:3%1:2 %1:10%1:filteredStimDim
+ for nSU =4:5%1:2 %1:10%1:filteredStimDim
  binnedResponsesbigd = spksGen(trainData);
 binnedResponsesbigd_hr = spksGen_hr(trainData_hr);
  mov_use=maskedMovdd(:,trainData);
@@ -57,7 +57,7 @@ binnedResponsesbigd_hr = spksGen_hr(trainData_hr);
 % [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
  [fitGMLM,f_val(nSU)] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval); 
  fitGMLM_log{nSU} = fitGMLM;
- %[fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
+ %[fitGMLM_2,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
  % fitGMLM_log(ifit).fitGMLM = fitGMLM;  %%
   [fitGMLM_full2,output]= fitGMLM_full(fitGMLM,binnedResponsesbigd_hr,mov_use);
   fitGMLM_full2_log{nSU}=fitGMLM_full2;
@@ -65,14 +65,14 @@ binnedResponsesbigd_hr = spksGen_hr(trainData_hr);
   plot(fitGMLM_full2.hist.hexpanded)
  end
  end
- 
- %save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/Cell%d_full',cellID),'fitGMLM_log','fitGMLM_full2_log','mov_use','binnedResponsesbigd','filteredStimDim','interval','totalMaskAccept2','totalMaskAccept','x_coord','y_coord');
+ [WNSTA,WNSTC,WN_uSq]=compute_STA_STC(binnedResponsesbigd,mov_use);
+ save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/Cell%d_full_su4_5.mat',cellID),'fitGMLM_log','fitGMLM_full2_log','mov_use','binnedResponsesbigd','filteredStimDim','interval','totalMaskAccept2','totalMaskAccept','x_coord','y_coord','WNSTA','WNSTC','WN_uSq');
 %% Compute STC 
-[WNSTA,WNSTC,WN_uSq]=compute_STA_STC(binnedResponsesbigd,mov_use);
+
 end
 %% Compare training and test set likelihoods accross models when true spikes known.
 
- for nSU=1:3
+ for nSU=1:4
      nSU
      fitGMLM_full2=fitGMLM_full2_log{nSU};
  % Training Err 
@@ -151,9 +151,9 @@ title('Training and Testing R-sq value');
  
   %% Show learned filters;
 figure;
-for nSU=4:4
+for nSU=1:4
     
- %   fitGMLM_full2 = fitGMLM_full2_log{nSU};
+    fitGMLM_full2 = fitGMLM_full2_log{nSU};
       mask = totalMaskAccept;
 sta_dim1 = size(mask,1);
 sta_dim2 = size(mask,2);
@@ -164,10 +164,10 @@ u_spatial_log = zeros(40,40,nSU);
 
 for ifilt=1:nSU
 
-%u_spatial = reshape_vector(fitGMLM_full2.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
-u_spatial = reshape_vector(WN_uSq{ifilt},masked_frame,indexedframe);
+u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+%u_spatial = reshape_vector(WN_uSq{ifilt},masked_frame,indexedframe);
 
-subplot(2,2,ifilt)
+subplot(3,2,ifilt)
 imagesc(u_spatial(x_coord,y_coord));
 colormap gray
 colorbar
@@ -181,11 +181,11 @@ end
 
 xx=I.*(v>0.2);
 xx=xx(x_coord,y_coord);
-%figure;
-% subplot(2,2,nSU);
-% imagesc(xx);
-% title(sprintf('Num SU : %d',nSU));
 
+subplot(2,2,nSU);
+imagesc(repelem(xx,10,10));
+title(sprintf('Num SU : %d',nSU));
+hold on;
 end
 
 %iso_response_bias_gmlm(binnedResponsesbigd,mov_use,fitGMLM);
@@ -331,7 +331,7 @@ hold on
 [X,N]= hist(diffll,1000);
 
 figure;
-plot(N0,log(X0));
+semilogy(N0,X0/sum(X0));
 hold on;
-plot(N,log(X));
-legend(sprintf('GLM 1-Null %f',(diffll0<0)/length(diffll0)),sprintf('GLM3-GLM1 %f',(diffll<0)/length(diffll)))
+semilogy(N,X/sum(X));
+%legend(sprintf('GLM 1-Null %f',(diffll0<0)/length(diffll0)),sprintf('GLM3-GLM1 %f',(diffll<0)/length(diffll)))

@@ -27,22 +27,26 @@ subunits{3}=k*subunit_scale;
 
 k=zeros(Filtdim1,Filtdim2,1,Filtlen);
 k(322-318,160-158,:,:)=1;
-k(319-318,159-158,:,:)=1;
+k(319-318,159-158,:,:)=1
 subunit_scale=1%1.5;
 subunits{4}=k*subunit_scale;
 
 
-figure;
+figure('Color','w');
 for isubunit=1:nSubunits
 subplot(2,2,isubunit);
-imagesc(subunits{isubunit}(:,:,1,4));
+imagesc((subunits{isubunit}(:,:,1,4)));
 colormap gray
 title(sprintf('Subunit: %d',isubunit));
+axis image
+set(gca,'XTick',[]);
+set(gca,'YTick',[]);
 end
 
 figure;
 mask=double((subunits{1}(:,:,1,4)+subunits{2}(:,:,1,4)+subunits{3}(:,:,1,4)+subunits{4}(:,:,1,4))~=0);
 mask(323-318,162-158,:,:)=1;
+mask(319-318,159-158,:,:)=1
 imagesc(mask);
 % Temporal properties?
 
@@ -53,6 +57,7 @@ tau_two=10;
 n_filters=6;
 t=[0:29];
 tf = scale_one*((t/tau_one).^n_filters).*exp(-n_filters*(t/tau_one -1)) - scale_two*((t/tau_two).^n_filters).*exp(-n_filters*(t/tau_two -1));
+tf=tf-mean(tf);
 figure;
 plot(tf)
 
@@ -71,22 +76,40 @@ subunits{4}=subunits{4}.*tfRep;
 
 % sub-unit weights
 subunitWeights=zeros(nSubunits,1);
-subunitWeights(1)=1%1;
+subunitWeights(1)=0%1;
 subunitWeights(2)=1%1.2;
 subunitWeights(3)=1%0.7;
 subunitWeights(4)=1%1.5;
 
 % sub-unit non-linearity
 
-f= @(x) double(x>0).*(1.6*x);
-%f=@(x) exp(0.6*x);
+% Dense model - Model used regularly
+% f= @(x) double(x>0).*(1.6*x);
+% N1=@(x) double(x>0)*(0.02).*(3.4*x).^2 ; % use it! , 2 is DC current
+
+%  model2
+%f= @(x) double(x>0).*(1.6*x);
+%N=@(x) double(x>0)*(0.02).*(3.4*x/12).^12 ; % use it! , 2 is DC current
+
+% Exp su nl, linear overall nl - with model assumptions
+ f =@(x)  0.5*exp(x);
+ N = @(x) double(x>0)*(0.02).*(3.4*x);
+
+
+
+%f= @(x) double(x>0).*(x).^4;
+
 % Ganglion cell non-linearity
-%N= @(x) exp(0.15*(x));
-N=@(x) double(x>0)*(0.02).*(3.4*x).^2 ; % use it! , 2 is DC current
-%N=@(x) x-min(x(:));
-%N = @(x) 15./(1+exp(-1.5*(x-5)));
+%%%N= @(x) exp(0.15*(x));
+
+%%%N=@(x) x-min(x(:));
+%%%N = @(x) 15./(1+exp(-1.5*(x-5)));
 % 
-% 
+
+% Sparse / code ts model
+% f=@(x) max((x)/5.8,0).^7;
+% N = @(x) 500*max(x,0);
+
 % figure;
 % for itime=1:30
 %     itime
@@ -103,7 +126,7 @@ N=@(x) double(x>0)*(0.02).*(3.4*x).^2 ; % use it! , 2 is DC current
 % end
 
 %% Generate white noise movie
- movieLen=120*30*60;
+ movieLen=120*60*60;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
 movie_idx=2; 
 if(movie_idx==1)
@@ -171,13 +194,88 @@ figure
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 % [fitGMLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,maskedMov,7,4);
- 
+ figure;
+scatter(maskedMov(2,binnedResponses~=0),maskedMov(5,binnedResponses~=0),1);hold on;plot([0,0],[-5,5],'g');hold on;plot([-5,5],[0,0],'g');
+hold on;
  %% EM like Max Expected Likelihood .. 
  interval=1;
- [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov2,8,4,interval);   
- idx=1:length(binnedResponses);
- spk_time = idx(binnedResponses>0)/120;
- [fitGMLM_full,output]= fitGMLM_full(fitGMLM,spk_time,maskedMov);
+ %[fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov2,8,4,interval);   
+ nSU=3;
+ [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,7,nSU,interval); 
+ fitGMLM1=fitGMLM;
+ 
+  interval=1;
+  nSU=3;
+  [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponses,maskedMov,7,nSU,interval,2);  
+  fitGMLM2=fitGMLM;
+  
+%  nSU=1;
+%  [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,7,nSU,interval); 
+%  fitGMLM1=fitGMLM;
+ 
+%  bigR = repmat(binnedResponses,[1,10]); bigR =bigR(:);
+%   [fitGMLM_full2,output]= fitGMLM_full(fitGMLM,bigR,maskedMov);
+
+ % figure;
+ % plot(fitGMLM_full2.hist.hexpanded)
+%  idx=1:length(binnedResponses);
+%  spk_time = idx(binnedResponses>0)/120;
+%  [fitGMLM_full,output]= fitGMLM_full(fitGMLM,spk_time,maskedMov);
+%% pixel 2,5 only
+figure;
+scatter(maskedMov(2,binnedResponses~=0),maskedMov(5,binnedResponses~=0),4,idx);hold on;plot([0,0],[-5,5],'g');hold on;plot([-5,5],[0,0],'g');
+hold on;
+plot(5*[0,fitGMLM.Linear.filter{2}(2)],5*[0,fitGMLM.Linear.filter{2}(5)],'r');
+hold on;
+plot(5*[0,fitGMLM.Linear.filter{1}(2)],5*[0,fitGMLM.Linear.filter{1}(5)],'r');
+ hold on;
+ plot(5*[0,fitGMLM.Linear.filter{3}(2)],5*[0,fitGMLM.Linear.filter{3}(5)],'r');
+  hold on;
+% plot(5*[0,fitGMLM.Linear.filter{4}(2)],5*[0,fitGMLM.Linear.filter{4}(5)],'r');
+
+X = maskedMov([2,5,4],binnedResponses~=0)';
+pixidx1=1;pixidx2=2;
+[idx,C]=kmeans(X,nSU);
+
+hold on;
+plot(6*[0,C(1,pixidx1)],6*[0,C(1,pixidx2)],'k');
+hold on;
+plot(6*[0,C(2,pixidx1)],6*[0,C(2,pixidx2)],'k');
+ hold on;
+ plot(5*[0,C(3,pixidx1)],5*[0,C(3,pixidx2)],'k');
+ hold on;
+% plot(5*[0,C(4,1)],5*[0,C(4,2)],'k');
+% spectral clustering
+
+% GMM clustering
+
+options = statset('Display','final');
+gm = fitgmdist(X,nSU,'Options',options);
+
+C = gm.mu;
+
+hold on;
+plot(5*[0,C(1,pixidx1)],5*[0,C(1,pixidx2)],'m');
+hold on;
+plot(5*[0,C(2,pixidx1)],5*[0,C(2,pixidx2)],'m');
+ hold on;
+ plot(5*[0,C(3,pixidx1)],5*[0,C(3,pixidx2)],'m');
+% hold on;
+% plot(5*[0,C(4,1)],5*[0,C(4,2)],'m');
+
+% Moment based method 
+C = X'*X/size(X,1);
+
+hold on;
+plot(5*[0,C(1,pixidx1)],5*[0,C(1,pixidx2)],'--*r');
+hold on;
+plot(5*[0,C(2,pixidx1)],5*[0,C(2,pixidx2)],'--*r');
+ hold on;
+ plot(5*[0,C(3,pixidx1)],5*[0,C(3,pixidx2)],'--*r');
+% hold on;
+% plot(5*[0,C(4,1)],5*[0,C(4,2)],'y');
+
+
  %% Show learned filters;
 sta_dim1 = size(mask,1);
 sta_dim2 = size(mask,2);
@@ -185,16 +283,31 @@ indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
 masked_frame = indexedframe(logical(mask));
 
 figure;
-for ifilt=1:4
+for ifilt=1:3
 subplot(2,2,ifilt)
-u_spatial = -reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
-imagesc(u_spatial);
+u_spatial = reshape_vector(fitGMLM1.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+imagesc((u_spatial));
+%caxis([-0.3,0.3]);
 colormap gray
 colorbar
 title(sprintf('GMLM Filter: %d',ifilt));
 end
 
- 
+ sta_dim1 = size(mask,1);
+sta_dim2 = size(mask,2);
+indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
+masked_frame = indexedframe(logical(mask));
+
+figure;
+for ifilt=1:3
+subplot(2,2,ifilt)
+u_spatial = reshape_vector(fitGMLM2.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+imagesc((u_spatial));
+%caxis([-0.3,0.3]);
+colormap gray
+colorbar
+title(sprintf('GMLM Filter: %d',ifilt));
+end
 %% Generate white noise movie
  movieLen=120*10;
 mov=zeros(Filtdim1,Filtdim2,movieLen);
@@ -238,7 +351,7 @@ SubUnit_Response_test_movie_script
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=30;
- predictedResponses = predictGMLM(fitGMLM,maskedMov,nTrials);
+ predictedResponses = predictGMLM_bias(fitGMLM,maskedMov,nTrials,1);
  
  % Compare actual and predicted
 figure;
@@ -246,10 +359,12 @@ figure;
 
 [x2,y2]=plotSpikeRaster(predictedResponses'>0,'PlotType','vertline');
 figure;
-plot(x1,y1+max(y2),'k');
+plot(x1/120,y1+max(y2),'k');
 hold on;
-plot(x2/10,y2,'r');
-legend('Recorded','Predicted');
+plot(x2/1200,y2,'r');
+ylim([0,max(y1)+max(y2)]);
+set(gca,'YTick',[]);
+%legend('Recorded','Predicted');
 
 %% Nulling experiment with GMLM
 movieLen=120*15;
@@ -264,12 +379,14 @@ binnedResponses = binnedResponseOrig;
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=50;
- predictedResponses = predictGMLM(fitGMLM,maskedMov2,nTrials);
+ predictedResponses4 = predictGMLM_bias(fitGMLM4,maskedMov,nTrials,1);
  
+ predictedResponses1 = predictGMLM_bias(fitGMLM1,maskedMov,nTrials,1);
 
 [x1,y1]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
 
-[x2,y2]=plotSpikeRaster(predictedResponses'>0,'PlotType','vertline');
+[x2,y2]=plotSpikeRaster(predictedResponses4'>0,'PlotType','vertline');
+[x3,y3]=plotSpikeRaster(predictedResponses1'>0,'PlotType','vertline');
 
  % Compare actual and predicted for Null movie.
 mov=movNull(:,:,Filtlen:movie_new_len+Filtlen-1);
@@ -277,28 +394,35 @@ binnedResponses = binnedResponseNull;
  maskedMov= filterMov(mov,mask,squeeze(tf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=50;
- predictedResponses = predictGMLM(fitGMLM,maskedMov2,nTrials);
+ predictedResponses4 = predictGMLM_bias(fitGMLM4,maskedMov,nTrials,1);
  
-[x3,y3]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
+ predictedResponses1 = predictGMLM_bias(fitGMLM1,maskedMov,nTrials,1);
+ 
+[x4,y4]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
 
-[x4,y4]=plotSpikeRaster(predictedResponses'>0,'PlotType','vertline');
+[x5,y5]=plotSpikeRaster(predictedResponses4'>0,'PlotType','vertline');
 
+[x6,y6]=plotSpikeRaster(predictedResponses1'>0,'PlotType','vertline');
  % Compare actual and predicted for Original movie
 
 figure;
-plot(x1,y1+3*max(y2),'r');
+plot(x1,y1+5*max(y2),'r');
 hold on;
-plot(x2/10,y2+2*max(y2),'k');
+plot(x2/10,y2+4*max(y2),'k');
 hold on;
+hold on;
+plot(x3/10,y3+3*max(y2),'r');
+hold on;
+plot(x4,y4+2*max(y2),'k');
+hold on;
+plot(x5/10,y5+max(y2),'r');
+hold on;
+plot(x6/10,y6,'k');
 
-hold on;
-plot(x3,y3+max(y2),'r');
-hold on;
-plot(x4/10,y4,'k');
-ylim([0,4*max(y2)])
+ylim([0,6*max(y2)])
 xlim([0,max(x1)]);
 title('Original & Null movie');
 set(gca,'ytick',[]);
 set(gca,'xtick',[]);
-legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
+%legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
 

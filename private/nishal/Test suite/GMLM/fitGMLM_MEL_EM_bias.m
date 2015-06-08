@@ -86,6 +86,8 @@ end
 
 end
 
+fitGLM.data_act.kx = kx;
+fitGLM.data_act.lam = lam;
 
 fitGLM.Linear.filter=filters;
 fitGLM.Linear.bias = bias;

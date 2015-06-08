@@ -35,13 +35,16 @@ N =size(mov_filtered,2)*interval/120;
 togo=1;
 f_val=Inf;
 tol=1e-5;
+max_iter=1000;
 % make 0 mean. 
-Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2)
+Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2);
 Sigmainv=inv(Sigma);
 
 f_val_log=[]; icnt=0;
-while(togo==1)
-kx=cell(nFrontEnds,1);
+iter=0;
+while(togo==1 & iter<=max_iter)
+iter=iter+1;
+    kx=cell(nFrontEnds,1);
 kkx = cell(nFrontEnds,1);
 
 for ifilter=1:nFrontEnds
@@ -84,6 +87,9 @@ togo=0;
 end
 
 end
+if(iter==max_iter)
+display('Stopping because max iter reached');    
+end
 
 phase2=1;
 if(phase2==1)
@@ -95,11 +101,12 @@ if(phase2==1)
     end
     
   
-    su_mask=double((-k_est)==repmat(max((-k_est)),[nFilters,1])); display('OFF cell assumed');
+    su_mask=double((-k_est)==repmat(max((-k_est),[],1),[nFilters,1])); display('OFF cell assumed');
     
     
-    togo=1;
-    while(togo==1)
+    togo=1; iter=0;
+    while(togo==1 & iter<=max_iter)
+        iter=iter+1;
 kx=cell(nFrontEnds,1);
 kkx = cell(nFrontEnds,1);
 
@@ -140,19 +147,26 @@ lam=lam+mu;
 
 likelihood = (sum(-lam*(interval/120)) + sum(y_tsp.*log(lam(tsp))))/size(mov_filtered,2);
 f_val_prev=f_val;
-f_val=-likelihood
+f_val=-likelihood;
 icnt=icnt+1; f_val_log(icnt)=f_val;
 if((abs(f_val-f_val_prev)/abs(f_val))<tol)
 togo=0;
 end
 
     end
-    
+    if(iter==max_iter)
+display('Phase 2 Stopping because max iter reached');    
+end
+
     
 end
 fitGLM.Linear.filter=filters;
+
 fitGLM.mu=mu;
-% figure;
-% plot(f_val_log);
-% title('Objective v/s iterations');
+fitGLM.data_act.kx=kx;
+fitGLM.data_act.lam=lam;
+% 
+%  figure;
+%  plot(f_val_log);
+%  title('Objective v/s iterations');
 end
