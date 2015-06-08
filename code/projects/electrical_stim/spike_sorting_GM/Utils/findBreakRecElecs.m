@@ -8,7 +8,7 @@ for e=1:length(recElecs)
     if(isempty(matchElec))
         breakRecElecs{e}=[];
     else
-        breakRecElecs{e}=breakStimElecs{matchElec};
+        breakRecElecs{e}=breakStimElecs{matchElec}';
     end
 end
         

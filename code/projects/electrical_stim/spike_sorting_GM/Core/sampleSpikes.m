@@ -85,6 +85,8 @@ for n=1:nNeurons
         end
         
         if(I(j) < Imax)
+            spikes{n}=double(spikes{n});
+            latencies{n}=double(latencies{n});
             spikes{n}(j,I(j)+1:Imax)    = NaN;
             latencies{n}(j,I(j)+1:Imax) = NaN;
         end

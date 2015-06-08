@@ -54,15 +54,20 @@ while(true)
     Gibbs = samplesigma(Gibbs);
     
     Gibbs = LogisticRegression(Gibbs);
-
-
-
+aux=[];
+for n=1:nNeurons
+aux=[aux; nansum(Gibbs.variables.spikes{n}')];
+end
+aux
     if(contIter>1)
         changeSpikes=0;
         for n=1:nNeurons
-            changeSpikes=changeSpikes+sum(sum(abs(Gibbs.variables.spikes{n}'-spikesold{n}')));
+            for j = 1:J
+            changeSpikes=changeSpikes+sum(abs(Gibbs.variables.spikes{n}(j,1:I(j))-spikesold{n}(j,1:I(j))));
+        
+            end
         end
-  
+        
         if(changeSpikes==0)
             return;
         end

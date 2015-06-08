@@ -19,7 +19,6 @@
 % The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
 % The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
 
-
 function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim, varargin)
 
 % INPUTS
@@ -86,6 +85,7 @@ end
 clear temp_fitmovie height width i
 
 %% Load Cell Specific Elements Spikes and STA
+
 for i_cell = 1:length(cells)
     cid = cells(i_cell);
     
@@ -93,11 +93,12 @@ for i_cell = 1:length(cells)
     glm_cellinfo.cid           = cid;
     glm_cellinfo.cell_savename = num2str(cid);
     master_idx         = find(datarun.cell_ids == cid);
-    
+   
     % Make the movie psuedo BW if it isn't already BW
     if ~exist('fitmovie', 'var')
         [RGB, fitmovie] = RGB_to_BW(datarun, master_idx, 'color_movie', fitmovie_color);
     end
+
     
     % Check the size of the movie
     size_fitmovie = size(fitmovie);
@@ -116,6 +117,8 @@ for i_cell = 1:length(cells)
         WN_STA = temp_STA;
         clear temp_STA
     end
+
+
     WN_STA = squeeze(WN_STA);
     size_STA = size(WN_STA);
     assert(length(size_STA) == 3, ['The STA size is ' num2str(size_STA)])
@@ -128,6 +131,7 @@ for i_cell = 1:length(cells)
     center_coord = datarun.vision.sta_fits{master_idx}.mean;
     center(1) = round(center_coord(1)); % y_coord
     center(2) = size(fitmovie,1) - round(center_coord(2)); %x_coord
+
     clear cell_savename
     
     % Align the spikes and the movies to the triggers;
