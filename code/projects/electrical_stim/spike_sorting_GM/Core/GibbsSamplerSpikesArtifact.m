@@ -52,13 +52,9 @@ while(true)
     Gibbs.variables.Residuals = Residuals;
    
     Gibbs = samplesigma(Gibbs);
-    
     Gibbs = LogisticRegression(Gibbs);
-aux=[];
-for n=1:nNeurons
-aux=[aux; nansum(Gibbs.variables.spikes{n}')];
-end
-aux
+
+
     if(contIter>1)
         changeSpikes=0;
         for n=1:nNeurons
