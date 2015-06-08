@@ -15,8 +15,8 @@ for n=neuronIndex
    
     for j = 1:J
         for i = 1:I(j)
-            [i j latenciesNew{n}(j,i)]
-            indLatency                 = find(Tfind0 == latenciesNew{n}(j,i))
+           
+            indLatency                 = find(Tfind0 == latenciesNew{n}(j,i));
             ActionPotentials{n,j}(i,:) = (Kn{n}(:,indLatency))';
         end
     end
