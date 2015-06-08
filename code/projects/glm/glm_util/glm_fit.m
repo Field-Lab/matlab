@@ -28,7 +28,7 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 %   fitmovie should have 2 of each frame
 %   OR the xml specification, like RGB-8-1-0.48-11111-32x32
 
-%   center_coord: the center of the RF (eg from the vision sta fit)
+%   center_coord: the center of the RF
 
 % OPTIONAL
 

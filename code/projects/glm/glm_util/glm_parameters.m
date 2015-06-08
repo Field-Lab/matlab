@@ -43,10 +43,6 @@ GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we a
 GLMP.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
 GLMP.stimfilter.note4 = 'Frames: Time duration of the fitted stim filter in frames';
 
-
-
-
-
 % Optimization
 GLMP.optimization.tolfun   = 5;
 GLMP.optimization.tolx     = 9;
@@ -61,15 +57,8 @@ GLMP.spikefilters.note0 = 'all parameters related to raised sinusoidal humps';
 GLMP.spikefilters.note1 = 'basis built by prep_spikefilterbasisGP / create_histbasis as of 2014-05-3';
 GLMP.spikefilters.ps.ms  = 100 ;      %% post spike filter time length in millisecs
 GLMP.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in millisecs
-
-
-
-
-
-%GLMP.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
-%GLMP.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
-
-
+%GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
+%GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMP.spikefilters.BiDirect_CP     = false;
 GLMP.spikefilters.ps.filternumber = 10;
 GLMP.spikefilters.cp.filternumber = 8;
@@ -81,9 +70,8 @@ GLMP.spikefilters.cp.bstretch     = 0.05;
 GLMP.spikefilters.cp.alpha        = 0;
 GLMP.spikefilters.ps.fratio = .5  ;  % legacy afraid to take out
 GLMP.spikefilters.cp.fratio = .4  ;  % legacy afraid to take out
-GLMP.spikefilters.cp.n_couplings = 3  ;
-
+GLMP.spikefilters.cp.n_couplings = 6  ;
 GLMP.others.fitblockchange = false;
-
 end
+
 
