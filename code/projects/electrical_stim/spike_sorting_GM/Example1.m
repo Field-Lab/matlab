@@ -3,8 +3,8 @@ addpath('./Core/')
 addpath('./Utils/')
 cvx_solver Mosek
 %pathToAnalysisData = './dataExample/';
-pathToAnalysisData = '/Users/gomena/Research/EJ-2014-11-05-Processed/data005/';
-
+% pathToAnalysisData = '/Users/gomena/Research/EJ-2014-11-05-Processed/data005/';
+pathToAnalysisData = '/Volumes/Analysis/2014-11-05-3/data005/';
 sampRate           = 20000;
 
 neuronIds = [2418 2434 2913 2763];
@@ -19,7 +19,7 @@ T        = Tmax-Tmin+1;
 Tdivide  = [0 floor(T/2) T];
 
 templates = makeTemplatesFromElecResp(pathToAnalysisData,patternNo,neuronIds,recElecs);
-templates = translateTemplate(templates,6,2,2);
+templates = translateTemplate(templates,6,2,2); % Line is here because n2434 has a strange offset
 
 movieNos  = findMovieNos(pathToAnalysisData,patternNo);
 
@@ -47,7 +47,8 @@ for m = 1:size(movieNos,2)
      end
 end
 
-
+% Used to fix the issue with different movies corresponding to the same
+% stimulus
 [data listAmps listStimElecs  listCurrentRangesUsed] = collapseTrialsSameCondition(data,listAmps,listStimElecs,listCurrentRangesUsed);
 
 [data] = cleanTrials(data);
