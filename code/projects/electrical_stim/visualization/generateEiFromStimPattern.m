@@ -1,4 +1,4 @@
-function rawData = generateEiFromStimPattern(pathToAnalysisData, patternNo,varargin)
+function [rawData, amplitudes] = generateEiFromStimPattern(pathToAnalysisData, patternNo,varargin)
 %% Show average recordings from all electrodes after a given stimulus as an EI
 % inputs:  pathToAnalysisData: a string that points to preprocessed data e.g.,'/Volumes/Analysis/2012-09-24-3/data008/';
 %          patternNo: numeric pattern number
@@ -9,6 +9,7 @@ function rawData = generateEiFromStimPattern(pathToAnalysisData, patternNo,varar
 %                circleSize - default 350, controls the size of the marker
 %                'electrodes'
 %                suppressPlots - option not to show plots, default 0
+%                plotElecWaveforms
 % Usage: generateEiFromStimPattern('/Volumes/Analysis/2012-09-24-3/data006/', 49,'movieNo',443)
 % Lauren Grosberg 9/2014
 
@@ -60,15 +61,17 @@ if ~suppressPlots
     set(f,'Color','white');
 end
 rawData = zeros(size(dataTraces,1),size(dataTraces,2),size(dataTraces,3),length(mIndices));
+idx = 0; % index for saving rawData output
 for movieIndex = mIndices
+    idx = idx + 1; 
     cla;
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(movieIndex), 99999);
     try
-        rawData(:,:,:,movieIndex) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
+        rawData(:,:,:,idx) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
     catch
         rawData(end,:,:,:) = []; %Sometimes certain movies have fewer repetitions than the first one
-        rawData(:,:,:,movieIndex) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
+        rawData(:,:,:,idx) = dataTraces(1:size(rawData,1),1:size(rawData,2),1:size(rawData,3));
     end
     % get stimulus amplitude
     [amps, stimChan, ~] = getStimAmps(pathToAnalysisData,...
