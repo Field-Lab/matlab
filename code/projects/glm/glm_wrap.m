@@ -237,6 +237,7 @@ for k = FitBlocks
 end
 spikesconcat = T_SP;
 end
+
 function raster_spiketimes = subR_createraster(blockedspikes, TestPars)
 % AKHeitman 2014-04-14
 % Make a raster which takes into account GLM processing
@@ -265,6 +266,7 @@ for i_blk = 1 : length(rasterblocks)
 end 
 
 end
+
 function concat_fitmovie   = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , FitPars)
 % AKHeitman 2014-04-14
 % Concatenate the fit movie (different blocks)
@@ -294,6 +296,7 @@ end
 concat_fitmovie = concat_fullfitMovie;
 
 end
+
 function [center,sd]       = subR_visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, masterdim, slvdim)
 % AKHeitman  2013-12-08
 % Grab x, y coordinates of STA center of the master

@@ -28,7 +28,7 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 %   fitmovie should have 2 of each frame
 %   OR the xml specification, like RGB-8-1-0.48-11111-32x32
 
-%   center_coord: the center of the RF (eg from the vision sta fit)
+%   center_coord: the center of the RF
 
 % OPTIONAL
 
@@ -124,8 +124,8 @@ end
 p_init     =  0.1*ones(paramind.paramcount,1);  
 
 % ORGANIZE STIMULUS COVARIATES
-inputstats.mu_avgIperpix = mean(fitmovie(:));
-inputstats.range = range(fitmovie(:));
+inputstats.mu_avgIperpix = double(mean(fitmovie(:)));
+inputstats.range = double(range(fitmovie(:)));
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 fittedGLM.inputstats = inputstats;
 %
