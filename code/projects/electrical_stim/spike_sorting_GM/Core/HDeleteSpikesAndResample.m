@@ -36,6 +36,7 @@ for n=1:nNeurons
         CondDel  = CondsDel{n};
         
         if(~isempty(CondDel))
+            Log(n).Deletion(breakRange) = 1;
             contLog(n)=contLog(n)+1;
             Log(n).Heuristic{contLog(n)}=['Going to delete spikes at breakpoint range ' num2str(breakRange) ' starting at condition ' num2str(CondDel)];
             Log(n).params.contLogHeuristic = contLog(n);
@@ -123,7 +124,7 @@ for n=1:nNeurons
             
             
         else
-            Log(n).params.contLogHeuristic = contLog(n);
+            Log(n).Deletion(breakRange) = 0;
             
         end
     end
