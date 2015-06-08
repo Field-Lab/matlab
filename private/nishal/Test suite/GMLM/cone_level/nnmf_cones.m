@@ -1,5 +1,6 @@
     
       %% Load alex cone data
+      addpath(genpath('../../../Test suite/'));
           %  load('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/conepreprocess.mat');
           % close all
          % load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
