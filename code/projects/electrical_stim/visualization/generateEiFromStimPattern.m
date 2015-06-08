@@ -1,4 +1,4 @@
-function rawData = generateEiFromStimPattern(pathToAnalysisData, patternNo,varargin)
+function [rawData, amplitudes] = generateEiFromStimPattern(pathToAnalysisData, patternNo,varargin)
 %% Show average recordings from all electrodes after a given stimulus as an EI
 % inputs:  pathToAnalysisData: a string that points to preprocessed data e.g.,'/Volumes/Analysis/2012-09-24-3/data008/';
 %          patternNo: numeric pattern number
@@ -9,6 +9,7 @@ function rawData = generateEiFromStimPattern(pathToAnalysisData, patternNo,varar
 %                circleSize - default 350, controls the size of the marker
 %                'electrodes'
 %                suppressPlots - option not to show plots, default 0
+%                plotElecWaveforms
 % Usage: generateEiFromStimPattern('/Volumes/Analysis/2012-09-24-3/data006/', 49,'movieNo',443)
 % Lauren Grosberg 9/2014
 
