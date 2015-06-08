@@ -19,8 +19,12 @@
 % The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
 % The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
 
+<<<<<<< HEAD
+function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim_description, varargin)
+=======
 
 function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim, varargin)
+>>>>>>> 3ab7ce02a06516ed2d56a76299b6f058101517d7
 
 % INPUTS
 
@@ -28,10 +32,14 @@ function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim, varargin)
 % glm_fit_from_WN(cells, dataset, stim, optional: stim_length, d_save)
 % dataset='2014-11-05-2/data009_nps';
 % cells=[2372,2523]
+<<<<<<< HEAD
+% stim_description 'RGB-10-2-0.48-11111-32x32'
+=======
 % stim: either a string like 'RGB-10-2-0.48-11111-32x32'
 %    or the matfile movie
 %    with a frame for every 1/120 seconds (regardless of interval, so will have repeated frames if interval >1)
 %    and stim size x time if black and white or stim size x 3 x time if RGB
+>>>>>>> 3ab7ce02a06516ed2d56a76299b6f058101517d7
 
 % OPTIONAL KEYWORDS
 % stim_length, optional, default 15 min
@@ -42,9 +50,14 @@ function [fittedGLM] = glm_fit_from_WN(cells, dataset, stim, varargin)
 
 % Parse optional input
 p = inputParser;
+<<<<<<< HEAD
+p.addParamValue('stim_length', 900)
+p.addParamValue('d_save', 0)
+=======
 p.addParameter('stim_length', 900)
 p.addParameter('d_save', 0)
 p.addParameter('monitor_refresh', 120)
+>>>>>>> 3ab7ce02a06516ed2d56a76299b6f058101517d7
 p.parse(varargin{:});
 stim_length = p.Results.stim_length;
 d_save = p.Results.d_save;
@@ -86,6 +99,7 @@ end
 clear temp_fitmovie height width i
 
 %% Load Cell Specific Elements Spikes and STA
+
 for i_cell = 1:length(cells)
     cid = cells(i_cell);
     
@@ -93,11 +107,12 @@ for i_cell = 1:length(cells)
     glm_cellinfo.cid           = cid;
     glm_cellinfo.cell_savename = num2str(cid);
     master_idx         = find(datarun.cell_ids == cid);
-    
+   
     % Make the movie psuedo BW if it isn't already BW
     if ~exist('fitmovie', 'var')
         [RGB, fitmovie] = RGB_to_BW(datarun, master_idx, 'color_movie', fitmovie_color);
     end
+
     
     % Check the size of the movie
     size_fitmovie = size(fitmovie);
@@ -116,6 +131,8 @@ for i_cell = 1:length(cells)
         WN_STA = temp_STA;
         clear temp_STA
     end
+
+
     WN_STA = squeeze(WN_STA);
     size_STA = size(WN_STA);
     assert(length(size_STA) == 3, ['The STA size is ' num2str(size_STA)])
@@ -128,6 +145,7 @@ for i_cell = 1:length(cells)
     center_coord = datarun.vision.sta_fits{master_idx}.mean;
     center(1) = round(center_coord(1)); % y_coord
     center(2) = size(fitmovie,1) - round(center_coord(2)); %x_coord
+
     clear cell_savename
     
     % Align the spikes and the movies to the triggers;
