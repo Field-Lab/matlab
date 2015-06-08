@@ -16,12 +16,12 @@ TripletRep              = TripletRepInMs*20;
 NumberOfSamples         = 10000; % trigger interval = 0.5 s
 electrodes              = 1:512;
 Array                   = eye(512,512);
-prePulseAmp             = 3; % prepulse at 3uA
+prePulseAmp             = 4; % prepulse at 4uA
 
 % ampsToTest              = [0.189  0.2835  0.378   0.4725  0.567];
-ampsToTest              = [0.6615 0.756   0.8505  0.945   1.0395];
+% ampsToTest              = [0.6615 0.756   0.8505  0.945   1.0395];
 % ampsToTest              = [1.134  1.2285  1.323   1.512   1.6065];
-% ampsToTest              = [1.7955 2       2.1735  2.3625  2.646];
+ ampsToTest              = [1.7955 2       2.1735  2.3625  2.646];
 
 numAmpsPerElec          = size(ampsToTest,2);    
 Array                   = repmat(Array,1,2+numAmpsPerElec); % 2 patterns/electrode associated with first two large pulses, numAmpsPerElec associated with the amps to be tested
@@ -73,18 +73,17 @@ for i =1:nChunksTotal
     Chunk=NS_MovieChunkGenerationForExperiment(Times, NumberOfSamples, currentPattern);
     movieChunks = [movieChunks Chunk]; %#ok<AGROW> %first value indicates number of chunks
 end
-%%
-% cd /Users/grosberg/Desktop/  
-keyboard; 
-
-fid = fopen('pulse_triplets_3uAampSet2_electrodes','wb','ieee-le.l64');
-fwrite(fid,electrodes,'int32');
-fclose(fid);
-
-fid = fopen('pulse_triplets_3uAampSet2_patterns','wb','ieee-le.l64');
-fwrite(fid,Array,'double');  
-fclose(fid);     
-
-fid = fopen('pulse_triplets_3uAampSet2_movie','wb','ieee-le.l64');
-fwrite(fid,movieChunks,'int32');
-fclose(fid);
+% %%
+%  cd /Users/grosberg/Desktop/  
+% 
+% fid = fopen('pulse_triplets_4uAampSet4_el','wb','ieee-le.l64');
+% fwrite(fid,electrodes,'int32');
+% fclose(fid);
+% 
+% fid = fopen('pulse_triplets_4uAampSet4_pt','wb','ieee-le.l64');
+% fwrite(fid,Array,'double');  
+% fclose(fid);     
+% 
+% fid = fopen('pulse_triplets_4uAampSet4_mv','wb','ieee-le.l64');
+% fwrite(fid,movieChunks,'int32');
+% fclose(fid);
