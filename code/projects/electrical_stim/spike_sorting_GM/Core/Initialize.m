@@ -4,10 +4,11 @@ function initial=Initialize(input)
 
 data           = input.tracesInfo.data;
 templates      = input.neuronInfo.templates;
-TfindRange     = input.params.TfindRange;  
-TfindRangeRel  = input.params.TfindRangeRel;
+TfindRange     = input.params.initial.TfindRange;  
+TfindRangeRel  = input.params.initial.TfindRangeRel;
 TfindRel       = [TfindRangeRel(1):TfindRangeRel(2)];
-Tdivide        = input.params.Tdivide;
+Tdivide        = input.params.initial.Tdivide;
+rho            = input.params.initial.rho;
 
 E = input.tracesInfo.E;
 T = input.tracesInfo.T;
@@ -21,11 +22,11 @@ lengthFindRange = length(TfindRel);
 lengthSpikes    = sum(I)*nNeurons*lengthFindRange;
 lengthDataVec   = sum(I)*E*T;
 for e=1:E
-    breakRanges{e}  = [0 input.tracesInfo.breakRecElecs{e} J];
+    breakRanges{e}  = [0 input.tracesInfo.breakPoints{e} J];
     
     for m=1:length(breakRanges{e})-1
         lengthRange    = breakRanges{e}(m+1)-breakRanges{e}(m);
-        aux            = find(lengthRange<=input.params.degPolRule)-1;
+        aux            = find(lengthRange<=input.params.initial.degPolRule)-1;
         degPols{e}(m)  = aux(1);
     end
 end
@@ -55,11 +56,11 @@ sizeA     = sum(sizeAe);
 Xpol=sparse(0,0);
 for j = 1:J
 
-    Xji=sparse(T*E,sizeA);
+    XjPol{j}=sparse(T*E,sizeA);
     
     for e = 1:E
 
-    Xjei=sparse(T,sizeAe(e));
+    XjAlle=sparse(T,sizeAe(e));
     rangeIndex=find(breakRanges{e}<j);
     rangeIndex=rangeIndex(end);
     covPol=(j-breakRanges{e}(rangeIndex));
@@ -69,26 +70,30 @@ for j = 1:J
             covsPol=[covsPol covPol^(p-1)];
         end
 
-    XjeiAux=sparse(0,0);
+    Xje{j,e}=sparse(0,0);
     
         for t=1:T
-            indt     = sparse(1,T);
-            indt(t)  = 1;
-            indtcovs = sparse(kron(indt,covsPol));
-            XjeiAux  = sparse([XjeiAux;indtcovs]);
+            indt         = sparse(1,T);
+            indt(t)      = 1;
+            indtcovs     = sparse(kron(indt,covsPol));
+            Xje{j,e}  = sparse([Xje{j,e};indtcovs]);
         end
-
-        Xjei(:,1+sizeAeDegCum{e}(rangeIndex):sizeAeDegCum{e}(rangeIndex+1)) = XjeiAux;
-        Xji(T*(e-1)+1:T*e,1+sizeAeCum(e):sizeAeCum(e+1)) = Xjei;
-        Xjis{j} = Xji;
+        
+        XjAlle(:,1+sizeAeDegCum{e}(rangeIndex):sizeAeDegCum{e}(rangeIndex+1)) = Xje{j,e};
+        XjPol{j}(T*(e-1)+1:T*e,1+sizeAeCum(e):sizeAeCum(e+1)) = XjAlle;
+       
     end
     
-        Xjpol = sparse(repmat(Xji,I(j),1));
-        Xpol  = sparse([Xpol;Xjpol]);
+        Xjipol = sparse(repmat(XjPol{j},I(j),1));
+        Xpol  = sparse([Xpol;Xjipol]);
 
 end
     
-
+for e=1:E
+    for j=1:J
+        XePol{e}((j-1)*T+1:j*T,:) = XjPol{j}((e-1)*T+1:e*T,1+sizeAeCum(e):sizeAeCum(e+1));
+    end
+end
 
 
 
@@ -157,19 +162,24 @@ end
 Ag = sparse([speye(lengthSpikes);-speye(lengthSpikes);Asp;Ai]);
 b  = sparse([ones(lengthSpikes,1);zeros(lengthSpikes,1);ones(size(Asp,1),1);zeros(size(Ai,1),1)]);
 
-rho1 = lengthSpikes;
-rho2 = norm(dataVec,2)^2;
+
 
 
 c = ones(lengthSpikes,1);
 cvx_begin
 variable BetaPol(sizeA)
 variable s(lengthSpikes) 
-minimize (quad_form((dataVec-Xpol*BetaPol-K*s),speye(length(dataVec))));
+if(rho>0)
+    minimize (rho*c'*s+quad_form((dataVec-Xpol*BetaPol-K*s),speye(length(dataVec))));
+else
+    minimize (quad_form((dataVec-Xpol*BetaPol-K*s),speye(length(dataVec))));
+end
 Ag*s <= b;
 cvx_end
 
-
+for e=1:E
+    BetaPolE{e}=BetaPol(1+sizeAeCum(e):sizeAeCum(e+1));
+end
 
 for n = 1:nNeurons
     for j = 1:J
@@ -189,7 +199,7 @@ end
 
 
 for j = 1:J
-    A(j,:) = Xjis{j}*BetaPol;
+    A(j,:) = XjPol{j}*BetaPol;
     
 end
 
@@ -235,7 +245,7 @@ for e=1:E
     end
 
     lambda0    = ones(length(matricesReg(e).Prods),1);
-    lambda     = NewtonMaxLogDet(lambda0,matricesReg(e).Prods,quad);
+    lambda     = NewtonMaxLogDet(input,lambda0,matricesReg(e).Prods,quad);
     lambda     = exp(lambda);
     lambdas{e} = lambda;
 
@@ -252,8 +262,8 @@ Lambdas{e} = sparse(Lambdas{e});
 LambdasInv{e} = sparse(inv(Lambdas{e}));
 end
 
-
-
+initial.BetaPolE          = BetaPolE;
+initial.BetaPol           = BetaPol;
 initial.ArtifactVariables = Beta;
 initial.Artifact          = A;
 initial.ArtifactE         = AE;
@@ -265,6 +275,9 @@ initial.ActionPotentials  = ActionPotentials;
 
 initial.params.Xj                 = Xj;
 initial.params.X                  = X;
+initial.params.Xpol               = Xpol;
+initial.params.XePol              = XePol;
+initial.params.XjPol              = XjPol;
 initial.params.matricesReg        = matricesReg;
 initial.params.lambdas            = lambdas;
 initial.params.Lambdas            = Lambdas;
