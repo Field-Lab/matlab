@@ -5,7 +5,7 @@ function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 % INPUTS
 % 
 % fittedGLM structure
-% testmovie 
+% testmovie should be in stim size x time (NO RGB!)
 % OPTIONAL
 % testspikes, which should be in cells, with each cell a repeat
 %   if no testspikes, no bits per spike will be calculated
@@ -36,7 +36,7 @@ frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord); 
 
 %%
-if testspikes
+if iscell(testspikes)
     logicalspike = zeros(params.trials,params.bins) ;
     for i_blk = 1 : params.trials
         spt = testspikes{i_blk};
@@ -50,7 +50,11 @@ if testspikes
         for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
             pairspike{pair} = zeros(params.trials,params.bins) ;
             for i_blk = 1 : params.trials
-                spt = neighborspikes{pair}{i_blk};
+                if params.trials == 1
+                    spt = neighborspikes{pair};
+                else
+                    spt = neighborspikes{pair}{i_blk};
+                end
                 binnumber = ceil(spt / params.bindur );
                 pairspike{pair}( i_blk, binnumber )  =  pairspike{pair}( i_blk,binnumber ) + 1;
             end
@@ -123,11 +127,11 @@ end
 lcif_kx0 = reshape( repmat(lcif_kx_frame, bpf, 1) , 1 , params.bins);
 lcif_mu0 = MU * ones (1,params.bins);
 
-if testspikes
+if iscell(testspikes)
     lcif_mu = repmat(lcif_mu0 , params.trials, 1);
     lcif_kx = repmat(lcif_kx0 , params.trials, 1);
     clear sbpf;
-    lcif = lcif_mu + lcif_kx;
+   lcif = lcif_mu + lcif_kx;
     
     if GLMType.PostSpikeFilter
         lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );
@@ -176,6 +180,7 @@ if testspikes
     xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
     xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
     xvalperformance.rasters.recorded = logicalspike;
+    xvalperformance.glm_rateperbin  = params.bindur * glm_ratepersec;
 end
 
 %%

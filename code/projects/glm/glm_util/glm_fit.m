@@ -2,12 +2,25 @@
 % This takes in the stimulus, the spikes, and the location of the cell to
 % fit a GLM. The GLM architecture and settings can be changed in
 % glm_parameters.m
+%
+% PATHS NEEDED
+% Vision.jar, such as javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar')
+% The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
+% The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
+
+% TROUBLESHOOTING
+% If it isn't working, use STA_Test(fitspikes, fitmovie, center_coord) to
+% make sure your timing and indexing is right.
+% This also only works for greyscale movies! It is not set up for color!
 
 
-function [fittedGLM] = glm_fit(fitspikes, fitmovie, center_coord, varargin)
+function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 
 % INPUTS
 %
+
+% REQUIRED
+
 %   fitspikes: the spike times of the neuron
 
 %   fitmovie: the movie frame by frame. You should
@@ -17,57 +30,59 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center_coord, varargin)
 
 %   center_coord: the center of the RF
 
+% OPTIONAL
+
 %   WN_STA: optional, To do fixedSP_rk1, you need to input the STA in the same
 %   dimensions as the fitting stimulus
 
 %   neighborspikes: optional, a cell array, where each cell has the spike times of
 %   the neighbor cells
-
-%   Set the specifics of the GLM architecture in GLMSettings.
-
-% Requires matlab/code/projects/glm to be added to your path
+%
+%   monitor_refresh: usually should be 120Hz. This is NOT the interval!
+%   Just the monitor speed!
 
 % Parse optional input 
 p = inputParser;
 p.addParamValue('WN_STA', 0)
 p.addParamValue('neighborspikes', 0)
+p.addParameter('monitor_refresh', 120)
 p.parse(varargin{:});
 WN_STA = p.Results.WN_STA;
 neighborspikes = p.Results.neighborspikes;
+monitor_refresh = p.Results.monitor_refresh;
 clear p
-
-%%
-
-% Check STA input
-% if WN_STA ~= 0
-%     assert(size(fitmovie,1) == size(WN_STA,1) && size(fitmovie,2) == size(WN_STA,2), 'STA and Movie are not the same dimensions')
-% end
 
 %% Setup Covariates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load up GLMParams compute some universal params
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-glm_parameters; % GLMType and GLMParams defined here
+[GLMT, GLMP] = glm_parameters; % GLMType and GLMParams defined here
 
-% if isfield(GLMType, 'specialchange') && GLMType.specialchange
-%     GLMPars = GLMParams(GLMType.specialchange_name);
-% end
-fittedGLM.GLMPars = GLMPars;
-fittedGLM.GLMType = GLMType;
+fittedGLM.GLMPars = GLMP;
+fittedGLM.GLMType = GLMT;
+GLMPars = GLMP;
+GLMType = GLMT;
+clear GLMP GLMT
+
+center_coord.x_coord = center(2);
+center_coord.y_coord = center(1);
 fittedGLM.center_coord = center_coord;
-if isfield(GLMType, 'debug') && GLMType.debug
-    GLMPars.optimization.tolfun = 1; 
+
+if isfield(fittedGLM.GLMType, 'specialchange') && fittedGLM.GLMType.specialchange
+    GLMPars = GLMParams(GLMType.specialchange_name);
 end
 
+if isfield(fittedGLM.GLMType, 'debug') && fittedGLM.GLMType.debug
+    GLMPars.optimization.tolfun = 1; 
+end
 
 % Timing
 frames = size(fitmovie,3);
 bins   = frames * GLMPars.bins_per_frame;
-t_bin  = (1/120) / GLMPars.bins_per_frame;
+t_bin  = (1/monitor_refresh) / GLMPars.bins_per_frame;
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
-
 
 % Make Coupling and Post Spike Filter Bases
 bin_size      = t_bin;
@@ -109,8 +124,8 @@ end
 p_init     =  0.1*ones(paramind.paramcount,1);  
 
 % ORGANIZE STIMULUS COVARIATES
-inputstats.mu_avgIperpix = mean(fitmovie(:));
-inputstats.range = range(fitmovie(:));
+inputstats.mu_avgIperpix = double(mean(fitmovie(:)));
+inputstats.range = double(range(fitmovie(:)));
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 fittedGLM.inputstats = inputstats;
 %
@@ -252,10 +267,9 @@ stimsize.height = size(fitmovie,2);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
-[STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
 if GLMType.CONVEX
     if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
-        
+        [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
         timefilter           = pstar(paramind.X);
         stimfilter           = STA_sp * (timefilter');
         stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);
