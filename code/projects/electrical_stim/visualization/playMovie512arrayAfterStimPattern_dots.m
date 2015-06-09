@@ -16,11 +16,11 @@ p = inputParser;
 p.addRequired('pathToAnalysisData', @ischar)
 p.addRequired('patternNo', @isnumeric)
 
-p.addParamValue('movieNo', 0, @isnumeric) 
-p.addParamValue('movieIndex', 0, @isnumeric)
-p.addParamValue('saveMovie', false, @islogical) %default: don't save movie
-p.addParamValue('colorScale',[-20 10], @isnumeric); 
-p.addParamValue('circleSize', 350, @isnumeric);
+p.addParameter('movieNo', 0, @isnumeric) 
+p.addParameter('movieIndex', 0, @isnumeric)
+p.addParameter('saveMovie', false, @islogical) %default: don't save movie
+p.addParameter('colorScale',[-20 10], @isnumeric); 
+p.addParameter('circleSize', 350, @isnumeric);
 
 p.parse(pathToAnalysisData, patternNo, varargin{:})
 saveMovie = p.Results.saveMovie; 

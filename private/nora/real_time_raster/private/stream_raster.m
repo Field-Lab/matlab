@@ -30,7 +30,7 @@ trigger_increment=1.6652e+04; % about where the next trigger is supposed to be! 
 % load the initial half second of data to get started
 sample_start=0;
 sample_end=sampling_rate/2;
-trigger_data=rdf.getData(0,sample_start,sample_end-sample_start);
+trigger_data=rdf.getData(1,sample_start,sample_end-sample_start);
 
 % bookkeeping counts, errors and warnings
 bad_channel_warn=0;
@@ -59,7 +59,7 @@ while ~end_of_streaming
         
         % if it is a raster start, find the spikes and plot!
         if trigger_count==raster_start(raster_count+1)
-            raster_count=raster_count+1;
+            raster_count=raster_count+1
             
             disp(['Making Raster ' num2str(raster_count)])
 
@@ -128,8 +128,8 @@ while ~end_of_streaming
                 hold off
                 ylim([0 raster_count+1])
             end
-        elseif trigger_count==(raster_start(raster_count)+1)
-            disp('Waiting for more data')
+       % elseif trigger_count==(raster_start(raster_count)+1)
+        %    disp('Waiting for more data')
         end
     end
     

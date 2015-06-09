@@ -86,7 +86,7 @@ for i_exp = exps
         testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
         GLMType.fitmoviefile  = origmatfile;
         if GLMType.debug
-            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:2);
+            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:57);
         end
         fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
          
@@ -98,6 +98,7 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
+        Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
@@ -153,6 +154,7 @@ for i_exp = exps
                     
                     % NBCoupling 06-10-2014
                     if GLMType.CouplingFilters==true
+                        % eval(sprintf('load %s/neighbor_cells.mat', BD.Cell_Selection));
                         glm_cellinfo.pairs=subR_pick_neighbor_cells(stafit_centercoord, cells_to_pair, datarun_master.vision.sta_fits);
                     else
                         glm_cellinfo.pairs=0;
@@ -235,6 +237,7 @@ for k = FitBlocks
 end
 spikesconcat = T_SP;
 end
+
 function raster_spiketimes = subR_createraster(blockedspikes, TestPars)
 % AKHeitman 2014-04-14
 % Make a raster which takes into account GLM processing
@@ -263,6 +266,7 @@ for i_blk = 1 : length(rasterblocks)
 end 
 
 end
+
 function concat_fitmovie   = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , FitPars)
 % AKHeitman 2014-04-14
 % Concatenate the fit movie (different blocks)
@@ -292,6 +296,7 @@ end
 concat_fitmovie = concat_fullfitMovie;
 
 end
+
 function [center,sd]       = subR_visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, masterdim, slvdim)
 % AKHeitman  2013-12-08
 % Grab x, y coordinates of STA center of the master
