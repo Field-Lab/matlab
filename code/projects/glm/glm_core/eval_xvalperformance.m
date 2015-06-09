@@ -226,7 +226,7 @@ elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
         cif0         = exp(lcif_const);
         cif_ps_cp       = cif0;
         binary_simulation = zeros(1,params.bins);
-        for i = 1 : params.bins- cp_bins;
+        for i = 1 : params.bins- max(cp_bins, ps_bins);
             roll = rand(1);
             if roll >  exp(-params.bindur*cif_ps_cp(i));
                 cif_ps_cp(i+1: i + ps_bins) =  cif_ps_cp(i+1: i + ps_bins) .* (cif_psgain');

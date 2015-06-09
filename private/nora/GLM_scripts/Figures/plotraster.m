@@ -119,7 +119,7 @@ end
 if p.Results.PSTH
     runtrials=find(runawaytrial);
     N=length(runtrials);
-    convolve=150;
+    convolve=30;
     PSTH_rec=zeros(length(runtrials),bins);
     PSTH_sim=zeros(length(runtrials),bins);
     
