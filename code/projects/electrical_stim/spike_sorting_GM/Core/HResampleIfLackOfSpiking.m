@@ -74,7 +74,7 @@ while(true)
                 continue
             end
         end
-        if(nargin<4||contIter>1)
+        if(nargin<5||contIter>1)
             if(isempty(auxHigh)) 
                 continue
             else
