@@ -46,7 +46,7 @@ for patternIndex = 1:size(patternNos, 2)
         f = figure; set(f,'Position',[100 360 1000 550]);
         set(f,'Color','white');
     end
-    
+    neighborsToIgnore = 3;
     ignore = [];
     
     for movieIndex = mIndices
@@ -58,7 +58,10 @@ for patternIndex = 1:size(patternNos, 2)
         subtractionMatrix = repmat(firstArtifact,[size(dataTraces,1) 1]);
         
         if isempty(ignore)
-            ignore = hexNeighborsFast(stimChan, hexArray, hexCoords);
+            ignore = stimChan;
+            for i = 1:neighborsToIgnore
+                ignore = hexNeighborsFast(ignore, hexArray, hexCoords);
+            end
         end
         
         %for t = 1:30 %size(dataTraces,3)
@@ -72,7 +75,7 @@ for patternIndex = 1:size(patternNos, 2)
                 
         for j = 1:size(bundle, 1)
             if ismember(bundle(j, 2), ignore)
-                bundle(j, 1) = NaN;
+                bundle(j, 3) = NaN;
             end
         end
         
@@ -103,7 +106,7 @@ for patternIndex = 1:size(patternNos, 2)
 %         end
             
         
-        bundleMean = mean(bundle(~isnan(bundle(:, 1))), 1);
+        bundleMean = mean(bundle(~isnan(bundle(:, 3))), 1);
         
         bundleMeans(movieIndex-1, 1, patternIndex) = bundleMean;
         bundleMeans(movieIndex-1, 2, patternIndex) = amps(1);
