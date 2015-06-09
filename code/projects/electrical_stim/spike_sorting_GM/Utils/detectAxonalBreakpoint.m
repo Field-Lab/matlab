@@ -1,4 +1,4 @@
-function [eigs negsum possum energies]=detectAxonalBreakpoint(pathToAnalysisData, patternNo)
+function [eigs negsum possum energies Matrices]=detectAxonalBreakpoint(pathToAnalysisData, patternNo)
 
 lMovingAverage=1;
 tMin = 11;
@@ -58,7 +58,7 @@ end
 end
 energies(movieIndex)=nansum(nansum(A));
 A=A./nansum(nansum(A));
-
+Matrices{movieIndex}=A;
 x =[1:32]';
 y =[1:65];
 Mx= nansum(x'*A);
