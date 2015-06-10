@@ -17,6 +17,9 @@ nNeurons = input.neuronInfo.nNeurons;
 
 for n=1:nNeurons
     Log(n).params.contLogHeuristic = 0;
+    for j=1:J
+        Gibbs.variables.spikes{n}(j,1:I(j))=100000;
+    end
 end
 
 lengthDataVec   = sum(I)*E*T;
@@ -41,12 +44,12 @@ for n=1:nNeurons
 end
 
 
-
 Gibbs.params.I = I;
 Gibbs.params.E = E;
 Gibbs.params.J = J;
 Gibbs.params.T = T;
 Gibbs.params.nNeurons = nNeurons;
+Gibbs.params.maxIterGibbs = input.params.maxIterGibbs;
 
 Gibbs.params.Kn                     = Kn;
 Gibbs.params.X                      = initial.params.X;
