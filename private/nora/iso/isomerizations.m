@@ -1,8 +1,13 @@
-function iso = isomerizations(power_reading, area, varargin)
+function iso = isomerizations(power_reading, area, spectra)
+% This function takes in the spectra spit out by
+% isomerizations_spectra_loading.m, as well as the power reading and area
+% measurements, and spits out the isomerizations for L, M, S cones, and Rods, in that
+% order
 
-% TO DO
-% Fix units + get constants values
-% check file loading + wavelengths of files
+% INPUTS
+% Required
+% power_reading: [r g b w] white is optional in milliwatts
+% area in um^2 microns^2
 
 % UNITS
 % area should be in um^2
@@ -15,49 +20,65 @@ function iso = isomerizations(power_reading, area, varargin)
 %   doesn't change. If the monitor is well centered on the meter, the
 %   reading shouldn't change.
 
-
-%% LOAD AND DEFINE STUFF
-
-p = inputParser;
-p.addParameter('meter_sensitivity_file', '/Volumes/Lab/Experiments/Calibration/Data/UDT/UDT-8U009.1') % eg udt.1
-p.addParameter('monitor_emission_file', '/Volumes/Lab/Experiments/Calibration/Data/rgb.1') % eg RGB.1
-p.addParameter('cone_absorption_file', '/Volumes/Lab/Experiments/Calibration/Data/CA Spectra/ca-lms.1') % eg LMS.1
-p.parse
+% QUESTIONS
+% cone absportion units?
+% still not sure about the unit scaling for the first part??
+% should be 201 but is only 200... why
 
 % Constants
 h = 6.62607*10^-31; % Planck's constant in mW * seconds^2
-c = 2.998*10^17; % nanometers per second
-
-% Load up spectra
-meter_sensitivity_spectrum = dlmread(p.Results.meter_sensitivity_file, '\n', 1, 0);
-monitor_emission_spectrum = dlmread(p.Results.monitor_emission_file, '\n', 1, 0);
-cone_absorption_spectrum = dlmread(p.Results.cone_absorption_file, '\n', 0, 0);
-
-% Check this or load it up or something?
-wavelengths = 370:1:730; % in nanometers
+c = 2.998*10^14; % microns per second
 
 %% CALCULATE THE POWER EMITTED FROM THE MONITOR
 
 % We already have the spectrum in the rgb file, and it is is accurate 
 % up to a scale factor alpha. 
-% power reading = < meter sensitivity | alpha * monitor emission > so
-% milliwatts = file_units * alpha_units *file_units
-alpha = power_reading/(meter_sensitivity_spectrum'*monitor_emission_spectrum);
+% power reading = < meter sensitivity | alpha * monitor emission > 
+% so alpha = power_reading / < meter sensitivity | monitor emission > 
+% and power_spectrum = alpha | monitor emission >
 
-% The true emission spectrum then is 
-power_spectrum = alpha * monitor_emission_spectrum;
+% If you took RGB measurements, it calculates alpha for each color gun, and
+% finds the true spectrum by adding all three colors times their alphas
+if length(power_reading)>1
+    alpha = power_reading(1:3)./(spectra.meter*spectra.monitor);
+    power_spectrum = alpha(1:3) * spectra.monitor';
+end
 
-%% CALCULATE THE FLUX: photons per second absorbed by the cones
+% If you took white and RGB measurements, it compares them here, but
+% ultimately uses the RGB measurements
+if length(power_reading) == 4
+    alpha_white = power_reading(4)./(spectra.meter*sum(spectra.monitor, 2)); % take the sum because used white light
+    power_spectrum_white = alpha_white * sum(spectra.monitor, 2)';
+    plot(spectra.wavelengths, power_spectrum)
+    hold on
+    plot(spectra.wavelengths, power_spectrum_white)
+    legend('Alpha calc separately for each channel', 'Alpha calc from white')
+    text(400, 0.06, ['RGB:  ' num2str(alpha)])
+    text(400, 0.065, ['W:  ' num2str(alpha_white)])
+    text(400, 0.07, 'Alpha')
+    title('White versus RGB Readings')
+end
+
+% If you ONLY took a white measurement, it just calculates one alpha, and
+% assumes all three colors add with the same weight
+if length(power_reading) == 1
+    alpha_white = power_reading./(spectra.meter*sum(spectra.monitor, 2)); % take the sum because used white light
+    power_spectrum = alpha_white * sum(spectra.monitor, 2)';
+end
+
+%% CALCULATE THE FLUX: photons per second absorbed by the photoreceptors
 % Flux in photons / second is given by
-% Flux = sum over wavelengths of Power(wavelength)*Wavelength / (h*c)
-flux = (power_spectrum .* wavelengths)' * cone_absorption_spectrum / (h*c);
+% Flux = sum over wavelengths of Power(wavelength)*Wavelength / (h*c) for
+% each of the three colors and for rods
+wavelengths_um = spectra.wavelengths*10^-3;
+flux = (power_spectrum .* wavelengths_um) * spectra.PR / (h*c); % units here??
 
 %% CALCULATE THE INTENSITY: photons per second per area
 % Intensity in photons/(area*second) is given by
 % Intensity = flux / area
 intensity = flux/area;
 
-%% CALCULATE ISOMERIZATIONS: photons absorbed per cone per second
+%% CALCULATE ISOMERIZATIONS: photons absorbed per photoreceptor per second
 % Isomerizations in photons/(cone * sec)
 % iso = intensity * area/molecule * molecules/cone
 % Area/molecule * molecules/cone ~ 1 um^2/cone
