@@ -37,7 +37,11 @@ input.params.initial.Newton.thres = 0.01;
 % don't change, decreases the sensitivity of the sigmoidal fit to low
 % probability spiking. 
 input.params.Gibbs.thresLogistic = 0.15*ones(1,input.tracesInfo.J);
-
+%Maximum number of Gibbs sampling iterations. This number is important, in
+%some cases we have to set it small so we won't waste time iterating and
+%getting the same results. The problem is that if it is too small then the
+%Gibbs sampler won't 'move' enough
+input.params.maxIterGibbs = 10;
 % heuristic parameters - addresses cases of high/low activation in
 % subsequent stimulation conditions.
 input.params.Heuristic.ResampleAlltimes = 1;
