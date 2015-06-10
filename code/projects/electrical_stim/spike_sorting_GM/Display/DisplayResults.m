@@ -1,5 +1,5 @@
 function DisplayResults(input,Gibbs,Log,n)
-
+figure; set(gcf,'Position', [387	340     1411    758]); 
 
 neuronIds = input.neuronInfo.neuronIds;
 neuronId = neuronIds(n);
@@ -34,10 +34,13 @@ clear sigma
 sigma  = Gibbs.variables.sigma(e,:);
 
 subplot(2,2,1)
-plot(amps,spikeProbs,'linewidth',3)
-grid('on')
-hold on
-plot(amps,spikeLogProbs,'--','linewidth',2)
+plot(amps,spikeProbs,'linewidth',3); 
+grid('on'); 
+hold on; plot(amps,spikeLogProbs,'--','linewidth',2); 
+xlabel('stimulation amplitude (uA)'); 
+ylabel('spike probability'); 
+title(sprintf('activation curve for n%0.0f',neuronId)); 
+
 for b = breakAxon
     plot([amps(b) amps(b)],[0 1],'linewidth',1.5,'color','green')
 end
@@ -48,20 +51,25 @@ axis([amps(1) amps(end) 0 1])
 
 
 subplot(2,2,2)
-plot(amps,latencies(:,2),'o','MarkerFaceColor','blue','Markersize',12)
+dots = plot(amps,latencies(:,2),'o','MarkerFaceColor','blue','Markersize',12); 
 hold on
 grid('on')
-plot(amps,latencies(:,3),'x','markersize',15)
-plot(amps,latencies(:,1),'x','markersize',15)
+crosses = plot(amps,latencies(:,3),'x','markersize',15); 
+plot(amps,latencies(:,1),'x','markersize',15);
+xlabel('stimulation amplitude (uA)'); 
+ylabel('latencies (sample points)'); 
+legend([dots,crosses],'medians','quartiles'); % of responding trials
+title(sprintf('latencies for n%0.0f',neuronId)); 
+
 for b = breakAxon
     
-    plot([amps(b) amps(b)], [nanmin(nanmin(lats))-3 nanmax(nanmax(lats))+3],'linewidth',1.5,'color','green')
+    plot([amps(b) amps(b)], [nanmin(nanmin(latencies))-3 nanmax(nanmax(latencies))+3],'linewidth',1.5,'color','green')
 end
 for b = breakRecElec
-    plot([amps(b) amps(b)], [nanmin(nanmin(lats))-3 nanmax(nanmax(lats))+3],'linewidth',1.5,'color','red')
+    plot([amps(b) amps(b)], [nanmin(nanmin(latencies))-3 nanmax(nanmax(latencies))+3],'linewidth',1.5,'color','red')
 end
 grid('on')
-axis([amps(1) amps(J) nanmin(nanmin(lats))-3 nanmax(nanmax(lats))+3])
+axis([amps(1) amps(J) nanmin(nanmin(latencies))-3 nanmax(nanmax(latencies))+3])
 
 
 subplot(2,2,3)
@@ -77,9 +85,10 @@ for b = breakRecElec
 end
 
 axis([amps(1) amps(J) nanmin(sigma) nanmax(sigma)])
+xlabel('stimulation amplitude (uA)'); 
+ylabel(['residual std dev in elec' num2str(e)])
 
 subplot(2,2,4)
-
 Artifact=Gibbs.variables.ArtifactE{e};
 
 Time = [input.tracesInfo.Trange(1) : input.tracesInfo.Trange(2)]/input.params.sampRate*1000;
@@ -89,4 +98,6 @@ for j = 1:J
     hold on
     grid('on')
 end
-
+title('artifact estimate'); 
+xlabel('time (ms)'); 
+ylabel('recorded daqs');
