@@ -2,6 +2,7 @@ function [Gibbs Log] = deleteSpikesBeginning(input,Gibbs,Log,maxConds)
 
 nNeurons = Gibbs.params.nNeurons;
 I        = Gibbs.params.I;
+Thres    = input.params.Heuristic.ActivationThres;
 
 
 for n=1:nNeurons
@@ -10,7 +11,7 @@ for n=1:nNeurons
         
         CondsDel{n} = [];
         
-        if(nansum(Gibbs.variables.spikes{n}(j,:)) == I(j))
+        if(nansum(Gibbs.variables.spikes{n}(j,:))./I(j)>Thres)
             CondsDel{n} = [CondsDel{n} j];
         end
         
