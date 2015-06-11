@@ -5,6 +5,8 @@ function displayResults_compare(input,Gibbs,Log,n,varargin)
 % if the optional argument is one, then the x axis show amplitude condition
 % instead of stimulus amplitude
 
+
+
 figure; set(gcf,'Position', [387	340     1411    758]); 
 
 neuronIds = input.neuronInfo.neuronIds;
@@ -18,18 +20,19 @@ breakPointsAll = sort(unique([breakAxon breakRecElec]));
 J = input.tracesInfo.J;
 I = input.tracesInfo.I;
 T = input.tracesInfo.T;
+
+spikeProbs    = nansum(Gibbs.variables.spikes{n}')./I;
+spikeLogProbs = Gibbs.variables.Probs(n,:);
+% Define optional variable
 if(nargin == 5)
     if(varargin{1} == 0)
-        amps = abs(input.stimInfo.listAmps)';
+        amps = abs(input.stimInfo.listAmps(:,1))';
     else
         amps = [1:J];
     end
 else
-     amps=abs(input.stimInfo.listAmps)';
+     amps=abs(input.stimInfo.listAmps(:,1))';
 end
-spikeProbs    = nansum(Gibbs.variables.spikes{n}')./I;
-spikeLogProbs = Gibbs.variables.Probs(n,:);
-
 clear latencies
 for j=1:J
     lats = Gibbs.variables.latencies{n}(j,1:I(j));
@@ -71,7 +74,7 @@ crosses = plot(amps,latencies(:,3),'x','markersize',15);
 plot(amps,latencies(:,1),'x','markersize',15);
 xlabel('stimulation amplitude (\muA)'); 
 ylabel('latencies (sample points)'); 
-legend([dots,crosses],'medians','quartiles'); % of responding trials
+% legend([dots, crosses],'medians','quartiles'); % of responding trials
 title(sprintf('latencies for n%0.0f',neuronId)); 
 
 for b = breakAxon
@@ -92,8 +95,10 @@ temp = load(filename);
 elecResp = temp.elecResp; 
 
 subplot(2,2,3); 
-plot(amps,elecResp.analysis.successRates,...
+hum = plot(abs(elecResp.stimInfo.stimAmps),elecResp.analysis.successRates,...
     'o-','LineWidth',3); grid on; 
+hold on; alg = plot(amps,spikeProbs,'^-','linewidth',3); 
+legend([hum alg(1,1)],'human','algorithm'); 
 xlabel('stimulation amplitude (\muA)'); 
 title('human analysis results'); 
 ylim([0 1]); 
@@ -107,10 +112,10 @@ for ii = 1:size(elecResp.analysis.latencies,1)
     humanLatencies(ii,3) = prctile(humanLats,75);
 end
 subplot(2,2,4); 
-dots = plot(amps,humanLatencies(:,2),'o','MarkerFaceColor','blue','Markersize',12); 
+dots = plot(abs(elecResp.stimInfo.stimAmps),humanLatencies(:,2),'o','MarkerFaceColor','blue','Markersize',12); 
 hold on; grid on; 
-crosses = plot(amps,humanLatencies(:,3),'x','markersize',15); 
-plot(amps,humanLatencies(:,1),'x','markersize',15);
+crosses = plot(abs(elecResp.stimInfo.stimAmps),humanLatencies(:,3),'x','markersize',15); 
+plot(abs(elecResp.stimInfo.stimAmps),humanLatencies(:,1),'x','markersize',15);
 xlabel('stimulation amplitude (\muA)'); 
 ylabel('latencies (sample points)'); 
 legend([dots,crosses],'medians','quartiles'); % of responding trials
