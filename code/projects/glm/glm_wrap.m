@@ -122,7 +122,10 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
+        
+        if GLMType.CouplingFilters
+            Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
+        end
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
