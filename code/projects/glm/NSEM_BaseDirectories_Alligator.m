@@ -29,12 +29,7 @@ BASEDIR.BlockedSpikes   = '/Users/akheitman/NSEM_Home/BlockedSpikes';
 BASEDIR.Cell_Selection  = '/Users/akheitman/NSEM_Home/Cell_Selection';
 BASEDIR.GLM_output_raw  = '/Users/akheitman/NSEM_Home/GLMOutput_Raw';
 BASEDIR.GLM_output_analysis  = '/Users/akheitman/NSEM_Home/GLMOutput_Analysis';
-BASEDIR.GLM_codehome    = '/Users/akheitman/Matlab_code/glm/';
-
-
-
-
-
+BASEDIR.GLM_codehome    = '/Users/akheitman/Matlab_code/github_chichilnisky/glm';
 BASEDIR.GLM_troubleshootplots = sprintf('%s/troubleshootingplots', BASEDIR.GLM_codehome); 
 
 
