@@ -5,13 +5,13 @@ addpath(genpath([location_of_git_repo '/private/nora']));
 
 % Java library
 
-addpath(('~/Nishal/matlab/private/nishal/create_act2'));
+addpath(('/Volumes/Lab/Users/bhaishahster/GITs/matlab/private/nishal/create_act2'));
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
-addpath(genpath('~/Nishal/matlab/private/nishal/Test suite/GLM/'));
-addpath(genpath('~/Nishal/matlab/private/nishal/Test suite/GLM2/'));
-addpath(genpath('~/Nishal/matlab/private/nishal'));
-addpath(genpath('~/Nishal/matlab/code'));
-addpath(genpath('~/Nishal/matlab/private/nishal/create_act_2/'));
+addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/private/nishal/Test suite/GLM/'));
+addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/private/nishal/Test suite/GLM2/'));
+addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/private/nishal'));
+addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/code'));
+addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/private/nishal/create_act_2/'));
 %% Dataset details
 % WN_datafile = '2015-03-09-2/data031/data031';
 % WN_datafile_short='2015-03-09-2/data031/data031';

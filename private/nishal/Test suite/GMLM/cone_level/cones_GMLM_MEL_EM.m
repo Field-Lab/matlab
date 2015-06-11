@@ -1,24 +1,26 @@
        %% Load alex cone data
           %  load('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/conepreprocess.mat');
           % close all
-          % load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
+           
+         %load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
             % Good cell - WN , cell ID: 166 thr=0.3
             
            %  load('/Volumes/Analysis/2011-12-13-2/subunits/data009/conepreprocess.mat');
            % Good cell - Voronoi, cell ID : 168 ,thr =0.5
             
-           load('/Volumes/Analysis/2011-12-13-2/subunits/data008/conepreprocess.mat');
+           % load('/Volumes/Analysis/2011-12-13-2/subunits/data008/conepreprocess.mat');
             % thr = 0.33
             
+             load('/Volumes/Analysis/2010-09-24-1/subunits/data006-from-d05_36/conepreprocess.mat');
+            thr=0.3; %[827,1157,1907,2341,2851,3346,3961,4081,4306,4460,4637,4681,4862,4876,4936,4998,5011,5176,5191,5251,5476,5701,5851,5911,6076,6151,6241,6332,7036];
+           
             
             coneidx=1:size(datarun.cones.weights,1);
             iidx=1:length(datarun.cell_ids);
-            for cellID=1321%[1351,2251,3586,4576,5162,1321];
+            for cellID=2341%[827,1157,1907,2341,2851,3346,3961,4081,4306,4460,4637,4681,4862,4876,4936,4998,5011,5176,5191,5251,5476,5701,5851,5911,6076,6151,6241,6332,7036];%1321%[1351,2251,3586,4576,5162,1321];
             ref_cell=iidx(datarun.cell_ids == cellID)%166%1:10;% 4 is interesting.
-            thr=0.33;
-            %cellID=datarun.cell_ids(ref_cell)
-           
             
+            %cellID=datarun.cell_ids(ref_cell);
             spks=datarun.spike_rate(ref_cell,:);
            
             %% Real cone wts
@@ -183,8 +185,9 @@ end
      ylim([min(-datarun.cones.centers(cones,2))-2,max(-datarun.cones.centers(cones,2))+2])
        title(sprintf('Cell ID: %d',cellID));
        
-       save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_su_%d.mat',cellID,nFilters),'fitGMLM_log');
-hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_su_%d.eps',cellID,nFilters));
+       
+       save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/quad_gmlm/quad_gmlm_%d_su_%d.mat',cellID,nFilters),'W_log','su_log');
+hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/quad_gmlm/quad_gmlm_%d_su_%d.eps',cellID,nFilters));
 
           end
              end

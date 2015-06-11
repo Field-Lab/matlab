@@ -38,7 +38,7 @@ togo=1;
 f_val=Inf;
 tol=1e-5;
 % make 0 mean. 
-Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2)
+Sigma = mov_filtered*mov_filtered'/size(mov_filtered,2);
 Sigmainv=inv(Sigma);
 
 f_val_log=[]; icnt=0;
@@ -78,7 +78,7 @@ lam=lam+mu;
 
 likelihood = (sum(-lam*(interval/120)) + sum(y_tsp.*log(lam(tsp))))/size(mov_filtered,2);
 f_val_prev=f_val;
-f_val=-likelihood
+f_val=-likelihood;
 icnt=icnt+1; f_val_log(icnt)=f_val;
 if((abs(f_val-f_val_prev)/abs(f_val))<tol)
 togo=0;
