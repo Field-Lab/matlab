@@ -28,6 +28,11 @@ if GLMType.CouplingFilters
 end
 % end NBCoupling
 
+if GLMType.contrast
+    paramind.C = (numParams + 1):(numParams+100);
+    numParams = numParams + 100;
+end
+
 
 % Assign indices to the stim filter
 % If CONVEX assign here

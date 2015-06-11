@@ -46,6 +46,7 @@ if strcmp(base_type, 'default')
     GLMType.nullpoint  = 'mean'; 
     GLMType.map_type   = 'mapPRJ'; 
     GLMType.debug      = false;
+    GLMType.contrast   = true;
 end
 %%%%% Cone Names %%%%%%%
 
