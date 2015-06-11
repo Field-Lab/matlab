@@ -7,7 +7,7 @@ clear; clc;
 %addpath(corelabpath_string)
 %javaaddpath('/Users/akheitman/Dropbox/Lab/Applications/Vision.app/Contents/Resources/Java/Vision.jar');
 %%
-copyfile('/Users/akheitman/Matlab_code/glm/NSEM_BaseDirectories_Alligator.m' , '/Users/akheitman/Matlab_code/glm/NSEM_BaseDirectories.m')
+copyfile('NSEM_BaseDirectories_Alligator.m' , 'NSEM_BaseDirectories.m')
 BD = NSEM_BaseDirectories;
 glmwrapdir     = BD.GLM_codehome ;
 glmcodedir     = sprintf('%s/glm_core', glmwrapdir);
