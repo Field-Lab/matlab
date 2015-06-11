@@ -67,7 +67,9 @@ function [StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v19
 % BD stands for base directory
 BD.NSEMhome        = '/netapp/snle/lab/Experiments/Array/Analysis/akheitman/NSEM_Projects';
 BD.codehome        = '/netapp/snle/lab/temp_matlabcodeAH/glm_AH_18';
-BD.baseanalysisdir = '/netapp/snle/lab/Experiments/Array/Analysis';
+% BD.baseanalysisdir = '/netapp/snle/lab/Experiments/Array/Analysis';
+BD.baseanalysisdir = '/Users/colleen/Desktop/NSEM_blocked_spikes';
+
 exp_nm = string_date;
 %%%%% 0A.  EXPERIMENT , MASTER AND SLAVE, DATA INPUT  %%%
 if strcmp(string_date, '2013-10-10-0'); dn_mas = 'data000'; dn_BWmapEI = 'data005';   dn_NSEMmapEI = 'data001'; end
@@ -188,7 +190,9 @@ DirPars.dn_NSEMmapEI      = dn_NSEMmapEI;
 DirPars.dn_BWmapPRJ       = dn_BWmapPRJ;
 DirPars.dn_NSEMmapPRJ     = dn_NSEMmapPRJ;
 
-DirPars.output_dir = sprintf('%s/GLM/%s/%s',BD.NSEMhome,exp_nm,fitandmap);
+% DirPars.output_dir = sprintf('%s/GLM/%s/%s',BD.NSEMhome,exp_nm,fitandmap);
+DirPars.output_dir = analysisdir;
+
 DirPars.analysisdir         = analysisdir;
 DirPars.NSEMprojects_home   = BD.NSEMhome;
 DirPars.stimulimatxmlfiles  = sprintf('%s/Stimuli',BD.NSEMhome);
@@ -293,11 +297,14 @@ if nargout  >= 3
 	datarun{1}.default_sta_fits       = 'vision';
 
 	%%% SETUP DATARUN FOR ENSLAVED (BW OR NSEM .. CAN'T CLASSIFY ON OWN DUE TO MOVIE ISSUES)
+%     	datarun{1}.names.rrs_neurons_path = sprintf('%s/%s/%s.neurons', DirPars.analysisdir,DirPars.dn_slv,DirPars.dn_slv);
+
 	datarun{2}.names.rrs_neurons_path = sprintf('%s/%s/%s.neurons', DirPars.analysisdir,DirPars.dn_slv,DirPars.dn_slv);
 	if strcmp(map_type, 'mapEI')
         datarun{2}.names.map_path         = sprintf('%s/%s/cellmatch_mapEI_from_%s.txt',analysisdir,DirPars.dn_slv,DirPars.dn_mas);
     end
-	datarun{2}.default_sta_fits = 'vision';
+% 	datarun{2}.default_sta_fits = 'vision';
+% 	datarun{1}.default_sta_fits = 'vision';
 
 	%%% ACTUALLY LOAD UP DATA
 	opt = struct('verbose',1,'load_params',1,'load_neurons',1);
