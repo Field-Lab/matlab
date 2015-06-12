@@ -1,0 +1,142 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\margl1440\margr1440\vieww19220\viewh12280\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\f0\b\fs24 \cf0 Algorithm with spike sorting with electrical Artifact (Gonzalo Mena, 2015)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 \
+
+\b Overall: 
+\b0 The algorithm is intended for doing spike sorting of a pattern for a number of neurons (it could be one or many) recorded in different electrodes (again, one or many).  Neuron template is currently loaded using elecResp files\
+\
+
+\b Relevant Variables:\
+nNeurons = 
+\b0 number of neurons for which spike sorting is done\
+
+\b E               = 
+\b0 number of electrodes whose template information is used for spike sorting
+\b \
+J               = 
+\b0 number of different amplitudes of stimulations, or conditions, or movies, in the patterns\
+
+\b I                =  
+\b0 J-dimensional vector of number number of traces available for different amplitudes.
+\b \
+T               = l
+\b0 ength of the time window used for spike sorting (the time window may or not begin at time t=1, see below for details)\
+In the following, even if neuronIds and recElecs can be large numbers, the numbers n and e will refer to neuron with index n and electrode with index e respectively,  with the order defined by the ordering of neurons and recording electrodes. (for example, if the recording electrodes are [164 160 165] then e=2 means electrode 160.  In general, all the indexes j,e,i,t are relative to already built model.\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 Loading data, the input structure:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+ 
+\b0 A path to pattern files has to be specified. Same with elecResp files. The algorithm takes the Id of the neuron, 
+\b neuronId,
+\b0  as an input, but it could be easily extended for context in which we want to do spike sorting for neurons that satisfy some criteria (neurons whose action potentials exceed a threshold at some electrode, for example). Also, the recording electrodes, 
+\b recElecs 
+\b0 may or may not be specified (if they are not specified, the function 
+\b makeTemplatesFromElecResp 
+\b0 will choose for each neuron the one in the field 
+\b elecResp.cells.goodElecs. 
+\b0 At the end of this part we will have a 
+\b input 
+\b0 structure with the fields \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls1\ilvl0\cf0 {\listtext	\'95	}input.tracesInfo : contains information about traces, recording electrodes, recording times, breakPoints, etc.\
+{\listtext	\'95	}input.stimInfo  : stimulation information, patterns, etc. \
+{\listtext	\'95	}input.neuronInfo : templates, neuronIds, etc\
+{\listtext	\'95	}input.params : parameters of the model, initialization, Gibbs sampler, Heuristics, etc.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+
+\b Load templates
+\b0 \
+The first step is load the templates (shown in the Examples). This can be done with the The function 
+\b makeTemplatesFromElecResp
+\b0  function, but the important for subsequent changes is templates should be nNeurons dimensional arrays, and templates\{n\} have to be E x T_template matrices that indicates the Action potential of neuron n at recording electrode e (with the order induced by the order they are listed) during a T_template time window. The MOST important thing to avoid undesired time offsets is that somatic spikes (minimum of Action Potential) should appear in the template at time t=10 or 11, and any other activity recorded in the rest of electrodes has to be consistent with that offset. Sometimes elecResp files have spikes at times t=20, that can be alleviated using the same 
+\b makeTemplatesFromElecResp 
+\b0 function
+\b . 
+\b0 Another function
+\b , translateTemplate 
+\b0 can be helpful to produce local shifts in the templates, in case some local incongruences has been found. Finally, regarding templates, and once recording electrodes have been specified, preferred electrodes has to be chosen for each neuron. Preferred electrodes are a key part of the algorithm: for the Heuristics, whenever there are problems in the obtained activation curves, changes are induced in the artifact. For this, a clear correspondence between neurons and recordings electrodes has to be specified, this is done with 
+\b prefElectrodes,
+\b0  a nNeuron dimensional cell array such that 
+\b prefElectrodes\{n\}
+\b0  is a vector with at least one element, indicating the index of the preferred electrodes. There can be overlap or not, that is, more than one neuron can have the same(s) preferred electrode(s). For now, the heuristics only make use of the first prefElectrodes, but it is an open question how to obtain a richer set of heuristics that choose more than one preferred electrodes in order to re-sample the Artifact. prefElectrodes can be created using the 
+\b PreferredElectrodes
+\b0  function, that takes for each neuron the electrode(s) with the strongest signal in the 
+\b recElecs
+\b0 . Template information and preferred electrodes has to be set to the input structure, see Examples\
+\
+
+\b Load data traces\
+
+\b0 The next step is to load the data from the movie files. At this point the time window for which we will analyse recordings have to be specified, this is done in
+\b  input.tracesInfo.Trange
+\b0    =   [Tmin Tmax] (in time samples), The same with the recording electrodes,
+\b  input.tracesInfo.recElecs
+\b0  . Also, we need to specify if we want to try axonal Bundle activation finding, but as it doesn\'92t work currently, just set 
+\b input.params.load.findAxon.includeAxonBreakpoint = 0
+\b0  and that step will be avoided.  Also, it is needed to specify 
+\b input.params.load.cleanData
+\b0   and 
+\b input.params.load.collapseTrialsSameCondition
+\b0   to tell the model if we want to clean the data (eliminate the first trial for each condition j) or collapse trials, which makes sense if by some reason the movies are organized in such a way that there is more than one movie corresponding to the same amplitude of stimulation (1 means yes and 0 no). After all these values have been specified the function 
+\b loadData
+\b0  will take care of loading all the traces from the movie files and filling the relevant information about traces and stimulus in the 
+\b input
+\b0  structure. voltage traces will be afterwards be available as a two dimensional cell array of matrices of traces: 
+\b input.tracesInfo.date\{j,e\}(i,t)
+\b0 . If Axonal bundle activation detection has to be specified manually, use the function 
+\b addAxonBreakPoint.
+\b0  The only remaining steps are done via the 
+\b filldefaultValues
+\b0  function, which sets the default values required at the different stages of the algorithm. Any value that has to be changed from this default can be re-set after the execution of this function (see Examples) In any case, the sintaxis for the breakpoint, either hardware or axon breakpoints is: an E dimensional cell array containing the breakpoints for each electrode.\
+\
+
+\b Summary of functions
+\b0 \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls2\ilvl0
+\b \cf0 {\listtext	\'95
+\b0 	}makeTemplatesFromElecResp\
+{\listtext	\'95	}translateTemplate (not very useful)\
+{\listtext	\'95	}PreferredElectrodes \
+{\listtext	\'95	}loadData\
+{\listtext	\'95	}addAxonBreakPoint \
+{\listtext	\'95	}filldefaultValues \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 Initialization: the initial structure
+\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+Once the initial structure has all the required values the 
+\b initialize
+\b0  function will find the convex relaxation solution (via Mosek), and then the Artifact regularization hyperparameters lambda will be obtained using a gradient descent method (function 
+\b NewtonMaxLogDet )
+\b0  All the relevant information here will be stored in the initial structure, which essentially contains all initial parameters and covariate matrices that are needed to perform computations in the spike sorting. For the convex relaxation, the original data is transformed into a huge vector, and the covariate matrices are created in such a way to explain how the different artifact variables and spikes will explain that vector. For
+\b \
+
+\b0 \
+\
+
+\b Comments
+\b0 \
+There can be a lot of redundancies in the definition, sometimes the same values can appear in the input, initial and Gibbs structures. That shouldn\'92t be a problem though\
+\
+}

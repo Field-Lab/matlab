@@ -587,7 +587,12 @@ for p = 1:length(pathnames)
     % Listing more recElecs is going to increase
     % the algorithm runtime.
     
-    
+     %Default minimum and maximum recording times. If the first part of the
+     %traces are not relevant, it could be worth trying make Tmin>1
+     Tmin     = 1;
+     Tmax     = 40;
+     input.tracesInfo.Trange        =    [Tmin Tmax];                                                                                       
+         
     
     % Load Templates from ElecResp. If recElecs are not supplied, then will be
     % found from the 'goodElecs' field.
@@ -611,6 +616,7 @@ for p = 1:length(pathnames)
     input.neuronInfo.neuronIds     =    neuronIds; %define neuron Ids
     input.neuronInfo.templates     =    templates; %define templates
     
+   
     
     %loads data from movie files
     input = loadData(input,pathToAnalysisData,patternNo);
