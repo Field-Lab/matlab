@@ -1,25 +1,11 @@
-function algHumCmp(input,Gibbs,Log,n)
+function values = algHumCmp(input,Gibbs, n, values)
 
 % Compares the results of Gonzalo's spike sorting algorithm to 
 % if the optional argument is one, then the x axis show amplitude condition
 % instead of stimulus amplitude
-
-figure; set(gcf,'Position', [387	340     1411    758]); 
-
-amps=abs(input.stimInfo.listAmps)';
-n = 1; % n is the index 
 neuronIds = input.neuronInfo.neuronIds;
 neuronId = neuronIds(n);
-e = input.neuronInfo.prefElectrodes{n}(1);
-breakAxon    =  input.tracesInfo.breakAxon{e};
-breakRecElec = input.tracesInfo.breakRecElecs{e};
 
-J = input.tracesInfo.J;
-I = input.tracesInfo.I;
-T = input.tracesInfo.T;
-
-spikeProbs    = nansum(Gibbs.variables.spikes{n}')./I;
-spikeLogProbs = Gibbs.variables.Probs(n,:);
 latencies = cell2mat(Gibbs.variables.latencies) ;
 
 spikes = cell2mat(Gibbs.variables.spikes);
@@ -31,22 +17,22 @@ filename = fullfile(pathname,fname);
 temp = load(filename); 
 elecResp = temp.elecResp; 
 for a = 1 : size(elecResp.analysis.latencies,1)
-    humanLat(a,:) = elecResp.analysis.latencies{a};
+    try
+        humanLat(a,:) = elecResp.analysis.latencies{a}; %#ok<AGROW>
+    catch
+        humanLat(:,1) =[];
+        humanLat(a,:) = elecResp.analysis.latencies{a}; %#ok<AGROW>
+    end
 end
 if size(latencies,2) == (size(humanLat,2) - 1)
     humanLat(:,1) = [];
 end
 humanSpikes = humanLat>0; 
-agreement = (humanSpikes == spikes); 
 
-totalTrials = numel(humanSpikes);
-percentageAgreement = sum(agreement(:))/totalTrials;
+% figure(1000); cla;  
+% subplot(1,2,1); imagesc(spikes); title('Algorithm spikes')
+% subplot(1,2,2); imagesc(humanSpikes); title('Human spikes'); 
 
-figure(1000); cla;  
-
-subplot(1,2,1); imagesc(spikes); title('Algorithm spikes')
-subplot(1,2,2); imagesc(humanSpikes); title('Human spikes'); 
- 
 agreement = (humanSpikes == spikes); 
 totalTrials = numel(humanSpikes);
 percentAgreement = sum(agreement(:))/totalTrials;
@@ -63,9 +49,9 @@ numFalseNegatives = sum(spikes(humanSpikes == 1) == 0);
 percentTruePositive = numTruePositives/totalHumanPositives;
 percentFalseNegatives = numFalseNegatives/totalHumanPositives;
 
-
-keyboard; 
-
+values = nansum([values  [numTruePositives; numFalseNegatives; totalHumanPositives; ...
+    numFalsePositives; numTrueNegatives; totalHumanNegatives;...
+    sum(agreement(:)); totalTrials]],2); 
 
 % 
 % clear latencies

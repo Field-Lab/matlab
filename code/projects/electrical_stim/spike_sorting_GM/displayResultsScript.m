@@ -37,3 +37,52 @@ end
 
 plotResponseCurves = 0 ; 
 [threshold, completeFit, erfErr] = fitToErf(elecResp,plotResponseCurves); 
+%%
+for p = 1:20 % 555
+    Gibbs = solAxon(p).Gibbs;
+    GibbsNoDelete = solAxon(p).GibbsNoDelete;
+    initial = solAxon(p).initial ;
+    input = solAxon(p).input;
+    Log = solAxon(p).Log;
+   
+    %      DisplayResults(input,GibbsNoDelete,Log,1)
+    displayResults_compare(input, Gibbs, Log, 1)
+end
+
+
+%% For axonal activation solutions
+values = [0;0;0;0;0;0;0;0]; 
+for p = [1:200] % 555
+    Gibbs = solAxon(p).Gibbs;
+    GibbsNoDelete = solAxon(p).GibbsNoDelete;
+    initial = solAxon(p).initial ;
+    input = solAxon(p).input;
+    Log = solAxon(p).Log;
+    values = algHumCmp(input,Gibbs,1,values);
+    disp(num2str(p)); 
+end
+
+percentFalsePositive = values(4)/values(6);
+percentTrueNegative = values(5)/values(6);
+
+percentTruePositive = values(1)/values(3);
+percentFalseNegatives = values(2)/values(3);
+percentAgreement = values(7)/values(8);
+
+%%
+groupnames = {'overall success','false positive','true negative',...
+    'true positive','false negative'}; 
+bw_title = 'success rates'; 
+bw_xlabel ='type'; 
+bw_ylabel = 'percentage';
+gridstatus = 'xy';
+bw_legend = {'red','blue'};
+my_errors = [sqrt(totalTrials) sqrt(totalHumanNegatives) ...
+    sqrt(totalHumanNegatives) sqrt(totalHumanPositives) sqrt(totalHumanPositives)]; 
+
+all_values = [percentAgreement; percentFalsePositive; percentTrueNegative; ...
+    percentTruePositive; percentFalseNegatives]; 
+bh = barweb([all_values],[my_errors;]', [], groupnames, bw_title, ...
+    bw_xlabel, bw_ylabel, [], gridstatus, bw_legend);
+ figure; bar(all_values); 
+ ylabel('percent accuracy');
