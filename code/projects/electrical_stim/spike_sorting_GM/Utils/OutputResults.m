@@ -1,12 +1,22 @@
 function Output = OutputResults(input,Gibbs,Log)
 %OutputResults Gives all the relevant information
-%   input: input,Gibbs,Log structure after executing spike Sorting
-%   Output: Output structure that contains original data traces Data{j,e}(i,t),
-%   spikes{n}(j,i), latencies{n}(j,i), Residuals Residual{j,e}(i,t) standard deviations sigma(e,j),
-%   Artifact{e}(j,t), Artifact substracted data traces (ResidualArtifact{j,e}(i,t)) and spike
-%   substracted traces (ResidualSpikes{j,e}(i,t),the logistic regression fit for each neuron
-%   LogisticReg(n,j). Finally, it has the Log of the Heuristics for each
-%   neuron, Log(n)
+%   input:  input,Gibbs,Log structure after executing spike Sorting
+%   Output: Output structure that contains spikes{n}(j,i), latencies{n}(j,i), Residuals 
+%           Residual{j,e}(i,t) standard deviations sigma(e,j),
+%           Artifact{e}(j,t), Artifact substracted data traces
+%          (ResidualArtifact{j,e}(i,t)), substracted traces (ResidualSpikes{j,e}(i,t),the logistic regression fit for each neuron
+%           LogisticReg(n,j). 
+%           It also contains information about neurons in Output.neuronInfo
+%           (templates, neuron Id, etc), information about stimulus in Output.stimInfo (amplitudes of stimulation,
+%           breakpoints in the stimulating electrodes, etc) and information
+%           about data traces in the recording electrodes in
+%           Output.tracesInfo (including data itselt, as
+%           Output.tracesInfo.data{j,e}(i,t) and breakpoints in data traces
+%           (both axonal and coming from stimulating electrode)
+%           Finally, it has the Log of the Heuristics for each  neuron,
+%           Output.Log(n), the parameters used in Output.params and the
+%           path in Output.path;
+%                      
 %   
 Output.spikes = Gibbs.variables.spikes;
 Output.latencies = Gibbs.variables.latencies;
@@ -31,6 +41,10 @@ for e=1:E
 end
 
 Output.LogisticReg = Gibbs.variables.Probs;
-Output.Data = input.tracesInfo.data;
 Output.Log  = Log;
+Output.neuronInfo = input.neuronInfo;
+Output.stimInfo   = input.stimInfo;
+Output.tracesInfo = input.tracesInfo;
+Output.params = input.params;
+Output.path = input.names.path;
 end
