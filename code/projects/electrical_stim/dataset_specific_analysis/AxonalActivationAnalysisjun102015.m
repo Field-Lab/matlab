@@ -552,9 +552,14 @@ pathnames = {'/Volumes/Analysis/2012-09-24-3/data003/elecResp_n2318_p155.mat';
 '/Volumes/Analysis/2015-04-14-0/data001/elecResp_n91_p489.mat';
 '/Volumes/Analysis/2015-04-14-0/data001/elecResp_n91_p6.mat';
 '/Volumes/Analysis/2015-05-27-0/data001/elecResp_n1593_p102.mat';
-'/Volumes/Analysis/2015-05-27-0/data001/elecResp_n1593_p99.mat'}; 
-
-for p = 202:449
+'/Volumes/Analysis/2015-05-27-0/data001/elecResp_n1593_p99.mat'; 
+'/Volumes/Analysis/2015-04-14-0/data001/elecResp_n1699_p122.mat';
+'/Volumes/Analysis/2015-04-14-0/data001/elecResp_n1699_p397.mat';
+'/Volumes/Analysis/2015-04-14-0/data001/elecResp_n1699_p402.mat';
+'/Volumes/Analysis/2015-04-14-0/data001/elecResp_n1699_p404.mat';
+'/Volumes/Analysis/2015-04-14-0/data001/elecResp_n1699_p409.mat';
+'/Volumes/Analysis/2015-04-14-0/data001/elecResp_n1699_p410.mat';};
+for p = 556:560
     
     
         %try
@@ -642,12 +647,16 @@ input = fillDefaultValues(input);
 initial = Initialize(input);
     
 [Gibbs GibbsNoDelete initial input Log] = doSpikeSortingElectricalArtifact(input,initial);
-    
+    solAxonB(p).Gibbs = Gibbs;
+    solAxonB(p).GibbsNoDelete = GibbsNoDelete;
+    solAxonB(p).initial = initial;
+    solAxonB(p).input = input;
+    solAxonB(p).Log = Log;
     timesAxonB(p)=toc;
     %catch
     %disp(['There was an error at pattern ']);
     Output = OutputResults(input,Gibbs,Log);
-    Outpusjun10Freddy(p)=Output;
+    Outputs10Jun(p)=Output;
     
     end
     
