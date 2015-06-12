@@ -85,8 +85,9 @@ for b = breakRecElec
     plot([amps(b) amps(b)], [nanmin(nanmin(latencies))-3 nanmax(nanmax(latencies))+3],'linewidth',1.5,'color','red')
 end
 grid('on')
-axis([amps(1) amps(J) nanmin(nanmin(latencies))-3 nanmax(nanmax(latencies))+3])
-
+if ~all(all(isnan(latencies)))
+    axis([amps(1) amps(J) nanmin(nanmin(latencies))-3 nanmax(nanmax(latencies))+3])
+end
 % Load elecResp file
 pathname = input.names.path; 
 fname = ['elecResp_n' num2str(neuronId) '_p' num2str(input.stimInfo.patternNo) '.mat']; 
