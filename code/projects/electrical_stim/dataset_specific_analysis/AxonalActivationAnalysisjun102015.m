@@ -554,9 +554,10 @@ pathnames = {'/Volumes/Analysis/2012-09-24-3/data003/elecResp_n2318_p155.mat';
 '/Volumes/Analysis/2015-05-27-0/data001/elecResp_n1593_p102.mat';
 '/Volumes/Analysis/2015-05-27-0/data001/elecResp_n1593_p99.mat'}; 
 
-for p = 1:size(pathnames,1)
+for p = 202:449
     
-        try
+    
+        %try
     clear input
     clear initial
     clear Gibbs
@@ -641,16 +642,14 @@ input = fillDefaultValues(input);
 initial = Initialize(input);
     
 [Gibbs GibbsNoDelete initial input Log] = doSpikeSortingElectricalArtifact(input,initial);
-    solAxon(p).Gibbs = Gibbs;
-    solAxon(p).GibbsNoDelete = GibbsNoDelete;
-    solAxon(p).initial = initial;
-    solAxon(p).input = input;
-    solAxon(p).Log = Log;
-    timesAxon(p)=toc;
-    catch
-    disp(['There was an error at pattern ' num2str(patternList(p)) ]);
+    
+    timesAxonB(p)=toc;
+    %catch
+    %disp(['There was an error at pattern ']);
+    Output = OutputResults(input,Gibbs,Log);
+    Outpusjun10Freddy(p)=Output;
     
     end
     
     
-end
+
