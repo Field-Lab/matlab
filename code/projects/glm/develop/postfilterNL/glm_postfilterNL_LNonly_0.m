@@ -45,9 +45,9 @@ cell_subset = 'debug'; postfilterNL.debug = true;
 base_glmsettings = {};
 base_glmsettings{1}.type = 'PostSpikeFilter';
 base_glmsettings{1}.name =  'OFF';
-postfilterNL.type = 'Logistic_max500';
-runoptions.print = true;
-glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
+postfilterNL.type        = 'Logistic_fixMU';
+runoptions.print         = true;
+glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
 
 clear; clc
 exps = [3]; stimtypes = [2]; celltypes = [1]; 
@@ -152,13 +152,15 @@ for i_exp = exps
                 % load fittedGLM
                 eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
                 glm_cellinfo = fittedGLM.cellinfo;
-                [lcif,objval_OLD] = subR_lcifdecomp_fittedGLM(fittedGLM.rawfit.opt_params,...
+                [lcif_OLD,objval_OLD] = subR_lcifdecomp_fittedGLM(fittedGLM.rawfit.opt_params,...
                     fittedGLM.GLMType,fittedGLM.GLMPars,fitspikes_concat,fitmovie_concat,inputstats,glm_cellinfo);
                 % old values of filters
                 MU_OLD =  fittedGLM.linearfilters.TonicDrive.Filter;
-                PS_OLD =  fittedGLM.linearfilters.PostSpike.Filter;
+                
                 [lcif_teststim_OLD] = subR_lcifstim_fittedGLM(fittedGLM.rawfit.opt_params,...
                     fittedGLM.GLMType,fittedGLM.GLMPars,testmovie,inputstats,glm_cellinfo);
+                
+                
                 % Figure out lcif of test stim
                 t_bin        = fittedGLM.t_bin;
                 home_sptimes = fitspikes_concat.home';
@@ -168,53 +170,76 @@ for i_exp = exps
                     'derivativecheck','off','diagnostics','off',...  % 
                     'display','iter','funvalcheck','off',... 
                     'GradObj','on','largescale','on','Hessian','on',...
-                    'MaxIter',100,'TolFun',10^(-5),'TolX',10^(-9) );               
+                    'MaxIter',100,'TolFun',10^(-5),'TolX',10^(-9) ); 
+                
+                
+                
+                optim_struct_NEW = optimset(...
+                    'derivativecheck','off','diagnostics','off',...  % 
+                    'display','iter','funvalcheck','off',... 
+                    'MaxIter',100,'TolFun',10^(-5),'TolX',10^(-9) );       
                 % Actual Optimization: New filters, stim lcif
                 
                 
-                %% Already Finished NLs
-                if strcmp(postfilterNL.type, 'Null')
-                    p0 = [1 1 1]';
-                    COV = [lcif.mu; lcif.stim; lcif.ps];
-                    [new_p new_objval eflag output] = fminunc(@(p) subr_optimizationfunction...
-                        (p,COV,home_spbins,t_bin),p0,optim_struct);                   
-                    % UNPACK TERMS
-                    Rescaling_string = sprintf('Rescaler::   MU: %1.2e, STIM: %1.2e, PSFilter: %1.2e',...
-                        new_p(1), new_p(2), new_p(3) );
-                    display(Rescaling_string )
-                    objval_NEW = new_objval;
-                    MU_NEW            = new_p(1) *MU_OLD;
-                    PS_NEW            = new_p(3) * PS_OLD;                   
-                    lcif_teststim_NEW = new_p(2) * lcif_teststim_OLD;
-                    rescale.MU = new_p(1);
-                    rescale.stim = new_p(2);
-                    rescale.PS = new_p(3);
-                elseif strcmp(postfilterNL.type, 'Hinge_fixedPS')
-                    stim_pos = lcif.stim;
-                    stim_pos(find(stim_pos<0)) = 0;
-                    stim_neg = lcif.stim;
-                    stim_neg(find(stim_neg>=0)) = 0;
-                    p0 = [1 1 1 1]';
-                    COV = [lcif.mu; stim_pos; stim_neg; lcif.ps];
-                    [new_p new_objval, eflag output] = fminunc(@(p) subr_optimizationfunction...
-                        (p,COV,home_spbins,t_bin),p0,optim_struct);
-                    % UNPACK TERMS
-                    Rescaling_string = sprintf('Rescalers::   MU: %1.2e, STIM_POS: %1.2e, STIM_NEG: %1.2e, PSFilter: %1.2e',...
-                        new_p(1), new_p(2), new_p(3), new_p(4) );
-                    display(Rescaling_string)
-                    stim_pos = lcif_teststim_OLD;
-                    stim_pos(find(stim_pos<0)) = 0;
-                    stim_neg = lcif_teststim_OLD;
-                    stim_neg(find(stim_neg>=0)) = 0;
-                    objval_NEW = new_objval;
-                    MU_NEW = new_p(1) *MU_OLD;
-                    PS_NEW = new_p(end) *PS_OLD;
-                    lcif_teststim_NEW = new_p(2) * stim_pos + new_p(3)* stim_neg;
+                if strcmp(postfilterNL.type, 'Logistic_fixMU')
                     
-                    rescale.MU = new_p(1);
-                    rescale.stim_pos = new_p(2);
-                    rescale.stim_neg = new_p(3);
-                    rescale.PS = new_p(4);
+                    
+                    MAX   = 20;
+                    RATE  = 1;
+                    OFFSET = log(MAX-1) / RATE;
+                    lcif_new_stim = log(MAX ./ (1 + exp(-RATE * (lcif_OLD.stim - OFFSET) )));
+                    lcif_NEW =  lcif_OLD.mu + lcif_new_stim;
+                    cif_NEW  = exp(lcif_NEW);
+                    lcif_0 = lcif_OLD.stim + lcif_OLD.mu;
+                    cif_0   = exp(lcif_0);
+                    dt     = fittedGLM.t_bin;
+                    spt    = home_spbins;
+                    lcif   = lcif_NEW;
+                    cif    = exp(lcif);
+                    objval = -( sum( lcif(spt) ) - dt * sum(cif) );
+                    
+                    lcif_intoLOGI = lcif_OLD.stim;
+                    lcif_ext  = lcif_OLD.mu;
+                    spikebins = home_spbins;
+                    t_bin = fittedGLM.t_bin;
+                    objval = objval_LOGISTIC(MAX, RATE, lcif_intoLOGI, lcif_ext, spikebins,t_bin)
+                    
+                    
+                    
+                    
+                    lowerbound = [2 .5];
+                    LOGI_Params0 = [1,1];
+                    [LOGI_Params_Opt new_objval, eflag output] = fmincon(@(LOGI_Params) objval_LOGISTIC...
+                        (LOGI_Params, lcif_intoLOGI, lcif_ext, spikebins,t_bin),...
+                        LOGI_Params0,[],[],[],[],lowerbound,[],[],optim_struct_NEW);
+                    
+                    
+                    vu_vec = [1/4, 1/2, 1, 2, 4, 10];
+                    
+                    logi_pars = cell(1,length(vu_vec));
+                    objvals_vu = NaN(1,length(vu_vec));
+                    
+                    lowerbound = [1 0.1];
+                    LOGI_Params0 = [10,1];
+                    for i_vu = 1:length(vu_vec)
+                        VU = vu_vec(i_vu);
+                        [LOGI_Params_Opt new_objval, eflag output] = fmincon(@(LOGI_Params) objval_GenLOGISTIC...
+                            (LOGI_Params,VU, lcif_intoLOGI, lcif_ext, spikebins,t_bin),...
+                            LOGI_Params0,[],[],[],[],lowerbound,[],[],optim_struct_NEW);
+                        
+                        logi_pars{i_vu}  = LOGI_Params_Opt;
+                        objvals_vu(i_vu) = new_objval
+                    end
+                        
+                        
+                    
+                    
+ 
+                    
+                    
+                    
+                    
+                    
                 elseif strcmp(postfilterNL.type, 'Hinge_refitPS')
                     stim_pos = lcif.stim;
                     stim_pos(find(stim_pos<0)) = 0;
@@ -222,7 +247,6 @@ for i_exp = exps
                     stim_neg(find(stim_neg>=0)) = 0;
                     
                     p_ps0 = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.PS); 
-                    
                     p0 = [1; 1; 1; p_ps0];
                     COV = [lcif.mu; stim_pos; stim_neg; lcif.ps_unoptimized.glm_covariate_vec];
                     display('madeithere')
@@ -243,179 +267,7 @@ for i_exp = exps
                     rescale.MU = new_p(1);
                     rescale.stim_pos = new_p(2);
                     rescale.stim_neg = new_p(3);                   
-                elseif strcmp(postfilterNL.type, 'PosLogistic_fixedPS')
-                     optim_struct = optimset(...
-                    'derivativecheck','off','diagnostics','off',...  % 
-                    'display','off','funvalcheck','off',... 
-                    'GradObj','on','largescale','on','Hessian','on',...
-                    'MaxIter',200,'TolFun',10^(-4),'TolX',10^(-9) ); 
-                    stim_pos = lcif.stim;
-                    stim_pos(find(stim_pos<0)) = 0;
-                    stim_neg = lcif.stim;
-                    stim_neg(find(stim_neg>=0)) = 0;
-                    
-                    SP0    = stim_pos;
-                    K_vec  = [1/8 .25 .5 1 2 4 8];
-                    X_vec_ofK = [-4 -2 -1 -.5 0 .5 1 2 4];
-                    
-                    
-                    
-                    
-                    if postfilterNL.debug
-                        display('shorten stimulus for post filter debugging mode')
-                        K_vec = [1];
-                        X_vec_ofK = [-2, 0];
-                    end
-                    
-                    objvals   = zeros(length(K_vec), length(X_vec_ofK) );
-                    fitted_ps = cell(length(K_vec), length(X_vec_ofK) );
-                    for i_K = 1:length(K_vec)
-                        for i_X0 = 1:length(X_vec_ofK)
-                            display(sprintf(' Working on slope number %d out of %d: Offset number %d out of %d',...
-                                i_K, length(K_vec), i_X0, length(X_vec_ofK))) 
-                            K = K_vec(i_K);
-                            X0 = X_vec_ofK(i_X0) / K;
-                            logistic_vals = 1./ (1 + exp(-K * ( SP0 - X0) ) ) + (  1- 1/(1+exp(K*X0)) );
-                            % plot(sort(SP0), sort(logistic_vals))
-                            
-                            stim_LOGISTIC = log(logistic_vals);
-                            COV = [lcif.mu; stim_LOGISTIC; stim_neg; lcif.ps];
-                            p0 = [1 1 1 1]';
-                            
-                            [new_p new_objval, eflag output] = fminunc(@(p) subr_optimizationfunction...
-                                (p,COV,home_spbins,t_bin),p0,optim_struct); 
-                            objvals(i_K,i_X0) = new_objval;
-                            fitted_ps{i_K,i_X0}.p = new_p;
-                            fitted_ps{i_K,i_X0}.objval = new_objval; 
-                        end
-                    end
-                    
-                    objval_NEW = min(objvals(:));
-                    [i_Kopt, i_Xopt] = ind2sub( size(objvals), find(objvals == objval_NEW));
-                    K_opt = K_vec(i_Kopt);
-                    X_opt = X_vec_ofK(i_Xopt) / K_opt;
-                    
-                    p_opt = fitted_ps{i_Kopt, i_Xopt}.p
-                    MU_NEW = p_opt(1) *MU_OLD;
-                    PS_NEW = p_opt(end) *PS_OLD;
-                    Rescaling_string = sprintf('Rescalers:: [MU: %1.2e, STIM_NEG: %1.2e, PSFilter: %1.2e]',...
-                        p_opt(1), p_opt(3), p_opt(4) );
-                    display(Rescaling_string);
-                    NL_string = sprintf('Logistic Params:: [Kval: %1.2e, Xval: %1.2e, Scale: %1.2e]',...
-                        K_opt, X_opt, p_opt(2) ); 
-                    display(NL_string)
-                    
-                    stim_pos = lcif_teststim_OLD;
-                    stim_pos(find(stim_pos<0)) = 0;
-                    stim_neg = lcif_teststim_OLD;
-                    stim_neg(find(stim_neg>=0)) = 0;
-
-                    test_logistic_vals = 1./ (1 + exp(-K_opt * ( stim_pos - X_opt) ) ) ...
-                        + (  1- 1/(1+exp(K_opt*X_opt)) );
-                    stim_testLOGISTIC = log(test_logistic_vals);
-                    lcif_teststim_NEW = p_opt(2) * stim_testLOGISTIC + p_opt(3)* stim_neg;
-                    
-                    rescale.MU = p_opt(1);
-                    rescale.stim_posLOG = p_opt(2);
-                    rescale.stim_neg = p_opt(3);
-                    rescale.PS = p_opt(4);
-                    rescale.poslogistic_K = K_opt;
-                    rescale.poslogistic_X = X_opt;
-                    rescale.poslogistic_Xscaled = K_opt * X_opt;
-                    
-                    rescale.searched_K = K_vec;
-                    rescale.searched_X = X_vec_ofK;
-                    rescale.fittedOBJvals = objvals;
-                elseif strcmp(postfilterNL.type, 'PosLogistic_refitPS')
-                     optim_struct = optimset(...
-                    'derivativecheck','off','diagnostics','off',...  % 
-                    'display','off','funvalcheck','off',... 
-                    'GradObj','on','largescale','on','Hessian','on',...
-                    'MaxIter',200,'TolFun',10^(-4),'TolX',10^(-9) ); 
-                    stim_pos = lcif.stim;
-                    stim_pos(find(stim_pos<0)) = 0;
-                    stim_neg = lcif.stim;
-                    stim_neg(find(stim_neg>=0)) = 0;
-                    
-                    
-                    p_ps0 = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.PS); 
-                    
-
-                    
-                    SP0    = stim_pos;
-                    K_vec  = [1/8 .25 .5 1 2 4 8];
-                    X_vec_ofK = [-4 -2 -1 -.5 0 .5 1 2 4];
-                   
-                   % display('SHORTENED OPTIONS FOR K AND X!!!')
-                   % K_vec = [.5 1 2]
-                   % X_vec_ofK =  [-4 -2 -1 -.5 0]
-                    if postfilterNL.debug
-                        display('shorten stimulus for post filter debugging mode')
-                        K_vec = [1];
-                        X_vec_ofK = [-2, 0];
-                    end
-                    
-                    
-                    
-                    objvals   = zeros(length(K_vec), length(X_vec_ofK) );
-                    fitted_ps = cell(length(K_vec), length(X_vec_ofK) );
-                    for i_K = 1:length(K_vec)
-                        for i_X0 = 1:length(X_vec_ofK)
-                            display(sprintf(' Working on slope number %d out of %d: Offset number %d out of %d',...
-                                i_K, length(K_vec), i_X0, length(X_vec_ofK))) 
-                            K = K_vec(i_K);
-                            X0 = X_vec_ofK(i_X0) / K;
-                            logistic_vals = 1./ (1 + exp(-K * ( SP0 - X0) ) ) + (  1- 1/(1+exp(K*X0)) );
-                            % plot(sort(SP0), sort(logistic_vals))
-                            
-                            stim_LOGISTIC = log(logistic_vals);
-                            COV = [lcif.mu; stim_LOGISTIC; stim_neg; lcif.ps_unoptimized.glm_covariate_vec];
-                            p0 = [1; 1; 1; p_ps0];
-                            
-                            [new_p new_objval, eflag output] = fminunc(@(p) subr_optimizationfunction...
-                                (p,COV,home_spbins,t_bin),p0,optim_struct); 
-                            objvals(i_K,i_X0) = new_objval;
-                            fitted_ps{i_K,i_X0}.p = new_p;
-                            fitted_ps{i_K,i_X0}.objval = new_objval; 
-                        end
-                    end
-                    
-                    objval_NEW = min(objvals(:));
-                    [i_Kopt, i_Xopt] = ind2sub( size(objvals), find(objvals == objval_NEW));
-                    K_opt = K_vec(i_Kopt);
-                    X_opt = X_vec_ofK(i_Xopt) / K_opt;
-                    
-                    p_opt = fitted_ps{i_Kopt, i_Xopt}.p;
-                    MU_NEW = p_opt(1) *MU_OLD;
-                    PS_NEW = lcif.ps_unoptimized.basis * p_opt(4:end);
-                    Rescaling_string = sprintf('Rescalers:: [MU: %1.2e, STIM_NEG: %1.2e, PSFilter: %1.2e]',...
-                        p_opt(1), p_opt(3), p_opt(4) );
-                    display(Rescaling_string);
-                    NL_string = sprintf('Logistic Params:: [Kval: %1.2e, Xval: %1.2e, Scale: %1.2e]',...
-                        K_opt, X_opt, p_opt(2) ); 
-                    display(NL_string)
-                    
-                    stim_pos = lcif_teststim_OLD;
-                    stim_pos(find(stim_pos<0)) = 0;
-                    stim_neg = lcif_teststim_OLD;
-                    stim_neg(find(stim_neg>=0)) = 0;
-
-                    test_logistic_vals = 1./ (1 + exp(-K_opt * ( stim_pos - X_opt) ) ) ...
-                        + (  1- 1/(1+exp(K_opt*X_opt)) );
-                    stim_testLOGISTIC = log(test_logistic_vals);
-                    lcif_teststim_NEW = p_opt(2) * stim_testLOGISTIC + p_opt(3)* stim_neg;
-                    
-                    rescale.MU = p_opt(1);
-                    rescale.stim_posLOG = p_opt(2);
-                    rescale.stim_neg = p_opt(3);
-                    rescale.PS = p_opt(4);
-                    rescale.poslogistic_K = K_opt;
-                    rescale.poslogistic_X = X_opt;
-                    rescale.poslogistic_Xscaled = K_opt * X_opt;
-                    
-                    rescale.searched_K = K_vec;
-                    rescale.searched_X = X_vec_ofK;
-                    rescale.fittedOBJvals = objvals;
+              
                 end
                 
                 %{
