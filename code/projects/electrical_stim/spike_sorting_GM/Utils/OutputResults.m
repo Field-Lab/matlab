@@ -40,6 +40,8 @@ for e=1:E
     end
 end
 
+
+
 Output.LogisticReg = Gibbs.variables.Probs;
 Output.Log  = Log;
 Output.neuronInfo = input.neuronInfo;
