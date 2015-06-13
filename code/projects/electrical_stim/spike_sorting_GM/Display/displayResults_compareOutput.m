@@ -120,8 +120,20 @@ title(sprintf('Artifact estimages for electrode %0.0f',elec));
 xlabel('time (ms)'); 
 ylabel('recorded daqs');
 
-
-
+% Plot the cell template
+subplot(2,3,4); 
+xlabel('time (ms)'); 
+[thresholdHum thresholdAlg] = fitToErfOutputAndHuman(Output);
+ActivationThreshold = thresholdAlg(n);
+try
+    index = find(amps >= ActivationThreshold,1,'first');
+catch
+    index = length(amps); 
+end
+plot(Output.ResidualArtifact{index}','r')
+times = (1:length(Output.neuronInfo.templates{1}))/20; 
+hold on; plot(Output.neuronInfo.templates{1},'k','LineWidth',3);
+xlim([0 40]); 
 subplot(2,3,5);
 dots = plot(amps,latencies(:,2),'o','MarkerFaceColor','blue','Markersize',12); 
 hold on

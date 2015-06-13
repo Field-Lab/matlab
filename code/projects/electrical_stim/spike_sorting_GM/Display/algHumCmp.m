@@ -16,12 +16,16 @@ fname = ['elecResp_n' num2str(neuronId) '_p' num2str(input.stimInfo.patternNo) '
 filename = fullfile(pathname,fname); 
 temp = load(filename); 
 elecResp = temp.elecResp; 
+disp(length(elecResp.stimInfo.stimAmps))
+if length(elecResp.stimInfo.stimAmps)>40
+    keyboard;
+end
 for a = 1 : size(elecResp.analysis.latencies,1)
     try
         humanLat(a,:) = elecResp.analysis.latencies{a}; %#ok<AGROW>
     catch
-        humanLat(:,1) =[];
-        humanLat(a,:) = elecResp.analysis.latencies{a}; %#ok<AGROW>
+        humanLat(a,1:(end-1)) = elecResp.analysis.latencies{a}; %#ok<AGROW>
+        humanLat(a,end) = NaN; 
     end
 end
 if size(latencies,2) == (size(humanLat,2) - 1)
