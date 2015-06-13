@@ -68,7 +68,7 @@ percentTrueNegative = values(5)/values(6);
 percentTruePositive = values(1)/values(3);
 percentFalseNegatives = values(2)/values(3);
 percentAgreement = values(7)/values(8);
-
+totalTrials = values(8); 
 %%
 groupnames = {'overall success','false positive','true negative',...
     'true positive','false negative'}; 
@@ -84,5 +84,6 @@ all_values = [percentAgreement; percentFalsePositive; percentTrueNegative; ...
     percentTruePositive; percentFalseNegatives]; 
 bh = barweb([all_values],[my_errors;]', [], groupnames, bw_title, ...
     bw_xlabel, bw_ylabel, [], gridstatus, bw_legend);
+
  figure; bar(all_values); 
  ylabel('percent accuracy');
