@@ -5,10 +5,10 @@ J               = length(Powers);
 numberOmit      = input.params.load.findAxon.numberOmit;
 lMovingAverage  = input.params.load.findAxon.lMovingAverage;
 typeEigenvalue  = input.params.load.findAxon.typeEigenvalue;
-for j = 1:J 
-
-A = Powers{j};
-
+for j = 1:J
+    
+    A = Powers{j};
+    
     for n1=1:numberOmit;
         [maxValue, linearIndexesOfMaxes] = max(A(:));
         [rowsOfMaxes colsOfMaxes] = find(A == maxValue);
@@ -16,20 +16,20 @@ A = Powers{j};
             A(rowsOfMaxes(n2),colsOfMaxes(n2))=NaN;
         end
     end
-Energy = nansum(nansum(A));    
-A=A./Energy;
-Powers{j} = A;
-Energies(j) = Energy;
-
-x  = [1:32]';
-y  = [1:65];
-Mx = nansum(x'*A);
-My = nansum(A*y');
-
-x2=x-Mx;
-y2=y-My;
-
-variance = 0;
+    Energy = nansum(nansum(A));
+    A=A./Energy;
+    Powers{j} = A;
+    Energies(j) = Energy;
+    
+    x  = [1:32]';
+    y  = [1:65];
+    Mx = nansum(x'*A);
+    My = nansum(A*y');
+    
+    x2=x-Mx;
+    y2=y-My;
+    
+    variance = 0;
     for i1=1:32
         for i2=1:65
             if(~isnan(A(i1,i2)))
@@ -39,12 +39,12 @@ variance = 0;
             end
         end
     end
-
-
-[eigvec eigval] = eig(variance);
-eigvals(j,2)=max(diag(eigval));
-eigvals(j,1)=min(diag(eigval));
-
+    
+    
+    [eigvec eigval] = eig(variance);
+    eigvals(j,2)=max(diag(eigval));
+    eigvals(j,1)=min(diag(eigval));
+    
 end
 
 ratios          = eigvals(:,1)./(eigvals(:,1)+eigvals(:,2));
@@ -78,7 +78,7 @@ for i=1:J-1
     difvalsAfter = diff(valsAfter);
     IndexPos     = difvalsAfter>0;
     if(IndexPos(1)==0)
-            possum(i) = 0;
+        possum(i) = 0;
     else
         if(nansum(IndexPos)==length(IndexPos))
             rangeInc=[i:J];
@@ -99,4 +99,6 @@ if(typeEigenvalue==1)
 else
     AxonBr  = AxonBr2;
 end
-            
+if(AxonBr == J|| AxonBr ==1)
+    AxonBr = [];
+end
