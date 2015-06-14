@@ -34,6 +34,14 @@ stimsize.frames = size(stimulus,3);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :);
 
+%first subunits!
+if GLMType.Subunits
+	for frame=1:stimsize.frames
+		tempstim=conv2(double(stimulus(:,:,frame)),double(GLMPars.subunits),'same');
+		stimulus(:,:,frame)=tempstim;
+	end
+end
+
 
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
