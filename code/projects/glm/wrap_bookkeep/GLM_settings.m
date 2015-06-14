@@ -46,7 +46,8 @@ if strcmp(base_type, 'default')
     GLMType.nullpoint  = 'mean'; 
     GLMType.map_type   = 'mapPRJ'; 
     GLMType.debug      = false;
-    GLMType.contrast   = true;
+    GLMType.contrast   = false;
+    GLMType.Subunits   = false;
 end
 %%%%% Cone Names %%%%%%%
 
@@ -160,6 +161,10 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         if strcmp(change.type, 'specialchange')
             GLMType.specialchange = true;
             GLMType.specialchange_name = change.name;
+        end
+        
+        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'ON')
+            GLMType.Subunits = true;
         end
         
 
