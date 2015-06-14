@@ -80,7 +80,7 @@ The first step is load the templates (shown in the Examples). This can be done w
 \b PreferredElectrodes
 \b0  function, that takes for each neuron the electrode(s) with the strongest signal in the 
 \b recElecs
-\b0 . Template information and preferred electrodes has to be set to the input structure, see Examples\
+\b0 . Template information and preferred electrodes has to be set to the input structure afterwards, see Examples. Notice we are relying in the elecResp file, but certainly there is possibility to easily extend the code to read templates for example from .ei files\
 \
 
 \b Load data traces\
@@ -113,15 +113,15 @@ The first step is load the templates (shown in the Examples). This can be done w
 \pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
 \ls2\ilvl0
 \b \cf0 {\listtext	\'95
-\b0 	}makeTemplatesFromElecResp\
+\b0 	}
+\b makeTemplatesFromElecResp\
 {\listtext	\'95	}translateTemplate (not very useful)\
 {\listtext	\'95	}PreferredElectrodes \
 {\listtext	\'95	}loadData\
 {\listtext	\'95	}addAxonBreakPoint \
 {\listtext	\'95	}filldefaultValues \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
-
-\b \cf0 Initialization: the initial structure
+\cf0 Initialization: the initial structure (under construction)
 \b0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 \cf0 \
@@ -134,8 +134,20 @@ Once the initial structure has all the required values the
 
 \b0 \
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
 
-\b Comments
+\b \cf0 Spike sorting: The Gibbs and Log structures. Gibbs sampler and Heuristics (under construction)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 After initialization is finished, this structure is passed to \
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 The results: Output Structures\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 Comments
 \b0 \
 There can be a lot of redundancies in the definition, sometimes the same values can appear in the input, initial and Gibbs structures. That shouldn\'92t be a problem though\
 \

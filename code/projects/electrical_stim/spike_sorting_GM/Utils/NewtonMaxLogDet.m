@@ -1,5 +1,11 @@
 function lambda = NewtonMaxLogDet(input,lambda0,Prods,quad)
-
+% NewtonMaxLogDet finds the hyperparameters lambda needed for the 
+% Artifact regularized model.  Actually it solves the problem
+%   min_lambda_i quad'*lambda- log(det(sum(lambda_i
+%   *Prods{i})). quad(i)=Artifact'*Prods{i}*Artifact is computed
+%  in the initialization are the vectorized artifact that comes from the
+%   initialization
+% input:  input structure, initial 
 
 beta   = input.params.initial.Newton.beta;
 a      = input.params.initial.Newton.a;

@@ -1,4 +1,22 @@
 function [templates recElecs]=makeTemplatesFromElecResp(pathToAnalysisData,patternNo,neuronIds,Tmin,varargin)
+% makeTemplatesFromElecResp Creates templates from elecResp files
+% loadData loads data from a movies adds manually an Axonal Bundle Breakpoint to the input structure, defined as the
+% last condition j for which there is no observed traveling wave following stimulation.
+% 
+% inputs:   -pathToAnalysisData: path to movie and elecResp files
+%           -patternNo: pattern for spike sorting 
+%           -neuronIds: Ids of neurons that will be part of the analysis         
+%           -Tmin: Minimum time of templates that will be considered. Choose one if original templates
+%            are aligned to onset of spike at time ~10. (this should be regularly the case for templates of length either 71 or 111)
+%            choose Tmin>10 to cut the first part of the template, if there is misalignment with above rule (That seems to be the case when
+%            templates have length=81, Tmin=10 in that case
+% optional: -recElecs: recording Electrode If they are not provided, they will be chosen from elecResp.cells.goodElecs file
+%          
+% Output:   templates{n}(e,t) and recElecs(e)
+%
+% Gonzalo Mena 6/2015 
+
+
 
 if(nargin>4)
     recElecs=varargin{1};
