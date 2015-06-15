@@ -1,5 +1,8 @@
 function Gibbs = GibbsSamplerSpikesArtifact(Gibbs)
-    
+%GibbsSamplerSpikesArtifact  updates the Gibbs.variables field, by doing swipes
+% between sampling spikes and latencies, Artifact, residual variances and logistic regression fit
+% It stops until no more changes in Gibbs.variables.spikes are seen or until the maximum number of iterations
+% is exceeded
 
 dataVecJ    = Gibbs.params.dataVecJ;
 TfindRel0   = Gibbs.params.TfindRel0;

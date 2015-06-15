@@ -6,7 +6,7 @@ function [Gibbs GibbsNoDelete initial input Log] = doSpikeSortingElectricalArtif
 % specified in input.params.Gibbs.maxIter is exceeded (the choice of this number can be
 % critical for the several neurons-electrodes context. Variables are stored in the Gibbs structure, and they suffer changes from
 % iteration to iteration. After these first Gibbs sampler iterations, doSpikeSortingElectricalArtifact
-% will apply sequentially the different heuristics in case some problem has been diagnosed
+% will apply sequentially the different heuristics (files that start with a H) in case some problem has been diagnosed
 % (for example, lack of fit with the underlying logistic regression model)
 % Almost all of these heuristics are based in re-estimating (extrapolating or interpolating)
 % the artifact in conditions for which problems have been diagnosed, and doing more Gibbs iterations again, until
@@ -120,16 +120,16 @@ Gibbs = GibbsSamplerSpikesArtifact(Gibbs);
 
 %%
 %Do heuristics
-[Gibbs Log] = deleteSpikesBeginning(input,Gibbs,Log,1);
+[Gibbs Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
 [Gibbs Log] = HResampleBadLogRegression(input,Gibbs,Log);
 [Gibbs Log] = HResampleIfLackOfSpiking(Gibbs,input,Log,[1:nNeurons]);
 [Gibbs Log] = HResampleAboveActivation(Gibbs,input,Log);
-[Gibbs Log] = deleteSpikesBeginning(input,Gibbs,Log,1);
-
+[Gibbs Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
+%Save solution before executing Heuristics
 GibbsNoDelete = Gibbs;
 
 [Gibbs Log] = HDeleteSpikesAndResample(GibbsNoDelete,input,Log);
-[Gibbs Log] = deleteSpikesBeginning(input,Gibbs,Log,1);
+[Gibbs Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
 [Gibbs Log] = HaddSpikesResample(Gibbs,input,Log);
 [Gibbs Log] = HResampleAboveActivation(Gibbs,input,Log);
 
