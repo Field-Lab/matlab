@@ -41,44 +41,44 @@
 
 clear; clc
 exps = [3]; stimtypes = [2]; celltypes = [1]; 
-cell_subset = 'debug'; postfilterNL.debug = false;
-baseGLM.settings = {};
-baseGLM.settings{1}.type = 'PostSpikeFilter';
-baseGLM.settings{1}.name =  'OFF';
+cell_subset = 'debug'; postfilterNL.debug = true;
+base_glmsettings = {};
+base_glmsettings{1}.type = 'PostSpikeFilter';
+base_glmsettings{1}.name =  'OFF';
 postfilterNL.type        = 'Logistic_fixMU';
 runoptions.print         = true;
-glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
+glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
 
 clear; clc
 exps = [3]; stimtypes = [2]; celltypes = [1]; 
 cell_subset = 'debug'; postfilterNL.debug = true;
-baseGLM.settings = {};
+base_glmsettings = {};
 postfilterNL.type = 'Hinge_fixedPS'
 runoptions.print = true;
-glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
+glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
 
 exps = [4]; stimtypes = [2]; celltypes = [2 1]; 
 cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
-baseGLM.settings{1}.type = 'cone_model';
-baseGLM.settings{1}.name = 'rieke_linear'
-baseGLM.settings{2}.type= 'input_pt_nonlinearity';
-baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+base_glmsettings{1}.type = 'cone_model';
+base_glmsettings{1}.name = 'rieke_linear'
+base_glmsettings{2}.type= 'input_pt_nonlinearity';
+base_glmsettings{2}.name= 'piecelinear_fourpiece_eightlevels';
 postfilterNL.type = 'Hinge_fixedPS'
 runoptions.print = false;
-glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
+glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
 %}
-function glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM_settings,postfilterNL,runoptions)
+
+function glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection));
 % Define structure which uniquely defines GLM to be used 
-if exist('baseGLM_settings', 'var')
-    baseGLM.settings = baseGLM_settings; clear baseGLM_settings;
-    baseGLM.Type = GLM_settings('default',baseGLM.settings);
+if exist('base_glmsettings', 'var')
+    base_GLMType = GLM_settings('default',base_glmsettings);
 else
-    baseGLM.Type = GLM_settings('default');
+    base_GLMType = GLM_settings('default');
 end
-baseGLM.Type.fitname    = GLM_fitname(baseGLM.Type); 
+base_GLMType.fitname    = GLM_fitname(base_GLMType); 
 currentdir = pwd;
 
 for i_exp = exps    
@@ -89,13 +89,13 @@ for i_exp = exps
         eval(sprintf('load %s/%s/datarun_master.mat', BD.BlockedSpikes,exp_nm));
         if i_stimtype == 1, stimtype = 'WN';   end
         if i_stimtype == 2, stimtype = 'NSEM'; end
-        baseGLM.Type.fit_type = stimtype;        
+        base_GLMType.fit_type = stimtype;        
         % Load and process stimulus
-        [StimulusPars, exp_info] = StimulusParams(exp_nm, stimtype, baseGLM.Type.map_type);
-        [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, baseGLM.Type.cone_model,'fitmovie');
-        [testmovie0]          = loadmoviematfile(exp_nm , stimtype, baseGLM.Type.cone_model,'testmovie');
+        [StimulusPars, exp_info] = StimulusParams(exp_nm, stimtype, base_GLMType.map_type);
+        [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, base_GLMType.cone_model,'fitmovie');
+        [testmovie0]          = loadmoviematfile(exp_nm , stimtype, base_GLMType.cone_model,'testmovie');
         testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
-        baseGLM.Type.fitmoviefile  = origmatfile;
+        base_GLMType.fitmoviefile  = origmatfile;
         if postfilterNL.debug
             display('shorten stimulus for post filter debugging mode')
             StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:2);
@@ -103,9 +103,9 @@ for i_exp = exps
         fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
         % Directories  
         secondDir.exp_nm        = exp_nm; 
-        secondDir.map_type      = baseGLM.Type.map_type; 
+        secondDir.map_type      = base_GLMType.map_type; 
         secondDir.stim_type     = stimtype;
-        secondDir.fitname       = baseGLM.Type.fitname;
+        secondDir.fitname       = base_GLMType.fitname;
         
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
@@ -153,88 +153,142 @@ for i_exp = exps
                 % load fittedGLM
                 eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
                 glm_cellinfo = fittedGLM.cellinfo;
-                
-                
-                [baseGLM.lcif_fit,baseGLM.objval] =  subR_lcifdecomp_fittedGLM(fittedGLM.rawfit.opt_params,...
+                [lcif_OLD,objval_OLD] = subR_lcifdecomp_fittedGLM(fittedGLM.rawfit.opt_params,...
                     fittedGLM.GLMType,fittedGLM.GLMPars,fitspikes_concat,fitmovie_concat,inputstats,glm_cellinfo);
-                [baseGLM.lcif_stimfilter_crossvaltest] = subR_lcifstim_fittedGLM(fittedGLM.rawfit.opt_params,...
+                % old values of filters
+                MU_OLD =  fittedGLM.linearfilters.TonicDrive.Filter;
+                
+                [lcif_teststim_OLD] = subR_lcifstim_fittedGLM(fittedGLM.rawfit.opt_params,...
                     fittedGLM.GLMType,fittedGLM.GLMPars,testmovie,inputstats,glm_cellinfo);
-                baseGLM.stimfilter_std = baseGLM.lcif_fit.stim;
-                
-                LOGI.input_fit  = baseGLM.lcif_fit.stim/ std(baseGLM.lcif_fit.stim);
-                LOGI.input_test = baseGLM.lcif_stimfilter_crossvaltest / std(baseGLM.lcif_fit.stim);
-                LOGI.log_external_drive = baseGLM.lcif_fit.mu;
-                LOGI.y_int     = exp( baseGLM.lcif_fit.mu(1) );
                 
                 
-                plotvec.normed_linearoutput       = sort(LOGI.input_test)
-                plotvec.rate_standardGLM          = sort(exp( std(baseGLM.lcif_fit.stim) * plotvec.normed_linearoutput + baseGLM.lcif_fit.mu(1) ));
-                NL_improve.stimdrivenrate_baseGLM = exp(baseGLM.lcif_stimfilter_crossvaltest + baseGLM.lcif_fit.mu(1) );      
-                
-                
-                % THIS SECTION COMPUTES OPTIMIZED STIM DRIVEN RATE
-                % NLParams and crossvaltest_finalrate
-                fit_bins     = length(baseGLM.lcif_fit.stim);
+                % Figure out lcif of test stim
                 t_bin        = fittedGLM.t_bin;
                 home_sptimes = fitspikes_concat.home';
                 home_spbins  = ceil(home_sptimes / t_bin);
-                home_spbins  = home_spbins(find(home_spbins < fit_bins) );                
+                home_spbins  = home_spbins(find(home_spbins < length(lcif.mu)) );
                 optim_struct = optimset(...
                     'derivativecheck','off','diagnostics','off',...  % 
                     'display','iter','funvalcheck','off',... 
-                    'MaxIter',100,'TolFun',10^(-6),'TolX',10^(-9) ); 
+                    'GradObj','on','largescale','on','Hessian','on',...
+                    'MaxIter',100,'TolFun',10^(-5),'TolX',10^(-9) ); 
                 
-                NLParams.metric_name = postfilterNL.type;
+                
+                
+                optim_struct_NEW = optimset(...
+                    'derivativecheck','off','diagnostics','off',...  % 
+                    'display','iter','funvalcheck','off',... 
+                    'MaxIter',100,'TolFun',10^(-5),'TolX',10^(-9) );       
+                % Actual Optimization: New filters, stim lcif
+                
+                
                 if strcmp(postfilterNL.type, 'Logistic_fixMU')
                     
-                    NLParams.note_metric = 'Logistic with Null Rate fixed to tonic drive. Driven by linear filter output,normalized to std 1';
-             
-                    lowerbound = [LOGI.y_int+1 .1];
-                    upperbound = [1000         100];
-                    LOGI_Params0 = [100,1];
-                    [LOGI_Params_Opt new_objval, eflag output] = fmincon(@(LOGI_Params) objval_LOGISTIC...
-                        (LOGI_Params, LOGI.y_int,LOGI.input_fit, 0, home_spbins,t_bin),...
-                        LOGI_Params0,[],[],[],[],lowerbound,upperbound,[],optim_struct);
                     
-                    [~, lcif_LOGI_crossvaltest] =  objval_LOGISTIC(LOGI_Params_Opt,...
-                        LOGI.y_int,LOGI.input_test, 0, [],t_bin); 
-                    NLParams.param_string = sprintf('Optimal Max Rate: %1.1e, Optimal Slope: %1.1e',...
-                        LOGI_Params_Opt(1), LOGI_Params_Opt(2) );
-                    NLParams.maxrate = LOGI_Params_Opt(1);
-                    NLParams.slope   = LOGI_Params_Opt(2);
-                    crosvaltest_finalrate = exp(lcif_LOGI_crossvaltest);
-                    
-                    clear lcif_LOGI_crossvaltest dummy lowerbound upperbound LOGI_Params0
-                    % Check Code
-                    %{
-                    lcif   = baseGLM.lcif_fit.stim + baseGLM.lcif_fit.mu; 
+                    MAX   = 20;
+                    RATE  = 1;
+                    OFFSET = log(MAX-1) / RATE;
+                    lcif_new_stim = log(MAX ./ (1 + exp(-RATE * (lcif_OLD.stim - OFFSET) )));
+                    lcif_NEW =  lcif_OLD.mu + lcif_new_stim;
+                    cif_NEW  = exp(lcif_NEW);
+                    lcif_0 = lcif_OLD.stim + lcif_OLD.mu;
+                    cif_0   = exp(lcif_0);
+                    dt     = fittedGLM.t_bin;
+                    spt    = home_spbins;
+                    lcif   = lcif_NEW;
                     cif    = exp(lcif);
-                    objval = -( sum( lcif(home_spbins) ) - t_bin * sum(cif) );
+                    objval = -( sum( lcif(spt) ) - dt * sum(cif) );
                     
-                    pars = [10,1];
-                    objval = objval_LOGISTIC(pars,LOGI.y_int,LOGI.input_fit, 0, home_spbins,t_bin)
-                    %}
+                    lcif_intoLOGI = lcif_OLD.stim;
+                    lcif_ext  = lcif_OLD.mu;
+                    spikebins = home_spbins;
+                    t_bin = fittedGLM.t_bin;
+                    objval = objval_LOGISTIC(MAX, RATE, lcif_intoLOGI, lcif_ext, spikebins,t_bin)
+                    
+                    
+                    
+                    
+                    lowerbound = [2 .5];
+                    LOGI_Params0 = [1,1];
+                    [LOGI_Params_Opt new_objval, eflag output] = fmincon(@(LOGI_Params) objval_LOGISTIC...
+                        (LOGI_Params, lcif_intoLOGI, lcif_ext, spikebins,t_bin),...
+                        LOGI_Params0,[],[],[],[],lowerbound,[],[],optim_struct_NEW);
+                    
+                    
+                    vu_vec = [1/4, 1/2, 1, 2, 4, 10];
+                    
+                    logi_pars = cell(1,length(vu_vec));
+                    objvals_vu = NaN(1,length(vu_vec));
+                    
+                    lowerbound = [1 0.1];
+                    LOGI_Params0 = [10,1];
+                    for i_vu = 1:length(vu_vec)
+                        VU = vu_vec(i_vu);
+                        [LOGI_Params_Opt new_objval, eflag output] = fmincon(@(LOGI_Params) objval_GenLOGISTIC...
+                            (LOGI_Params,VU, lcif_intoLOGI, lcif_ext, spikebins,t_bin),...
+                            LOGI_Params0,[],[],[],[],lowerbound,[],[],optim_struct_NEW);
+                        
+                        logi_pars{i_vu}  = LOGI_Params_Opt;
+                        objvals_vu(i_vu) = new_objval
+                    end
+                        
+                        
+                    
+                    
+ 
+                    
+                    
+                    
+                    
+                    
+                elseif strcmp(postfilterNL.type, 'Hinge_refitPS')
+                    stim_pos = lcif.stim;
+                    stim_pos(find(stim_pos<0)) = 0;
+                    stim_neg = lcif.stim;
+                    stim_neg(find(stim_neg>=0)) = 0;
+                    
+                    p_ps0 = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.PS); 
+                    p0 = [1; 1; 1; p_ps0];
+                    COV = [lcif.mu; stim_pos; stim_neg; lcif.ps_unoptimized.glm_covariate_vec];
+                    display('madeithere')
+                    [new_p new_objval, eflag output] = fminunc(@(p) subr_optimizationfunction...
+                        (p,COV,home_spbins,t_bin),p0,optim_struct);
+                    % UNPACK TERMS
+                    Rescaling_string = sprintf('Rescalers::   MU: %1.2e, STIM_POS: %1.2e, STIM_NEG: %1.2e',...
+                        new_p(1), new_p(2), new_p(3) );
+                    display(Rescaling_string)
+                    objval_NEW = new_objval;
+                    MU_NEW = new_p(1) *MU_OLD;
+                    PS_NEW = lcif.ps_unoptimized.basis * new_p(4:end);
+                    stim_pos = lcif_teststim_OLD;
+                    stim_pos(find(stim_pos<0)) = 0;
+                    stim_neg = lcif_teststim_OLD;
+                    stim_neg(find(stim_neg>=0)) = 0;
+                    lcif_teststim_NEW = new_p(2) * stim_pos + new_p(3)* stim_neg;
+                    rescale.MU = new_p(1);
+                    rescale.stim_pos = new_p(2);
+                    rescale.stim_neg = new_p(3);                   
+              
                 end
-                plotvec.rate_optNL               = sort(crosvaltest_finalrate);
-                NL_improve.stimdrivenrate_withNL = crosvaltest_finalrate;
                 
+                %{
+                xvals_0     = linspace(min(lcif_teststim_OLD),max(lcif_teststim_OLD),1000);
+                xvals_pos = xvals_0(xvals_0>=0);
+                xvals_neg = xvals_0(xvals_0<0);
+                xvals_new = log( [[exp(xvals_neg *new_p(3))],[exp(xvals_pos *new_p(2))]]) 
+                subplot(2,1,1); plot(xvals_0,exp(xvals_0)); hold on; plot(xvals_0,exp(xvals_new),'r');
+                subplot(2,1,2); plot(xvals,yvals_0);  hold on; plot(xvals_0,exp(xvals_new),'r');xlim([-2,2]);
+                %}
                 
-                clf;
-                x1 = plotvec.normed_linearoutput;
-                y1 = plotvec.rate_standardGLM;
-                y2 = plotvec.rate_optNL; 
-                plot(x1,y1,'r'); hold on
-                plot(x1,y2,'b');
-                xlim([-4,4]);
-                ylabel('stim driven rate')
-                xlabel('Standard Dev of Filteroutput')
-                title('Nonlinearity')
                 
                 % NOTE THINK ABOUT SHOWING THE NEW NONLINEARITY %
                 NL_xvalperformance      = subR_NLxvalperformance(fittedGLM,MU_NEW,PS_NEW,lcif_teststim_NEW);
                 NL_xvalperformance.type = postfilterNL.type;
                 NL_xvalperformance.objval_glm_withNL = objval_NEW;
-                NL_xvalperformance.objval_glm        = baseGLM.objval;
+                NL_xvalperformance.objval_glm        = objval_OLD;
+                NL_xvalperformance.computetime   = datestr(clock);
+                NL_xvalperformance.param_refit = new_p;
+                NL_xvalperformance.rescale   = rescale;
                 savename = sprintf('%s/%s',savedir, cell_savename);
                 eval(sprintf('save %s.mat fittedGLM NL_xvalperformance', savename));
                                 
