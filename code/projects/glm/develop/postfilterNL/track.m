@@ -1,6 +1,17 @@
 glm_postfilterNL_LNonly
 (focus on parametrically searching the non-linearity using likelihood)
 
+
+
+Version 1:
+- 2015-06-15
+- redone interpreation of Non-linearity
+- ready to plot and clean up
+
+Version 0_a:
+- 2015-06-15
+- extra save, just to be conservative
+
 Version 0:
 - 2015-06-11
 - no need to optimize offset MU .. keep as is
