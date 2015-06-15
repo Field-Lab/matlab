@@ -616,7 +616,21 @@ for p = 1:length(pathnames)
     input.neuronInfo.neuronIds     =    neuronIds; %define neuron Ids
     input.neuronInfo.templates     =    templates; %define templates
     
-   
+    %Parameters to find a Axonal activation authomatically.
+    %if includeAxonBreakpoint=0 no axonal breakpoint will be included
+    input.params.load.findAxon.includeAxonBreakpoint  =   0; % For now, set to zero because the axonal breakpoint solution is not working
+    input.params.load.findAxon.numberOmit             =   4;
+    input.params.load.findAxon.lMovingAverage         =   1;
+    input.params.load.findAxon.TrangeAxon             =  [11 40];
+    %If one, look for decreases in the minimum of the eigenvalues of the
+    %variance (space) of the energy plot. If equal 2 looks for increases
+    input.params.load.findAxon.typeEigenvalue         =   2;
+    % cleanData = 1 erases the first trial of each movie (for cases where some
+    % of the trials did not result in electrical stimulation as intended)
+    input.params.load.cleanData                       =   1;
+    % if collapseTrialsSameCondition = 1 Collapse movies 2*j and 2*j-1
+    input.params.load.collapseTrialsSameCondition     =   1;
+    
     
     %loads data from movie files
     input = loadData(input,pathToAnalysisData,patternNo);
