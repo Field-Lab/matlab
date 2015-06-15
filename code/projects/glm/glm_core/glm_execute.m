@@ -54,10 +54,10 @@ if GLMType.PostSpikeFilter
 end
 if GLMType.CouplingFilters
     basis_params  = GLMPars.spikefilters.cp;
-    % cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
+    cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
     % Put in PCA for coupling here
-    load('CP_basis.mat');
-    cp_basis = waveform; 
+    % load('CP_basis.mat');
+    % cp_basis = waveform; 
 end
 clear bin_size basis_params
 

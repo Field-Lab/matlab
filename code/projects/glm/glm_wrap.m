@@ -38,6 +38,30 @@
 %  subR_createraster
 %  subR_concat_fitmovie_fromblockedcell
 %  subR_visionSTA_to_xymviCoord
+
+% Sample Call and Output to verify that it works
+%{
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
+
+%%% Should have the following minimization sequence  
+### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0            1297.56                         2e+04                
+     1            1297.56             10          2e+04           4
+     2           -42251.5            2.5       2.56e+03           0
+     3           -45320.3        4.13912       5.15e+03           7
+
+Local minimum possible.
+%}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
@@ -98,7 +122,10 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
+        
+        if GLMType.CouplingFilters
+            Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
+        end
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
@@ -237,6 +264,7 @@ for k = FitBlocks
 end
 spikesconcat = T_SP;
 end
+
 function raster_spiketimes = subR_createraster(blockedspikes, TestPars)
 % AKHeitman 2014-04-14
 % Make a raster which takes into account GLM processing
@@ -265,6 +293,7 @@ for i_blk = 1 : length(rasterblocks)
 end 
 
 end
+
 function concat_fitmovie   = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , FitPars)
 % AKHeitman 2014-04-14
 % Concatenate the fit movie (different blocks)
@@ -294,6 +323,7 @@ end
 concat_fitmovie = concat_fullfitMovie;
 
 end
+
 function [center,sd]       = subR_visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, masterdim, slvdim)
 % AKHeitman  2013-12-08
 % Grab x, y coordinates of STA center of the master

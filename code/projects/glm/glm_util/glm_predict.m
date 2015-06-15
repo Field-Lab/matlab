@@ -1,7 +1,4 @@
 %% NB 2015-05-04
-% This function takes in a GLM fit and a movie and makes predictions. It
-% also calculated the bits per spike for recorded spikes, if you input
-% testspikes
 
 function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 %%
@@ -9,46 +6,37 @@ function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 % 
 % fittedGLM structure
 % testmovie should be in stim size x time (NO RGB!)
-%
 % OPTIONAL
 % testspikes, which should be in cells, with each cell a repeat
 %   if no testspikes, no bits per spike will be calculated
 % neighborspikes, if using coupling
 % predict, set to 'false' if you dont want to make rasters
-% trials, set the number of trials to predict. if none is given, will
-% default to the number in testspikes, if no testspikes, then 20.
+% 
 
 % Parse optional input 
 p = inputParser;
 p.addParamValue('testspikes', 0)
 p.addParamValue('neighborspikes', 0)
 p.addParamValue('predict', true)
-p.addParamValue('trials', 0)
 p.parse(varargin{:});
 testspikes = p.Results.testspikes;
 neighborspikes = p.Results.neighborspikes;
 predict = p.Results.predict;
-params.trials = p.Results.trials;
 clear p
 
+
 bpf               = fittedGLM.bins_per_frame;
-if params.trials == 0
-    try
-        params.trials = length(testspikes);
-    catch
-        params.trials = 20;
-    end
-end
+params.trials     = length(testspikes);
 params.bindur     = fittedGLM.t_bin;
-params.bins       = fittedGLM.bins_per_frame *size(testmovie,3);
+params.bins       = fittedGLM.bins_per_frame *size(testmovie,3); 
 params.frames     = size(testmovie,3);
-params.testdur_seconds = params.bindur * params.bins ;
+params.testdur_seconds = params.bindur * params.bins ;   
 center_coord = fittedGLM.center_coord;
 frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord); 
 
 %%
-if testspikes ~= 0
+if iscell(testspikes)
     logicalspike = zeros(params.trials,params.bins) ;
     for i_blk = 1 : params.trials
         spt = testspikes{i_blk};
@@ -62,7 +50,11 @@ if testspikes ~= 0
         for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
             pairspike{pair} = zeros(params.trials,params.bins) ;
             for i_blk = 1 : params.trials
-                spt = neighborspikes{pair}{i_blk};
+                if params.trials == 1
+                    spt = neighborspikes{pair};
+                else
+                    spt = neighborspikes{pair}{i_blk};
+                end
                 binnumber = ceil(spt / params.bindur );
                 pairspike{pair}( i_blk, binnumber )  =  pairspike{pair}( i_blk,binnumber ) + 1;
             end
@@ -80,6 +72,7 @@ GLMType = fittedGLM.GLMType;
 
   
     %% Set up CIF Components
+    
 
 MU = fittedGLM.linearfilters.TonicDrive.Filter;
 if GLMType.PostSpikeFilter
@@ -134,11 +127,11 @@ end
 lcif_kx0 = reshape( repmat(lcif_kx_frame, bpf, 1) , 1 , params.bins);
 lcif_mu0 = MU * ones (1,params.bins);
 
-if testspikes ~= 0
+if iscell(testspikes)
     lcif_mu = repmat(lcif_mu0 , params.trials, 1);
     lcif_kx = repmat(lcif_kx0 , params.trials, 1);
     clear sbpf;
-    lcif = lcif_mu + lcif_kx;
+   lcif = lcif_mu + lcif_kx;
     
     if GLMType.PostSpikeFilter
         lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );
@@ -187,6 +180,7 @@ if testspikes ~= 0
     xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
     xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
     xvalperformance.rasters.recorded = logicalspike;
+    xvalperformance.glm_rateperbin  = params.bindur * glm_ratepersec;
 end
 
 %%

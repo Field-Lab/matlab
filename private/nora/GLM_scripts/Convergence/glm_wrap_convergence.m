@@ -69,7 +69,8 @@ end
 
 % need to define fitting blocks for each experiment and stim type
 % Conv_Blocks{exp, stim} = [1 2 ];
-Conv_Blocks = [1 2 3 5 7 9 11 20 30 40 50 57];
+% Conv_Blocks = [1 2 3 5 7 9 11 20 30 40 50 57];
+Conv_Blocks = [11 20 30];
 
 for i_exp = exps
     for i_stimtype = stimtypes

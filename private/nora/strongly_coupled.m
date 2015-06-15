@@ -12,7 +12,7 @@ total_cell_count = 0;
 % coupling.CP = paired cell, CP_WN, CP_NSEM
 
 for exp = 2
-    for fittype = 1:2
+    for fittype = 1
         cell_count = total_cell_count;
         
         % Get file list
@@ -24,15 +24,24 @@ for exp = 2
         % Load cells
         for file=1:n_cells
             cell_count = cell_count + 1;
-            load([datapath fittypepath{fittype} exp_names(exp,:) matfiles(file).name]);
+            load([datapath fittypepath{1} exp_names(exp,:) matfiles(file).name]);
             coupling{cell_count}.info(1) = str2double(matfiles(file).name(7:(end-4)));
-            coupling{cell_count}.info(2+fittype) = fittedGLM.xvalperformance.glm_normedbits;
             coupling{cell_count}.CP(:,1) = double(fittedGLM.cellinfo.pairs);
             
-            % Go through the pairs and extract coupling
+            % WN
+            coupling{cell_count}.info(2) = fittedGLM.xvalperformance.glm_normedbits;
             for pair = 1:6
-                coupling{cell_count}.CP(pair,1+fittype) = max(fittedGLM.linearfilters.Coupling.Filter{pair});
+                coupling{cell_count}.CP(pair,2) = max(fittedGLM.linearfilters.Coupling.Filter{pair});
             end
+            
+            % NSEM
+            load([datapath fittypepath{2} exp_names(exp,:) matfiles(file).name]);
+            coupling{cell_count}.info(3) = fittedGLM.xvalperformance.glm_normedbits;
+            for pair = 1:6
+                coupling{cell_count}.CP(pair,3) = max(fittedGLM.linearfilters.Coupling.Filter{pair});
+            end
+            
+
         end
     end
     total_cell_count = cell_count; 
@@ -68,14 +77,14 @@ title('ON-ON Coupling')
 
 %%
 
-if 0
 datarun = load_data('2012-09-27-3/data003');
 datarun = load_neurons(datarun);
 datarun = load_params(datarun);
 plot_rf_fit(datarun, 'On Parasol')
 hold on
+plot_rf_fit(datarun, [91 1909 2360 6858], 'edge', false, 'fill', true, 'alpha', 0.1)
 
-for i = 40:142
+for i = 1:length(coupling)
     cid = find(datarun.cell_ids == coupling{i}.info(1));
     start = datarun.vision.sta_fits{cid}.mean;
     for i_pair = 1:6
@@ -83,7 +92,6 @@ for i = 40:142
         finish = datarun.vision.sta_fits{cid}.mean;
         plot([start(1) finish(1)],[start(2) finish(2)],'k','LineWidth', (0.1+abs(coupling{i}.CP(i_pair,3)))); %-coupling{i}.CP(i_pair,2)
     end
-end
 end
 
 
