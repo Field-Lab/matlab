@@ -1,12 +1,12 @@
 function lambda = NewtonMaxLogDet(input,lambda0,Prods,quad)
-% NewtonMaxLogDet finds the hyperparameters lambda needed for the 
-% Artifact regularized model.  Actually it solves the problem
-%   min_lambda_i quad'*lambda- log(det(sum(lambda_i
-%   *Prods{i})). quad(i)=Artifact'*Prods{i}*Artifact is computed
-%  in the initialization are the vectorized artifact that comes from the
-%   initialization
-% input:  input structure, initial 
-
+% NewtonMaxLogDet finds the hyperparameters lambda needed for the regularized model for the artifact using gradient descent 
+% it solves the problem Artifact regularized model.  Actually it solves the problem  min_lambda_i quad'*lambda- log(det(sum(lambda_i*Prods{i}))
+% Input:  -input: input structure, 
+%         -lambda0: initial lambda estimate (same length as Prods)
+%         -quad: quadratic product, quad(i)=Artifact'*Prods{i}*Artifact where  Artifact is the vectorized form of the Artifact computed in the initialization (via quadratic programing)    
+%         -Prods: a cell array containing the products D'*D where the D'*D's are the regularization matrix in all the features (time and condition) 
+%Output:  -lambda: the estimated hyperparameters
+% Gonzalo Mena 06/15
 beta   = input.params.initial.Newton.beta;
 a      = input.params.initial.Newton.a;
 thres  = input.params.initial.Newton.thres;

@@ -1,16 +1,17 @@
 function input = fillDefaultValues(input)
-%  fillDefaultValues  sets the default values for input structure.
-%  inputs:   input structure
+%  fillDefaultValues  sets the default values for input structure (and subsequent stages of algorithm).
+%  it has to be executed after loadData for practical considerations, All changes in this default values
+%  should be made after the execution of fillDefaultValues. Also, it sets all relevant variables after loadData (this means, 
+%  this function could be somehow merged with laodData in order to leave it exclusively for setting of the default values)
+%   Input:    - input: input structure
 %            
-%   optional:  input structure with default values and remaining relevant
-%               variables
-%              printElecs
+%   Output:   - input: input structure with default values and remaining relevant
+%               variables. See inline comments for details about those default values.
+%               
 %    
-% usage: use it always before initialize(). If default parameters need to
-% be changed to other ones, do it after executing this function. That
-% shouldln't be the case for the vast majority of them, though.
-%
 % Gonzalo Mena 6/2015 
+
+
 
 
 % Set up defaults for optional parameters%
