@@ -11,7 +11,7 @@
 \margl1440\margr1440\vieww19220\viewh12280\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
 
-\f0\b\fs24 \cf0 Algorithm for spike sorting with electrical Artifact (Gonzalo Mena, June 15th 2015)\
+\f0\b\fs24 \cf0 Algorithm for spike sorting with electrical Artifact (Gonzalo Mena, June 12th 2015)\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
@@ -181,8 +181,11 @@ Summary of functions used in this stage
 \b \
 \pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
 \ls5\ilvl1\cf0 {\listtext	\uc0\u8259 	}
-\b0 makeToeplitz\
-{\listtext	\uc0\u8259 	}makeRegularizationMatrices\
+\b0 makeToeplitz which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls5\ilvl2\cf0 {\listtext	\uc0\u8259 	}makeActionPotential\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls5\ilvl1\cf0 {\listtext	\uc0\u8259 	}makeRegularizationMatrices\
 {\listtext	\uc0\u8259 	}makeArtifactCovariates\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 \cf0 \
@@ -363,4 +366,19 @@ The function
 \b0  has to be executed after Gibbs structure is available, notice one can also make outputs with GibbsNoDelete, in case that information may be useful too\
                \
 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 June 15th 2015. New important function\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 New function SpikeSortingCompact was created, see the help for usage. The aim is to don't have to run examples, but do Spike Sorting with just having to fill the more esential variables, the path and neurons, and in such a way that all values are specified as defaults (as stated in the examples and fillDefaultValues function) unless otherwise stated. Also, no need to translate templates to have them aligned to onset of spike at time 11. (using the also new AlignTemplates function)\
+This function should be easily modified in order to give more flexibility to define default values. 
+\b \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 \
 }
