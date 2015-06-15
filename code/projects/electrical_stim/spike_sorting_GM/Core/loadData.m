@@ -1,14 +1,15 @@
 function input = loadData(input,pathToAnalysisData,patternNo)
 % loadData loads data from a movies adds manually an Axonal Bundle Breakpoint to the input structure, defined as the
 % last condition j for which there is no observed traveling wave following stimulation.
-%  inputs:   path:pathToAnalysisData, pattern: patternNo and input with a few
-% values (input.tracesInfo.Trange, input.params.findAxon. (see example2.m
-% input.params.load.cleanData, input.params.load.collapseTrialsSameCondition )
-%            
-% output:  The same input, with data loaded (new information in fields
-% input.tracesInfo, input.stimInfo). Traces will be available in
-% input.tracesInfo.data{e,j}
-% usage:  
+% inputs:   -pathToAnalysisData: path
+%           -patternNo: pattern to be analyzed
+%           -input: input structure with a few values values (input.tracesInfo.Trange, input.params.findAxon. (see examples.m
+%                   input.params.load.cleanData, input.params.load.collapseTrialsSameCondition )
+%           
+% output:  -input The same input, with data loaded (new information in fields
+%           input.tracesInfo, input.stimInfo). Traces will be available in
+%           input.tracesInfo.data{e,j}
+% usage:  usit it in the same order as in examples (some fields in input have to be filled)
 %
 % Gonzalo Mena 6/2015 
 
