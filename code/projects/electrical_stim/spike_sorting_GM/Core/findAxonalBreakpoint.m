@@ -1,4 +1,12 @@
 function [input AxonBr]  = findAxonalBreakpoint(input)
+%function findAxonalBreakpoint uses Power information of different movies (defined as temporal 
+%                              sums of squared traces over different electrodes) to find an axonal breakpoint
+%                              defined as the last j previous the onset of axonal bundle activation
+%   Input:  -input: input structure with the unnormalized input.tracesInfo.Powers
+%   Output: -input: input structure with now normalized input.tracesinfo.Powers information for each condition
+%                   and energies information (input.tracesInfo.energies), the normalization constants.
+%           -AxonBr: The axonal breakpoint (a number between 1 and J)
+% Gonzalo Mena 06/15
 
 Powers          = input.tracesInfo.Powers;
 J               = length(Powers);

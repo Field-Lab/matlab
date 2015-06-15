@@ -1,11 +1,12 @@
 function templates=translateTemplate(templates,t0,elecs,neuron)
-% translateTemplate() shifts the templates to the right  certain
+% translateTemplate shifts the templates to the right  certain
 % neuron and electrodes
 % 
-% inputs:   templates, t0: time units to shift, elecs: electrode indexes in which
-% the shift will be done. neuron = neuronindex for the neuron whose
-% template will be shifted
-% output:  shifted templates
+% inputs:   -templates, in the output format specified by makeTemplatesFromElecResp
+%           -t0: time units to shift, 
+%           -elecs: Index(es0 of electrode(s) electrode indexes for which shift will be done
+%           -neuron = Index of neuron whose template will be shifted
+% output:  shifted templates, templates{n}(e,t)
 %
 % Gonzalo Mena 6/2015 
 

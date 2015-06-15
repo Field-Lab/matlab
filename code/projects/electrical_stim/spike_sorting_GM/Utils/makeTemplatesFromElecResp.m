@@ -5,15 +5,15 @@ function [templates recElecs]=makeTemplatesFromElecResp(pathToAnalysisData,patte
 % 
 % inputs:   -pathToAnalysisData: path to movie and elecResp files
 %           -patternNo: pattern for spike sorting 
-%           -neuronIds: Ids of neurons that will be part of the analysis         
+%           -neuronIds: Vector of Ids of neurons that will be part of the analysis         
 %           -Tmin: Minimum time of templates that will be considered. Choose one if original templates
 %            are aligned to onset of spike at time ~10. (this should be regularly the case for templates of length either 71 or 111)
 %            choose Tmin>10 to cut the first part of the template, if there is misalignment with above rule (That seems to be the case when
 %            templates have length=81, Tmin=10 in that case
-% optional: -recElecs: recording Electrode If they are not provided, they will be chosen from elecResp.cells.goodElecs file
+% optional: -recElecs: vector of recording electrodes. If they are not provided, they will be chosen from elecResp.cells.goodElecs file
 %          
-% Output:   templates{n}(e,t) and recElecs(e)
-%
+% Output:   templates: a nNeuron dimensional cell array, such that templates{n} is a E*T_template matrix 
+%           recElecs: E dimensional vector of electrodes recElecs (same as input, if they are provided)  
 % Gonzalo Mena 6/2015 
 
 

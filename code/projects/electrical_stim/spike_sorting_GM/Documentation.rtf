@@ -2,8 +2,9 @@
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 {\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
-{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
-{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid201\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid3}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}}
 \margl1440\margr1440\vieww19220\viewh12280\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
 
@@ -32,7 +33,7 @@ J               =
 \b \
 T               = l
 \b0 ength of the time window used for spike sorting (the time window may or not begin at time t=1, see below for details)\
-In the following, even if neuronIds and recElecs can be large numbers, the numbers n and e will refer to neuron with index n and electrode with index e respectively,  with the order defined by the ordering of neurons and recording electrodes. (for example, if the recording electrodes are [164 160 165] then e=2 means electrode 160.  In general, all the indexes j,e,i,t are relative to already built model.\
+In the following, even if neuronIds and recElecs can be large numbers, the numbers n and e will refer to neuron with index n and electrode with index e respectively,  with the order defined by the ordering of neurons and recording electrodes. (for example, if the recording electrodes are [164 160 165] then e=2 means electrode 160.  In general, all the indexes j,e,i,t will respect this representation.\
 \
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
@@ -49,7 +50,7 @@ In the following, even if neuronIds and recElecs can be large numbers, the numbe
 \b0 may or may not be specified (if they are not specified, the function 
 \b makeTemplatesFromElecResp 
 \b0 will choose for each neuron the one in the field 
-\b elecResp.cells.goodElecs. 
+\b elecResp.cells.goodElecs). 
 \b0 At the end of this part we will have a 
 \b input 
 \b0 structure with the fields \
@@ -62,14 +63,16 @@ In the following, even if neuronIds and recElecs can be large numbers, the numbe
 \cf0 \
 \
 
-\b Load templates
+\b Loading templates
 \b0 \
-The first step is load the templates (shown in the Examples). This can be done with the The function 
+The first step is load the templates (shown in the Examples). This can be done with the the function 
 \b makeTemplatesFromElecResp
-\b0  function, but the important for subsequent changes is templates should be nNeurons dimensional arrays, and templates\{n\} have to be E x T_template matrices that indicates the Action potential of neuron n at recording electrode e (with the order induced by the order they are listed) during a T_template time window. The MOST important thing to avoid undesired time offsets is that somatic spikes (minimum of Action Potential) should appear in the template at time t=10 or 11, and any other activity recorded in the rest of electrodes has to be consistent with that offset. Sometimes elecResp files have spikes at times t=20, that can be alleviated using the same 
+\b0  which outputs n dimentional cell arrays, templates such that templates\{n\} are E x T_template matrices that indicates the Action potential of neuron n at recording electrode e (with the order induced by the order they are listed) during a T_template time window. The MOST important thing to avoid undesired time offsets is that somatic spikes (minimum of Action Potential) should appear in the template at time t=10 or 11, and any other activity recorded in the rest of electrodes has to be consistent with that offset. Sometimes elecResp files have spikes at times t=20, that can be alleviated using the same 
 \b makeTemplatesFromElecResp 
 \b0 function
-\b . 
+\b . If another way to obtain templates from experimental data is available (for example, from .ei files), the makeTemplatesFromElecResp function may be replaced by another but the important is to maintain the output templates\{n\}(e,t)
+\b0  format.
+\b  
 \b0 Another function
 \b , translateTemplate 
 \b0 can be helpful to produce local shifts in the templates, in case some local incongruences has been found. Finally, regarding templates, and once recording electrodes have been specified, preferred electrodes has to be chosen for each neuron. Preferred electrodes are a key part of the algorithm: for the Heuristics, whenever there are problems in the obtained activation curves, changes are induced in the artifact. For this, a clear correspondence between neurons and recordings electrodes has to be specified, this is done with 
@@ -80,7 +83,7 @@ The first step is load the templates (shown in the Examples). This can be done w
 \b PreferredElectrodes
 \b0  function, that takes for each neuron the electrode(s) with the strongest signal in the 
 \b recElecs
-\b0 . Template information and preferred electrodes has to be set to the input structure afterwards, see Examples. Notice we are relying in the elecResp file, but certainly there is possibility to easily extend the code to read templates for example from .ei files\
+\b0 . Template information and preferred electrodes has to be set to the input structure afterwards, see Examples. \
 \
 
 \b Load data traces\
@@ -125,27 +128,41 @@ The first step is load the templates (shown in the Examples). This can be done w
 \b0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 \cf0 \
-Once the initial structure has all the required values the 
+Once the input structure has all the required values the 
 \b initialize
-\b0  function will find the convex relaxation solution (via Mosek), and then the Artifact regularization hyperparameters lambda will be obtained using a gradient descent method (function 
-\b NewtonMaxLogDet )
-\b0  All the relevant information here will be stored in the initial structure, which essentially contains all initial parameters and covariate matrices that are needed to perform computations in the spike sorting. For the convex relaxation, the original data is transformed into a huge vector, and the covariate matrices are created in such a way to explain how the different artifact variables and spikes will explain that vector. For
-\b \
-
+\b0  function will find the convex relaxation solution (via Mosek), and with that, the artifact regularization hyperparameters lambda. All the relevant information here will be stored in the 
+\b initial 
+\b0 structure, which essentially contains all initial parameters and covariate matrices that are needed to perform computations for the spike sorting. For the convex relaxation, the original data is transformed into a huge vector, and the covariate matrices are created in such a way to explain how the different artifact variables and spikes will explain account for that vector. hyperparameters are found solving a Max-LOGDET program, which is done using a gradient descent method (implemented in the function 
+\b NewtonMaxLogDet). \
+Summary of functions used in this stage
 \b0 \
-\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0
+\b \cf0 {\listtext	\'95	}initialize\
+{\listtext	\'95	}NewtonMaxLogDet (which calls logDetExp)\
+{\listtext	\'95	}makeToeplitz\
+{\listtext	\'95	}makeRegularizationMatrices\
+{\listtext	\'95	}makeArtifactCovariates
+\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
 
 \b \cf0 Spike sorting: The Gibbs and Log structures. Gibbs sampler and Heuristics (under construction)\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
-\b0 \cf0 After initialization is finished, this structure is passed to \
-\
-\
+\b0 \cf0 After initialization is finished, this structure is passed to the function 
+\b doSpikeSortingElectricalArtifact 
+\b0 that will output a structure Gibbs, containing all relevant variables in the spike sorting algorithm. This function carries out a lot of operations, the first of them is to create the Gibbs structure, which contains the spike sorting variables in Gibbs.variables: spikes, latencies, action potentials (defined as the waves generated across the electrodes for each neuron given the latencies information), artifact, residuals, residual variances, spike subtracted traces, spike probabilities, and logistic regression fit parameters. Also, in Gibbs.params are stored the regularization hyperparameters and other params that were passed from the input structure. Form example, Gibbs.params.maxIter is the maximum number of consecutive Gibbs sampler iterations (if that wants to be changed, do it in input.params.Gibbs). The variables in Gibbs.diagnostic can for now be avoided. \
+After creating the Gibbs structure, doSpikeSortingElectricalArtifact will do swipes across the variables until no further changes in the spikes are observed, or until a maximum number of iterations is achieved. This is done via the 
+\b GibbsSamplerSpikesArtifact 
+\b0 function. After executing the GibbsSampler, the next step is to execute the heuristics. Heuristics are functions that begin with a capital H, 
+\b HResampleBadLogRegression, HResampleIfLackOfSpiking, HResampleAboveActivation, HDeleteSpikesAndResample, HaddSpikesResample, 
+\b0 and they have in common that they \'93diagnose\'94 possible problems in the current activation curve(s) and from that diagnose execute a repertoire of actions that hopefully will get rid of that problems.\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
 
-\b \cf0 The results: Output Structures\
+\b \cf0 The results: Output Structure\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 \cf0 Comments
 \b0 \
