@@ -61,6 +61,7 @@ display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
         replace_existing  = true;
+        disp('here')
     end
     if isfield(runoptions,'reverseorder')
         reverseorder  = true;
@@ -98,7 +99,7 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
+        Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/C']
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 

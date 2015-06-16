@@ -40,9 +40,9 @@ end
 
 clear WN8 WN4 repeats_within_block repeat_starts block_starts
 
-%cells{1} = [10 14 45 4];
+% cells{1} = [10 14 45 4];
 cells{2} = [285 268 339 5386];
-cells{1} = [14 4];
+% cells{1} = [14 4];
 
 %% Load up cell info
 

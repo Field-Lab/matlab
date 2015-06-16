@@ -26,6 +26,12 @@ if ~exist('condition','var')
     else
         core = sprintf('%s_noCP', core);
     end
+    if GLMType.Subunits
+        core = sprintf('%s_SU'  , core);
+    end
+    if GLMType.contrast
+        core = sprintf('%s_C'  , core); 
+    end
     GLM_fitname_core = sprintf('%s_%s', core, GLMType.cone_sname);
     
     % modify core name is we are running a reduced debug mode
