@@ -151,14 +151,14 @@ for i_cell = 1:length(cells)
     fitspikes=spikes_adj;
     clear spikes_adj;
     
-end
-
 % Execute and save GLM
 tic
 fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh);
 toc
 if isstr(d_save)
     eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+end
+
 end
 
 
