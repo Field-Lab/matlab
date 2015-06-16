@@ -7,9 +7,8 @@
 %     'sameRecandStimElec_29cases_10jun2015.mat']);
 
 
-%% 
+%%
 for p = 1:size(NeuronList,1)
-    
     Gibbs = sol(p).Gibbs;
     GibbsNoDelete = sol(p).GibbsNoDelete;
     initial = sol(p).initial ;
@@ -21,10 +20,10 @@ for p = 1:size(NeuronList,1)
     displayResults_compare(input, Gibbs, Log, 1,1)
 end
  
-%% This is a large workspace - it takes time to load!
-% load('/Users/grosberg/matlab/dataset_specific/workspace-axonal_activation_11jun2015.mat')
 %%
-for p = 541:555 % 555
+% load('/Users/grosberg/matlab/dataset_specific/workspace-axonal_activation_11jun2015.mat')
+%% Load the cases where a different 
+for p = 450; %541:555 % p can range from 450 to 555
     Gibbs = solAxonB(p).Gibbs;
     GibbsNoDelete = solAxonB(p).GibbsNoDelete;
     initial = solAxonB(p).initial ;
@@ -38,7 +37,7 @@ end
 plotResponseCurves = 0 ; 
 [threshold, completeFit, erfErr] = fitToErf(elecResp,plotResponseCurves); 
 %%
-for p = 1:20 % solAxon has good data from 1:200
+for p = 1:20 % 555
     Gibbs = solAxon(p).Gibbs;
     GibbsNoDelete = solAxon(p).GibbsNoDelete;
     initial = solAxon(p).initial ;
