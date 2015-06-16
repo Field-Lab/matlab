@@ -4,7 +4,7 @@ function [GLMT, GLMP] = glm_parameters
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
 % GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
-GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false; 
+GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
@@ -19,6 +19,8 @@ GLMT.nullpoint  = 'mean';
 GLMT.map_type   = 'mapPRJ';
 GLMT.debug      = true;
 GLMT.specialchange = false;
+GLMT.Subunits = false;
+GLMT.contrast = false;
 
 %% GLM PARAMETERS
 % Detailed parameters of the model, including time bins, filter bases, etc.
