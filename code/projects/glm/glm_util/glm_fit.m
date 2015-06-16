@@ -28,7 +28,7 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 %   fitmovie should have 2 of each frame
 %   OR the xml specification, like RGB-8-1-0.48-11111-32x32
 
-%   center_coord: the center of the RF
+% %   center_coord: the center of the RF
 
 % OPTIONAL
 
@@ -121,7 +121,7 @@ end
 
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
-p_init     =  0.1*ones(paramind.paramcount,1);  
+p_init     =  -0.1*ones(paramind.paramcount,1);  
 
 % ORGANIZE STIMULUS COVARIATES
 inputstats.mu_avgIperpix = double(mean(fitmovie(:)));
