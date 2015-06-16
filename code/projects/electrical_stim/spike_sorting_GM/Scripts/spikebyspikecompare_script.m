@@ -1,13 +1,24 @@
-% for p=202:449
-%     Outputs10Jun(p)=Outputsjun10Freddy(p);
-% end
-% 
-% for p=1:561
-%     sumi(p)=nansum(Outputs10Jun(p).tracesInfo.I);
-% end
+% This script is used to compare electrical stimulation results using 
+% Gonzalo's spike sorting algorithm to those obtained with human sorting.
+% The comparison is done on a trial by trial basis, and reports the cases
+% that used the same electrode for stimulating and recording differently
+% than cases that used separate electrodes for stimulating and recording.
 
-% Two output files, one for same recording and stimulating electrode,
-% one for
+% Must load two files from Gonzalo's visit in June 2015 that contain the
+% sorting output from the alogirhtm. The required variables are called 
+% sorted_diffStimRecElecs and sorted_sameStimRecElecs
+
+%% load data
+diffRecStim = load(['/Volumes/Lab/Projects/electrical_stim/GM-sorting-'...
+    'validation/2015-06-algorithm-results/sorted_diffStimRecElecs']);
+sameRecStim = load(['/Volumes/Lab/Projects/electrical_stim/GM-sorting-'...
+    'validation/2015-06-algorithm-results/sorted_sameStimRecElecs']); 
+
+sorted_diffStimRecElecs = diffRecStim.sorted_diffStimRecElecs; clear diffRecStim; 
+sorted_sameStimRecElecs = sameRecStim.sorted_sameStimRecElecs; clear sameRecStim; 
+
+%% analyze cases with different recording and stimulating electrodes
+
 agreement = [];
 totalTrials = []; 
 totalHumanNegatives = [];
@@ -17,10 +28,9 @@ totalHumanPositives = [];
 numTruePositives = [];
 numFalseNegatives = [];
 
-for p = 1:size(Outputs10Jun,2)
+for p = 1:size(sorted_diffStimRecElecs,2)
     flag = 1; 
-    algorithmOutput = Outputs10Jun(p);
-        
+    algorithmOutput = sorted_diffStimRecElecs(p);        
     latencies = cell2mat(algorithmOutput.latencies);
     spikes = cell2mat(algorithmOutput.spikes);
     
@@ -32,7 +42,6 @@ for p = 1:size(Outputs10Jun,2)
     filename = fullfile(pathname,fname);
     temp = load(filename);
     elecResp = temp.elecResp;
-%     disp(['number of stimAmps: ' num2str(length(elecResp.stimInfo.stimAmps))]); 
     clear humanLat; 
     humanLat = zeros(size(spikes,1), size(spikes,2) + 1); 
     humanLat(:) = NaN;
@@ -41,31 +50,14 @@ for p = 1:size(Outputs10Jun,2)
     else
         incSize = 1;
     end
-    for a = 1 :incSize: size(elecResp.analysis.latencies,1)/incSize;
-        try
-            if elecResp.stimInfo.stimAmps(1) == elecResp.stimInfo.stimAmps(2)
-                lats1 = elecResp.analysis.latencies{2*a-1}; 
-                lats2 = elecResp.analysis.latencies{2*a}; 
-                humanLat(ceil(a/incSize),2:end) = [lats1(2:end); lats2(2:end)]';
-            else
-                humanLat(a,1:size(elecResp.analysis.latencies{a},1)) = elecResp.analysis.latencies{a};
-            end
-        catch
-            try
-                disp('does this ever happen?'); 
-                humanLat(a,1:(end-1)) = elecResp.analysis.latencies{a}; 
-                humanLat(a,end) = NaN;
-            catch
-                if elecResp.stimInfo.stimAmps(a) == elecResp.stimInfo.stimAmps(a-1)
-                     lats1 = elecResp.analysis.latencies{2*a-1}; 
-                     lats2 = elecResp.analysis.latencies{2*a}; 
-                end
-                keyboard;
-                if flag == 1
-                    disp(['problem at  p:' num2str(p)]);
-                    flag = 0;
-                end
-            end
+    for a = 1 :incSize: size(elecResp.analysis.latencies,1)/incSize; 
+        if elecResp.stimInfo.stimAmps(1) == elecResp.stimInfo.stimAmps(2)
+%             disp('have to collapse conditions that had the same stimulation ampltiude');
+            lats1 = elecResp.analysis.latencies{2*a-1};
+            lats2 = elecResp.analysis.latencies{2*a};
+            humanLat(ceil(a/incSize),2:end) = [lats1(2:end); lats2(2:end)]';
+        else
+            humanLat(a,1:size(elecResp.analysis.latencies{a},1)) = elecResp.analysis.latencies{a};
         end
     end
     if size(latencies,2) == (size(humanLat,2) - 1)
@@ -100,7 +92,7 @@ errors = [1.96*sqrt(1/totalTrials*percentAgreement*(1-percentAgreement));...
     1.96*sqrt(1/totalHumanPositives*percentTruePositive*(1-percentTruePositive));...
     1.96*sqrt(1/totalHumanPositives*percentFalseNegatives*(1-percentFalseNegatives))];
 
-%%
+%% analyze cases with the same recording and stimulating electrodes
 
 agreement = [];
 totalTrials = []; 
@@ -111,10 +103,9 @@ totalHumanPositives = [];
 numTruePositives = [];
 numFalseNegatives = [];
 
-for p = 1:size(OutputsSameElectrode,2)
-    flag = 1; 
-    algorithmOutput = OutputsSameElectrode(p);
-        
+for p = 1:size(sorted_sameStimRecElecs,2)
+     
+    algorithmOutput = sorted_sameStimRecElecs(p);
     latencies = cell2mat(algorithmOutput.latencies);
     spikes = cell2mat(algorithmOutput.spikes);
     
@@ -126,7 +117,6 @@ for p = 1:size(OutputsSameElectrode,2)
     filename = fullfile(pathname,fname);
     temp = load(filename);
     elecResp = temp.elecResp;
-%     disp(['number of stimAmps: ' num2str(length(elecResp.stimInfo.stimAmps))]); 
     clear humanLat; 
     humanLat = zeros(size(spikes,1), size(spikes,2) + 1); 
     humanLat(:) = NaN;
@@ -136,32 +126,15 @@ for p = 1:size(OutputsSameElectrode,2)
         incSize = 1;
     end
     for a = 1 :incSize: size(elecResp.analysis.latencies,1)/incSize;
-        try
-            if elecResp.stimInfo.stimAmps(1) == elecResp.stimInfo.stimAmps(2)
-                lats1 = elecResp.analysis.latencies{2*a-1}; 
-                lats2 = elecResp.analysis.latencies{2*a}; 
-                humanLat(ceil(a/incSize),2:end) = [lats1(2:end); lats2(2:end)]';
-            else
-                humanLat(a,1:size(elecResp.analysis.latencies{a},1)) = elecResp.analysis.latencies{a};
-            end
-        catch
-            try
-                disp('does this ever happen?'); 
-                humanLat(a,1:(end-1)) = elecResp.analysis.latencies{a}; 
-                humanLat(a,end) = NaN;
-            catch
-                if elecResp.stimInfo.stimAmps(a) == elecResp.stimInfo.stimAmps(a-1)
-                     lats1 = elecResp.analysis.latencies{2*a-1}; 
-                     lats2 = elecResp.analysis.latencies{2*a}; 
-                end
-                keyboard;
-                if flag == 1
-                    disp(['problem at  p:' num2str(p)]);
-                    flag = 0;
-                end
-            end
+        if elecResp.stimInfo.stimAmps(1) == elecResp.stimInfo.stimAmps(2)
+            lats1 = elecResp.analysis.latencies{2*a-1};
+            lats2 = elecResp.analysis.latencies{2*a};
+            humanLat(ceil(a/incSize),2:end) = [lats1(2:end); lats2(2:end)]';
+        else
+            humanLat(a,1:size(elecResp.analysis.latencies{a},1)) = elecResp.analysis.latencies{a};
         end
     end
+    
     if size(latencies,2) == (size(humanLat,2) - 1)
         humanLat(:,1) = [];
     end
@@ -192,6 +165,7 @@ errorsS = [1.96*sqrt(1/totalTrials*percentAgreement*(1-percentAgreement));...
     1.96*sqrt(1/totalHumanNegatives*percentFalsePositive*(1-percentFalsePositive));...
     1.96*sqrt(1/totalHumanPositives*percentTruePositive*(1-percentTruePositive));...
     1.96*sqrt(1/totalHumanPositives*percentFalseNegatives*(1-percentFalseNegatives))];
+
 
 %% Plots
 
