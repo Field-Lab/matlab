@@ -40,8 +40,8 @@
 %{
 
 clear; clc
-exps = [1 2 3]; stimtypes = [2]; celltypes = [1 2]; 
-cell_subset = 'shortlist'; postfilterNL.debug = false;
+exps = [1 3 2 4]; stimtypes = [2]; celltypes = [1 2]; 
+cell_subset = 'all'; postfilterNL.debug = false;
 baseGLM.settings = {};
 baseGLM.settings{1}.type = 'PostSpikeFilter';
 baseGLM.settings{1}.name =  'OFF';
@@ -215,6 +215,37 @@ for i_exp = exps
                     objval = objval_LOGISTIC(pars,LOGI.y_int,LOGI.input_fit, 0, home_spbins,t_bin)
                     %}
                 end
+                if strcmp(postfilterNL.type, 'GenLogistic_fixMU')                    
+                    NLParams.note_metric = 'Logistic with Null Rate fixed to tonic drive. Driven by linear filter output,normalized to std 1';
+                    lowerbound = [LOGI.y_int+1 .1];
+                    upperbound = [1000         100];
+                    LOGI_Params0 = [100,1];
+                    [LOGI_Params_Opt new_objval, eflag output] = fmincon(@(LOGI_Params) objval_LOGISTIC...
+                        (LOGI_Params, LOGI.y_int,LOGI.input_fit, 0, home_spbins,t_bin),...
+                        LOGI_Params0,[],[],[],[],lowerbound,upperbound,[],optim_struct);
+                    
+                    [~, lcif_LOGI_crossvaltest] =  objval_LOGISTIC(LOGI_Params_Opt,...
+                        LOGI.y_int,LOGI.input_test, 0, [],t_bin); 
+                    NLParams.param_string = sprintf('2 Params fit with fmincon,  Optimal Max Rate: %1.1e, Optimal Slope: %1.1e',...
+                        LOGI_Params_Opt(1), LOGI_Params_Opt(2) );
+                    NLParams.maxrate = LOGI_Params_Opt(1);
+                    NLParams.slope   = LOGI_Params_Opt(2);
+                    crosvaltest_finalrate = exp(lcif_LOGI_crossvaltest);
+                    
+                    clear lcif_LOGI_crossvaltest dummy lowerbound upperbound LOGI_Params0
+                    % Check Code
+                    %{
+                    lcif   = baseGLM.lcif_fit.stim + baseGLM.lcif_fit.mu; 
+                    cif    = exp(lcif);
+                    objval = -( sum( lcif(home_spbins) ) - t_bin * sum(cif) );
+                    
+                    pars = [10,1];
+                    objval = objval_LOGISTIC(pars,LOGI.y_int,LOGI.input_fit, 0, home_spbins,t_bin)
+                    %}
+                end
+                
+                
+                
                 plotvec.rate_optNL               = sort(crosvaltest_finalrate);
                 NL_improve.stimdrivenrate_withNL = crosvaltest_finalrate;
                 NL_xvalperformance               = subR_NLxvalperformance(fittedGLM,log(crosvaltest_finalrate));

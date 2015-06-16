@@ -1,11 +1,9 @@
 glm_postfilterNL_LNonly
 (focus on parametrically searching the non-linearity using likelihood)
-
-
-
 Version 1a:
 - 2015-06-15
 - Plotting DONE.. ready to roll
+- Good enough to steam forward with analysis of effect of modulating NL
 
 Version 1:
 - 2015-06-15
@@ -25,7 +23,8 @@ Version 0:
 - still need to plot
 
 
-glm_postfilterNL_wrap:
+glm_postfilterNL_wrap: 
+this should largely not be used anymore!! comment 2015-06-15
 
 
 
