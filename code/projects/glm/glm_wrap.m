@@ -116,8 +116,8 @@ for i_exp = exps
                 conv_column = 2; 
                 conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
-                candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
-            end
+candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];            
+end
             % NBCoupling 2015-04-20
             if GLMType.CouplingFilters
                 cells_to_pair = repmat(cellgroup,2,1);
@@ -125,7 +125,8 @@ for i_exp = exps
                     cells_to_pair(2,i_pair) = find(datarun_master.cell_ids == cellgroup(i_pair));
                 end
             end 
-            cellgroup = intersect(candidate_cells, cellgroup)
+		cellgroup = intersect(candidate_cells, cellgroup);
+cellgroup = [1205, 1417, 1566, 1936, 2540, 2626, 5045, 5301, 6348, 6533, 6826, 7666]
             if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end
             
             for i_cell = 1:length(cellgroup)

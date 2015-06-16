@@ -46,7 +46,7 @@ cells{1} = [14 4];
 
 %% Load up cell info
 
-for i_cell = 1%:length(cells)
+for i_cell = 2%:length(cells)
     
     disp(i_cell)
     cell = cells{i_cell}(1);
@@ -83,4 +83,4 @@ for i_cell = 1%:length(cells)
     
 end
 
-% save('/Volumes/Lab/Users/Nora/amacrine.mat','fittedGLM')
+save('/Volumes/Lab/Users/Nora/amacrine_coupled.mat','fittedGLM')
