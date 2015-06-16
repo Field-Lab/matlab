@@ -128,7 +128,7 @@ if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
 end
 
 
-
+save('stim.mat', 'stim');
 %}
 stim = reshape(stim, [ROI_length^2 , stimsize.frames]);
 

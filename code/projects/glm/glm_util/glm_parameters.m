@@ -3,8 +3,8 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-% GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
-GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
+GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
+% GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
@@ -38,7 +38,7 @@ GLMP.timenotes_3    = 'true tstim only matters for binning the spike times when 
 
 % STA and Spatial Filter Size
 GLMP.stimfilter.fixedSP_type = 'WNSTA';
-GLMP.stimfilter.ROI_length = 19;  
+GLMP.stimfilter.ROI_length = 11;  
 GLMP.stimfilter.frames = 30;  % orig 30
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
