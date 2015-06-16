@@ -10,6 +10,7 @@ center = [50, 21];
 toc
 disp('Concatenating the blocks')
 [fitspikes, fitmovie] = blocked_prep(spikes, BWmovie.fitmovie.movie_byblock);
+clear spikes BWmovie
 
 %% Just to check!
 toc
