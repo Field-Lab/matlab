@@ -97,6 +97,8 @@ for i_cell = 1:length(cells)
     % Make the movie psuedo BW if it isn't already BW
     if ~exist('fitmovie', 'var')
         [RGB, fitmovie] = RGB_to_BW(datarun, master_idx, 'color_movie', fitmovie_color);
+        clear fitmovie_color
+        fitmovie = permute(fitmovie, [2 1 3]);
     end
 
     
@@ -114,7 +116,7 @@ for i_cell = 1:length(cells)
             RGB(2)*WN_STA(:,:,2,:)+ ...
             RGB(3)*WN_STA(:,:,3,:));
         clear WN_STA
-        WN_STA = temp_STA;
+        WN_STA = permute(temp_STA, [2 1 3]);
         clear temp_STA
     end
 
@@ -129,8 +131,8 @@ for i_cell = 1:length(cells)
     
     % Pull out the cell location
     center_coord = datarun.vision.sta_fits{master_idx}.mean;
-    center(1) = round(center_coord(1)); % y_coord
-    center(2) = size(fitmovie,1) - round(center_coord(2)); %x_coord
+    center(1) = round(center_coord(1)); % x_coord
+    center(2) = size(fitmovie,2) - round(center_coord(2)); %y_coord
 
     clear cell_savename
     
