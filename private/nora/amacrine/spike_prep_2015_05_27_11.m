@@ -83,4 +83,4 @@ for i_cell = 2%:length(cells)
     
 end
 
-% save('/Volumes/Lab/Users/Nora/amacrine.mat','fittedGLM')
+save('/Volumes/Lab/Users/Nora/amacrine_coupled.mat','fittedGLM')
