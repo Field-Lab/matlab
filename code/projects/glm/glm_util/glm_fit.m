@@ -65,8 +65,8 @@ GLMPars = GLMP;
 GLMType = GLMT;
 clear GLMP GLMT
 
-center_coord.x_coord = center(2);
-center_coord.y_coord = center(1);
+center_coord.x_coord = center(1);
+center_coord.y_coord = center(2);
 fittedGLM.center_coord = center_coord;
 
 if isfield(fittedGLM.GLMType, 'specialchange') && fittedGLM.GLMType.specialchange

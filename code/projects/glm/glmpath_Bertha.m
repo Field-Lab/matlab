@@ -3,7 +3,7 @@
 %%
 function glmpath_Bertha
 
-copyfile('/home/vision/akheitman/matlab/code/glm/NSEM_BaseDirectories_Bertha.m' , '/home/vision/akheitman/matlab/code/glm/NSEM_BaseDirectories.m')
+copyfile('NSEM_BaseDirectories_Bertha.m' , 'NSEM_BaseDirectories.m')
 BD = NSEM_BaseDirectories;
 glmwrapdir     = BD.GLM_codehome ;
 glmcodedir     = sprintf('%s/glm_core', glmwrapdir);
