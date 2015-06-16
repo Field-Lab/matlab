@@ -4,7 +4,7 @@
 
 % SET TRIGGER INTERVAL TO 0.5 SECONDS
 
-clear all
+clear all;
 
 % as seen in vision-interactive (EI plot):
 % 
@@ -13,17 +13,17 @@ clear all
 % 3   |   4
 
 %% Define inputs
-include_single_elecs = false;
+include_single_elecs = true;
 both_polarity_combs = true;
-quadrant = 1;
+quadrant = 3.1; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
 elec_spacing = 60;
 same_polarity = false; % Set to true to use only negative pairs. 
-use_ratios = true;
-scale_factor = -4; %Set scale factor to determine 2-elec ratio to use
-pairOrientation = 'downright'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
+use_ratios = false;
+scale_factor = 2; %Set scale factor to determine 2-elec ratio to use. A positive value gives
+pairOrientation = 'downleft'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 delayInMs = 7.5; %interval between pulses
 saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
-saveName = 'axon512_quad1'; %Descriptive name for the stimulus files 
+saveName = 'axon512_quad3'; %Descriptive name for the stimulus files 
 
 %%
 if elec_spacing == 60
@@ -42,6 +42,12 @@ if elec_spacing == 60
         electrodes = find(elec_coords(:,1)<0  & elec_coords(:,2)>=0);
     elseif quadrant == 3;
         electrodes = find(elec_coords(:,1)<0 & elec_coords(:,2)<0);
+    elseif quadrant == 3.1
+        electrodes = find(elec_coords(:,1) <40 & elec_coords(:,1)>-940 ...
+            & elec_coords(:,2)<0); 
+    elseif quadrant == 34; 
+        electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
+            & elec_coords(:,2)<0);
     else
         electrodes = find(elec_coords(:,1)>=0 & elec_coords(:,2)<0);
     end
@@ -153,8 +159,13 @@ end
 %%
 
 if elec_spacing == 60
-    pattern_order1 = zeros(1,128);
-    pattern_order2 = zeros(1,128);
+%     if quadrant == 34
+%         pattern_order1 = zeros(1,256);
+%         pattern_order2 = zeros(1,256);
+%     else
+        pattern_order1 = zeros(1,128);
+        pattern_order2 = zeros(1,128);
+%     end
 else
     pattern_order1 = zeros(1,120);
     pattern_order2 = zeros(1,120);
@@ -520,7 +531,11 @@ end
 
 if use_ratios
     figure; subplot(1,2,1); imagesc(array); title('opp polarity pairs')
-    array(find(array == 1)) = -scale_factor; 
+    if scale_factor<1
+        array(find(array == 1)) = -scale_factor;
+    else
+        array(find(array == -1)) = -scale_factor; 
+    end
     subplot(1,2,2); imagesc(array); title('ratio');
 end
 %% Save files
