@@ -3,6 +3,10 @@ glm_postfilterNL_LNonly
 
 
 
+Version 1a:
+- 2015-06-15
+- Plotting DONE.. ready to roll
+
 Version 1:
 - 2015-06-15
 - redone interpreation of Non-linearity

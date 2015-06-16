@@ -40,8 +40,8 @@
 %{
 
 clear; clc
-exps = [1 2 3]; stimtypes = [2]; celltypes = [1 2]; 
-cell_subset = 'shortlist'; postfilterNL.debug = false;
+exps = [3]; stimtypes = [1]; celltypes = [1]; 
+cell_subset = 'debug'; postfilterNL.debug = false;
 baseGLM.settings = {};
 baseGLM.settings{1}.type = 'PostSpikeFilter';
 baseGLM.settings{1}.name =  'OFF';
@@ -167,7 +167,7 @@ for i_exp = exps
                 LOGI.y_int     = exp( baseGLM.lcif_fit.mu(1) );
                 
                 
-                plotvec.normed_linearoutput       = sort(LOGI.input_test);
+                plotvec.normed_linearoutput       = sort(LOGI.input_test)
                 plotvec.rate_standardGLM          = sort(exp( std(baseGLM.lcif_fit.stim) * plotvec.normed_linearoutput + baseGLM.lcif_fit.mu(1) ));
                 NL_improve.stimdrivenrate_baseGLM = exp(baseGLM.lcif_stimfilter_crossvaltest + baseGLM.lcif_fit.mu(1) );      
                 
