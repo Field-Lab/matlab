@@ -17,8 +17,8 @@ function [BASEDIR] = NSEM_BaseDirectories_Lovelight
 BASEDIR.note                = 'GLM and NSEM directories.  Code and Data.  Independent of experiment number, parameters, fit types';
 BASEDIR.NSEM_home_snleapp   = '/netapp/snle/lab/Experiments/Array/Analysis/akheitman/NSEM_Projects';
 
-% BASEDIR.general_codehome = '/Users/Nora/Documents/MATLAB/matlab/code/';
-BASEDIR.general_codehome = '/home/vision/Nora/matlab/code/'; % BERTHA
+BASEDIR.general_codehome = '/Users/Nora/Documents/MATLAB/matlab/code/';
+%BASEDIR.general_codehome = '/home/vision/Nora/matlab/code/'; % BERTHA
 BASEDIR.analysisdir      = '/Volumes/Analysis';
 BASEDIR.NSEM_home        = '/Volumes/Lab/Users/akheitman/NSEM_Home';
 
