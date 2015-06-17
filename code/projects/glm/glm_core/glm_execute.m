@@ -90,8 +90,8 @@ if GLMType.TonicDrive
 end
 
 % PREPARE PARAMETERS
-[paramind] =  prep_paramindGP(GLMType, GLMPars); 
-%p_init     =  zeros(paramind.paramcount,1);  
+[paramind] =  prep_paramindGP(GLMType, GLMPars);
+%p_init     =  zeros(paramind.paramcount,1);
 p_init     = .01* ones(paramind.paramcount,1);
 
 
