@@ -2,6 +2,8 @@
 codebase_path = matlab_code_path; 
 analysisPath = uigetdir('/Volumes/Analysis/', 'Choose the electrical stim data folder (001,002, etc) that contains data organized by pattern');
 analysisPath = '/Volumes/Analysis/2015-05-27-0/data001/'; % Directory with the electrical spikes sorted into -autosort/'; 
+% Set optional arguments. 
+Output = SpikeSortingCompact(pathToAnalysisData,patternNo,neuronIds,varargin)
 % Create directory for automatic spike sorting
 sortedPath = 
 for p = 1:length(pathnames)
