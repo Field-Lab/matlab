@@ -13,8 +13,11 @@
 clear ; close all; clc;
 
 % Dictate comparison plot
-%{
+%
 comparison_name = 'WNvsNSEM_standardGLM_noPS';
+%details.metric = 'BPS_divideCRM';
+details.metric = 'FracVar_10msec'
+
 model{1}.settings{1}.type = 'PostSpikeFilter';
 model{1}.settings{1}.name =  'OFF';
 model{1}.fit_type = 'WN';
@@ -23,31 +26,44 @@ model{2}.settings{1}.name =  'OFF';
 model{2}.fit_type = 'NSEM';
 %}
 
-
+%{
 comparison_name = 'WNvsNSEM_standardGLM';
 model{1}.settings= {};
 model{1}.fit_type = 'WN';
 model{2}.settings= {};
 model{2}.fit_type = 'NSEM';
+details.metric = 'BPS_divideCRM'
+%}
 
 
-
-%details.cellselection_type = 'all';
-details.cellselection_type = 'glmconv_4pct';
+details.cellselection_type = 'all';
+%details.cellselection_type = 'glmconv_4pct';
 details.celltypes = [1 2];
 details.exps = [1 2 3 4];
-%details.metric = 'BPS_divideUOP';
-details.metric = 'BPS_divideCRM';
 
-%
+
+%% Bookkeeping
 BD   = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
 if strcmp(details.cellselection_type, 'glmconv_4pct')
     eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection)); 
 end
+currentdir = pwd;
 savedir = sprintf('%s/Plots/ModelComparisons/%s',BD.GLM_output_analysis,comparison_name);
 if ~exist(savedir,'dir'), mkdir(savedir); end
 
+expstring = 'exp';
+if find(details.exps ==1), expstring = sprintf('%sA',expstring); end
+if find(details.exps ==2), expstring = sprintf('%sB',expstring); end
+if find(details.exps ==3), expstring = sprintf('%sC',expstring); end
+if find(details.exps ==4), expstring = sprintf('%sD',expstring); end
+celltypestring = '';
+if length(details.celltypes) == 1
+    if details.celltypes == 1, celltypestring = 'ONonly'; end
+    if details.celltypes == 2, celltypestring = 'OFFonly'; end
+end
+savename = sprintf('%s_%s_%s_%s%s',comparison_name,details.metric, details.cellselection_type, expstring, celltypestring);
+clear expstring celltypestring
 
 model{1}.GLMType         = GLM_settings('default',model{1}.settings);
 model{1}.fitname         = GLM_fitname(model{1}.GLMType);
@@ -71,9 +87,6 @@ model_comparison.timestamp       = datestr(clock);
 model_comparison.code_name       = mfilename('fullpath');
 %% GET CELLS SQUARED UP
 % Define Cell_Subset structure
-
-
-
 for i_exp = details.exps
     cell_subset = cell(2,1);
     cell_subset{1}.celltype = 'ONPar';
@@ -115,8 +128,6 @@ for i_exp = details.exps
     end
     model_comparison.byexpnm{i_exp}.cell_subset =cell_subset; 
 end
-%%
-
 %% Build up data
 for i_exp = details.exps
     exp_nm  = allcells{i_exp}.exp_nm;
@@ -139,9 +150,12 @@ for i_exp = details.exps
     cell_subset       = model_comparison.byexpnm{i_exp}.cell_subset;
     scores_bycelltype = cell_subset;
     
+    
+    % Update with each new metric here!
     for i_model = 1:2
         if strcmp(details.metric,'BPS_divideUOP'), underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end
         if strcmp(details.metric,'BPS_divideCRM'), underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end  
+        if strcmp(details.metric,'FracVar_10msec'), underlyingmetric_name = sprintf('crossval_fracvar_10msec_%s',exp_nm); end 
         eval(sprintf('load %s/%s.mat aggregated_scores',  model{i_model}.aggscores_dir, underlyingmetric_name));
         
         for i_celltype = details.celltypes
@@ -164,6 +178,8 @@ for i_exp = details.exps
                 finalscores = rawscores_subset./(normalizers_all.uop_bps(cell_subset{i_celltype}.subset_indices)); 
             elseif strcmp(details.metric, 'BPS_divideCRM')
                 finalscores = rawscores_subset./(normalizers_all.crm_bps(cell_subset{i_celltype}.subset_indices));
+            elseif strcmp(details.metric,'FracVar_10msec')
+                finalscores = rawscores_subset;
             end
             
             if i_model == 1, scores_bycelltype{i_celltype}.finalscores_model1 = finalscores; end
@@ -175,13 +191,7 @@ for i_exp = details.exps
     model_comparison.byexpnm{i_exp}.scores_bycelltype =  scores_bycelltype;
 end
 
-
-
-
-
-
-
-
+eval(sprintf('save %s/%s.mat model_comparison', savedir, savename))
 
 %% PLOT CHANGE IN WN VS NSEM  (ONE SINGLE LARGE PLOT)
 colors = {'r.','g.','b.','c.'};
@@ -192,10 +202,11 @@ axis square
 low_lim  = -Inf;
 high_lim = Inf;
 
-if strcmp(details.metric,'BPS_divideCRM') || strcmp(details.metric,'BPS_divideUOP')
+if strcmp(details.metric,'BPS_divideCRM') || strcmp(details.metric,'BPS_divideUOP') || strcmp(details.metric, 'FracVar_10msec');
     low_lim  = 0;
     high_lim = 1;
 end
+
 
 xlim([low_lim, high_lim]);
 ylim([low_lim, high_lim]);
@@ -224,8 +235,9 @@ for i_exp = details.exps
     end
 end
 
-%eval(sprintf('print
-    
+cd(savedir)
+eval(sprintf('print -dpdf plot_%s.pdf',savename))
+cd(currentdir)    
 
 
 
