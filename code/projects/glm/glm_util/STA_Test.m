@@ -13,7 +13,7 @@ fitframes = movie_size(3);
 for i = 1:length(fitspikes)
     sp_frame = floor(fitspikes(i) * 120);
     if sp_frame > 29 && sp_frame<fitframes
-        STA = STA+fitmovie(:,:,(sp_frame-29):sp_frame);
+        STA = STA+double(fitmovie(:,:,(sp_frame-29):sp_frame));
     end
 end
 
