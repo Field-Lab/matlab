@@ -21,6 +21,7 @@ GLMT.debug      = true;
 GLMT.specialchange = false;
 GLMT.Subunits = false;
 GLMT.contrast = false;
+GLMT.init = false;
 
 %% GLM PARAMETERS
 % Detailed parameters of the model, including time bins, filter bases, etc.
@@ -38,7 +39,7 @@ GLMP.timenotes_3    = 'true tstim only matters for binning the spike times when 
 
 % STA and Spatial Filter Size
 GLMP.stimfilter.fixedSP_type = 'WNSTA';
-GLMP.stimfilter.ROI_length = 5;  
+GLMP.stimfilter.ROI_length = 11;  
 GLMP.stimfilter.frames = 30;  % orig 30
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
