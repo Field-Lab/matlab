@@ -18,17 +18,20 @@ p = inputParser;
 p.addParamValue('testspikes', 0)
 p.addParamValue('neighborspikes', 0)
 p.addParamValue('predict', true)
+p.addParamValue('trials', 20)
 p.parse(varargin{:});
 testspikes = p.Results.testspikes;
 neighborspikes = p.Results.neighborspikes;
 predict = p.Results.predict;
+params.trials = p.Results.trials;
 clear p
 
 
 bpf               = fittedGLM.bins_per_frame;
-params.trials     = length(testspikes);
+
+try params.trials     = length(testspikes); catch; end % If there are testspikes, it will use that number of trials
 params.bindur     = fittedGLM.t_bin;
-params.bins       = fittedGLM.bins_per_frame *size(testmovie,3); 
+params.bins       = fittedGLM.bins_per_frame *size(testmovie,3);
 params.frames     = size(testmovie,3);
 params.testdur_seconds = params.bindur * params.bins ;   
 center_coord = fittedGLM.center_coord;
