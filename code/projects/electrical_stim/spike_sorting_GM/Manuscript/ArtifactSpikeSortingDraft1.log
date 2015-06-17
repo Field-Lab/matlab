@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  17 JUN 2015 02:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  17 JUN 2015 13:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -221,7 +221,26 @@ File `slidesec.sty' v0.9  92/05/07  <tvz>
 \@temptokenb=\toks29
 \c@slidesection=\count105
 \c@slidesubsection=\count106
-) (./ArtifactSpikeSortingDraft1.aux)
+) (./ArtifactSpikeSortingDraft1.aux
+
+LaTeX Warning: Label `fig:mouse' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:mouse' multiply defined.
+
+
+LaTeX Warning: Label `fig:gull' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:gull' multiply defined.
+
+
+LaTeX Warning: Label `fig:tiger' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:tiger' multiply defined.
+
+)
 \openout1 = `ArtifactSpikeSortingDraft1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
@@ -237,8 +256,7 @@ LaTeX Font Info:    ... okay on input line 58.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
 LaTeX Font Info:    ... okay on input line 58.
 LaTeX Font Info:    Try loading font information for OT1+ptm on input line 58.
-
-(/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+ (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 (/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
@@ -310,26 +328,10 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 62.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 67.
-
-
-LaTeX Warning: Citation `paninski2004' on page 1 undefined on input line 69.
-
-
-LaTeX Warning: Citation `LewickiSS' on page 1 undefined on input line 69.
-
-
-LaTeX Warning: Citation `PillowShlens' on page 1 undefined on input line 69.
-
-
-LaTeX Warning: Citation `Ekanadham201447' on page 1 undefined on input line 69.
-
-
-
-LaTeX Warning: Citation `Rey2015' on page 1 undefined on input line 69.
-
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 72.
 LaTeX Font Info:    Try loading font information for U+msa on input line 74.
+
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
@@ -340,12 +342,6 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-
-LaTeX Warning: Citation `PillowShlens' on page 2 undefined on input line 84.
-
-
-LaTeX Warning: Citation `EkanadhamTS11' on page 2 undefined on input line 84.
-
 Package epstopdf Info: Source file: <./Figures/4templates.eps>
 (epstopdf)                    date: 2015-05-19 18:49:57
 (epstopdf)                    size: 18281 bytes
@@ -357,6 +353,7 @@ Package epstopdf Info: Source file: <./Figures/4templates.eps>
 onverted-to.pdf ./Figures/4templates.eps>
 (epstopdf)             \includegraphics on input line 87.
 Package epstopdf Info: Output file is already uptodate.
+
 <./Figures/4templates-eps-converted-to.pdf, id=8, 943.525pt x 272.01625pt>
 File: ./Figures/4templates-eps-converted-to.pdf Graphic file (type pdf)
 
@@ -364,27 +361,16 @@ File: ./Figures/4templates-eps-converted-to.pdf Graphic file (type pdf)
 Package pdftex.def Info: ./Figures/4templates-eps-converted-to.pdf used on inpu
 t line 87.
 (pdftex.def)             Requested size: 469.75502pt x 135.43085pt.
- [2] [3]
-Overfull \hbox (10.37276pt too wide) detected at line 101
-[] [] \OMS/cmsy/m/n/10.95 jj\OML/cmm/m/it/10.95 A[] \OMS/cmsy/m/n/10.95 ^^@ \OM
-L/cmm/m/it/10.95 A[]\OMS/cmsy/m/n/10.95 jj[]\OML/cmm/m/it/10.95 ;   \OMS/cmsy/m
-/n/10.95 8\OML/cmm/m/it/10.95 e \OT1/cmr/m/n/10.95 = 1 [] \OML/cmm/m/it/10.95 E
-  [] [] \OMS/cmsy/m/n/10.95 jj\OML/cmm/m/it/10.95 A[] \OMS/cmsy/m/n/10.95 ^^@ \
-OML/cmm/m/it/10.95 A[]\OMS/cmsy/m/n/10.95 jj[]  8\OML/cmm/m/it/10.95 j[] \OT1/c
-mr/m/n/10.95 = 1 [] \OML/cmm/m/it/10.95 B; e \OT1/cmr/m/n/10.95 = 1 [] \OML/cmm
-/m/it/10.95 E
- []
-
-[4 <./Figures/4templates-eps-converted-to.pdf>] [5]
+ [2] [3] [4 <./Figures/4templates-eps-converted-to.pdf>] [5]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 118.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 123.
  [6]
-Underfull \hbox (badness 10000) in paragraph at lines 129--130
+Underfull \hbox (badness 10000) in paragraph at lines 134--135
 
  []
 
 [7]
-Overfull \hbox (38.41608pt too wide) detected at line 143
+Overfull \hbox (38.41608pt too wide) detected at line 148
 \OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 s[]\OT1/cmr/m/n/10
 .95 (\OML/cmm/m/it/10.95 l\OT1/cmr/m/n/10.95 ) = 1\OMS/cmsy/m/n/10.95 j\OML/cmm
 /m/it/10.95 Y; A; \OT1/cmr/m/n/10.95 ^^F\OML/cmm/m/it/10.95 ; ^^U; ; s\OMS/cms
@@ -392,16 +378,6 @@ y/m/n/10.95 n[]\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 / [] [] []
  []
 
 [8]
-
-LaTeX Warning: Citation `Hosmer1997' on page 9 undefined on input line 159.
-
-
-LaTeX Warning: Citation `Gelman96posteriorpredictive' on page 9 undefined on in
-put line 159.
-
-
-LaTeX Warning: Citation `Box1980' on page 9 undefined on input line 159.
-
 Package epstopdf Info: Source file: <./Figures/i0.eps>
 (epstopdf)                    date: 2015-04-21 22:18:15
 (epstopdf)                    size: 29825 bytes
@@ -410,14 +386,14 @@ Package epstopdf Info: Source file: <./Figures/i0.eps>
 (epstopdf)                    size: 18095 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i0-eps-converted
 -to.pdf ./Figures/i0.eps>
-(epstopdf)             \includegraphics on input line 165.
+(epstopdf)             \includegraphics on input line 170.
 Package epstopdf Info: Output file is already uptodate.
-<./Figures/i0-eps-converted-to.pdf, id=51, 867.24pt x 434.62375pt>
+ <./Figures/i0-eps-converted-to.pdf, id=49, 867.24pt x 434.62375pt>
 File: ./Figures/i0-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i0-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i0-eps-converted-to.pdf used on input line 1
-65.
+70.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 Package epstopdf Info: Source file: <./Figures/i1.eps>
 (epstopdf)                    date: 2015-04-21 22:18:00
@@ -427,18 +403,18 @@ Package epstopdf Info: Source file: <./Figures/i1.eps>
 (epstopdf)                    size: 18269 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i1-eps-converted
 -to.pdf ./Figures/i1.eps>
-(epstopdf)             \includegraphics on input line 170.
+(epstopdf)             \includegraphics on input line 175.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/i1-eps-converted-to.pdf, id=52, 867.24pt x 434.62375pt>
+<./Figures/i1-eps-converted-to.pdf, id=50, 867.24pt x 434.62375pt>
 File: ./Figures/i1-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i1-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i1-eps-converted-to.pdf used on input line 1
-70.
+75.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 
-Overfull \hbox (2.28001pt too wide) in paragraph at lines 164--174
+Overfull \hbox (2.28001pt too wide) in paragraph at lines 169--179
  [][] [] 
  []
 
@@ -450,14 +426,14 @@ Package epstopdf Info: Source file: <./Figures/i2.eps>
 (epstopdf)                    size: 18333 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i2-eps-converted
 -to.pdf ./Figures/i2.eps>
-(epstopdf)             \includegraphics on input line 176.
+(epstopdf)             \includegraphics on input line 181.
 Package epstopdf Info: Output file is already uptodate.
-<./Figures/i2-eps-converted-to.pdf, id=53, 867.24pt x 434.62375pt>
+<./Figures/i2-eps-converted-to.pdf, id=51, 867.24pt x 434.62375pt>
 File: ./Figures/i2-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i2-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i2-eps-converted-to.pdf used on input line 1
-76.
+81.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 Package epstopdf Info: Source file: <./Figures/i3.eps>
 (epstopdf)                    date: 2015-04-21 22:17:32
@@ -467,18 +443,18 @@ Package epstopdf Info: Source file: <./Figures/i3.eps>
 (epstopdf)                    size: 18105 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i3-eps-converted
 -to.pdf ./Figures/i3.eps>
-(epstopdf)             \includegraphics on input line 180.
+(epstopdf)             \includegraphics on input line 185.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/i3-eps-converted-to.pdf, id=54, 867.24pt x 434.62375pt>
+<./Figures/i3-eps-converted-to.pdf, id=52, 867.24pt x 434.62375pt>
 File: ./Figures/i3-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i3-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i3-eps-converted-to.pdf used on input line 1
-80.
+85.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 
-Overfull \hbox (4.56004pt too wide) in paragraph at lines 175--184
+Overfull \hbox (4.56004pt too wide) in paragraph at lines 180--189
  [][]  [] 
  []
 
@@ -490,14 +466,14 @@ Package epstopdf Info: Source file: <./Figures/i4.eps>
 (epstopdf)                    size: 18191 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i4-eps-converted
 -to.pdf ./Figures/i4.eps>
-(epstopdf)             \includegraphics on input line 187.
+(epstopdf)             \includegraphics on input line 192.
 Package epstopdf Info: Output file is already uptodate.
-<./Figures/i4-eps-converted-to.pdf, id=55, 867.24pt x 434.62375pt>
+<./Figures/i4-eps-converted-to.pdf, id=53, 867.24pt x 434.62375pt>
 File: ./Figures/i4-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i4-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i4-eps-converted-to.pdf used on input line 1
-87.
+92.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 Package epstopdf Info: Source file: <./Figures/i6.eps>
 (epstopdf)                    date: 2015-04-21 22:16:37
@@ -507,23 +483,23 @@ Package epstopdf Info: Source file: <./Figures/i6.eps>
 (epstopdf)                    size: 18138 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i6-eps-converted
 -to.pdf ./Figures/i6.eps>
-(epstopdf)             \includegraphics on input line 191.
+(epstopdf)             \includegraphics on input line 196.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/i6-eps-converted-to.pdf, id=56, 867.24pt x 434.62375pt>
+<./Figures/i6-eps-converted-to.pdf, id=54, 867.24pt x 434.62375pt>
 File: ./Figures/i6-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i6-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i6-eps-converted-to.pdf used on input line 1
-91.
+96.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 
-Overfull \hbox (4.56004pt too wide) in paragraph at lines 186--195
+Overfull \hbox (4.56004pt too wide) in paragraph at lines 191--200
  [][]  [] 
  []
 
 [9] [10]
-Overfull \hbox (4.87663pt too wide) in paragraph at lines 202--211
+Overfull \hbox (4.87663pt too wide) in paragraph at lines 207--216
 [][] 
  []
 
@@ -536,28 +512,25 @@ to.pdf>
 (epstopdf)                    size: 12365 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/Results10dataset
 s-eps-converted-to.pdf ./Figures/Results10datasets.eps>
-(epstopdf)             \includegraphics on input line 215.
+(epstopdf)             \includegraphics on input line 220.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/Results10datasets-eps-converted-to.pdf, id=63, 892.33376pt x 620.317
+<./Figures/Results10datasets-eps-converted-to.pdf, id=61, 892.33376pt x 620.317
 5pt>
 File: ./Figures/Results10datasets-eps-converted-to.pdf Graphic file (type pdf)
  <use ./Figures/Results10datasets-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/Results10datasets-eps-converted-to.pdf used 
-on input line 215.
+on input line 220.
 (pdftex.def)             Requested size: 469.75502pt x 326.56131pt.
  [11 <./Figures/i0-eps-converted-to.pdf> <./Figures/i1-eps-converted-to.pdf> <.
 /Figures/i2-eps-converted-to.pdf> <./Figures/i3-eps-converted-to.pdf> <./Figure
 s/i4-eps-converted-to.pdf> <./Figures/i6-eps-converted-to.pdf>]
-Overfull \hbox (10.5049pt too wide) in paragraph at lines 219--228
+Overfull \hbox (10.5049pt too wide) in paragraph at lines 224--233
 [][] 
  []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-LaTeX Warning: Citation `Lauren2014' on page 12 undefined on input line 233.
 
 Package epstopdf Info: Source file: <./Figures/TracesEl185pattern1494.eps>
 (epstopdf)                    date: 2015-05-19 21:26:15
@@ -568,16 +541,16 @@ rted-to.pdf>
 (epstopdf)                    size: 19143 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/TracesEl185patte
 rn1494-eps-converted-to.pdf ./Figures/TracesEl185pattern1494.eps>
-(epstopdf)             \includegraphics on input line 240.
+(epstopdf)             \includegraphics on input line 245.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/TracesEl185pattern1494-eps-converted-to.pdf, id=127, 820.06375pt x 5
+<./Figures/TracesEl185pattern1494-eps-converted-to.pdf, id=125, 820.06375pt x 5
 44.0325pt>
 File: ./Figures/TracesEl185pattern1494-eps-converted-to.pdf Graphic file (type 
 pdf)
  <use ./Figures/TracesEl185pattern1494-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/TracesEl185pattern1494-eps-converted-to.pdf 
-used on input line 240.
+used on input line 245.
 (pdftex.def)             Requested size: 435.77042pt x 289.07999pt.
  [12 <./Figures/Results10datasets-eps-converted-to.pdf>] [13] [14]
 Package epstopdf Info: Source file: <./Figures/TracesEl170pattern1443.eps>
@@ -589,16 +562,16 @@ rted-to.pdf>
 (epstopdf)                    size: 25955 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/TracesEl170patte
 rn1443-eps-converted-to.pdf ./Figures/TracesEl170pattern1443.eps>
-(epstopdf)             \includegraphics on input line 248.
+(epstopdf)             \includegraphics on input line 253.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/TracesEl170pattern1443-eps-converted-to.pdf, id=143, 850.17625pt x 5
+<./Figures/TracesEl170pattern1443-eps-converted-to.pdf, id=141, 850.17625pt x 5
 65.11125pt>
 File: ./Figures/TracesEl170pattern1443-eps-converted-to.pdf Graphic file (type 
 pdf)
  <use ./Figures/TracesEl170pattern1443-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/TracesEl170pattern1443-eps-converted-to.pdf 
-used on input line 248.
+used on input line 253.
 (pdftex.def)             Requested size: 434.90736pt x 289.07999pt.
 Package epstopdf Info: Source file: <./Figures/ResidualsEl170pattern1443.eps>
 (epstopdf)                    date: 2015-05-19 22:51:18
@@ -609,20 +582,20 @@ nverted-to.pdf>
 (epstopdf)                    size: 27114 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/ResidualsEl170pa
 ttern1443-eps-converted-to.pdf ./Figures/ResidualsEl170pattern1443.eps>
-(epstopdf)             \includegraphics on input line 255.
+(epstopdf)             \includegraphics on input line 260.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf, id=144, 852.18375pt 
+<./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf, id=142, 852.18375pt 
 x 568.1225pt>
 File: ./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf Graphic file (ty
 pe pdf)
  <use ./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/ResidualsEl170pattern1443-eps-converted-to.p
-df used on input line 255.
+df used on input line 260.
 (pdftex.def)             Requested size: 433.6327pt x 289.07999pt.
 
 
-LaTeX Warning: Float too large for page by 36.92993pt on input line 260.
+LaTeX Warning: Float too large for page by 36.92993pt on input line 265.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -639,41 +612,36 @@ Missing character: There is no ‚ in font ptmr7t!
 esidualsEl170pattern1443-eps-converted-to.pdf>]
 (./ArtifactSpikeSortingDraft1.aux)
 
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
  4055 strings out of 493117
  60510 string characters out of 6135433
- 131661 words of memory out of 5000000
+ 131818 words of memory out of 5000000
  7410 multiletter control sequences out of 15000+600000
  33156 words of font info for 76 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,10n,38p,3785b,467s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,10n,38p,3782b,467s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
 live/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texl
-ive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texliv
-e/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/
-2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/20
-14/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2014
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2014/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2014/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2014/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2014/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2014/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2014/texmf-dist/f
-onts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1
-/urw/times/utmr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times
-/utmri8a.pfb>
-Output written on ArtifactSpikeSortingDraft1.pdf (17 pages, 372256 bytes).
+ive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texliv
+e/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/
+2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/20
+14/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2014/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2014/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2014/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2014/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2014/texmf-di
+st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/t
+ype1/urw/times/utmr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/t
+imes/utmri8a.pfb>
+Output written on ArtifactSpikeSortingDraft1.pdf (17 pages, 356881 bytes).
 PDF statistics:
- 237 PDF objects out of 1000 (max. 8388607)
- 169 compressed objects within 2 object streams
+ 229 PDF objects out of 1000 (max. 8388607)
+ 163 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
