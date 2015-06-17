@@ -9,15 +9,11 @@
 %
 % CALLS:
 % GLM_settings, GLM_fitname NSEM_BaseDirectories cell_list
-
-
 % Standard Bookkeeping
 clear ; close all; clc;
-BD   = NSEM_BaseDirectories;
-eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
-eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection)); 
 
 % Dictate comparison plot
+%{
 comparison_name = 'WNvsNSEM_standardGLM_noPS';
 model{1}.settings{1}.type = 'PostSpikeFilter';
 model{1}.settings{1}.name =  'OFF';
@@ -25,22 +21,44 @@ model{1}.fit_type = 'WN';
 model{2}.settings{1}.type = 'PostSpikeFilter';
 model{2}.settings{1}.name =  'OFF';
 model{2}.fit_type = 'NSEM';
+%}
 
+
+comparison_name = 'WNvsNSEM_standardGLM';
+model{1}.settings= {};
+model{1}.fit_type = 'WN';
+model{2}.settings= {};
+model{2}.fit_type = 'NSEM';
+
+
+
+%details.cellselection_type = 'all';
 details.cellselection_type = 'glmconv_4pct';
 details.celltypes = [1 2];
 details.exps = [1 2 3 4];
-details.metric = 'BPS_normUOP';
+%details.metric = 'BPS_divideUOP';
+details.metric = 'BPS_divideCRM';
 
+%
+BD   = NSEM_BaseDirectories;
+eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
+if strcmp(details.cellselection_type, 'glmconv_4pct')
+    eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection)); 
+end
 savedir = sprintf('%s/Plots/ModelComparisons/%s',BD.GLM_output_analysis,comparison_name);
 if ~exist(savedir,'dir'), mkdir(savedir); end
 
 
-model{1}.GLMType = GLM_settings('default',model{1}.settings);
-model{1}.fitname    = GLM_fitname(model{1}.GLMType);
+model{1}.GLMType         = GLM_settings('default',model{1}.settings);
+model{1}.fitname         = GLM_fitname(model{1}.GLMType);
+model{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{1}.fitname);
 model{2}.GLMType = GLM_settings('default',model{2}.settings);
 model{2}.fitname    = GLM_fitname(model{2}.GLMType);
+model{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{2}.fitname);
 
 %%% LOADING 
+
+i_exp = 1; i_celltype = 1;  i_cell = 1; i_stimtype = 1; i_model = 1;
 model_comparison.byexpnm         = allcells;
 model_comparison.comparison_name = comparison_name;
 model_comparison.notes.n1        = 'Use Normalization from ';
@@ -51,191 +69,175 @@ model_comparison.notes.n5        = 'LPPS: logarithmic probability per second';
 model_comparison.notes.n6        = 'GLM: Generalized Linear Model';
 model_comparison.timestamp       = datestr(clock);
 model_comparison.code_name       = mfilename('fullpath');
-i_exp = 1; i_celltype = 1;  i_cell = 1; i_stimtype = 1; i_model = 1;
+%% GET CELLS SQUARED UP
+% Define Cell_Subset structure
 
-%% LOAD DATA FROM FITTED GLM
-% Collect Data
+
+
 for i_exp = details.exps
-    exp_nm  = allcells{i_exp}.exp_nm;
-    expname = allcells{i_exp}.expname;
-    
-    candidate_cells = [allcells{i_exp}.ONP , allcells{i_exp}.OFFP];
+    cell_subset = cell(2,1);
+    cell_subset{1}.celltype = 'ONPar';
+    cell_subset{1}.all_cids = allcells{i_exp}.ONP;
+    cell_subset{2}.celltype = 'OFFPar';
+    cell_subset{2}.all_cids = allcells{i_exp}.OFFP;
+
+    % Grab cids of cell subsets
     if strcmp(details.cellselection_type, 'shortlist')
-        [exp_nm,candidate_cells,expname]  = cell_list(i_exp,cellselection_type);
+        [~,candidate_cells,~]  = cell_list(i_exp,cellselection_type);
         candidate_cells = cell2mat(candidate_cells);
+        for i_celltype = 1:2
+            cell_subset{i_celltype}.subset_cids = intersect(candidate_cells, cell_subset{i_celltype}.all_cids);
+        end
+        clear candidate_cells
     elseif strcmp(details.cellselection_type,'glmconv_4pct')
-        conv_column = 2; 
-        conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
-        conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
-        candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
-        clear conv_column conv_index_ON conv_index_OFF
+        conv_column     = 2; 
+        conv_index_ON   = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
+        conv_index_OFF  = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
+        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
+        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
+        clear conv_index_ON conv_index_OFF conv_columns
+    elseif strcmp(details.cellselection_type,'all')
+        cell_subset{1}.subset_cids = allcells{i_exp}.ONP;
+        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP;
     end
     
-    clear crossval_dir
-    for i_model = 1:2
-        secondDir.exp_nm    = exp_nm;
-        secondDir.stim_type = model{i_model}.fit_type;
-        secondDir.map_type  = 'mapPRJ';
-        secondDir.fitname   = model{i_model}.fitname;
-        basedir{i_model} = NSEM_secondaryDirectories('loaddir_GLMfit', secondDir);
-        
-        for i_celltype = [1,2]
-            if i_celltype == 1, celltype = 'ONPar';  cellgroup_full = allcells{i_exp}.ONP;  end
-            if i_celltype == 2, celltype = 'OFFPar'; cellgroup_full = allcells{i_exp}.OFFP; end
-
-            cellgroup     = intersect(cellgroup_full,candidate_cells);
-            if i_celltype == 1, model_comparison.byexpnm{i_exp}.ONP  = cellgroup; end
-            if i_celltype == 2, model_comparison.byexpnm{i_exp}.OFFP = cellgroup; end
-
-            xval_scores.WN.frac_bits     = NaN(length(cellgroup),2);
-            xval_scores.WN.frac_var      = NaN(length(cellgroup),2);
-            xval_scores.WN.vspkd_ratio   = NaN(length(cellgroup),2);
-            xval_scores.WN.vspkd_diff    = NaN(length(cellgroup),2);
-            
-            
-            for i_cell = 1:length(cellgroup)
-                clear crossval_rawmetrics cell_savename
-                cid = cellgroup(i_cell); cell_savename = sprintf('%s_%d', celltype,cid);
-                display(sprintf('LOADING %s %s', expname,cell_savename));
-                norm_index = find(cellgroup_full == cid);
-                for i_model = 1:2
-                    eval(sprintf('load %s/%s.mat crossval_rawmetrics', crossval_dir{i_model}.WN, cell_savename))
-                    rawXVAL.WN.bps(i_model)         = crossval_rawmetrics.bps;
-                    rawXVAL.WN.fracvar(i_model)     = crossval_rawmetrics.l2error_normvar;
-                    rawXVAL.WN.vspkd(i_model)       = crossval_rawmetrics.vspkd;
-                    fit_scores.WN.obj_val(i_cell,i_model)  = crossval_rawmetrics.fit_objval;
-                    clear crossval_rawmetrics
-
-                    eval(sprintf('load %s/%s.mat crossval_rawmetrics', crossval_dir{i_model}.NSEM, cell_savename))
-                    rawXVAL.NSEM.bps(i_model)       = crossval_rawmetrics.bps;
-                    rawXVAL.NSEM.fracvar(i_model)   = crossval_rawmetrics.l2error_normvar;
-                    rawXVAL.NSEM.vspkd(i_model)     = crossval_rawmetrics.vspkd;
-                    fit_scores.NSEM.obj_val(i_cell,i_model)= crossval_rawmetrics.fit_objval;
-                    clear crossval_rawmetrics
-                end
-                %%
-                xval_scores.WN.frac_bits(i_cell,:)   = rawXVAL.WN.bps   / rastnorm.WN.bps(norm_index);
-                xval_scores.WN.vspkd_ratio(i_cell,:) = rawXVAL.WN.vspkd / rastnorm.WN.vspkd(norm_index);
-                xval_scores.WN.vspkd_diff(i_cell,:)  = rawXVAL.WN.vspkd - rastnorm.WN.vspkd(norm_index);
-                xval_scores.WN.frac_var(i_cell,:)    = rawXVAL.WN.fracvar;
-                xval_scores.NSEM.frac_bits(i_cell,:)   = rawXVAL.NSEM.bps   / rastnorm.NSEM.bps(norm_index);
-                xval_scores.NSEM.vspkd_ratio(i_cell,:) = rawXVAL.NSEM.vspkd / rastnorm.NSEM.vspkd(norm_index);
-                xval_scores.NSEM.vspkd_diff(i_cell,:)  = rawXVAL.NSEM.vspkd - rastnorm.NSEM.vspkd(norm_index);
-                xval_scores.NSEM.frac_var(i_cell,:)    = rawXVAL.NSEM.fracvar;
-                clear rawXVVAL 
-            end
-        model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores = xval_scores;
-        model_comparison.byexpnm{i_exp}.celltype{i_celltype}.fit_scores  =  fit_scores;
+    % Translate into indices
+    for i_celltype = 1:2
+        full   = cell_subset{i_celltype}.all_cids;
+        subset = cell_subset{i_celltype}.subset_cids;
+        index  = NaN(size(subset));
+        for i_cell = 1:length(subset)
+            cid = subset(i_cell);
+            index(i_cell) = find(full == cid);
+        end
+        cell_subset{i_celltype}.subset_indices = index;
+        clear index subset cid full
     end
+    model_comparison.byexpnm{i_exp}.cell_subset =cell_subset; 
 end
-eval(sprintf('save %s/%s_model_comparsion_matfile_%s.mat model_comparison GLMType', savedir, comparison_name,cellselection_type))
-
 %%
+
+%% Build up data
 for i_exp = details.exps
     exp_nm  = allcells{i_exp}.exp_nm;
     expname = allcells{i_exp}.expname;
-    
     % Load normalizer by experiment number
-    if strcmp(details.metric, 'BPS_normUOP')
+    if strcmp(details.metric, 'BPS_divideUOP') || strcmp(details.metric, 'BPS_divideCRM')
+        neednormalization = true;
         if i_exp < 4
             normalizer = 'base_crm_findPS';
         elseif i_exp == 4
             normalizer = 'base_crm_importPS';
         end    
         eval(sprintf('load %s/Raster_Metrics/%s_%s.mat raster_scores', BD.Cell_Selection, normalizer, exp_nm));
-        raster_bps  = raster_scores; clear raster_scores
+        clear normalizer
+    else
+        neednormalization = false;
     end
-
-    clear crossval_dir
+    
+    % Pull out relevant structures for tracking results
+    cell_subset       = model_comparison.byexpnm{i_exp}.cell_subset;
+    scores_bycelltype = cell_subset;
+    
     for i_model = 1:2
-        secondDir.exp_nm    = exp_nm;
-        secondDir.stim_type = model{i_model}.fit_type;
-        secondDir.map_type  = 'mapPRJ';
-        secondDir.fitname   = model{i_model}.fitname;
-        basedir{i_model} = NSEM_secondaryDirectories('loaddir_GLMfit', secondDir);
-    end
-    
-    candidate_cells = [allcells{i_exp}.ONP , allcells{i_exp}.OFFP];
-    if strcmp(details.cellselection_type, 'shortlist')
-        [exp_nm,candidate_cells,expname]  = cell_list(i_exp,cellselection_type);
-        candidate_cells = cell2mat(candidate_cells);
-    elseif strcmp(details.cellselection_type,'glmconv_4pct')
-        conv_column = 2; 
-        conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
-        conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
-        candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
-        clear conv_column conv_index_ON conv_index_OFF
-    end
-    
-    %%
-    for i_celltype = details.celltypes
-        if i_celltype == 1, celltype = 'ONPar';  cellgroup_full = allcells{i_exp}.ONP;  end
-        if i_celltype == 2, celltype = 'OFFPar'; cellgroup_full = allcells{i_exp}.OFFP; end
+        if strcmp(details.metric,'BPS_divideUOP'), underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end
+        if strcmp(details.metric,'BPS_divideCRM'), underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end  
+        eval(sprintf('load %s/%s.mat aggregated_scores',  model{i_model}.aggscores_dir, underlyingmetric_name));
         
-        cellgroup     = intersect(cellgroup_full,candidate_cells);
-        if i_celltype == 1, model_comparison.byexpnm{i_exp}.ONP  = cellgroup; end
-        if i_celltype == 2, model_comparison.byexpnm{i_exp}.OFFP = cellgroup; end
-        
-        xval_scores.WN.frac_bits     = NaN(length(cellgroup),2);
-        xval_scores.WN.frac_var      = NaN(length(cellgroup),2);
-        xval_scores.WN.vspkd_ratio   = NaN(length(cellgroup),2);
-        xval_scores.WN.vspkd_diff    = NaN(length(cellgroup),2);
-        fit_scores.WN.obj_val        = NaN(length(cellgroup),2);
-        rastnorm.WN.bps              = raster_bps.celltype{i_celltype}.scores_WN.crm_bps;
-        rastnorm.WN.vspkd            = raster_vspkd.celltype{i_celltype}.scores_WN.rast_vspkd;
-        
-        xval_scores.NSEM.frac_bits   = NaN(length(cellgroup),2);
-        xval_scores.NSEM.frac_var    = NaN(length(cellgroup),2);
-        xval_scores.NSEM.vspkd_ratio = NaN(length(cellgroup),2);
-        xval_scores.NSEM.vspkd_diff  = NaN(length(cellgroup),2);
-        fit_scores.NSEM.obj_val      = NaN(length(cellgroup),2);
-        rastnorm.NSEM.bps         = raster_bps.celltype{i_celltype}.scores_NSEM.crm_bps;
-        rastnorm.NSEM.vspkd       = raster_vspkd.celltype{i_celltype}.scores_NSEM.rast_vspkd;
-        
-        %%
-        % Load Cell Specific Elements   Spikes and STA
-        for i_cell = 1:length(cellgroup)
-            clear crossval_rawmetrics cell_savename
-            cid = cellgroup(i_cell); cell_savename = sprintf('%s_%d', celltype,cid);
-            display(sprintf('LOADING %s %s', expname,cell_savename));
-            norm_index = find(cellgroup_full == cid);
-            for i_model = 1:2
-                eval(sprintf('load %s/%s.mat crossval_rawmetrics', crossval_dir{i_model}.WN, cell_savename))
-                rawXVAL.WN.bps(i_model)         = crossval_rawmetrics.bps;
-                rawXVAL.WN.fracvar(i_model)     = crossval_rawmetrics.l2error_normvar;
-                rawXVAL.WN.vspkd(i_model)       = crossval_rawmetrics.vspkd;
-                fit_scores.WN.obj_val(i_cell,i_model)  = crossval_rawmetrics.fit_objval;
-                clear crossval_rawmetrics
-                
-                eval(sprintf('load %s/%s.mat crossval_rawmetrics', crossval_dir{i_model}.NSEM, cell_savename))
-                rawXVAL.NSEM.bps(i_model)       = crossval_rawmetrics.bps;
-                rawXVAL.NSEM.fracvar(i_model)   = crossval_rawmetrics.l2error_normvar;
-                rawXVAL.NSEM.vspkd(i_model)     = crossval_rawmetrics.vspkd;
-                fit_scores.NSEM.obj_val(i_cell,i_model)= crossval_rawmetrics.fit_objval;
-                clear crossval_rawmetrics
+        for i_celltype = details.celltypes
+            scores_bycelltype{i_celltype}.cids = cell_subset{i_celltype}.subset_cids;
+            if strcmp(model{i_model}.fit_type, 'WN')
+                rawscores_all = aggregated_scores.celltype{i_celltype}.scores_WN;
+                if neednormalization
+                    normalizers_all = raster_scores.celltype{i_celltype}.scores_WN;
+                end
+            elseif strcmp(model{i_model}.fit_type, 'NSEM')
+                rawscores_all = aggregated_scores.celltype{i_celltype}.scores_NSEM;
+                if neednormalization
+                    normalizers_all = raster_scores.celltype{i_celltype}.scores_NSEM;
+                end
             end
-            %%
-            xval_scores.WN.frac_bits(i_cell,:)   = rawXVAL.WN.bps   / rastnorm.WN.bps(norm_index);
-            xval_scores.WN.vspkd_ratio(i_cell,:) = rawXVAL.WN.vspkd / rastnorm.WN.vspkd(norm_index);
-            xval_scores.WN.vspkd_diff(i_cell,:)  = rawXVAL.WN.vspkd - rastnorm.WN.vspkd(norm_index);
-            xval_scores.WN.frac_var(i_cell,:)    = rawXVAL.WN.fracvar;
-            xval_scores.NSEM.frac_bits(i_cell,:)   = rawXVAL.NSEM.bps   / rastnorm.NSEM.bps(norm_index);
-            xval_scores.NSEM.vspkd_ratio(i_cell,:) = rawXVAL.NSEM.vspkd / rastnorm.NSEM.vspkd(norm_index);
-            xval_scores.NSEM.vspkd_diff(i_cell,:)  = rawXVAL.NSEM.vspkd - rastnorm.NSEM.vspkd(norm_index);
-            xval_scores.NSEM.frac_var(i_cell,:)    = rawXVAL.NSEM.fracvar;
-            clear rawXVVAL 
+            rawscores_subset = rawscores_all(cell_subset{i_celltype}.subset_indices);
+            
+            % Define the final score
+            if strcmp(details.metric,'BPS_divideUOP')
+                finalscores = rawscores_subset./(normalizers_all.uop_bps(cell_subset{i_celltype}.subset_indices)); 
+            elseif strcmp(details.metric, 'BPS_divideCRM')
+                finalscores = rawscores_subset./(normalizers_all.crm_bps(cell_subset{i_celltype}.subset_indices));
+            end
+            
+            if i_model == 1, scores_bycelltype{i_celltype}.finalscores_model1 = finalscores; end
+            if i_model == 2, scores_bycelltype{i_celltype}.finalscores_model2 = finalscores; end           
         end
-        model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores = xval_scores;
-        model_comparison.byexpnm{i_exp}.celltype{i_celltype}.fit_scores  =  fit_scores;
+    end
+    
+    % Put scores structure back in
+    model_comparison.byexpnm{i_exp}.scores_bycelltype =  scores_bycelltype;
+end
+
+
+
+
+
+
+
+
+
+%% PLOT CHANGE IN WN VS NSEM  (ONE SINGLE LARGE PLOT)
+colors = {'r.','g.','b.','c.'};
+MS_A = 12;
+MS_B = 30; 
+clf; hold on
+axis square
+low_lim  = -Inf;
+high_lim = Inf;
+
+if strcmp(details.metric,'BPS_divideCRM') || strcmp(details.metric,'BPS_divideUOP')
+    low_lim  = 0;
+    high_lim = 1;
+end
+
+xlim([low_lim, high_lim]);
+ylim([low_lim, high_lim]);
+plot(linspace(low_lim, high_lim,100),linspace(low_lim, high_lim,100),'k');
+for i_exp = details.exps
+    exp_nm  = allcells{i_exp}.exp_nm;
+    expname = allcells{i_exp}.expname;
+    colorstring = colors{i_exp};
+
+    for i_celltype = details.celltypes
+        model1 = model_comparison.byexpnm{i_exp}.scores_bycelltype{i_celltype}.finalscores_model1;
+        model2 = model_comparison.byexpnm{i_exp}.scores_bycelltype{i_celltype}.finalscores_model2;
+
+        model1(find(model1<=low_lim)) = low_lim;
+        model2(find(model2<=low_lim)) = low_lim;
+
+        model1(find(model1>=high_lim)) = high_lim;
+        model2(find(model2>=high_lim)) = high_lim;
+        
+        plot(model1, model2, colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+            plot(model1, model2, 'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(model1, model2, 'k.', 'markersize', MS_A);;
+        end            
     end
 end
-eval(sprintf('save %s/%s_model_comparsion_matfile_%s.mat model_comparison GLMType', savedir, comparison_name,cellselection_type))
+
+%eval(sprintf('print
+    
+
+
+
+
+
 
 
 
 
 
 %% PLOT THE 2 by 2, WN/NSEM and Fit vs Train
+%{
 if plot_diagnostics
     eval(sprintf('load %s/%s_model_comparsion_matfile_%s.mat model_comparison GLMType', savedir, comparison_name,cellselection_type))
     colors = {'r','g','b','c'};
@@ -329,169 +331,7 @@ if plot_diagnostics
     orient landscape
     eval(sprintf('print -dpdf %s/%s_WN_NSEM_FIT_XVAL_%s.pdf', savedir, comparison_name, cellselection_type))
 end
-
-
-%% PLOT CHANGE IN WN VS NSEM  (ONE SINGLE LARGE PLOT)
-close all
-if plot_deltaWNNSEM
-eval(sprintf('load %s/%s_model_comparsion_matfile_%s.mat model_comparison GLMType', savedir, comparison_name,cellselection_type))
-colors = {'r.','g.','b.','c.'};
-MS_A = 12;
-MS_B = 30; 
-    
-for i_metric = 1:5
-    clear score_max score_min plot_max plot_min
-    if i_metric == 1, met_type = 'frac_bits'; score_max = 1; score_min = 0; plot_max = 1; plot_min = 0; end
-    if i_metric == 2, met_type = 'vspkd_ratio'; score_max = 5; score_min= 1;plot_max = 5; plot_min = 1; end
-    if i_metric == 3, met_type = 'vspkd_diff'; score_max = 1.6; score_min= 0; plot_max = 1.6; plot_min = 0; end
-    if i_metric == 4, met_type = 'frac_var_unexp';  score_max = 1; score_min = 0; plot_max = 1; plot_min = 0; end
-    if i_metric == 5, met_type = 'frac_var_exp';  score_max = 1; score_min = 0; plot_max = 1; plot_min = 0; end
-    figure(1); clf; hold on; axis square
-    figure(2); clf; hold on; axis square
-    figure(3); clf; hold on; axis square
-    for i_exp = [1 2 3]
-        clear raster_scores
-        exp_nm  = allcells{i_exp}.exp_nm;
-        expname = allcells{i_exp}.expname;
-        colorstring = colors{i_exp};
-        
-        for i_celltype = celltypes
-            if i_metric == 1
-                scores_WN     = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.frac_bits;
-                scores_NSEM   = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.frac_bits;
-            elseif i_metric == 2
-                scores_WN     = (model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.vspkd_ratio);
-                scores_NSEM   = (model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.vspkd_ratio);
-            elseif i_metric == 3
-                scores_WN     = (model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.vspkd_diff);
-                scores_NSEM   = (model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.vspkd_diff);
-            elseif i_metric == 4
-                scores_WN     = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.frac_var;
-                scores_NSEM   = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.frac_var;
-            
-            elseif i_metric == 5
-                scores_WN     = 1-model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.frac_var;
-                scores_NSEM   = 1-model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.frac_var;
-            end
-            scores_WN(find(scores_WN>score_max)) = score_max;
-            scores_WN(find(scores_WN<score_min)) = score_min;
-            scores_NSEM(find(scores_NSEM>score_max)) = score_max;
-            scores_NSEM(find(scores_NSEM<score_min)) = score_min;
-            
-            figure(1);
-            plot(scores_WN(:,1), scores_NSEM(:,1), colorstring, 'markersize', MS_B);
-            for i_cell = 1:size(scores_WN,1)
-                x_line = linspace(scores_WN(i_cell,1), scores_WN(i_cell,2),100);
-                y_line = linspace(scores_NSEM(i_cell,1), scores_NSEM(i_cell,2),100);
-                plot(x_line,y_line,'k');
-            end
-            plot(scores_WN(:,2), scores_NSEM(:,2), colorstring, 'markersize', MS_B);
-            if i_celltype == 1
-                plot(scores_WN(:,2), scores_NSEM(:,2), 'w.', 'markersize', MS_A);
-            elseif i_celltype == 2
-                plot(scores_WN(:,2), scores_NSEM(:,2), 'k.', 'markersize', MS_A);
-            end
-            
-            figure(2);
-            plot(scores_WN(:,1), scores_NSEM(:,1), colorstring, 'markersize', MS_B);
-            if i_celltype == 1
-                plot(scores_WN(:,1), scores_NSEM(:,1), 'w.', 'markersize', MS_A);
-            elseif i_celltype == 2
-                plot(scores_WN(:,1), scores_NSEM(:,1), 'k.', 'markersize', MS_A);
-            end
-            
-            figure(3);
-            plot(scores_WN(:,2), scores_NSEM(:,2), colorstring, 'markersize', MS_B);
-            if i_celltype == 1
-                plot(scores_WN(:,2), scores_NSEM(:,2), 'w.', 'markersize', MS_A);
-            elseif i_celltype == 2
-                plot(scores_WN(:,2), scores_NSEM(:,2), 'k.', 'markersize', MS_A);
-            end
-            
-        end
-    end
-    figure(1)
-    unity_line = linspace(plot_min, plot_max,100);
-    plot(unity_line,unity_line,'k')
-    xlim([plot_min, plot_max]); ylim([plot_min, plot_max]);
-    set(gca,'xtick',plot_min+(plot_max-plot_min)*[0:.25:1]); 
-    set(gca,'ytick',plot_min+(plot_max-plot_min)*[0:.25:1]);
-    
-    figure(2)
-    unity_line = linspace(plot_min, plot_max,100);
-    plot(unity_line,unity_line,'k')
-    xlim([plot_min, plot_max]); ylim([plot_min, plot_max]);
-    set(gca,'xtick',plot_min+(plot_max-plot_min)*[0:.25:1]); 
-    set(gca,'ytick',plot_min+(plot_max-plot_min)*[0:.25:1]);
-    
-    figure(3)
-    unity_line = linspace(plot_min, plot_max,100);
-    plot(unity_line,unity_line,'k')
-    xlim([plot_min, plot_max]); ylim([plot_min, plot_max]);
-    set(gca,'xtick',plot_min+(plot_max-plot_min)*[0:.25:1]); 
-    set(gca,'ytick',plot_min+(plot_max-plot_min)*[0:.25:1]);
-    
-    figure(1);
-    eval(sprintf('print -dpdf %s/%s_deltaWNNSEM_%s_%s.pdf', savedir, comparison_name,met_type, cellselection_type))
-    figure(2);
-    eval(sprintf('print -dpdf %s/%s_oldWNNSEM_%s_%s.pdf', savedir, comparison_name,met_type, cellselection_type))
-    figure(3);
-    eval(sprintf('print -dpdf %s/%s_newWNNSEM_%s_%s.pdf', savedir, comparison_name,met_type, cellselection_type))
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %{
-    for i_plot = 1:2 
-        clf; hold on; axis square
-        for i_exp = exps
-            clear raster_scores
-            exp_nm  = allcells{i_exp}.exp_nm;
-            expname = allcells{i_exp}.expname;
-            colorstring = colors{i_exp};
-
-            for i_celltype = celltypes
-                if i_metric == 1
-                scores_WN     = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.frac_bits;
-                scores_NSEM   = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.frac_bits;
-                elseif i_metric == 2
-                    scores_WN     = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.frac_var;
-                    scores_NSEM   = model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.frac_var;
-                elseif i_metric == 3
-                    scores_WN     = (model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.WN.vspkd_ratio);
-                    scores_NSEM   = (model_comparison.byexpnm{i_exp}.celltype{i_celltype}.xval_scores.NSEM.vspkd_ratio);
-                end
-
-
-                scores_WN(find(scores_WN>score_max)) = score_max;
-                scores_WN(find(scores_WN<score_min)) = score_min;
-
-                scores_NSEM(find(scores_NSEM>score_max)) = score_max;
-                scores_NSEM(find(scores_NSEM<score_min)) = score_min;
-
-                plot(scores_WN(:,i_plot), scores_NSEM(:,i_plot), colorstring, 'markersize', MS_B);
-                if i_celltype == 1
-                    plot(scores_WN(:,i_plot), scores_NSEM(:,i_plot), 'w.', 'markersize', MS_A);
-                elseif i_celltype == 2
-                    plot(scores_WN(:,i_plot), scores_NSEM(:,i_plot), 'k.', 'markersize', MS_A);
-                end
-            end
-        end
-        unity_line = linspace(plot_min, plot_max,100);
-        plot(unity_line,unity_line,'k')
-        xlim([plot_min, plot_max]); ylim([plot_min, plot_max]);
-        if i_metric == 1 || i_metric ==2 
-            set(gca,'xtick',[0:.25:1]); set(gca,'ytick',[0:.25:1]);
-        end
-        if i_plot == 1
-            eval(sprintf('print -dpdf %s/%s_oldWNNSEM_%s_%s.pdf', savedir, comparison_name, met_type, cellselection_type))
-        elseif i_plot == 2
-            eval(sprintf('print -dpdf %s/%s_newWNNSEM_%s_%s.pdf', savedir, comparison_name,met_type, cellselection_type))
-        end
-    end
-    %}
-end
-
-end
+%}
 
 
 %% OLD CRAPPY PLOT TEMPLATES
