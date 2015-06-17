@@ -34,21 +34,21 @@ if ~exist('condition','var')
     end
     
     if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
-        GLM_fitname_core = sprintf('%s_stimnonlin_%s',GLM_fitname_core, GLMType.input_pt_nonlinearity_type)
+        GLM_fitname_core = sprintf('%s_stimnonlin_%s',GLM_fitname_core, GLMType.input_pt_nonlinearity_type);
     end
     
     if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-        GLM_fitname_core = sprintf('%s_postfilterNL_%s',GLM_fitname_core, GLMType.postfilter_nonlinearity_type)
+        GLM_fitname_core = sprintf('%s_postfilterNL_%s',GLM_fitname_core, GLMType.postfilter_nonlinearity_type);
     end
     
     % See if there are special changes to the core parameters 
     if ~isfield(GLMType, 'specialchange') || ~GLMType.specialchange
-        GLM_fitname = sprintf('%s/standardparams',GLM_fitname_core)
+        GLM_fitname = sprintf('%s/standardparams',GLM_fitname_core);
     else
         GLM_fitname = sprintf('%s/ChangeParams_%s',GLM_fitname_core,GLMType.specialchange_name ) ;
     end
     if isfield(GLMType,'DoubleOpt_Manual') && GLMType.DoubleOpt_Manual
-        GLM_fitname = sprintf('%s/Man_DoubleOpt_standardparams',GLM_fitname_core)
+        GLM_fitname = sprintf('%s/Man_DoubleOpt_standardparams',GLM_fitname_core);
     end
 end
 
