@@ -178,8 +178,11 @@ for cc = 1:length(cell_indices)
     % compute spike rate at all times
     spike_rate = histc(datarun.spikes{cell_index},datarun.triggers(1):refresh_time:movie.size*refresh_time+datarun.triggers(1));
     % store spikes in the relevant region
-    spikes(:,cc) = spike_rate(1:end-1);
-    
+    if isempty(spike_rate)
+        spikes(:,cc) = zeros(size(spikes,1),1);
+    else
+        spikes(:,cc) = spike_rate(1:end-1);
+    end
     
 
     % get STA

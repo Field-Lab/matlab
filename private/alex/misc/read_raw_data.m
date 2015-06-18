@@ -1,5 +1,4 @@
 
-samplingrate=20000;
 %initiate data 
 raw_data_path='/Volumes/Data/4444-44-44-4/data000';
 raw_data_path='/Volumes/Data/4444-44-44-4/data001';
@@ -16,8 +15,10 @@ raw_data_path='/Volumes/Data/9999-99-99-9/data001';
 raw_data_path='/Volumes/Data/2015-03-09-2/data000';
 raw_data_path='/Volumes/Data/2015-03-09-2/data001';
 
-rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(raw_data_path);
+raw_data_path='/Volumes/Data/9999-99-99-9/data003';
 
+rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(raw_data_path);
+samplingrate=20000;
 % read 1s of data starting from 0
 alld = [];
 for i=0:30

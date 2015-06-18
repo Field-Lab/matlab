@@ -1,5 +1,5 @@
 %% load NSEM
-mvpath='/Volumes/Data/stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/';
+mvpath='/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/';
 my_movie=zeros(320,320,3600);
 cnt=1;
 for i=1:30
@@ -437,6 +437,7 @@ save(['/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-noref
 data='019';
 [second_nd.psr, second_nd.asr, second_nd.gs, second_nd.r2, second_nd.ind, second_nd.cellID] = get_LN_ndf(data, scale, mean_rgb);
 save(['/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/not_scaled/', 'data_019.mat'], 'second_nd');
+
 
 nds={'NDF2','NDF1'};
 %%%%%%%% plot it

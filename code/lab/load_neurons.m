@@ -58,9 +58,17 @@ params = p.Results;
 [spikes, extras] = load_rrs_neurons(datarun.names.rrs_neurons_path, params.load_spikes);
 
 
+
 % STORE IN DATARUN
 datarun.triggers = extras.triggers;
-datarun.duration = extras.duration;
+
+% ath: additional check for concatenated runs (which have extras.duration of added concat runs)
+max_spike_time = max(cell2mat(cellfun(@max,spikes, 'UniformOutput', false))); % in s
+max_triggers = max(datarun.triggers); % in s
+duration = max(max_spike_time,max_triggers); % in s
+datarun.duration = duration;
+
+% datarun.duration = extras.duration;
 datarun.sampling_rate = 20000;
 
 % sort cell IDs, if desired

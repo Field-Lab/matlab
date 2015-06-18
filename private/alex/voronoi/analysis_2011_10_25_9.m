@@ -2,11 +2,14 @@ datarun = load_data('/Volumes/Analysis/2011-10-25-9/d06-10-norefit/data006-from-
 datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun);
 datarun = set_polarities(datarun);
+datarun = load_neurons(datarun);
 
 
 datarun1 = load_data('/Volumes/Analysis/2011-10-25-9/d06-10-norefit/data010-from-d06_10/data010-from-d06_10');
 datarun1 = load_params(datarun1,'verbose',1);
 datarun1 = load_sta(datarun1);
+
+[inputs, refresh, duration] = get_wn_movie_ath(datarun, 'BW-3-5-0.48-11111-200x200-60.35.xml');
 
 vorrun = load_data('/Volumes/Analysis/2011-10-25-9/d06-10-norefit/data008-from-d06_10/data008-from-d06_10');
 vorrun = load_params(vorrun,'verbose',1);
@@ -66,7 +69,7 @@ cells = [14];
 
 clear bords sta sta1 ind tt tt1 cellInd a b
 
-[inputs, refresh, duration] = get_wn_movie_ath(vorrun, 'BW-1-3-0.50-11111-1264x1-60.35.xml');
+[inputs_v, refresh_v, duration_v] = get_wn_movie_ath(vorrun, 'BW-1-3-0.50-11111-1264x1-60.35.xml');
 
 offset = 0;
 sta_length = 15;
@@ -704,5 +707,138 @@ for ii = 1:length(cone_pairs)
     drawnow
     cnt=cnt+1;
     
+end
+
+
+
+%% Plot stuff
+
+% first do Voronoi - simply 3rd frame, no temporal summation
+sta_params.length = 3;
+sta_params.offset = 0;
+offset = 0;
+sta_length=4;
+filepath = '/Users/alexth/Desktop/voronoi/2011-10-25-9/d06-10-norefit/';
+
+for datarunID = 1:length(datarun.cell_ids)
+    visionID = datarun.cell_ids(datarunID);
+    [folder, my_type] = find_cell_type(datarun, visionID);
+    
+    if ~exist([filepath,folder],'dir')
+        mkdir([filepath,folder]);
+    end
+    
+    
+    fig=figure('PaperPosition',[0 0 12 8],'PaperSize',[12 8]);
+    set(fig,'color','white','position',[1 24 1886 1074]);
+    
+    my_sta=zeros(size(inputs_v,1),sta_params.length);
+    
+    spikes=ceil((vorrun.spikes{datarunID}-vorrun.triggers(1))*1000/(refresh_v)); % spikes in frames
+    spike_rate=zeros(size(inputs_v,2),1);
+    
+    % 36207 frames is 1800s;
+    k = [sta_params.length-sta_params.offset, 12069, 24138, 36207];
+
+    for cnt1 = 1:3
+        spikes_tmp = spikes(spikes>k(cnt1) & spikes <=k(cnt1+1));
+        
+        while ~isempty(spikes_tmp)
+            [~, ia, ~] = unique(spikes_tmp);
+            spike_rate(spikes_tmp(ia))=spike_rate(spikes_tmp(ia))+1;
+            for j=1:sta_params.length
+                my_sta(:,sta_params.length-j+1) = my_sta(:, sta_params.length-j+1) +...
+                    sum(inputs_v(:,spikes_tmp(ia)-sta_params.length+j+sta_params.offset),2);
+            end
+            spikes_tmp(ia)=[];
+        end
+        % my_sta=my_sta/nspikes;
+        
+        % get voronoi map sta
+        tmp_map = vormap;
+        tt=0:max(tmp_map(:));
+        vorsta=zeros(600,600,sta_params.length);
+        coneX = zeros(max(tmp_map(:)),1);
+        coneY = coneX;
+        cnt = 1;
+        for i=1:1264
+            [a, b] = find(tmp_map==tt(i+1));
+            % find center of this cone
+            coneX(i) = mean(a);
+            coneY(i) = mean(b);
+            if ~isempty(a)
+                for j = 1:length(a)
+                    vorsta(a(j),b(j),:) = my_sta(cnt,:);
+                end
+            end
+            cnt=cnt+1;
+        end
+        vorsta_tmp = vorsta(:, :, 2);
+        
+        subplot(2,3,cnt1)
+        colormap gray
+        imagesc(vorsta_tmp)
+        title([int2str((k(cnt1+1))/(1000/refresh_v)), ' s'])
+        drawnow
+    end
+    
+
+    val = max(abs(my_sta(:,2)));    
+    ind = find(abs(vorsta_tmp)==val, 1);
+    [a,b] = ind2sub([600,600], ind);
+    a = round(a/3);
+    b = round(b/3);
+    
+    myinds = [];
+    my_as = a-30:a+30;
+    my_as(my_as<1 | my_as>200) = [];
+    my_bs = b-30:b+30;
+    my_bs(my_bs<1 | my_bs>200) = [];
+    for i = my_as
+        for j=my_bs
+            myinds = [myinds sub2ind([200, 200],i, j)];
+        end
+    end
+    
+    subplot(2,3,2)
+    title(['Vision ID ', int2str(visionID), ', datarun ID ', int2str(datarunID), ', ', folder])
+
+    
+    % do single cone WN
+       
+    spikes=ceil((datarun.spikes{datarunID}-datarun.triggers(1))*1000/refresh); % spikes in frames
+    
+    spike_rate=zeros(duration,1);
+    my_sta=zeros(length(myinds),sta_length);
+    k = [sta_length-offset, 7241, 14482, 21724];
+
+    for cnt1 = 4:6
+        spike_tmp = spikes(spikes>k(cnt1-3) &spikes<=k(cnt1-2));
+        spike_tmp(spike_tmp<sta_length-offset)=[];
+        
+        tic
+        while ~isempty(spike_tmp)
+            [c, ia, ic] = unique(spike_tmp);
+            spike_rate(spike_tmp(ia))=spike_rate(spike_tmp(ia))+1;
+            for j=1:sta_length
+                my_sta(:,sta_length-j+1)=my_sta(:,sta_length-j+1)+sum(inputs(myinds,spike_tmp(ia)-sta_length+j+offset),2);
+            end
+            spike_tmp(ia)=[];
+        end
+        toc
+        %     my_sta=my_sta/sum(spike_rate);
+        tmp_sta = reshape(my_sta,length(my_bs),length(my_as),4);
+        
+        subplot(2,3,cnt1)
+        colormap gray
+        imagesc(tmp_sta(:,:,2)')
+        drawnow
+        title([int2str((k(cnt1-2))/(1000/refresh)), ' s'])
+    end
+
+    
+    print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(datarunID)]));
+    close(fig)
+
 end
 
