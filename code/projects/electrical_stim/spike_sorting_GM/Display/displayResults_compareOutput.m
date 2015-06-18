@@ -123,21 +123,24 @@ ylabel('recorded daqs');
 % Plot the cell template
 subplot(2,3,4); 
 xlabel('time (ms)'); 
-[thresholdHum thresholdAlg] = fitToErfOutputAndHuman(Output);
+[thresholdHum, thresholdAlg] = fitToErfOutputAndHuman(Output);
 ActivationThreshold = thresholdAlg(n);
-try
-    index = find(amps >= ActivationThreshold,1,'first');
-catch
-    index = length(amps); 
+index = find(amps >= ActivationThreshold,1,'first');
+if isempty(index)
+    index = length(amps);
 end
-plot(Output.ResidualArtifact{index}','r')
-times = (1:length(Output.neuronInfo.templates{1}))/20; 
-hold on; plot(Output.neuronInfo.templates{1},'k','LineWidth',3);
+ph = plot(Output.ResidualArtifact{index}','r'); 
+% times = (1:length(Output.neuronInfo.templates{1}))/20; 
+hold on; th = plot(Output.neuronInfo.templates{1},'k','LineWidth',3);
 xlim([0 40]); 
+legend([ph(1) th],'trials (w artifact subtracted)',...
+    sprintf('n%0.0f template', neuronId)); 
+title(sprintf(['first condition after human / algorithm disagreement\n'...
+    'condition %0.0f , stimAmp %0.3f uA'], index, amps(index)));
+
 subplot(2,3,5);
 dots = plot(amps,latencies(:,2),'o','MarkerFaceColor','blue','Markersize',12); 
-hold on
-grid('on')
+hold on; grid on; 
 crosses = plot(amps,latencies(:,3),'x','markersize',15); 
 plot(amps,latencies(:,1),'x','markersize',15);
 xlabel('stimulation amplitude (\muA)'); 
