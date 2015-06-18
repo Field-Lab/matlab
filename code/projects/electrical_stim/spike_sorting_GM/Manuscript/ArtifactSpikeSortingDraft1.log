@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  17 JUN 2015 13:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  17 JUN 2015 15:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -363,21 +363,21 @@ t line 87.
 (pdftex.def)             Requested size: 469.75502pt x 135.43085pt.
  [2] [3] [4 <./Figures/4templates-eps-converted-to.pdf>] [5]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 123.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 124.
  [6]
-Underfull \hbox (badness 10000) in paragraph at lines 134--135
+Underfull \hbox (badness 10000) in paragraph at lines 135--136
 
  []
 
 [7]
-Overfull \hbox (38.41608pt too wide) detected at line 148
+Overfull \hbox (38.41608pt too wide) detected at line 149
 \OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 s[]\OT1/cmr/m/n/10
 .95 (\OML/cmm/m/it/10.95 l\OT1/cmr/m/n/10.95 ) = 1\OMS/cmsy/m/n/10.95 j\OML/cmm
 /m/it/10.95 Y; A; \OT1/cmr/m/n/10.95 ^^F\OML/cmm/m/it/10.95 ; ^^U; ; s\OMS/cms
 y/m/n/10.95 n[]\OT1/cmr/m/n/10.95 ) \OMS/cmsy/m/n/10.95 / [] [] []
  []
 
-[8]
+[8] [9]
 Package epstopdf Info: Source file: <./Figures/i0.eps>
 (epstopdf)                    date: 2015-04-21 22:18:15
 (epstopdf)                    size: 29825 bytes
@@ -386,14 +386,14 @@ Package epstopdf Info: Source file: <./Figures/i0.eps>
 (epstopdf)                    size: 18095 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i0-eps-converted
 -to.pdf ./Figures/i0.eps>
-(epstopdf)             \includegraphics on input line 170.
+(epstopdf)             \includegraphics on input line 171.
 Package epstopdf Info: Output file is already uptodate.
- <./Figures/i0-eps-converted-to.pdf, id=49, 867.24pt x 434.62375pt>
+ <./Figures/i0-eps-converted-to.pdf, id=52, 867.24pt x 434.62375pt>
 File: ./Figures/i0-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i0-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i0-eps-converted-to.pdf used on input line 1
-70.
+71.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 Package epstopdf Info: Source file: <./Figures/i1.eps>
 (epstopdf)                    date: 2015-04-21 22:18:00
@@ -403,18 +403,18 @@ Package epstopdf Info: Source file: <./Figures/i1.eps>
 (epstopdf)                    size: 18269 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i1-eps-converted
 -to.pdf ./Figures/i1.eps>
-(epstopdf)             \includegraphics on input line 175.
+(epstopdf)             \includegraphics on input line 176.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/i1-eps-converted-to.pdf, id=50, 867.24pt x 434.62375pt>
+<./Figures/i1-eps-converted-to.pdf, id=53, 867.24pt x 434.62375pt>
 File: ./Figures/i1-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i1-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i1-eps-converted-to.pdf used on input line 1
-75.
+76.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 
-Overfull \hbox (2.28001pt too wide) in paragraph at lines 169--179
+Overfull \hbox (2.28001pt too wide) in paragraph at lines 170--180
  [][] [] 
  []
 
@@ -426,14 +426,14 @@ Package epstopdf Info: Source file: <./Figures/i2.eps>
 (epstopdf)                    size: 18333 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i2-eps-converted
 -to.pdf ./Figures/i2.eps>
-(epstopdf)             \includegraphics on input line 181.
+(epstopdf)             \includegraphics on input line 182.
 Package epstopdf Info: Output file is already uptodate.
-<./Figures/i2-eps-converted-to.pdf, id=51, 867.24pt x 434.62375pt>
+<./Figures/i2-eps-converted-to.pdf, id=54, 867.24pt x 434.62375pt>
 File: ./Figures/i2-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i2-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i2-eps-converted-to.pdf used on input line 1
-81.
+82.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 Package epstopdf Info: Source file: <./Figures/i3.eps>
 (epstopdf)                    date: 2015-04-21 22:17:32
@@ -443,18 +443,18 @@ Package epstopdf Info: Source file: <./Figures/i3.eps>
 (epstopdf)                    size: 18105 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i3-eps-converted
 -to.pdf ./Figures/i3.eps>
-(epstopdf)             \includegraphics on input line 185.
+(epstopdf)             \includegraphics on input line 186.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/i3-eps-converted-to.pdf, id=52, 867.24pt x 434.62375pt>
+<./Figures/i3-eps-converted-to.pdf, id=55, 867.24pt x 434.62375pt>
 File: ./Figures/i3-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i3-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i3-eps-converted-to.pdf used on input line 1
-85.
+86.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 
-Overfull \hbox (4.56004pt too wide) in paragraph at lines 180--189
+Overfull \hbox (4.56004pt too wide) in paragraph at lines 181--190
  [][]  [] 
  []
 
@@ -466,14 +466,14 @@ Package epstopdf Info: Source file: <./Figures/i4.eps>
 (epstopdf)                    size: 18191 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i4-eps-converted
 -to.pdf ./Figures/i4.eps>
-(epstopdf)             \includegraphics on input line 192.
+(epstopdf)             \includegraphics on input line 193.
 Package epstopdf Info: Output file is already uptodate.
-<./Figures/i4-eps-converted-to.pdf, id=53, 867.24pt x 434.62375pt>
+<./Figures/i4-eps-converted-to.pdf, id=56, 867.24pt x 434.62375pt>
 File: ./Figures/i4-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i4-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i4-eps-converted-to.pdf used on input line 1
-92.
+93.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 Package epstopdf Info: Source file: <./Figures/i6.eps>
 (epstopdf)                    date: 2015-04-21 22:16:37
@@ -483,23 +483,23 @@ Package epstopdf Info: Source file: <./Figures/i6.eps>
 (epstopdf)                    size: 18138 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/i6-eps-converted
 -to.pdf ./Figures/i6.eps>
-(epstopdf)             \includegraphics on input line 196.
+(epstopdf)             \includegraphics on input line 197.
 Package epstopdf Info: Output file is already uptodate.
 
-<./Figures/i6-eps-converted-to.pdf, id=54, 867.24pt x 434.62375pt>
+<./Figures/i6-eps-converted-to.pdf, id=57, 867.24pt x 434.62375pt>
 File: ./Figures/i6-eps-converted-to.pdf Graphic file (type pdf)
 
 <use ./Figures/i6-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/i6-eps-converted-to.pdf used on input line 1
-96.
+97.
 (pdftex.def)             Requested size: 234.8775pt x 117.70808pt.
 
-Overfull \hbox (4.56004pt too wide) in paragraph at lines 191--200
+Overfull \hbox (4.56004pt too wide) in paragraph at lines 192--201
  [][]  [] 
  []
 
-[9] [10]
-Overfull \hbox (4.87663pt too wide) in paragraph at lines 207--216
+[10]
+Overfull \hbox (4.87663pt too wide) in paragraph at lines 208--217
 [][] 
  []
 
@@ -512,7 +512,7 @@ to.pdf>
 (epstopdf)                    size: 12365 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/Results10dataset
 s-eps-converted-to.pdf ./Figures/Results10datasets.eps>
-(epstopdf)             \includegraphics on input line 220.
+(epstopdf)             \includegraphics on input line 221.
 Package epstopdf Info: Output file is already uptodate.
 
 <./Figures/Results10datasets-eps-converted-to.pdf, id=61, 892.33376pt x 620.317
@@ -520,12 +520,12 @@ Package epstopdf Info: Output file is already uptodate.
 File: ./Figures/Results10datasets-eps-converted-to.pdf Graphic file (type pdf)
  <use ./Figures/Results10datasets-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/Results10datasets-eps-converted-to.pdf used 
-on input line 220.
+on input line 221.
 (pdftex.def)             Requested size: 469.75502pt x 326.56131pt.
  [11 <./Figures/i0-eps-converted-to.pdf> <./Figures/i1-eps-converted-to.pdf> <.
 /Figures/i2-eps-converted-to.pdf> <./Figures/i3-eps-converted-to.pdf> <./Figure
 s/i4-eps-converted-to.pdf> <./Figures/i6-eps-converted-to.pdf>]
-Overfull \hbox (10.5049pt too wide) in paragraph at lines 224--233
+Overfull \hbox (10.5049pt too wide) in paragraph at lines 225--234
 [][] 
  []
 
@@ -541,7 +541,7 @@ rted-to.pdf>
 (epstopdf)                    size: 19143 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/TracesEl185patte
 rn1494-eps-converted-to.pdf ./Figures/TracesEl185pattern1494.eps>
-(epstopdf)             \includegraphics on input line 245.
+(epstopdf)             \includegraphics on input line 246.
 Package epstopdf Info: Output file is already uptodate.
 
 <./Figures/TracesEl185pattern1494-eps-converted-to.pdf, id=125, 820.06375pt x 5
@@ -550,7 +550,7 @@ File: ./Figures/TracesEl185pattern1494-eps-converted-to.pdf Graphic file (type
 pdf)
  <use ./Figures/TracesEl185pattern1494-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/TracesEl185pattern1494-eps-converted-to.pdf 
-used on input line 245.
+used on input line 246.
 (pdftex.def)             Requested size: 435.77042pt x 289.07999pt.
  [12 <./Figures/Results10datasets-eps-converted-to.pdf>] [13] [14]
 Package epstopdf Info: Source file: <./Figures/TracesEl170pattern1443.eps>
@@ -562,7 +562,7 @@ rted-to.pdf>
 (epstopdf)                    size: 25955 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/TracesEl170patte
 rn1443-eps-converted-to.pdf ./Figures/TracesEl170pattern1443.eps>
-(epstopdf)             \includegraphics on input line 253.
+(epstopdf)             \includegraphics on input line 254.
 Package epstopdf Info: Output file is already uptodate.
 
 <./Figures/TracesEl170pattern1443-eps-converted-to.pdf, id=141, 850.17625pt x 5
@@ -571,7 +571,7 @@ File: ./Figures/TracesEl170pattern1443-eps-converted-to.pdf Graphic file (type
 pdf)
  <use ./Figures/TracesEl170pattern1443-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/TracesEl170pattern1443-eps-converted-to.pdf 
-used on input line 253.
+used on input line 254.
 (pdftex.def)             Requested size: 434.90736pt x 289.07999pt.
 Package epstopdf Info: Source file: <./Figures/ResidualsEl170pattern1443.eps>
 (epstopdf)                    date: 2015-05-19 22:51:18
@@ -582,7 +582,7 @@ nverted-to.pdf>
 (epstopdf)                    size: 27114 bytes
 (epstopdf)             Command: <repstopdf --outfile=./Figures/ResidualsEl170pa
 ttern1443-eps-converted-to.pdf ./Figures/ResidualsEl170pattern1443.eps>
-(epstopdf)             \includegraphics on input line 260.
+(epstopdf)             \includegraphics on input line 261.
 Package epstopdf Info: Output file is already uptodate.
 
 <./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf, id=142, 852.18375pt 
@@ -591,11 +591,11 @@ File: ./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf Graphic file (ty
 pe pdf)
  <use ./Figures/ResidualsEl170pattern1443-eps-converted-to.pdf>
 Package pdftex.def Info: ./Figures/ResidualsEl170pattern1443-eps-converted-to.p
-df used on input line 260.
+df used on input line 261.
 (pdftex.def)             Requested size: 433.6327pt x 289.07999pt.
 
 
-LaTeX Warning: Float too large for page by 36.92993pt on input line 265.
+LaTeX Warning: Float too large for page by 36.92993pt on input line 266.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -638,7 +638,7 @@ dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2014/texmf-di
 st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/t
 ype1/urw/times/utmr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/t
 imes/utmri8a.pfb>
-Output written on ArtifactSpikeSortingDraft1.pdf (17 pages, 356881 bytes).
+Output written on ArtifactSpikeSortingDraft1.pdf (17 pages, 358874 bytes).
 PDF statistics:
  229 PDF objects out of 1000 (max. 8388607)
  163 compressed objects within 2 object streams
