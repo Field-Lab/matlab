@@ -13,7 +13,7 @@
 % need troublshoot.doit (true or false), 
 %troubleshoot.plotdir,
 % troubleshoot.name
-function [X_frame,X_bin] = prep_stimcelldependentGPXV(GLMType, GLMPars, stimulus, inputstats, center_coord,STA,troubleshoot)
+function [X_frame,X_bin] = prep_stimcelldependentGPXV(GLMType, GLMPars, stimulus, inputstats, center_coord,STA, SU_filter, troubleshoot)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load up GLMParams
@@ -36,20 +36,20 @@ ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 %first subunits!
 if GLMType.Subunits
 	for frame=1:stimsize.frames
-		tempstim=conv2(double(stimulus(:,:,frame)),double(GLMPars.subunits),'same');
-		stimulus(:,:,frame)=tempstim;
+		tempstim=conv2(double(stimulus(:,:,frame)),SU_filter,'same');
+		stimulus(:,:,frame)=tempstim.^2;
 	end
 end
 
 stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :);
 
-
+% might need to move this to before SU? NB
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
-
 stim   = double(stim);
 stim   = stim / fitmoviestats.span;
+%
 
 if strcmp(GLMType.nullpoint, 'mean')
     stim = stim - fitmoviestats.normmean;

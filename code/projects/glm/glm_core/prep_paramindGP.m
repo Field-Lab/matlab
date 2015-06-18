@@ -110,7 +110,10 @@ if ~GLMType.CONVEX
         paramind.inhibitoryfilter_index = union(paramind.space2,paramind.time2);
     end
     
-    
+    if GLMType.Subunits
+        paramind.SU = (convParams + 1):(convParams + 9);
+        % numParams = numParams + 9;
+    end
     
     paramind.convParams = convParams;
     paramind.convParams_ind = 1:convParams;

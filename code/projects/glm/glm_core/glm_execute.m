@@ -96,10 +96,19 @@ p_init     = .01* ones(paramind.paramcount,1);
 
 
 % ORGANIZE STIMULUS COVARIATES
+
+% NB SU
+% Initialize the subunits
+if GLMType.Subunits
+   SU_filter = ones(GLMPars.subunit_size);
+else
+   SU_filter = 0;
+end
+
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
-clear WN_STA center_coord
+[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
+clear WN_STA
 
 %
 if ~GLMType.CONVEX
@@ -189,6 +198,8 @@ if GLMType.CONVEX
     end
 end
 
+
+
 % NONCONVEX OPTMIZATION
 if ~GLMType.CONVEX
     bpf               = GLMPars.bins_per_frame;
@@ -222,10 +233,50 @@ if ~GLMType.CONVEX
     end
     filtertype = GLMType.stimfilter_mode;
     
-    [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
+    iterate = 1;
+while iterate < 2
+        
+        % Fit the "normal" parts of GLM: linear stim filter, PS filter,
+        % CP filter, etc
+        [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
             (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
+        
+        
+        if GLMType.Subunits
+            
+            % Unpack the linear pooling filter
+            stimsize.width  = size(fitmovie,1);
+            stimsize.height = size(fitmovie,2);
+            ROI_length      = GLMPars.stimfilter.ROI_length;
+            ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
+            pooling_filter = reshape(pstar(paramind.space1), [ROI_length, ROI_length]);
+            
+            % Set up the covariate vector
+            p_init_SU     = .01* ones(GLMPars.subunit_size^2,1);
+            SU_cov = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord); % maybe eventually should add other filters to be fit again here? eg coupling
+            convex_cov_SU = imresize(SU_cov, [9 bins],'nearest');
 
+            % Do optimization
+            [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_convex_optimizationfunction(p_SU,convex_cov_SU,home_spbins,t_bin),p_init_SU,optim_struct);
+            
+            % Unpack the subunit filter
+            SU_filter = reshape(pstar_SU(paramind.SU), [GLMPars.subunit_size, GLMPars.subunit_size]);
+            
+            % Remake the stimulus with the new subunit filter
+            [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
+            
+            % Then run the loop again
+            iterate = iterate + 1; % eventually replace this with some metric of change
+        else
+            % If not using subunits, just fit the "normal" GLM once and move on
+            iterate = 0;
+        end
+    end
+    
 end
+
+
+
 fittedGLM.fminunc_output = output;
 
 %% Unpack the output into filters
@@ -238,15 +289,15 @@ rawfit.objective_val     = fstar;
 clear linearfilters
 linearfilters.note = 'These terms, convolved with the covariates, make the log of the conditional intensity function';
 if isfield(paramind, 'MU')
-        linearfilters.TonicDrive.Filter      = pstar(paramind.MU);
-        linearfilters.TonicDrive.note        ='no convolution necessary, this term is part of the lcif for every bin';
+    linearfilters.TonicDrive.Filter      = pstar(paramind.MU);
+    linearfilters.TonicDrive.note        ='no convolution necessary, this term is part of the lcif for every bin';
 end
 if isfield(paramind, 'PS')
-        rawfit.ps_basis = ps_basis;
-        linearfilters.PostSpike.Filter     = ps_basis * pstar(paramind.PS);
-        linearfilters.PostSpike.startbin   = 1;  
-        linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
-        linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
+    rawfit.ps_basis = ps_basis;
+    linearfilters.PostSpike.Filter     = ps_basis * pstar(paramind.PS);
+    linearfilters.PostSpike.startbin   = 1;
+    linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
+    linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
 end
 % NBCoupling 05-28-14
 if isfield(paramind, 'CP')

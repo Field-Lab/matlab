@@ -30,7 +30,7 @@ GLMPars.stimfilter.note4 = 'Frames: Time duration of the fitted stim filter in f
 % NBsubunits eventually these will be parameters in a dual fitting type thing
 GLMPars.others.point_nonlinearity.increment_to_decrement=3;
 GLMPars.others.point_nonlinearity.scalar_raisedpower=2;
-GLMPars.subunits=ones(3,3);
+GLMPars.subunit_size = 3;
   
 
 
