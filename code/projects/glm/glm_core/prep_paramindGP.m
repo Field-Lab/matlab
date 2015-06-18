@@ -29,8 +29,8 @@ end
 % end NBCoupling
 
 if GLMType.contrast
-    paramind.C = (numParams + 1):(numParams+100);
-    numParams = numParams + 100;
+    paramind.C = (numParams + 1);%:(numParams+100);
+    numParams = numParams + 1;%00;
 end
 
 
