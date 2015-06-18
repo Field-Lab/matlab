@@ -18,10 +18,11 @@
 clear ; close all; clc;
 glm_settings{1}.type = 'PostSpikeFilter';
 glm_settings{1}.name =  'OFF';
+special_arg = 'Logistic_fixMU';
 metric_type.name  = 'crossval_BPS';
 metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 exps     = [1 2 3 4];
-score_aggregator(glm_settings,metric_type,exps)
+score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 %glm_settings = {};
 %glm_settings{1}.type = 'cone_model';
@@ -39,19 +40,25 @@ score_aggregator(glm_settings,metric_type,exps)
 
 
 
-function score_aggregator(glm_settings,metric_type,exps)
+function score_aggregator(glm_settings,metric_type,exps, special_arg)
 
 % Standard Bookkeeping
 BD   = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
 model.GLMType     = GLM_settings('default',glm_settings);
 model.fitname     = GLM_fitname(model.GLMType);
-savedir           = sprintf('%s/%s', BD.GLM_output_analysis, model.fitname);
+if exist('special_arg','var')  
+    if strcmp(special_arg, 'Logistic_fixMU')
+        model.fitname = sprintf('%s/Logistic_fixMU', model.fitname)
+    end
+end
+
+savedir = sprintf('%s/%s', BD.GLM_output_analysis, model.fitname)
 
 
 for i_exp = exps
     exp_nm  = allcells{i_exp}.exp_nm;
-    filename = sprintf('%s/%s_%s.mat', savedir,metric_type.name, exp_nm);
+    filename = sprintf('%s/%s_%s.mat', savedir,metric_type.name, exp_nm)
     expname = allcells{i_exp}.expname;
     
     
@@ -108,11 +115,17 @@ for i_exp = exps
                 % Compute metric if necessary
                 if exist(matfilename)
                     display(sprintf('LOADING %s %s', expname,cell_savename));
-                    eval(sprintf('load %s fittedGLM', matfilename));
+                    eval(sprintf('load %s', matfilename));
 
                     if strcmp(metric_type.name,'crossval_BPS')
                         rawscores(i_index) = fittedGLM.xvalperformance.logprob_glm_bpspike;
+                        if exist('special_arg','var')  
+                            if strcmp(special_arg, 'Logistic_fixMU')
+                                rawscores(i_index) = NL_xvalperformance.logprob_glm_withNL_bpspike;
+                            end
+                        end
                     end
+
                     if strcmp(metric_type.name,'crossval_fracvar_10msec')
                         smoothbins = 12;
                         rast_rec = fittedGLM.xvalperformance.rasters.recorded;
@@ -145,7 +158,7 @@ for i_exp = exps
             end
             if i_fit == 2
                 aggregated_scores.celltype{i_celltype}.scores_NSEM = rawscores;
-            end                
+            end
         end
     end
     aggregated_scores.timestamp       = datestr(clock);
@@ -155,5 +168,6 @@ end
 
 
 end
+
 
 
