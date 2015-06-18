@@ -291,17 +291,17 @@ if nargout  >= 3
 	ntb_oe = ntb_o +ntb_e;
      
     %%% SETUP DATARUN FOR LOADING THE MASTER DATA]	
-    datarun{1}.names.rrs_params_path  =[string_date, '/data000/data000.params'];
-	datarun{1}.names.rrs_sta_path     = [string_date, '/data000/data000.sta'];
+%     datarun{1}.names.rrs_params_path  =[string_date, '/data003/data003.params'];
+% 	datarun{1}.names.rrs_sta_path     = [string_date, '/data003/data003.sta'];
 
-% 	datarun{1}.names.rrs_params_path  = sprintf('%s/%s/%s.params', DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
-% 	datarun{1}.names.rrs_sta_path     = sprintf('%s/%s/%s.sta',    DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
+	datarun{1}.names.rrs_params_path  = sprintf('/Volumes/Analysis/%s/%s/%s.params',exp_nm,DirPars.dn_mas,DirPars.dn_mas);
+	datarun{1}.names.rrs_sta_path     = sprintf('/Volumes/Analysis/%s/%s/%s.sta', exp_nm,DirPars.dn_mas,DirPars.dn_mas);
 	datarun{1}.default_sta_fits       = 'vision';
 
 	%%% SETUP DATARUN FOR ENSLAVED (BW OR NSEM .. CAN'T CLASSIFY ON OWN DUE TO MOVIE ISSUES)
-    	datarun{2}.names.rrs_neurons_path = [string_date, '/data001-from-data000/data001-from-data000.neurons'];
+%     	datarun{2}.names.rrs_neurons_path = [string_date, '/data001-from-data000/data001-from-data000.neurons'];
 
-% 	datarun{2}.names.rrs_neurons_path = sprintf('%s/%s/%s.neurons', DirPars.analysisdir,DirPars.dn_slv,DirPars.dn_slv);
+	datarun{2}.names.rrs_neurons_path = sprintf('/Volumes/Analysis/%s/%s-cr/%s-cr.neurons', exp_nm,DirPars.dn_slv,DirPars.dn_slv);
 	if strcmp(map_type, 'mapEI')
         datarun{2}.names.map_path         = sprintf('%s/%s/cellmatch_mapEI_from_%s.txt',analysisdir,DirPars.dn_slv,DirPars.dn_mas);
     end
@@ -323,19 +323,19 @@ if nargout  >= 3
     %%% RELOAD MASTER WITH FULL 
     %%% HACK TO GET AROUND WEIRD CELL DROPPING IN LOAD_MAP or
     %%% MAP_CELL_TYPES
-        datarun_mas{1}.names.rrs_params_path  =[string_date, '/data000/data000.params'];
-	datarun_mas{1}.names.rrs_sta_path     = [string_date, '/data000/data000.sta'];
+%         datarun_mas{1}.names.rrs_params_path  =[string_date, '/data000/data000.params'];
+% 	datarun_mas{1}.names.rrs_sta_path     = [string_date, '/data000/data000.sta'];
 
-% 	datarun{1}.names.rrs_params_path  = sprintf('%s/%s/%s.params', DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
-% 	datarun{1}.names.rrs_sta_path     = sprintf('%s/%s/%s.sta',    DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
+	datarun_mas{1}.names.rrs_params_path  = sprintf('/Volumes/Analysis/%s/%s/%s.params', exp_nm, DirPars.dn_mas,DirPars.dn_mas);
+	datarun_mas{1}.names.rrs_sta_path     = sprintf('/Volumes/Analysis/%s/%s/%s.sta',   exp_nm,DirPars.dn_mas,DirPars.dn_mas);
 	datarun_mas{1}.default_sta_fits       = 'vision';
 
 	%%% SETUP DATARUN FOR ENSLAVED (BW OR NSEM .. CAN'T CLASSIFY ON OWN DUE TO MOVIE ISSUES)
-    	datarun_mas{2}.names.rrs_neurons_path = [string_date, '/data001-from-data000/data001-from-data000.neurons'];
+%     	datarun_mas{2}.names.rrs_neurons_path = [string_date, '/data001-from-data000/data001-from-data000.neurons'];
         
-%     datarun_mas.names.rrs_params_path  = sprintf('%s/%s/%s.params', DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
+%     datarun_mas{2}.names.rrs_params_path  = sprintf('/Volumes/Analysis/%s/%s/%s.params', exp_nm,DirPars.dn_mas,DirPars.dn_mas);
 % 	datarun_mas.names.rrs_sta_path     = sprintf('%s/%s/%s.sta',    DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
-%     datarun_mas.names.rrs_neurons_path = sprintf('%s/%s/%s.neurons', DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
+	datarun_mas{2}.names.rrs_neurons_path = sprintf('/Volumes/Analysis/%s/%s-cr/%s-cr.neurons', exp_nm,DirPars.dn_slv,DirPars.dn_slv);
 % 	datarun_mas.default_sta_fits       = 'vision';
     opt = struct('verbose',1,'load_params',1,'load_neurons',1);
 	datarun_mas = load_data(datarun_mas,opt);
