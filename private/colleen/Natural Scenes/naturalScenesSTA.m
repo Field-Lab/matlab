@@ -1,15 +1,33 @@
-cell_ids = [322 979 1336 1622 1641 1923 1924 1956 2182 2931 7431];
+cell_ids =  [3110 6286];
 date = '2013-08-19-6';
 type = 'nc6';
+% nc4 [322 650979 1336 1622 1641 1923 1924 1956 2182 2526 2931 7431]
+% nc6 [3110 6286]
+% Unknown [109 182 186 261 286 661 691 694 695 706 721 741 742 1072 1112 1156 1292 1445 1516 1668 1733 1999 2018 2105 2149 2272 2343 2372 2496 2528 2551 2751 2762 2944 3050 3196 3532 3533 3588 3635 3664 4175 4296 4308 4431 4793 4837 4925 4955 5076 5119 5135 5343 5363 5406 5446 5511 5731 6063 6256 6317 6365 6562 6591 6668 6706 6758 6781 6962 6966 6983 7007 7037 7084 7097 7309 7398 7447 7521 7563 7580 7613 7638] ]
+
 % load(['/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-09-27-3/NSEM_mapPRJ/organizedspikes_ONPar_', num2str(cell_id),'.mat'])
 % load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat';
-load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat';
+% load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat';
+
+%2012-08-09-3
+% NSEM_eye-120-3_0-3600 schemeA
+% load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat';
+
+%2012-09-27-3
+% NSEM_eye-120-3_0-3600 schemeA
+% load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat';
+
+% 2013-08-19-6 
+load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-long-v2/fitmovie_schemeA_8pix_Identity_8pix.mat';
+
+%2013-10-10-0
+% load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_FEM900FF_longrast/fitmovie_schemeB_8pix_Identity_8pix.mat';
 
 for id = 1:length(cell_ids)
     
         
     cell_id = cell_ids(id);
-    load(['/Users/colleen/Desktop//NSEM_blocked_spikes/', date, '/BlockSpikesandRasters/organizedspikes_', type, '_', num2str(cell_id),'.mat'])
+    load(['/Users/colleen/Desktop/NSEM_blocked_spikes/', date, '/BlockSpikesandRasters/organizedspikes_', type, '_', num2str(cell_id),'.mat'])
     fprintf('Computing STA for Cell %s... \n', num2str(cell_id))
     if id == 1
         frame_times_all_blocks = organizedspikes.block.t_frame;
@@ -20,7 +38,7 @@ for id = 1:length(cell_ids)
         % triggers = triggers(1:100:200000);
         
         % start frame times at 0 at the beginning of the block
-        
+        close 
         %% load movie
         num_frames = 30;
         movie_frames = NSEMmovie.fitmovie.movie_byblock;
@@ -28,11 +46,11 @@ for id = 1:length(cell_ids)
         
         
         % average movie
-        movie = zeros(80,40,7200);
+        movie = zeros(80,40,size(movie_frames{1}.matrix,3));
         for block = 1:size(movie_frames,2)
             movie = movie + double(movie_frames{block}.matrix)/256; % values between 0 and 1
         end
-        movie_avg = mean(movie,3)'/7200*30;
+        movie_avg = mean(movie,3)'/size(movie_frames{1}.matrix,3)*num_frames;
         
     end
 
