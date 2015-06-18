@@ -32,7 +32,6 @@ stimsize.width  = size(stimulus,1);
 stimsize.height = size(stimulus,2);
 stimsize.frames = size(stimulus,3);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
-stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :);
 
 %first subunits!
 if GLMType.Subunits
@@ -42,6 +41,7 @@ if GLMType.Subunits
 	end
 end
 
+stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :);
 
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
