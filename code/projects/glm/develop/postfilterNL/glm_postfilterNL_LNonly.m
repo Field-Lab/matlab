@@ -40,7 +40,7 @@
 %{
 
 clear; clc
-exps = [4]; stimtypes = [2 2]; celltypes = [1 2]; 
+exps = [4]; stimtypes = [1]; celltypes = [1 2]; 
 cell_subset = 'all'; postfilterNL.debug = false;
 baseGLM.settings = {};
 baseGLM.settings{1}.type = 'PostSpikeFilter';

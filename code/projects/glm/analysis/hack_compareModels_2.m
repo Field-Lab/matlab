@@ -1,3 +1,4 @@
+% Version 2 last hacked version that works cleanly
 % Version 1 use the NEW STATS
 % Version 0 only looked at fittedGLM and not other metrics 2015-03-18
 % Version 0 more compatible with shortlist types
@@ -18,7 +19,7 @@ comparison_name = 'WNvsNSEM_standardGLM_noPS';
 details.metric = 'BPS_divideUOP';
 %details.metric = 'BPS_divideCRM';
 %details.metric = 'FracVar_10msec'
-%details.metric = 'FracVar_25msec';
+%details.metric = 'FracVar_20msec';
 %details.metric = 'VSPKD_50msec';
 %details.metric = 'VSPKD_50msec_subtract';
 %details.metric = 'VSPKD_50msec_divide';
@@ -33,9 +34,15 @@ model{2}.fit_type = 'NSEM';
 model{2}.special_arg = '';
 %}
 
-%
-comparison_name = 'WNvsNSEM_standardGLM_noPS_LOG';
 
+comparison_name = 'WNvsNSEM_standardGLM_noPS_LOG';
+%details.metric = 'BPS_divideUOP';
+%details.metric = 'BPS_divideCRM';
+details.metric = 'FracVar_10msec'
+%details.metric = 'FracVar_20msec';
+%details.metric = 'VSPKD_50msec';
+%details.metric = 'VSPKD_50msec_subtract';
+%details.metric = 'VSPKD_50msec_divide';
 model{1}.settings{1}.type = 'PostSpikeFilter';
 model{1}.settings{1}.name =  'OFF';
 model{1}.fit_type = 'WN';
@@ -47,7 +54,6 @@ model{2}.fit_type = 'NSEM';
 model{2}.special_arg = '';
 model{1}.special_arg = 'Logistic_fixMU';
 model{2}.special_arg = 'Logistic_fixMU';
-%}
 %{
 comparison_name = 'WNvsNSEM_standardGLM';
 model{1}.settings= {};
@@ -58,45 +64,11 @@ details.metric = 'BPS_divideCRM'
 %}
 
 
-%{
-comparison_name = 'NSEM_noPS_improveNL';
-model{1}.settings{1}.type = 'PostSpikeFilter';
-model{1}.settings{1}.name =  'OFF';
-model{1}.fit_type = 'NSEM';
-model{1}.special_arg = '';
-model{2}.settings{1}.type = 'PostSpikeFilter';
-model{2}.settings{1}.name =  'OFF';
-model{2}.fit_type = 'NSEM';
-model{2}.special_arg = 'Logistic_fixMU';
-%}
-%{
-comparison_name = 'WN_noPS_improveNL';
-model{1}.settings{1}.type = 'PostSpikeFilter';
-model{1}.settings{1}.name =  'OFF';
-model{1}.fit_type = 'WN';
-model{1}.special_arg = '';
-model{2}.settings{1}.type = 'PostSpikeFilter';
-model{2}.settings{1}.name =  'OFF';
-model{2}.fit_type = 'WN';
-model{2}.special_arg = 'Logistic_fixMU';
-%}
-
 %details.cellselection_type = 'all';
-details.metric = 'BPS_divideUOP';
-%details.metric = 'BPS_divideCRM';
-%details.metric = 'FracVar_10msec';
-%details.metric = 'FracVar_25msec';
 details.cellselection_type = 'glmconv_4pct';
-%details.cellselection_type = 'all';
 details.celltypes = [1 2];
-details.exps = [1 2 3 4];
-%details.metric = 'BPS_divideUOP';
-%details.metric = 'BPS_divideCRM';
-%details.metric = 'FracVar_10msec'
-%details.metric = 'FracVar_25msec';
-%details.metric = 'VSPKD_50msec';
-%details.metric = 'VSPKD_50msec_subtract';
-%details.metric = 'VSPKD_50msec_divide';
+details.exps = [4];
+
 
 %% Bookkeeping
 BD   = NSEM_BaseDirectories;
@@ -129,17 +101,15 @@ if strcmp(model{1}.special_arg,'Logistic_fixMU')
 end
 
 
-
+model{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{1}.fitname);
 model{2}.GLMType         = GLM_settings('default',model{2}.settings);
 model{2}.fitname         = GLM_fitname(model{2}.GLMType);
-
+model{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{2}.fitname);
 
 if strcmp(model{2}.special_arg,'Logistic_fixMU')
     model{2}.fitname = sprintf('%s/Logistic_fixMU', model{2}.fitname);
 end
 
-model{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{1}.fitname);
-model{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{2}.fitname);
 %%% LOADING 
 
 i_exp = 1; i_celltype = 1;  i_cell = 1; i_stimtype = 1; i_model = 1;
@@ -229,7 +199,7 @@ for i_exp = details.exps
         if strcmp(details.metric,'BPS_divideUOP'),  underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end
         if strcmp(details.metric,'BPS_divideCRM'),  underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end  
         if strcmp(details.metric,'FracVar_10msec'), underlyingmetric_name = sprintf('crossval_fracvar_10msec_%s',exp_nm); end
-        if strcmp(details.metric,'FracVar_25msec'), underlyingmetric_name = sprintf('crossval_FracVar_25msec_%s',exp_nm); end
+        if strcmp(details.metric,'FracVar_20msec'), underlyingmetric_name = sprintf('crossval_fracvar_20msec_%s',exp_nm); end
         if strcmp(details.metric,'VSPKD_50msec'),   underlyingmetric_name = sprintf('crossval_victorspike_50msec_%s',exp_nm); end
         if strcmp(details.metric,'VSPKD_50msec_subtract'), underlyingmetric_name = sprintf('crossval_victorspike_50msec_%s',exp_nm); end
         if strcmp(details.metric,'VSPKD_50msec_divide'), underlyingmetric_name = sprintf('crossval_victorspike_50msec_%s',exp_nm); end
@@ -258,7 +228,7 @@ for i_exp = details.exps
                 finalscores = rawscores_subset./(normalizers_all.crm_bps(cell_subset{i_celltype}.subset_indices));
             elseif strcmp(details.metric,'FracVar_10msec')
                 finalscores = rawscores_subset;
-            elseif strcmp(details.metric,'FracVar_25msec')
+            elseif strcmp(details.metric,'FracVar_20msec')
                 finalscores = rawscores_subset;
             elseif strcmp(details.metric,'VSPKD_50msec')
                 finalscores = rawscores_subset;
@@ -295,7 +265,7 @@ end
 
 
 
-if strcmp(details.metric, 'FracVar_10msec') || strcmp(details.metric, 'FracVar_25msec')
+if strcmp(details.metric, 'FracVar_10msec') || strcmp(details.metric, 'FracVar_20msec')
     low_lim  = 0;
     high_lim = 1;
 end
