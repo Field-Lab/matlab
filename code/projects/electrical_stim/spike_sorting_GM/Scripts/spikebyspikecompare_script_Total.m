@@ -8,6 +8,10 @@
 % sorting output from the alogirhtm. The required variables are called 
 % sorted_diffStimRecElecs and sorted_sameStimRecElecs
 
+% The difference in this script from spikebyspikecompare_script is that the
+% percentage accuracy is always computed by the totalTrials, not the total
+% positive / negative trials
+
 %% load data
 diffRecStim = load(['/Volumes/Lab/Projects/electrical_stim/GM-sorting-'...
     'validation/2015-06-algorithm-results/sorted_diffStimRecElecs']);
@@ -79,10 +83,10 @@ for p = 1:size(sorted_diffStimRecElecs,2)
 end
 agreement =  sum(agreement(:)); 
 percentAgreement = agreement/totalTrials;
-percentFalsePositive = numFalsePositives/totalHumanNegatives;
-percentTrueNegative = numTrueNegatives/totalHumanNegatives;
-percentTruePositive = numTruePositives/totalHumanPositives;
-percentFalseNegatives = numFalseNegatives/totalHumanPositives;
+percentFalsePositive = numFalsePositives/totalTrials;
+percentTrueNegative = numTrueNegatives/totalTrials;
+percentTruePositive = numTruePositives/totalTrials;
+percentFalseNegatives = numFalseNegatives/totalTrials;
 all_vals = [percentAgreement; percentTrueNegative; percentFalsePositive;...
      percentTruePositive; percentFalseNegatives];
 
@@ -154,10 +158,10 @@ for p = 1:size(sorted_sameStimRecElecs,2)
 end
 agreement =  sum(agreement(:)); 
 percentAgreement = agreement/totalTrials;
-percentFalsePositive = numFalsePositives/totalHumanNegatives;
-percentTrueNegative = numTrueNegatives/totalHumanNegatives;
-percentTruePositive = numTruePositives/totalHumanPositives;
-percentFalseNegatives = numFalseNegatives/totalHumanPositives;
+percentFalsePositive = numFalsePositives/totalTrials;
+percentTrueNegative = numTrueNegatives/totalTrials;
+percentTruePositive = numTruePositives/totalTrials;
+percentFalseNegatives = numFalseNegatives/totalTrials;
 all_valsS = [percentAgreement; percentTrueNegative; percentFalsePositive;...
       percentTruePositive; percentFalseNegatives];
 errorsS = [1.96*sqrt(1/totalTrials*percentAgreement*(1-percentAgreement));...
@@ -167,6 +171,7 @@ errorsS = [1.96*sqrt(1/totalTrials*percentAgreement*(1-percentAgreement));...
     1.96*sqrt(1/totalHumanPositives*percentFalseNegatives*(1-percentFalseNegatives))];
 
 %% Plots
+
 groupnames = {'% agreement';'% true negative';'% false positive';...
     '% true positive';'% false negative'};
 bw_colormap = [100  27.1  0;
@@ -177,3 +182,4 @@ figure;
 barweb([all_vals all_valsS], [errors errorsS], [], ...
     groupnames, 'Spike by spike analysis of algorithm v. human', ...
     'error type', 'proportional agreement', bw_colormap, gridstatus, bw_legend);
+

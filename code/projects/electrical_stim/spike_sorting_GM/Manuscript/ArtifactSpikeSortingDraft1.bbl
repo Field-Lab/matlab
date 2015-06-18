@@ -1,0 +1,69 @@
+\begin{thebibliography}{10}
+
+\bibitem{paninski2004}
+Liam Paninski.
+\newblock Maximum likelihood estimation of cascade point-process neural
+  encoding models.
+\newblock {\em Network: Computation in Neural Systems}, 15(4):243--262,
+  November 2004.
+
+\bibitem{LewickiSS}
+M.~S. Lewicki.
+\newblock {A review of methods for spike sorting: the detection and
+  classification of neural action potentials}.
+\newblock {\em Network: Computation in Neural Systems}, 9(4):53--78, 1998.
+
+\bibitem{PillowShlens}
+Jonathan~W. Pillow, Jonathon Shlens, E.~J. Chichilnisky, and Eero~P.
+  Simoncelli.
+\newblock A model-based spike sorting algorithm for removing correlation
+  artifacts in multi-neuron recordings.
+\newblock {\em PLoS ONE}, 8(5):e62123, 05 2013.
+
+\bibitem{Ekanadham201447}
+Chaitanya Ekanadham, Daniel Tranchina, and Eero~P. Simoncelli.
+\newblock A unified framework and method for automatic neural spike
+  identification.
+\newblock {\em Journal of Neuroscience Methods}, 222(0):47 -- 55, 2014.
+
+\bibitem{Rey2015}
+Hernan~Gonzalo Rey, Carlos Pedreira, and Rodrigo~Quian Quiroga.
+\newblock Past, present and future of spike sorting techniques.
+\newblock {\em Brain Research Bulletin}, 2015.
+\newblock In press.
+
+\bibitem{EkanadhamTS11}
+Chaitanya Ekanadham, Daniel Tranchina, and Eero~P. Simoncelli.
+\newblock A blind sparse deconvolution method for neural spike identification.
+\newblock In John Shawe-Taylor, Richard~S. Zemel, Peter~L. Bartlett, Fernando
+  C.~N. Pereira, and Kilian~Q. Weinberger, editors, {\em NIPS}, pages
+  1440--1448, 2011.
+
+\bibitem{Hosmer1997}
+Hosmer W., Hosmer T., Le~Cessei S., and Lemeshow S.
+\newblock A comparison of goodness-of-fit tests for the logistic regression
+  model.
+\newblock {\em Stat Med}, 16(9):965--980, 1997.
+
+\bibitem{Gelman96posteriorpredictive}
+Andrew Gelman, Xiao li~Meng, and Hal Stern.
+\newblock Posterior predictive assessment of model fitness via realized
+  discrepancies.
+\newblock {\em Statistica Sinica}, pages 733--807, 1996.
+
+\bibitem{Box1980}
+George~E.P. Box.
+\newblock Sampling and bayes' inference in scientific modeling and robustness.
+\newblock {\em Journal of the Royal Statistical Society, Series A},
+  143:383--430, 1980.
+
+\bibitem{Lauren2014}
+Lauren~E. Grosberg, Paweł Hottowy, Lauren~H. Jepson, Shinya~Ito abd Frederick
+  Kellison-Linn, Alexander Sher, and Władysław~Dabrowski abd Alan M.
+  Litke~abd E.J.~Chichilnisky.
+\newblock Axon activation with epiretinal stimulation in isolated primate
+  retina.
+\newblock In {\em The eye and the chip}, 2014.
+\newblock Conference Poster.
+
+\end{thebibliography}
