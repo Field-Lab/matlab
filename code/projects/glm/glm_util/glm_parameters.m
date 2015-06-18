@@ -11,7 +11,7 @@ GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false;
 GLMT.CouplingFilters = false;
 
 % Use this to do a quick check that things are right
-GLMT.debug      = false;
+GLMT.debug      = true;
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
