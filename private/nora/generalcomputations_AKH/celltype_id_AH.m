@@ -78,6 +78,40 @@ if strcmp(string_celltype , 'SBC')
     end
 end
 
+if strcmp(string_celltype , 'On Large')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'ON Large') ||  strcmp(name, 'On Large') ...
+             
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+if strcmp(string_celltype , 'Off Large')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'OFF Large') ||  strcmp(name, 'Off Large') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+if strcmp(string_celltype , 'crap')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'crap') ||  strcmp(name, 'Crap')   
+            match(i_type) = 1;
+            break
+        end
+    end
+end
 if strcmp(string_celltype , 'Unclassified')
     
     for i_type = 1:types

@@ -1,4 +1,4 @@
-% function      prep_BlockSpikeandRasters  
+% function  cd    prep_BlockSpikeandRasters  
 %               2013-12-04  AKHeitman (previously EDOI) 
 %
 %               
@@ -51,8 +51,11 @@ function prep_BlockSpikeandRasters(string_date, slv_type, map_type)
 %exp_nm = '2012-09-27-3'; fit_type = 'BW'; map_type = 'mapPRJ'; 
 exp_nm = string_date;
 boolean_debug = false;
-CTYPE = {'On Parasol','Off Parasol','On Midget','Off Midget', 'SBC', 'nc5', 'nc4', 'nc6', 'Unclassified'}; %
-CTYPE_sname = { 'ONPar' , 'OFFPar','ONMid','OFFMid','SBC', 'nc5', 'nc6', 'Unknown'};  % short name
+% CTYPE = {'On Parasol','Off Parasol','On Midget','Off Midget', 'SBC', 'nc5', 'nc4', 'nc6', 'Unclassified'}; %
+CTYPE = {'On Large', 'Off Large', 'nc5', 'nc4', 'nc6', 'Unclassified'}; %
+
+% CTYPE_sname = { 'ONPar' , 'OFFPar','ONMid','OFFMid','SBC', 'nc5', 'nc6', 'Unknown'};  % short name
+CTYPE_sname = {'ONLarge', 'OFFLarge', 'nc5','nc4', 'nc6', 'Unknown'};  % short name
 
 %%% Just or debugging
 %{ 
