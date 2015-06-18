@@ -29,23 +29,25 @@ dt = bin_duration;
 spt = spikebins;
 
 f_eval = 0;
+hessbase = zeros(size(COV));
+
 % Find Conditional Intensity and its log
 for i = 1:length(p)
     lcif = p * COV(i,:);
     cif  = exp(lcif);
+end
     
     % Evaluate the objective function (monotonic in log-likelihood)
     f_eval = f_eval + sum( lcif(spt) ) - dt * sum(cif);
-end
-
-% Evaluate the gradient
-g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
-
-% Evaluate the hessian
-hessbase = zeros(size(COV));
-for i_vec = 1:size(COV,1)
+    
+    % Evaluate the gradient
+    g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
+    
+    % Evaluate the hessian
     hessbase(i_vec,:) = sqrt(cif) .* COV(i_vec,:) ;
 end
+
+
 H_eval = -dt * (hessbase * hessbase');
 
 
