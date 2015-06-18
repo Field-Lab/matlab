@@ -1,4 +1,4 @@
-% Version 1 use the NEW STATS
+% Version 1 Works great!  2015-06-17
 % Version 0 only looked at fittedGLM and not other metrics 2015-03-18
 % Version 0 more compatible with shortlist types
 % hack_comparemodels
@@ -13,46 +13,24 @@
 clear ; close all; clc;
 
 % Dictate comparison plot
-%{
+%
 comparison_name = 'WNvsNSEM_standardGLM_noPS';
-details.metric = 'BPS_divideUOP';
 %details.metric = 'BPS_divideCRM';
 %details.metric = 'FracVar_10msec'
-%details.metric = 'FracVar_20msec';
+details.metric = 'FracVar_20msec';
 %details.metric = 'VSPKD_50msec';
 %details.metric = 'VSPKD_50msec_subtract';
 %details.metric = 'VSPKD_50msec_divide';
 model{1}.settings{1}.type = 'PostSpikeFilter';
 model{1}.settings{1}.name =  'OFF';
 model{1}.fit_type = 'WN';
-
-model{1}.special_arg = '';
+model{1}.special_arg = Logistic_fixMU';
 model{2}.settings{1}.type = 'PostSpikeFilter';
 model{2}.settings{1}.name =  'OFF';
 model{2}.fit_type = 'NSEM';
-model{2}.special_arg = '';
+model{2}.special_arg = 'Logistic_fixMU';
 %}
 
-
-comparison_name = 'WNvsNSEM_standardGLM_noPS_LOG';
-details.metric = 'BPS_divideUOP';
-%details.metric = 'BPS_divideCRM';
-%details.metric = 'FracVar_10msec'
-%details.metric = 'FracVar_20msec';
-%details.metric = 'VSPKD_50msec';
-%details.metric = 'VSPKD_50msec_subtract';
-%details.metric = 'VSPKD_50msec_divide';
-model{1}.settings{1}.type = 'PostSpikeFilter';
-model{1}.settings{1}.name =  'OFF';
-model{1}.fit_type = 'WN';
-
-model{1}.special_arg = '';
-model{2}.settings{1}.type = 'PostSpikeFilter';
-model{2}.settings{1}.name =  'OFF';
-model{2}.fit_type = 'NSEM';
-model{2}.special_arg = '';
-model{1}.special_arg = 'Logistic_fixMU';
-model{2}.special_arg = 'Logistic_fixMU';
 %{
 comparison_name = 'WNvsNSEM_standardGLM';
 model{1}.settings= {};
@@ -94,20 +72,10 @@ clear expstring celltypestring
 
 model{1}.GLMType         = GLM_settings('default',model{1}.settings);
 model{1}.fitname         = GLM_fitname(model{1}.GLMType);
-
-if strcmp(model{1}.special_arg,'Logistic_fixMU')
-    model{1}.fitname = sprintf('%s/Logistic_fixMU', model{1}.fitname);
-end
-
-
 model{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{1}.fitname);
 model{2}.GLMType         = GLM_settings('default',model{2}.settings);
 model{2}.fitname         = GLM_fitname(model{2}.GLMType);
 model{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, model{2}.fitname);
-
-if strcmp(model{2}.special_arg,'Logistic_fixMU')
-    model{2}.fitname = sprintf('%s/Logistic_fixMU', model{2}.fitname);
-end
 
 %%% LOADING 
 
