@@ -167,8 +167,10 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             GLMType.Subunits = true;
         end
         
+        if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
+            GLMType.contrast = true;
+        end
 
-        
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_shiftmean';
