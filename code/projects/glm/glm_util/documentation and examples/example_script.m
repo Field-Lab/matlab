@@ -1,3 +1,13 @@
+%% Add paths
+
+% Change this to your github repo
+repo_location = 'Documents/MATLAB'; 
+
+% Then these will work
+javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar')
+addpath(genpath([repo_location '/matlab/code/lab']))
+addpath(genpath([repo_location '/matlab/code/projects/glm']))
+
 %% Fit the GLM to a white noise run
 alex_test = glm_fit_from_WN(800, '2015-03-09-2/d05-27-norefit/data008-from-d05-d27/data008-from-d05-d27', 'BW-10-8-0.48-11111-32x32');
 

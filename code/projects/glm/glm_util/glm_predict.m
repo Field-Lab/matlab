@@ -11,7 +11,8 @@ function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 % OPTIONAL
 % testspikes, which should be in cells, with each cell a repeat
 %   if no testspikes, no bits per spike will be calculated
-%   in SECONDS
+%   in SECONDS FROM BEGINNING OF REPEAT. This means you have to deal with
+%   triggers, etc, BEFORE using in this function
 % neighborspikes, if using coupling, same format as testspikes
 % predict, set to 'false' if you dont want to make rasters, you just want
 %   to calculate BPS for testspikes
