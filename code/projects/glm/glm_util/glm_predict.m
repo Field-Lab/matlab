@@ -5,12 +5,17 @@ function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 % INPUTS
 % 
 % fittedGLM structure
-% testmovie should be in stim size x time (NO RGB!)
+% testmovie should be in stim size x time (NO RGB!) and SAME STIXEL size as
+%   the original fitmovie. It also gets rescaled, so don't worry about
+%   scaling.
 % OPTIONAL
 % testspikes, which should be in cells, with each cell a repeat
 %   if no testspikes, no bits per spike will be calculated
-% neighborspikes, if using coupling
-% predict, set to 'false' if you dont want to make rasters
+%   in SECONDS FROM BEGINNING OF REPEAT. This means you have to deal with
+%   triggers, etc, BEFORE using in this function
+% neighborspikes, if using coupling, same format as testspikes
+% predict, set to 'false' if you dont want to make rasters, you just want
+%   to calculate BPS for testspikes
 % 
 
 % Parse optional input 
@@ -29,7 +34,7 @@ clear p
 
 bpf               = fittedGLM.bins_per_frame;
 
-try params.trials     = length(testspikes); catch; end % If there are testspikes, it will use that number of trials
+if iscell(testspikes); params.trials     = length(testspikes); end % If there are testspikes, it will use that number of trials
 params.bindur     = fittedGLM.t_bin;
 params.bins       = fittedGLM.bins_per_frame *size(testmovie,3);
 params.frames     = size(testmovie,3);
@@ -69,7 +74,9 @@ end
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
-[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, testmovie,fittedGLM.inputstats,center_coord) ;
+inputstats.mu_avgIperpix = mean(testmovie(:));
+inputstats.range = max(testmovie(:))-min(testmovie(:));
+[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, testmovie,inputstats,center_coord) ;
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
 

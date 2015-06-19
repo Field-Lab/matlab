@@ -1,6 +1,6 @@
 function plotfilters(fittedGLM)
 
-% Plots the GLM filters
+% Plots the GLM filters using the output from glm_fit
 
 GLMType = fittedGLM.GLMType;
 dt = fittedGLM.t_bin;
