@@ -71,7 +71,7 @@ for i=1
 end
 clear data nmdata
 
-
+addpath(genpath('/Users/alexth/test4/matlab/private/nora/'))
 
 data='008';
 starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
@@ -113,7 +113,7 @@ glm = glm_fit_from_WN(cells, starun, wn_movie_name);
 plotfilters(glm)
 
 
-stix_size=16;
+stix_size=10;
 stim=zeros(320/stix_size,320/stix_size, 3600);
 cnt_i=1;
 for i=1:stix_size:320
@@ -126,6 +126,17 @@ for i=1:stix_size:320
     cnt_i=cnt_i+1;
 end
 
-glm_prediction = glm_predict(glm, stim);
+stim1 = imresize(my_movie,1/stix_size, 'method','box');
+a = stim1 - stim;
+mean(a(:))
 
-plotraster(xval, fittedGLM)
+stim1 = permute(stim1,[2,1,3]);
+
+glm_prediction = glm_predict(glm, stim1);
+nnz(glm_prediction.rasters.glm_sim)
+
+
+xval = struct;
+xval.rasters = '';
+plotraster(xval, glm)
+
