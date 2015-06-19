@@ -6,7 +6,7 @@
 
 % AKHEITMAN  Started: 2015-06-16, Closed: 2015-06-17
 % CALLS: GLM_settings, GLM_fitname NSEM_BaseDirectories cell_list
-% Version 3 Confirmed to work robustly
+% Version 3 Has a way to handle post-filter NL  
 % Version 2 Function calling scheme.
 % Version 1 has cleaner auto-update and integrated viktor spike
 % Version 0 works.. not sure how auto-update is going though 2015-06-16
@@ -24,9 +24,11 @@ special_arg = 'Logistic_fixMU';
 %metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 %metric_type.name      = 'crossval_fracvar_10msec';
 %metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
+%metric_type.name      = 'crossval_fracvar_25msec';
+%metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
 metric_type.name       = 'crossval_victorspike_50msec';
 metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
-exps     = [2];
+exps     = [3];
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 %glm_settings = {};
@@ -129,31 +131,55 @@ for i_exp = exps
                             end
                         end
                     end
-
+                    
                     if strcmp(metric_type.name,'crossval_fracvar_10msec')
                         smoothbins = 12;
                         rast_rec = fittedGLM.xvalperformance.rasters.recorded;
                         rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
+                        if exist('special_arg','var')  
+                            if strcmp(special_arg, 'Logistic_fixMU')
+                                clear rast_sim
+                                display('loading_NLalternate_rast')
+                                rast_sim = NL_xvalperformance.rasters.glm_withNL;
+                            end
+                        end
                         [crossval_score] = rawcrossval_performance_fracvar(rast_sim,rast_rec,smoothbins);
                         rawscores(i_index) = crossval_score.metric_raw;
                     end
+                    if strcmp(metric_type.name,'crossval_fracvar_25msec')
+                        smoothbins = 30;
+                        rast_rec = fittedGLM.xvalperformance.rasters.recorded;
+                        rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
+                        if exist('special_arg','var')  
+                            if strcmp(special_arg, 'Logistic_fixMU')
+                                clear rast_sim
+                                display('loading_NLalternate_rast')
+                                rast_sim = NL_xvalperformance.rasters.glm_withNL;
+                            end
+                        end
+                        [crossval_score] = rawcrossval_performance_fracvar(rast_sim,rast_rec,smoothbins);
+                        rawscores(i_index) = crossval_score.metric_raw;
+                    end
+                    
+                    
+                    
+                    
                     if strcmp(metric_type.name,'crossval_victorspike_50msec')
                         timescale = .05;
                         bindur = fittedGLM.t_bin;
                         rast_rec = fittedGLM.xvalperformance.rasters.recorded;
                         rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
+                        if exist('special_arg','var')  
+                            if strcmp(special_arg, 'Logistic_fixMU')
+                                clear rast_sim
+                                display('loading_NLalternate_rast')
+                                rast_sim = NL_xvalperformance.rasters.glm_withNL;
+                            end
+                        end
                         [crossval_score] = rawcrossval_performance_ViktorSpike(rast_sim,rast_rec,timescale, bindur);
                         rawscores(i_index) = crossval_score.metric_raw;
                     end
-                    if strcmp(metric_type.name,'crossval_victorspike_10msec')
-                        timescale = .01;
-                        bindur = fittedGLM.t_bin;
-                        rast_rec = fittedGLM.xvalperformance.rasters.recorded;
-                        rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
-                        [crossval_score] = rawcrossval_performance_ViktorSpike(rast_sim,rast_rec,timescale, bindur);
-                        rawscores(i_index) = crossval_score.metric_raw;
-                    end
-                    
+                   
                 end
             end
 

@@ -39,12 +39,9 @@ comparison_name = 'WNvsNSEM_standardGLM_noPS_LOG';
 model{1}.settings{1}.type = 'PostSpikeFilter';
 model{1}.settings{1}.name =  'OFF';
 model{1}.fit_type = 'WN';
-
-model{1}.special_arg = '';
 model{2}.settings{1}.type = 'PostSpikeFilter';
 model{2}.settings{1}.name =  'OFF';
 model{2}.fit_type = 'NSEM';
-model{2}.special_arg = '';
 model{1}.special_arg = 'Logistic_fixMU';
 model{2}.special_arg = 'Logistic_fixMU';
 %}
@@ -80,23 +77,24 @@ model{2}.settings{1}.name =  'OFF';
 model{2}.fit_type = 'WN';
 model{2}.special_arg = 'Logistic_fixMU';
 %}
-
-%details.cellselection_type = 'all';
-details.metric = 'BPS_divideUOP';
-%details.metric = 'BPS_divideCRM';
-%details.metric = 'FracVar_10msec';
-%details.metric = 'FracVar_25msec';
-details.cellselection_type = 'glmconv_4pct';
-%details.cellselection_type = 'all';
-details.celltypes = [1 2];
-details.exps = [1 2 3 4];
 %details.metric = 'BPS_divideUOP';
 %details.metric = 'BPS_divideCRM';
 %details.metric = 'FracVar_10msec'
 %details.metric = 'FracVar_25msec';
-%details.metric = 'VSPKD_50msec';
+details.metric = 'VSPKD_50msec';
 %details.metric = 'VSPKD_50msec_subtract';
 %details.metric = 'VSPKD_50msec_divide';
+%details.cellselection_type = 'all';
+%details.metric = 'BPS_divideUOP';
+%details.metric = 'BPS_divideCRM';
+%details.metric = 'FracVar_10msec';
+%details.metric = 'FracVar_25msec';
+%details.metric = 'FracVar_10msec_ODDEVEN_normdivide';
+details.cellselection_type = 'glmconv_4pct';
+details.cellselection_type = 'all';
+details.celltypes = [1 2];
+details.exps = [2 3 4 1];
+
 
 %% Bookkeeping
 BD   = NSEM_BaseDirectories;
@@ -215,6 +213,11 @@ for i_exp = details.exps
         normalizer = 'vspkd_msec50'
         eval(sprintf('load  %s/Raster_Metrics/%s_%s.mat raster_scores', BD.Cell_Selection, normalizer, exp_nm));
         clear normalizer
+    elseif strcmp(details.metric,'FracVar_10msec_ODDEVEN_normdivide')
+        neednormalization = true;
+        normalizer = 'fracvar_10msec_ODDEVEN';
+        eval(sprintf('load  %s/Raster_Metrics/%s_%s.mat raster_scores', BD.Cell_Selection, normalizer, exp_nm));
+        clear normalizer
     else
         neednormalization = false;
     end
@@ -229,6 +232,7 @@ for i_exp = details.exps
         if strcmp(details.metric,'BPS_divideUOP'),  underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end
         if strcmp(details.metric,'BPS_divideCRM'),  underlyingmetric_name = sprintf('crossval_BPS_%s',exp_nm); end  
         if strcmp(details.metric,'FracVar_10msec'), underlyingmetric_name = sprintf('crossval_fracvar_10msec_%s',exp_nm); end
+        if strcmp(details.metric,'FracVar_10msec_ODDEVEN_normdivide'), underlyingmetric_name = sprintf('crossval_fracvar_10msec_%s',exp_nm); end
         if strcmp(details.metric,'FracVar_25msec'), underlyingmetric_name = sprintf('crossval_FracVar_25msec_%s',exp_nm); end
         if strcmp(details.metric,'VSPKD_50msec'),   underlyingmetric_name = sprintf('crossval_victorspike_50msec_%s',exp_nm); end
         if strcmp(details.metric,'VSPKD_50msec_subtract'), underlyingmetric_name = sprintf('crossval_victorspike_50msec_%s',exp_nm); end
@@ -258,6 +262,8 @@ for i_exp = details.exps
                 finalscores = rawscores_subset./(normalizers_all.crm_bps(cell_subset{i_celltype}.subset_indices));
             elseif strcmp(details.metric,'FracVar_10msec')
                 finalscores = rawscores_subset;
+            elseif strcmp(details.metric,'FracVar_10msec_ODDEVEN_normdivide')
+                finalscores = (rawscores_subset ./ (normalizers_all(cell_subset{i_celltype}.subset_indices)));
             elseif strcmp(details.metric,'FracVar_25msec')
                 finalscores = rawscores_subset;
             elseif strcmp(details.metric,'VSPKD_50msec')
@@ -296,6 +302,10 @@ end
 
 
 if strcmp(details.metric, 'FracVar_10msec') || strcmp(details.metric, 'FracVar_25msec')
+    low_lim  = 0;
+    high_lim = 1;
+end
+if strcmp(details.metric,'FracVar_10msec_ODDEVEN_normdivide')
     low_lim  = 0;
     high_lim = 1;
 end

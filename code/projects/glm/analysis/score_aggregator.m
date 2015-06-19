@@ -6,6 +6,7 @@
 
 % AKHEITMAN  Started: 2015-06-16, Closed: 2015-06-17
 % CALLS: GLM_settings, GLM_fitname NSEM_BaseDirectories cell_list
+% Version 3 Has a way to handle post-filter NL  
 % Version 2 Function calling scheme.
 % Version 1 has cleaner auto-update and integrated viktor spike
 % Version 0 works.. not sure how auto-update is going though 2015-06-16
@@ -23,11 +24,11 @@ special_arg = 'Logistic_fixMU';
 %metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 %metric_type.name      = 'crossval_fracvar_10msec';
 %metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
-metric_type.name      = 'crossval_fracvar_25msec';
-metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
-%metric_type.name       = 'crossval_victorspike_50msec';
-%metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
-exps     = [1 2 3 4];
+%metric_type.name      = 'crossval_fracvar_25msec';
+%metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
+metric_type.name       = 'crossval_victorspike_50msec';
+metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
+exps     = [3];
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 %glm_settings = {};
@@ -46,7 +47,6 @@ score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 
 function score_aggregator(glm_settings,metric_type,exps, special_arg)
-
 % Standard Bookkeeping
 BD   = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
