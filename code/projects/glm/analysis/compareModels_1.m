@@ -5,8 +5,6 @@
 % GLM_settings, GLM_fitname NSEM_BaseDirectories cell_list
 % Standard Bookkeeping
 
-% Version_2  Works! Automatically plots 2 versions (detailed, summary)
-%            over all experiments and single populations
 % Version_1  Cleaner Calling.. automatically plot everything
 % Version_0  Works, produces a single plot.  2015-06-18
 %  Continuation of hack_comparemodels_2
@@ -15,17 +13,15 @@
 % Calling Sequences
 %{
 clear ; close all; clc;
-%comparison_name = 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'; 
-%metrics = [1 2 3 4 5 6]; 
-comparison_name = 'WNvsNSEM-standardGLM'; 
-metrics = [1 3 4 6];
+comparison_name = 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'; 
+metrics = [6 2 3 4]; 
 cellselection_type = 'glmconv4pct';
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
-    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
+    if i_metric == 2, metric = 'FracVar_normdivide'; end
+    if i_metric == 3, metric = 'VSPKD50msec_normdivide'; end
     if i_metric == 4, metric = 'FracVar10msec'; end
-    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
+    if i_metric == 4, metric = 'VSPKD50msec_normsubstract'; end    
     if i_metric == 6, metric = 'BPS_divideUOP'; end
     compareModels(comparison_name, metric,cellselection_type)
 end
@@ -47,16 +43,6 @@ plotparams.exps = exps;
 plotparams.celltypes = celltypes;
 
 % Unpack comparison_name
-if strcmp(comparison_name, 'WNvsNSEM-standardGLM')
-    models{1}.settings = {};
-    models{1}.fit_type = 'WN';
-    models{2}.settings = {};
-    models{2}.fit_type = 'NSEM';
-    plotparams.xlabel             = 'White Noise';
-    plotparams.ylabel             = 'Natural Scenes';
-    plotparams.title_comparison   = 'Standard GLM (no coupling)';
-    plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, no coupling)';
-end
 if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
@@ -69,7 +55,6 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     plotparams.xlabel             = 'White Noise';
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'LN with Logistic';
-    plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
 end
 % Unpack metric
 switch metric
@@ -115,7 +100,6 @@ switch metric
         normalize.doit = false;
         plotparams.low_lim = 0;
         plotparams.high_lim = 2;
-        plotparams.title_metric = 'Victor Spike (50msec)';
   
     case 'VSPKD50msec_normsubtract'
         rawmetric_name = 'crossval_victorspike_50msec';
@@ -125,7 +109,6 @@ switch metric
         normalize.operation = 'subtract';
         plotparams.low_lim = 0;
         plotparams.high_lim = 1;
-        plotparams.title_metric = 'NormSubtract Victor Spike (50msec)';
         
     case 'VSPKD50msec_normdivide'
         rawmetric_name = 'crossval_victorspike_50msec';
@@ -135,7 +118,6 @@ switch metric
         normalize.operation = 'divide';
         plotparams.low_lim = 1;
         plotparams.high_lim = 2;
-        plotparams.title_metric = 'Normalized Victor Spike (50msec)';
 end
 plotparams.title = sprintf('%s: %s', plotparams.title_metric, plotparams.title_comparison);
 %% Bookkeeping
@@ -145,7 +127,7 @@ if strcmp(cellselection_type, 'glmconv4pct')
     eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection)); 
 end
 currentdir = pwd;
-savedir = sprintf('%s/Plots/ModelComparisons/%s/%s',BD.GLM_output_analysis,comparison_name,metric);
+savedir = sprintf('%s/Plots/ModelComparisons/%s',BD.GLM_output_analysis,comparison_name);
 if ~exist(savedir,'dir'), mkdir(savedir); end
 
 savename = sprintf('%s_%s_%s',comparison_name,metric,cellselection_type);
@@ -153,12 +135,12 @@ clear expstring celltypestring
 
 models{1}.GLMType         = GLM_settings('default',models{1}.settings);
 models{1}.fitname         = GLM_fitname(models{1}.GLMType);
-if isfield(models{1}, 'postfilterNL') && strcmp(models{1}.postfilerNL,'Logistic_fixMU')
+if strcmp(models{1}.postfilerNL,'Logistic_fixMU')
     models{1}.fitname = sprintf('%s/Logistic_fixMU', models{1}.fitname);
 end
 models{2}.GLMType         = GLM_settings('default',models{2}.settings);
 models{2}.fitname         = GLM_fitname(models{2}.GLMType);
-if isfield(models{1}, 'postfilterNL') && strcmp(models{2}.postfilerNL,'Logistic_fixMU')
+if strcmp(models{2}.postfilerNL,'Logistic_fixMU')
     models{2}.fitname = sprintf('%s/Logistic_fixMU', models{2}.fitname);
 end
 
@@ -168,8 +150,12 @@ models{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{2}.f
 %%% LOADING 
 model_comparison.byexpnm         = allcells;
 model_comparison.comparison_name = comparison_name;
-model_comparison.metric          = metric;
-model_comparison.models          = models;
+model_comparison.notes.n1        = 'Use Normalization from ';
+model_comparison.notes.n2        = 'UOP: unconditioned optimal performance';
+model_comparison.notes.n3        = 'CRM: conditioned rate model';
+model_comparison.notes.n4        = 'BPS: Bits Per Spike';
+model_comparison.notes.n5        = 'LPPS: logarithmic probability per second';
+model_comparison.notes.n6        = 'GLM: Generalized Linear Model';
 model_comparison.timestamp       = datestr(clock);
 model_comparison.code_name       = mfilename('fullpath');
 %% GET CELLS SQUARED UP
@@ -326,7 +312,7 @@ for i_exp = exps
     % Put scores structure back in
     model_comparison.byexpnm{i_exp}.scores_bycelltype =  scores_bycelltype;
 end
-eval(sprintf('save %s/data_%s.mat model_comparison outputnotes', savedir, savename))
+eval(sprintf('save %s/%s.mat model_comparison outputnotes', savedir, savename))
 
 %% plotting section
 
@@ -342,12 +328,12 @@ printname_base = sprintf('%s_%s',savename,expstring);
 % hack to prevent pdf printing error
 homedir = pwd;
 
-printname_notext = sprintf('%s_NOTEXT',printname_base);
-printname_fullplot = sprintf('%s_FULLPLOTS',printname_base);
+printname_notext = sprintf('%s_NOTEXT',printname_base)
+printname_fullplot = sprintf('%s_FULLPLOTS',printname_base)
 
 cd(savedir)
-subR_plotcomparison_nolabels(model_comparison,plotparams,printname_notext);
-subR_plotcomparison_fullplots(model_comparison,plotparams,printname_fullplot);
+subR_plotcomparison_nolabels(model_comparison,plotparams,printname_notext)
+subR_plotcomparison_fullplots(model_comparison,plotparams,printname_fullplot)
 cd(homedir)
 
 % hack to get plot without the 2013-10-10-0
@@ -452,23 +438,6 @@ function subR_plotcomparison_fullplots(model_comparison,plotparams,printname)
 % plot_entries
 
 clf
-subplot(3,1,1); axis off
-delta = .15;
-c=0;   text(-.1, 1-delta*c,sprintf('PURPOSE: %s', plotparams.purpose ));
-c=c+1; text(-.1, 1-delta*c,sprintf('Metric: %s,  Comparison Title: %s',...
-    model_comparison.metric, model_comparison.comparison_name ),'interpreter','none');
-c=c+1; text(-.1, 1-delta*c,sprintf('X-axis: %s Fit: %s',...
-    model_comparison.models{1}.fit_type,model_comparison.models{1}.fitname),'interpreter','none');
-c=c+1; text(-.1, 1-delta*c,sprintf('Y-axis: %s Fit: %s',...
-    model_comparison.models{2}.fit_type,model_comparison.models{2}.fitname),'interpreter','none');
-c=c+1; text(-.1, 1-delta*c,...
-    'Outer Dot Color: { (Red: 2012-08-09-3), (Green: 2012-09-27-3), (Blue: 2013-08-19-6), (Cyan: 2013-10-10-0) }','interpreter','none');
-c=c+1; text(-.1, 1-delta*c,...
-    'Inner Dot Color: { (White: On Parasol), (Black: Off Parasol) }','interpreter','none');
-c=c+1; text(-.1, 1-delta*c,sprintf('Plot Date %s',datestr(clock)));
-c=c+1; text(-.1, 1-delta*c,sprintf('Mfile: %s', mfilename('fullpath')),'interpreter','none' );
-    
-
 
 colors = {'r.','g.','b.','c.'};
 MS_A = 10;
