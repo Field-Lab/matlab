@@ -1,6 +1,6 @@
 % runGLM
 
-load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/NSEM_mapPRJ/organizedspikes_ONPar_5134.mat')
+load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/NSEM_mapPRJ/organizedspikes_crap_2748.mat')
 
 %2012-08-09-3
 % NSEM_eye-120-3_0-3600 schemeA
