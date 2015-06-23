@@ -140,7 +140,7 @@ for e=1:3
         end
     end
    cd('/Users/gomena/Research/GIT/ChichilniskyGIT/matlab/code/projects/electrical_stim/spike_sorting_GM/Manuscript/FiguresMethods')
-   print(titlefig{e},'-deps')
+   print(titlefig{e},'-depsc2')
    print(titlefig{e},'-djpeg')
 end
 
@@ -150,7 +150,7 @@ titlefig={'ArtTraceS1','ArtTraceS2','ArtTraceNS'};
 
 
 for e=1:3
-     figure(e)
+     figure(e+3)
     title(titles{e},'fontsize',18)
      
         lambda=linspace(0,1,19);
@@ -167,6 +167,6 @@ for e=1:3
         
             end
    cd('/Users/gomena/Research/GIT/ChichilniskyGIT/matlab/code/projects/electrical_stim/spike_sorting_GM/Manuscript/FiguresMethods')
-   print(titlefig{e},'-deps')
+   print(titlefig{e},'-depsc2')
    print(titlefig{e},'-djpeg')
 end

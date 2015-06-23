@@ -54,7 +54,7 @@
 \newcommand{\Om}{\Omega}
 \newcommand{\gep}{\varepsilon}
 
-\graphicspath{ {./Figures/} }
+\graphicspath{ {./FiguresMethods/} }
 \begin{document}
 
 
@@ -66,7 +66,7 @@
 \bigskip
 \abstract{We developed an algorithm that successfully automatizes spike sorting with electrical artifact. In the following, the method is succinctly described and results are shown for 56 datasets from electrical stimulation experiments}
 \section{Introduction}
-In a retinal prosthetic context one is ultimately concerned with building probabilistic models of how cells responds to electrical activity. This can be thought in the same terms as in the neural coding problem, which is stated probabilistically : what is the probability of a response across a neural population given a particular natural stimulus (for example, an image)? \cite{Paninski04}. The difference is that the stimulus is now replaced by an artificial, electrical one. Whichever model is built, data is necessary for it's fitting and for subsequently providing a solution for the inverse decoding problem: how an electrical stimulus has to be chosen int order to elicit an arbitrary response? Naturally, the most relevant information required for the fitting of any of such models is contained in the set of stimulus-response pairs, and whereas the stimulus is controlled by the experimenter, responses (spikes) have to be identified from electrode recordings. This problem, of distinguishing particular action potentials of neurons from extracellular voltage recordings, is known in the literature as spike sorting. In consequence, any framework for achieving controlled arbitrary responses in neurons via electrical stimulation will rely on spike sorting as a fundamental building block of its computational implementation. Because of the central importance of spike sorting in systems neuroscience, in the past decades many different methodologies have been developed for automatizing the detection of spikes, and significant improvements in accuracy and computational efficiency have been achieved\cite{Lewicki98,PillowEtal13,EkanadhamEtal14,Rey15}. However, the context of electrical stimulation constitutes a departure from the realm where current spike sorting methodologies apply, as the electrode recordings are now corrupted by the transient activity induced by this exogenous stimulation. This corruption or artifact can have an overwhelming impact in the recorded traces, making the spike identification process challenging even for of the human expert (see FIGURE WITH EXAMPLE TRACES). Actually, previous to this work the only available spike sorting method relied heavily on human judgement, and because of the difficulty of telling spikes apart from the artifact, it was extremely time consuming even for datasets of modest size. In this article we provide the first scalable algorithmic approach for spike sorting in the presence of electrical stimulation artifact.
+In a retinal prosthetic context one is ultimately concerned with building probabilistic models of how cells responds to electrical activity. This can be thought in the same terms as in the neural coding problem, which is stated probabilistically : what is the probability of a response across a neural population given a particular natural stimulus (for example, an image)? \cite{Paninski04}. The difference is that the stimulus is now replaced by an artificial, electrical one. Whichever model is built, data is necessary for it's fitting and for subsequently providing a solution for the inverse decoding problem: how an electrical stimulus has to be chosen int order to elicit an arbitrary response? Naturally, the most relevant information required for the fitting of any of such models is contained in the set of stimulus-response pairs, and whereas the stimulus is controlled by the experimenter, responses (spikes) have to be identified from electrode recordings. This problem, of distinguishing particular action potentials of neurons from extracellular voltage recordings, is known in the literature as spike sorting. In consequence, any framework for achieving controlled arbitrary responses in neurons via electrical stimulation will rely on spike sorting as a fundamental building block of its computational implementation. Because of the central importance of spike sorting in systems neuroscience, in the past decades many different methodologies have been developed for automating the detection of spikes, and significant improvements in accuracy and computational efficiency have been achieved\cite{Lewicki98,PillowEtal13,EkanadhamEtal14,Rey15}. However, the context of electrical stimulation constitutes a departure from the realm where current spike sorting methodologies apply, as the electrode recordings are now corrupted by the transient activity induced by this exogenous stimulation. This corruption or artifact can have an overwhelming impact in the recorded traces, making the spike identification process challenging even for of the human expert (see \ref{fig:traces}). Actually, previous to this work the only available spike sorting method relied heavily on human judgement, and because of the difficulty of telling spikes apart from the artifact, it was extremely time consuming even for datasets of modest size. In this article we provide the first scalable algorithmic approach for spike sorting in the presence of electrical stimulation artifact.
 
 
 \subsection{Electrical artifact}
@@ -74,14 +74,14 @@ In a retinal prosthetic context one is ultimately concerned with building probab
  The main problem is the presence of electrical artifact, which is a consequence of the electric field generated by the stimulation, and whose ubiquitous presence hampers the spike identification process. Actually, because of the electrical artifact, whose amplitude can be several times larger than of action potentials, spikes can become almost non-identifiable: suppose for example all trials at condition $j$ have spikes and there is little variability in spiking times. Suppose also the artifact is nearly the same across trials, so the recorded traces, assumed to be the artifact plus action potentials plus noise would look almost identical for all trials, and we may conclude that either there are no spikes at all, or that there are spikes at every trial (in which case, spiking times could be any). A more dramatic example corresponds to the situation where there is only one trial per condition. Then, spike sorting is impossible as there is no way to tell the artifact and action potential (if any) apart. The moral is that if we are completely agnostic about how artifact looks like there is little we can do. However, if we impose structure about how the artifact looks like and how often spikes should show up as a function of condition, then better chances are spikes will be identified better.   
 \section{Methods}
 
-As shown in figure WITH EXAMPLE TRACES trial by trial spike identification can be impossible even if templates are available. An appropriate experimental design is crucial to allow the simultaneous inference of spikes and artifact. This design should exploit neurophysiological the overcome the identifiability issues
+As shown in figure \ref{fig:traces} trial by trial spike identification can be extremely difficult even if templates are available. An appropriate experimental design is crucial to allow the simultaneous inference of spikes and artifact. This design should exploit neurophysiological the overcome the identifiability issues
  \subsection{Data description}
 %avoid redundancies with stimulation and change pattern
 Suppose spike sorting is required for a set of $N$ neurons. Apart from the templates of these neurons, Data consists of a set of $I$ voltage traces, or trials, measured both across time ($t=1\ldots T$, corresponding to multiples of the sample rate) and a set of recording electrodes in the array ($e=1\ldots E$), as a response to electrical stimulation (although in principle there are as many as 512 electrodes, we only consider for subsequent analysis the ones where the spike waveform have a strong enough signal, that should correspond to nearby locations of the somas of neurons) These traces are organized into a design as follows: first, a number of $J$ different stimulus are chosen, defined by the current amplitudes of the pulses that are passed into a subset of electrodes in the array (that may or may not overlap with the recording electrodes). For separate datasets, references to specific currents and stimulating electrodes can be avoided, and replaced by the reference to the $j-th$ stimulus condition, since the stimulating electrodes remain the same and currents into each electrode always belong to the same line and increase monotonically with the index $j$. Then, for condition $j$, a number of $I_j$ traces are available. Thus,  $I = \sum_j I_j$. Naturally, templates of neurons for which spike sorting are required is done in 
 
 
 \subsection{Assumptions}
-In order to come up with a generative model for which we can do tractable inferences, some assumptions have to be made. Although they are simplifications, taken together they seem to provide reasonable enough account of the data. First, we assume that spikes, artifact and noise interact linearly, and thus the observed traces are the sum of these three components (HOW CAN WE JUSTIFY THIS). Regarding the noise terms, they are assumed gaussian and trial-to-trial independent, and their variances electrode and condition dependent, reflecting different responses of the background neural tissue (which are believed to be responsible of the observed noise) to different stimulus (see FIGURE WITH EXAMPLE TRACES). Also, noise processes are assumed uncorrelated in time and electrodes. This is certainly arguable: it is known that noise terms exhibit large both spatial and temporal correlations \cite{PillowEtal13}, but if these correlations were explicitly accounted for by the model then different covariance matrices should be estimated, one per each condition $j$. This would entail a non negligible additional computational burden, but most importantly, would prescribe the gathering of larger number of trials to allow reliable estimation of such matrices. As results with synthetic data created from the projection of real data on the simplified model shows that results are essentially the same regardless the correlations, and because in the first applications of this method we will deal with rather simple cases where noise correlations should not be a major issue, we prefer to maintain this assumption. Regarding the artifact, we assume it is a function of time and condition $j$, but remains the same for different trials. This comes from voltage recordings in TTX experiments, where no neural driven activity is expected to occur, and where it is observed that trial-to-trials variations in the traces within the same condition are well explained by the noise. The Artifact is also assumed to possess a regularized structure: both variations in time and condition (see FIGURE THAT SHOWS NATURE OF ARTIFACT FROM TTX EXPERIMENTS) are assumed smooth. Regarding activity of neurons for which we do spike sorting, we assume a set of $N$ spike templates are available (SEE FIGURE WITH TEMPLATES) , each of them showing an action potential as recorded in all the $E$ electrodes that are relevant for the analysis. Rather than an assumption, this is a reality as templates are available from previous experiments using visual stimuli, where no electrical artifact is expected. The actual underlying assumption is that templates faithfully describe the real action potentials, as they are are subject to all the estimation problems related to regular spike sorting(IS THIS THE RIGHT PALCE TO TALK ABOUT HOW TEMPLATES ARE OBTAINED?). For spike timing, it is assumed that spikes can occur only over a set of $T'$ consecutive multiples of the sample rate, denoted $\{t_1,\ldots t_{T'}\}\subseteq \{1\ldots T\}$. Again, this is to keep a tractable setup, since a model that allows spiking at arbitrary times, as the one developed in \cite{EkanadhamEtal11} would require computations that for now can be avoided.  Also, we assume at most one spike per neuron can occur in the recording time, which is a consequence that spikes are sought in a time window that is no bigger than the usual refractory period. Finally, for spiking probabilities, an underlying parametric model for the activation curves is assumed, reflecting the known sigmoideal response saturation phenomenon, which is also observed in the electrical stimulation context. \cite{GrosbergEtal14}. The need of making this assumption will be clear after the generative model and algorithm for it's fitting are introduced, which is done in the following. 
+In order to come up with a generative model for which we can do tractable inferences, some assumptions have to be made. Although they are simplifications, taken together they seem to provide reasonable enough account of the data. First, we assume that spikes, artifact and noise interact linearly, and thus the observed traces are the sum of these three components (HOW CAN WE JUSTIFY THIS). Regarding the noise terms, they are assumed gaussian and trial-to-trial independent, and their variances electrode and condition dependent, reflecting different responses of the background neural tissue (which are believed to be responsible of the observed noise) to different stimulus (see \ref{fig:traces}). Also, noise processes are assumed uncorrelated in time and electrodes. This is certainly arguable: it is known that noise terms exhibit large both spatial and temporal correlations \cite{PillowEtal13}, but if these correlations were explicitly accounted for by the model then different covariance matrices should be estimated, one per each condition $j$. This would entail a non negligible additional computational burden, but most importantly, would prescribe the gathering of larger number of trials to allow reliable estimation of such matrices. As results with synthetic data created from the projection of real data on the simplified model shows that results are essentially the same regardless the correlations, and because in the first applications of this method we will deal with rather simple cases where noise correlations should not be a major issue, we prefer to maintain this assumption. Regarding the artifact, we assume it is a function of time and condition $j$, but remains the same for different trials. This comes from voltage recordings in TTX experiments, where no neural driven activity is expected to occur, and where it is observed that trial-to-trials variations in the traces within the same condition are well explained by the noise. The Artifact is also assumed to possess a regularized structure: both variations in time and condition (see \ref{fig:ttx}) are assumed smooth. Regarding activity of neurons for which we do spike sorting, we assume a set of $N$ spike templates are available , each of them showing an action potential as recorded in all the $E$ electrodes that are relevant for the analysis (see figure  \ref{fig:traces} for examples). Rather than an assumption, this is a reality as templates are available from previous experiments using visual stimuli, where no electrical artifact is expected. The actual underlying assumption is that templates faithfully describe the real action potentials, as they are are subject to all the estimation problems related to regular spike sorting(IS THIS THE RIGHT PALCE TO TALK ABOUT HOW TEMPLATES ARE OBTAINED?). For spike timing, it is assumed that spikes can occur only over a set of $T'$ consecutive multiples of the sample rate, denoted $\{t_1,\ldots t_{T'}\}\subseteq \{1\ldots T\}$. Again, this is to keep a tractable setup, since a model that allows spiking at arbitrary times, as the one developed in \cite{EkanadhamEtal11} would require computations that for now can be avoided.  Also, we assume at most one spike per neuron can occur in the recording time, which is a consequence that spikes are sought in a time window that is no bigger than the usual refractory period. Finally, for spiking probabilities, an underlying parametric model for the activation curves is assumed, reflecting the known sigmoideal response saturation phenomenon, which is also observed in the electrical stimulation context. \cite{GrosbergEtal14}. The need of making this assumption will be clear after the generative model and algorithm for it's fitting are introduced, which is done in the following. 
 
 
 \subsection{The generative model}
@@ -176,36 +176,110 @@ This heuristic addresses the cases where no spiking is observed in a certain int
 \pagebreak
 \begin{figure}[ht!]
         \centering
-        \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{i0.eps}
-                \caption{After Convex relaxation}
+        \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{ArtTraceS1.eps}
+                \caption{}
         \end{subfigure}% 
-~\begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{i1.eps}
-                \caption{Gibbs Sampler Solution}
+~\begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{ArtTraceS2.eps}
+                \caption{}
         \end{subfigure}
-        \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{i2.eps}
-                \caption{After one iteration of heuristic}
-        \end{subfigure}~
-         \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{i3.eps}
-                \caption{After two Iterations of heuristic}
+      ~  \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{ArtTraceNS.eps}
+                \caption{}
         \end{subfigure}
-        
-        
-        \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{i4.eps}
-                \caption{After three Iterations of heuristic}
-        \end{subfigure}~
-         \begin{subfigure}[b]{0.5\textwidth}
-                \includegraphics[width=\textwidth]{i6.eps}
-                \caption{Final Result}
+        \\
+         \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{ArtMeanS1.eps}
+                \caption{}
+        \end{subfigure}     
+       ~ \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{ArtMeanS2.eps}
+                \caption{}
+        \end{subfigure}
+       ~ \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{ArtMeansNS.eps}
+                \caption{}
 
         \end{subfigure}
-\caption{Illustration of the different stages of the algorithm. Initial values provided by the convex relaxation (a) are used as input for the Gibbs sampler (b). If the fit of the activation curve to a logistic model is poor, the artifact is resampled in the conditions that are most responsible of that lack of fit (c,d,e), until no changes are further needed (f)}
+\caption{TTX experiments are useful to probe into the structure of hardware artifact. Current pulses were passed through two stimulating electrodes (current amplitudes between 0.5 and 2.3 mA) and responses were recorded in three electrodes.
+ (a)-(c) Trial-by-trial variability in the artifact when stimulus is kept the same. Each colored line is a recorded trace recorded at different electrodes: in (a) and (b) they are the stimulating electrodes and (c) it is a non-recording, but neighboring electrode. (d)-(f). Artifact as a function of condition of stimulation. Each colored line is the artifact (average across trials) for a different condition. Light blue to blue are traces in the first inter-breakpoint range, and orange to red traces in the second. For the stimulating electrodes, (d) and (e), sensible changes are observed after a breakpoint, which makes extrapolation difficult. For the non-stimulating electrode (f) no discontinuities are observed. There is no clear pattern that explains condition and time variations in artifacts, but they all exhibit time smoothness (mostly after 0.6 ms), and condition smoothness for conditions in the same inter-breakpoint range.
+}
+\label{fig:ttx}
 \end{figure}
+\pagebreak
 
+\begin{figure}[ht!]
+        \centering
+        \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{TemplateEL1.eps}
+                \caption{}
+        \end{subfigure}% 
+~\begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{EL11.eps}
+                \caption{}
+        \end{subfigure}
+      ~  \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{EL12.eps}
+                \caption{}
+        \end{subfigure}
+        ~  \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{EL13.eps}
+                \caption{}
+        \end{subfigure}
+        \\
+         \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{TemplateEL2.eps}
+                \caption{}
+        \end{subfigure}     
+       ~ \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{EL21.eps}
+                \caption{}
+        \end{subfigure}
+       ~ \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{EL22.eps}
+                \caption{}
+                \end{subfigure}
+~ \begin{subfigure}[b]{0.23\textwidth}
+                \includegraphics[width=\textwidth]{EL23.eps}
+                \caption{}
+        \end{subfigure}
+\caption{Caption: Examples of recorded traces in a experiment with two stimulating electrodes and two neurons. In one of the stimulating electrodes (electrode 1) neuron 1 has a strong signal, as shown by templates in (a), and neuron 2 has a strong signal only in a non-stimulating electrode (electrode 2), as shown in (e).
+(b)-(d) show all traces in electrode 1 for different conditions. Presence or absence of spiking is indicated by red or blue colors, respectively. In (b) spike sorting is straightforward by mere visual inspection of traces and template, which is no longer true for (c ) and (d). In (c) all trials have spikes, but notice voltage the deflection around t=0.6ms doesn?t match the template as in (b). The reason is that artifact also contributes to that deflection. Because of this, spike identification requires a more thorough treatment: for example, if a good guess of the artifact can be obtained by an extrapolation from previous conditions, then it can be subtracted for subsequent template matching with the residuals (not shown). However, that is not possible in (d), as condition 14 is the first following a breakpoint, making extrapolation senseless. The decision has to be made by an activation curve criterion: for their similarity all traces either have or don?t have spikes, but absence of spikes is unlikely because activation was observed at previous conditions. (f)-(h) show traces in electrode 2, and illustrate ubiquitous phenomena: First, notice in (f) there are traces with voltage deflections that are not explained by none of the two neurons. These are the result of transient changes in background activity, characteristic to each condition (for example, spiking of other neurons not relevant for spike sorting). This justifies the use of condition dependent residual variances. Second, notice variability in spike latencies decreases with condition until variability is barely noticeable. In this steady regime spike identification is hampered, as spike and artifact contributions to data are difficult to distinguish. }
+\label{fig:traces}
+\end{figure}
+\pagebreak
+\graphicspath{ {./FiguresMethods/AlgExample/} }
+\begin{figure}[ht!]
+        \centering
+        \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{Act0.eps}
+                \caption{}
+        \end{subfigure}% 
+~\begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{Act2.eps}
+                \caption{}
+        \end{subfigure}
+      ~  \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{Act3.eps}
+                \caption{}
+        \end{subfigure}
+        \\
+         \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{A0.eps}
+                \caption{}
+        \end{subfigure}     
+       ~ \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{A2.eps}
+                \caption{}
+        \end{subfigure}
+       ~ \begin{subfigure}[b]{0.32\textwidth}
+                \includegraphics[width=\textwidth]{A3.eps}
+                \caption{}
+                \end{subfigure}
+\caption{Example of the different stages of the algorithm. (a)-(c) Algorithm activation curves (blue traces) after initialization (a), first Gibbs sampling iteration (b) and heuristic post-processing (c ), along with ground truth activation curves (red traces) and logistic regression fit (black traces). (d)-(e) Artifact estimates at different stages of algorithm. Each colored trace corresponds to a different amplitude of stimulation (equivalently, conditions), with red traces representing high amplitudes. After the initialization the fit to ground truth is poor, although a useful polynomial estimate of the artifact is obtained. After Gibbs sampling the activation curves matches ground truth much better, but there is a condition where spikes are mistakenly inferred at all trials, denoted by the green circle in (b). This is diagnosed by a lack of fit with the underlying logistic regression, and prescribes the interpolation of the corresponding artifact, dashed line in (e), based in the information provided by the rest of non-dashed traces. As a result, a better estimate is obtained, spikes are no longer inferred at that condition, and lack of fit is no further diagnosed, leading to termination.}
+\label{fig:traces}
+\end{figure}
 
  \bibliographystyle{unsrt} 
 \bibliography{references}

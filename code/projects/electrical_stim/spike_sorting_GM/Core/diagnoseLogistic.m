@@ -57,3 +57,4 @@ end
     
 
 Gibbs.diagnostics.condSortError    = condSortError;
+Gibbs.variables.ProbRobust       = probs;

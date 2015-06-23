@@ -1,0 +1,117 @@
+\begin{thebibliography}{10}
+
+\bibitem{Paninski04}
+Liam Paninski.
+\newblock Maximum likelihood estimation of cascade point-process neural
+  encoding models.
+\newblock {\em Network: Computation in Neural Systems}, 15(4):243--262,
+  November 2004.
+
+\bibitem{Lewicki98}
+M.~S. Lewicki.
+\newblock {A review of methods for spike sorting: the detection and
+  classification of neural action potentials}.
+\newblock {\em Network: Computation in Neural Systems}, 9(4):53--78, 1998.
+
+\bibitem{PillowEtal13}
+Jonathan~W. Pillow, Jonathon Shlens, E.~J. Chichilnisky, and Eero~P.
+  Simoncelli.
+\newblock A model-based spike sorting algorithm for removing correlation
+  artifacts in multi-neuron recordings.
+\newblock {\em PLoS ONE}, 8(5):e62123, 05 2013.
+
+\bibitem{EkanadhamEtal14}
+Chaitanya Ekanadham, Daniel Tranchina, and Eero~P. Simoncelli.
+\newblock A unified framework and method for automatic neural spike
+  identification.
+\newblock {\em Journal of Neuroscience Methods}, 222(0):47 -- 55, 2014.
+
+\bibitem{Rey15}
+Hernan~Gonzalo Rey, Carlos Pedreira, and Rodrigo~Quian Quiroga.
+\newblock Past, present and future of spike sorting techniques.
+\newblock {\em Brain Research Bulletin}, 2015.
+\newblock In press.
+
+\bibitem{EkanadhamEtal11}
+Chaitanya Ekanadham, Daniel Tranchina, and Eero~P. Simoncelli.
+\newblock A blind sparse deconvolution method for neural spike identification.
+\newblock In John Shawe-Taylor, Richard~S. Zemel, Peter~L. Bartlett, Fernando
+  C.~N. Pereira, and Kilian~Q. Weinberger, editors, {\em NIPS}, pages
+  1440--1448, 2011.
+
+\bibitem{GrosbergEtal14}
+Lauren~E. Grosberg, Paweł Hottowy, Lauren~H. Jepson, Shinya~Ito abd Frederick
+  Kellison-Linn, Alexander Sher, and Władysław~Dabrowski abd Alan M.
+  Litke~abd E.J.~Chichilnisky.
+\newblock Axon activation with epiretinal stimulation in isolated primate
+  retina.
+\newblock In {\em The eye and the chip}, 2014.
+\newblock Conference Poster.
+
+\bibitem{TibshiraniEtal05}
+Robert Tibshirani, Michael Saunders, Saharon Rosset, Ji~Zhu, and Keith Knight.
+\newblock Sparsity and smoothness via the fused lasso.
+\newblock {\em Journal of the Royal Statistical Society Series B}, pages
+  91--108, 2005.
+
+\bibitem{SzlamEtal10}
+Arthur Szlam, Koray Kavukcuoglu, and Yann LeCun.
+\newblock {Convolutional Matching Pursuit and Dictionary Training}.
+\newblock 2010.
+
+\bibitem{PachitariuEtal13}
+Marius Pachitariu, Adam~M. Packer, Noah Pettit, Henry Dalgleish, Michael
+  Häusser, and Maneesh Sahani.
+\newblock Extracting regions of interest from biological images with
+  convolutional sparse block coding.
+\newblock In Christopher J.~C. Burges, Léon Bottou, Zoubin Ghahramani, and
+  Kilian~Q. Weinberger, editors, {\em NIPS}, pages 1745--1753, 2013.
+
+\bibitem{Geman84}
+Stuart Geman and Donald Geman.
+\newblock Stochastic relaxation, gibbs distributions, and the bayesian
+  restoration of images.
+\newblock {\em IEEE Trans. Pattern Anal. Mach. Intell.}, 6(6):721--741,
+  November 1984.
+
+\bibitem{Earl05}
+David~J. Earl and Michael~W. Deem.
+\newblock Parallel tempering: Theory, applications, and new perspectives.
+\newblock {\em Physical Chemistry Chemical Physics}, 7(23):3910--3916, 2005.
+
+\bibitem{Atchade10}
+Y.~F. Atchadé and J.S. Liu.
+\newblock The wang-landau algorithm for monte carlo computation in general
+  state spaces.
+\newblock {\em Statistica Sinica}, 20:209--233, 2010.
+
+\bibitem{BoydEtal04}
+Stephen Boyd and Lieven Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, New York, NY, USA, 2004.
+
+\bibitem{Rockafellar70}
+R.~Tyrrell Rockafellar.
+\newblock {\em Convex analysis}.
+\newblock Princeton Mathematical Series. Princeton University Press, Princeton,
+  N. J., 1970.
+
+\bibitem{HastieEtal01}
+Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
+\newblock {\em The Elements of Statistical Learning}.
+\newblock Springer Series in Statistics. Springer New York Inc., New York, NY,
+  USA, 2001.
+
+\bibitem{VandenbergheEtal98}
+Lieven Vandenberghe, Stephen Boyd, and Shao po~Wu.
+\newblock Determinant maximization with linear matrix inequality constraints.
+\newblock {\em SIAM Journal on Matrix Analysis and Applications}, 19:499--533,
+  1998.
+
+\bibitem{HosmerEtal97}
+Hosmer W., Hosmer T., Le~Cessei S., and Lemeshow S.
+\newblock A comparison of goodness-of-fit tests for the logistic regression
+  model.
+\newblock {\em Stat Med}, 16(9):965--980, 1997.
+
+\end{thebibliography}

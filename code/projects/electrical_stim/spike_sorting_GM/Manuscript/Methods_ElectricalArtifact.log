@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  19 JUN 2015 19:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  22 JUN 2015 17:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -221,7 +221,11 @@ File `slidesec.sty' v0.9  92/05/07  <tvz>
 \@temptokenb=\toks29
 \c@slidesection=\count105
 \c@slidesubsection=\count106
-) (./Methods_ElectricalArtifact.aux)
+) (./Methods_ElectricalArtifact.aux
+
+LaTeX Warning: Label `fig:traces' multiply defined.
+
+)
 \openout1 = `Methods_ElectricalArtifact.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
@@ -237,8 +241,7 @@ LaTeX Font Info:    ... okay on input line 58.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
 LaTeX Font Info:    ... okay on input line 58.
 LaTeX Font Info:    Try loading font information for OT1+ptm on input line 58.
-
-(/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+ (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 (/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
@@ -324,18 +327,11 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
- [4]
-
-LaTeX Warning: Citation `SzlamEtal10' on page 5 undefined on input line 112.
-
-
-LaTeX Warning: Citation `PachitariuEtal13' on page 5 undefined on input line 11
-2.
-
-[5]
+ [4] [5]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 120.
- [6] [7]
+
+[6] [7]
 Overfull \hbox (38.41608pt too wide) detected at line 142
 \OML/cmm/m/it/10.95 p\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 s[]\OT1/cmr/m/n/10
 .95 (\OML/cmm/m/it/10.95 l\OT1/cmr/m/n/10.95 ) = 1\OMS/cmsy/m/n/10.95 j\OML/cmm
@@ -354,37 +350,436 @@ m/n/10.95 = ^^F[]\OML/cmm/m/it/10.95 X[]\OT1/cmr/m/n/10.95 ^^F[](\OML/cmm/m/it/
 OML/cmm/m/it/10.95 ;
  []
 
-[8] [9] [10] [11] (./Methods_ElectricalArtifact.bbl
+[8] [9] [10] [11]
+Package epstopdf Info: Source file: <./FiguresMethods/ArtTraceS1.eps>
+(epstopdf)                    date: 2015-06-22 02:29:22
+(epstopdf)                    size: 16704 bytes
+(epstopdf)             Output file: <./FiguresMethods/ArtTraceS1-eps-converted-
+to.pdf>
+(epstopdf)                    date: 2015-06-22 02:36:04
+(epstopdf)                    size: 9348 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/ArtTraceS
+1-eps-converted-to.pdf ./FiguresMethods/ArtTraceS1.eps>
+(epstopdf)             \includegraphics on input line 180.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/ArtTraceS1-eps-converted-to.pdf, id=52, 507.8975pt x 422.5787
+5pt>
+File: ./FiguresMethods/ArtTraceS1-eps-converted-to.pdf Graphic file (type pdf)
+ <use ./FiguresMethods/ArtTraceS1-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/ArtTraceS1-eps-converted-to.pdf used 
+on input line 180.
+(pdftex.def)             Requested size: 150.32504pt x 125.07231pt.
+Package epstopdf Info: Source file: <./FiguresMethods/ArtTraceS2.eps>
+(epstopdf)                    date: 2015-06-22 02:29:23
+(epstopdf)                    size: 17094 bytes
+(epstopdf)             Output file: <./FiguresMethods/ArtTraceS2-eps-converted-
+to.pdf>
+(epstopdf)                    date: 2015-06-22 02:36:05
+(epstopdf)                    size: 9467 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/ArtTraceS
+2-eps-converted-to.pdf ./FiguresMethods/ArtTraceS2.eps>
+(epstopdf)             \includegraphics on input line 184.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/ArtTraceS2-eps-converted-to.pdf, id=53, 507.8975pt x 422.5787
+5pt>
+File: ./FiguresMethods/ArtTraceS2-eps-converted-to.pdf Graphic file (type pdf)
+ <use ./FiguresMethods/ArtTraceS2-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/ArtTraceS2-eps-converted-to.pdf used 
+on input line 184.
+(pdftex.def)             Requested size: 150.32504pt x 125.07231pt.
+Package epstopdf Info: Source file: <./FiguresMethods/ArtTraceNS.eps>
+(epstopdf)                    date: 2015-06-22 02:29:23
+(epstopdf)                    size: 16422 bytes
+(epstopdf)             Output file: <./FiguresMethods/ArtTraceNS-eps-converted-
+to.pdf>
+(epstopdf)                    date: 2015-06-22 02:36:06
+(epstopdf)                    size: 9098 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/ArtTraceN
+S-eps-converted-to.pdf ./FiguresMethods/ArtTraceNS.eps>
+(epstopdf)             \includegraphics on input line 188.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/ArtTraceNS-eps-converted-to.pdf, id=54, 507.8975pt x 422.5787
+5pt>
+File: ./FiguresMethods/ArtTraceNS-eps-converted-to.pdf Graphic file (type pdf)
+ <use ./FiguresMethods/ArtTraceNS-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/ArtTraceNS-eps-converted-to.pdf used 
+on input line 188.
+(pdftex.def)             Requested size: 150.32504pt x 125.07231pt.
+Package epstopdf Info: Source file: <./FiguresMethods/ArtMeanS1.eps>
+(epstopdf)                    date: 2015-06-22 02:29:20
+(epstopdf)                    size: 15933 bytes
+(epstopdf)             Output file: <./FiguresMethods/ArtMeanS1-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2015-06-22 02:36:08
+(epstopdf)                    size: 9449 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/ArtMeanS1
+-eps-converted-to.pdf ./FiguresMethods/ArtMeanS1.eps>
+(epstopdf)             \includegraphics on input line 193.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/ArtMeanS1-eps-converted-to.pdf, id=55, 513.92pt x 422.57875pt
+>
+File: ./FiguresMethods/ArtMeanS1-eps-converted-to.pdf Graphic file (type pdf)
+ <use ./FiguresMethods/ArtMeanS1-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/ArtMeanS1-eps-converted-to.pdf used o
+n input line 193.
+(pdftex.def)             Requested size: 150.32504pt x 123.60861pt.
+Package epstopdf Info: Source file: <./FiguresMethods/ArtMeanS2.eps>
+(epstopdf)                    date: 2015-06-22 02:29:21
+(epstopdf)                    size: 16173 bytes
+(epstopdf)             Output file: <./FiguresMethods/ArtMeanS2-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2015-06-22 02:36:09
+(epstopdf)                    size: 9938 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/ArtMeanS2
+-eps-converted-to.pdf ./FiguresMethods/ArtMeanS2.eps>
+(epstopdf)             \includegraphics on input line 197.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/ArtMeanS2-eps-converted-to.pdf, id=56, 507.8975pt x 422.57875
+pt>
+File: ./FiguresMethods/ArtMeanS2-eps-converted-to.pdf Graphic file (type pdf)
+ <use ./FiguresMethods/ArtMeanS2-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/ArtMeanS2-eps-converted-to.pdf used o
+n input line 197.
+(pdftex.def)             Requested size: 150.32504pt x 125.07231pt.
+Package epstopdf Info: Source file: <./FiguresMethods/ArtMeansNS.eps>
+(epstopdf)                    date: 2015-06-22 02:29:21
+(epstopdf)                    size: 15558 bytes
+(epstopdf)             Output file: <./FiguresMethods/ArtMeansNS-eps-converted-
+to.pdf>
+(epstopdf)                    date: 2015-06-22 02:36:10
+(epstopdf)                    size: 9313 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/ArtMeansN
+S-eps-converted-to.pdf ./FiguresMethods/ArtMeansNS.eps>
+(epstopdf)             \includegraphics on input line 201.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/ArtMeansNS-eps-converted-to.pdf, id=57, 507.8975pt x 422.5787
+5pt>
+File: ./FiguresMethods/ArtMeansNS-eps-converted-to.pdf Graphic file (type pdf)
+ <use ./FiguresMethods/ArtMeansNS-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/ArtMeansNS-eps-converted-to.pdf used 
+on input line 201.
+(pdftex.def)             Requested size: 150.32504pt x 125.07231pt.
+ [12] [13 <./FiguresMethods/ArtTraceS1-eps-converted-to.pdf> <./FiguresMethods/
+ArtTraceS2-eps-converted-to.pdf> <./FiguresMethods/ArtTraceNS-eps-converted-to.
+pdf> <./FiguresMethods/ArtMeanS1-eps-converted-to.pdf> <./FiguresMethods/ArtMea
+nS2-eps-converted-to.pdf> <./FiguresMethods/ArtMeansNS-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <./FiguresMethods/TemplateEL1.eps>
+(epstopdf)                    date: 2015-06-22 02:46:13
+(epstopdf)                    size: 11113 bytes
+(epstopdf)             Output file: <./FiguresMethods/TemplateEL1-eps-converted
+-to.pdf>
+(epstopdf)                    date: 2015-06-22 02:51:25
+(epstopdf)                    size: 7309 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/TemplateE
+L1-eps-converted-to.pdf ./FiguresMethods/TemplateEL1.eps>
+(epstopdf)             \includegraphics on input line 215.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/TemplateEL1-eps-converted-to.pdf, id=101, 508.90125pt x 422.5
+7875pt>
+File: ./FiguresMethods/TemplateEL1-eps-converted-to.pdf Graphic file (type pdf)
+
+ <use ./FiguresMethods/TemplateEL1-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/TemplateEL1-eps-converted-to.pdf used
+ on input line 215.
+(pdftex.def)             Requested size: 108.04164pt x 89.71135pt.
+Package epstopdf Info: Source file: <./FiguresMethods/EL11.eps>
+(epstopdf)                    date: 2015-06-22 02:46:11
+(epstopdf)                    size: 16125 bytes
+(epstopdf)             Output file: <./FiguresMethods/EL11-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2015-06-22 02:51:26
+(epstopdf)                    size: 8367 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/EL11-eps-
+converted-to.pdf ./FiguresMethods/EL11.eps>
+(epstopdf)             \includegraphics on input line 219.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/EL11-eps-converted-to.pdf, id=102, 507.8975pt x 422.57875pt>
+File: ./FiguresMethods/EL11-eps-converted-to.pdf Graphic file (type pdf)
+
+<use ./FiguresMethods/EL11-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/EL11-eps-converted-to.pdf used on inp
+ut line 219.
+(pdftex.def)             Requested size: 108.04164pt x 89.89189pt.
+Package epstopdf Info: Source file: <./FiguresMethods/EL12.eps>
+(epstopdf)                    date: 2015-06-22 02:46:11
+(epstopdf)                    size: 15635 bytes
+(epstopdf)             Output file: <./FiguresMethods/EL12-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2015-06-22 02:51:27
+(epstopdf)                    size: 8087 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/EL12-eps-
+converted-to.pdf ./FiguresMethods/EL12.eps>
+(epstopdf)             \includegraphics on input line 223.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/EL12-eps-converted-to.pdf, id=103, 507.8975pt x 422.57875pt>
+File: ./FiguresMethods/EL12-eps-converted-to.pdf Graphic file (type pdf)
+
+<use ./FiguresMethods/EL12-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/EL12-eps-converted-to.pdf used on inp
+ut line 223.
+(pdftex.def)             Requested size: 108.04164pt x 89.89189pt.
+Package epstopdf Info: Source file: <./FiguresMethods/EL13.eps>
+(epstopdf)                    date: 2015-06-22 02:46:12
+(epstopdf)                    size: 15366 bytes
+(epstopdf)             Output file: <./FiguresMethods/EL13-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2015-06-22 02:51:28
+(epstopdf)                    size: 8237 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/EL13-eps-
+converted-to.pdf ./FiguresMethods/EL13.eps>
+(epstopdf)             \includegraphics on input line 227.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/EL13-eps-converted-to.pdf, id=104, 507.8975pt x 422.57875pt>
+File: ./FiguresMethods/EL13-eps-converted-to.pdf Graphic file (type pdf)
+
+<use ./FiguresMethods/EL13-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/EL13-eps-converted-to.pdf used on inp
+ut line 227.
+(pdftex.def)             Requested size: 108.04164pt x 89.89189pt.
+Package epstopdf Info: Source file: <./FiguresMethods/TemplateEL2.eps>
+(epstopdf)                    date: 2015-06-22 02:46:15
+(epstopdf)                    size: 11961 bytes
+(epstopdf)             Output file: <./FiguresMethods/TemplateEL2-eps-converted
+-to.pdf>
+(epstopdf)                    date: 2015-06-22 02:51:30
+(epstopdf)                    size: 7422 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/TemplateE
+L2-eps-converted-to.pdf ./FiguresMethods/TemplateEL2.eps>
+(epstopdf)             \includegraphics on input line 232.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/TemplateEL2-eps-converted-to.pdf, id=105, 508.90125pt x 422.5
+7875pt>
+File: ./FiguresMethods/TemplateEL2-eps-converted-to.pdf Graphic file (type pdf)
+
+ <use ./FiguresMethods/TemplateEL2-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/TemplateEL2-eps-converted-to.pdf used
+ on input line 232.
+(pdftex.def)             Requested size: 108.04164pt x 89.71135pt.
+Package epstopdf Info: Source file: <./FiguresMethods/EL21.eps>
+(epstopdf)                    date: 2015-06-22 02:46:13
+(epstopdf)                    size: 15488 bytes
+(epstopdf)             Output file: <./FiguresMethods/EL21-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2015-06-22 02:51:31
+(epstopdf)                    size: 8244 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/EL21-eps-
+converted-to.pdf ./FiguresMethods/EL21.eps>
+(epstopdf)             \includegraphics on input line 236.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/EL21-eps-converted-to.pdf, id=106, 507.8975pt x 422.57875pt>
+File: ./FiguresMethods/EL21-eps-converted-to.pdf Graphic file (type pdf)
+
+<use ./FiguresMethods/EL21-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/EL21-eps-converted-to.pdf used on inp
+ut line 236.
+(pdftex.def)             Requested size: 108.04164pt x 89.89189pt.
+Package epstopdf Info: Source file: <./FiguresMethods/EL22.eps>
+(epstopdf)                    date: 2015-06-22 02:46:14
+(epstopdf)                    size: 15565 bytes
+(epstopdf)             Output file: <./FiguresMethods/EL22-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2015-06-22 02:51:32
+(epstopdf)                    size: 8139 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/EL22-eps-
+converted-to.pdf ./FiguresMethods/EL22.eps>
+(epstopdf)             \includegraphics on input line 240.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/EL22-eps-converted-to.pdf, id=107, 507.8975pt x 422.57875pt>
+File: ./FiguresMethods/EL22-eps-converted-to.pdf Graphic file (type pdf)
+
+<use ./FiguresMethods/EL22-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/EL22-eps-converted-to.pdf used on inp
+ut line 240.
+(pdftex.def)             Requested size: 108.04164pt x 89.89189pt.
+Package epstopdf Info: Source file: <./FiguresMethods/EL23.eps>
+(epstopdf)                    date: 2015-06-22 02:46:14
+(epstopdf)                    size: 15595 bytes
+(epstopdf)             Output file: <./FiguresMethods/EL23-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2015-06-22 02:51:34
+(epstopdf)                    size: 8083 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/EL23-eps-
+converted-to.pdf ./FiguresMethods/EL23.eps>
+(epstopdf)             \includegraphics on input line 244.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/EL23-eps-converted-to.pdf, id=108, 507.8975pt x 422.57875pt>
+File: ./FiguresMethods/EL23-eps-converted-to.pdf Graphic file (type pdf)
+
+<use ./FiguresMethods/EL23-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/EL23-eps-converted-to.pdf used on inp
+ut line 244.
+(pdftex.def)             Requested size: 108.04164pt x 89.89189pt.
+ [14 <./FiguresMethods/TemplateEL1-eps-converted-to.pdf> <./FiguresMethods/EL11
+-eps-converted-to.pdf> <./FiguresMethods/EL12-eps-converted-to.pdf> <./FiguresM
+ethods/EL13-eps-converted-to.pdf> <./FiguresMethods/TemplateEL2-eps-converted-t
+o.pdf> <./FiguresMethods/EL21-eps-converted-to.pdf> <./FiguresMethods/EL22-eps-
+converted-to.pdf> <./FiguresMethods/EL23-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <./FiguresMethods/AlgExample/Act0.eps>
+(epstopdf)                    date: 2015-06-22 15:43:29
+(epstopdf)                    size: 16053 bytes
+(epstopdf)             Output file: <./FiguresMethods/AlgExample/Act0-eps-conve
+rted-to.pdf>
+(epstopdf)                    date: 2015-06-22 15:49:34
+(epstopdf)                    size: 11256 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/AlgExampl
+e/Act0-eps-converted-to.pdf ./FiguresMethods/AlgExample/Act0.eps>
+(epstopdf)             \includegraphics on input line 256.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/AlgExample/Act0-eps-converted-to.pdf, id=160, 508.90125pt x 4
+33.62pt>
+File: ./FiguresMethods/AlgExample/Act0-eps-converted-to.pdf Graphic file (type 
+pdf)
+ <use ./FiguresMethods/AlgExample/Act0-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/AlgExample/Act0-eps-converted-to.pdf 
+used on input line 256.
+(pdftex.def)             Requested size: 150.32504pt x 128.08882pt.
+Package epstopdf Info: Source file: <./FiguresMethods/AlgExample/Act2.eps>
+(epstopdf)                    date: 2015-06-22 15:15:07
+(epstopdf)                    size: 13548 bytes
+(epstopdf)             Output file: <./FiguresMethods/AlgExample/Act2-eps-conve
+rted-to.pdf>
+(epstopdf)                    date: 2015-06-22 15:49:35
+(epstopdf)                    size: 11727 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/AlgExampl
+e/Act2-eps-converted-to.pdf ./FiguresMethods/AlgExample/Act2.eps>
+(epstopdf)             \includegraphics on input line 260.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/AlgExample/Act2-eps-converted-to.pdf, id=161, 508.90125pt x 4
+33.62pt>
+File: ./FiguresMethods/AlgExample/Act2-eps-converted-to.pdf Graphic file (type 
+pdf)
+ <use ./FiguresMethods/AlgExample/Act2-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/AlgExample/Act2-eps-converted-to.pdf 
+used on input line 260.
+(pdftex.def)             Requested size: 150.32504pt x 128.08882pt.
+Package epstopdf Info: Source file: <./FiguresMethods/AlgExample/Act3.eps>
+(epstopdf)                    date: 2015-06-22 15:15:08
+(epstopdf)                    size: 13342 bytes
+(epstopdf)             Output file: <./FiguresMethods/AlgExample/Act3-eps-conve
+rted-to.pdf>
+(epstopdf)                    date: 2015-06-22 15:49:37
+(epstopdf)                    size: 11344 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/AlgExampl
+e/Act3-eps-converted-to.pdf ./FiguresMethods/AlgExample/Act3.eps>
+(epstopdf)             \includegraphics on input line 264.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/AlgExample/Act3-eps-converted-to.pdf, id=162, 508.90125pt x 4
+33.62pt>
+File: ./FiguresMethods/AlgExample/Act3-eps-converted-to.pdf Graphic file (type 
+pdf)
+ <use ./FiguresMethods/AlgExample/Act3-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/AlgExample/Act3-eps-converted-to.pdf 
+used on input line 264.
+(pdftex.def)             Requested size: 150.32504pt x 128.08882pt.
+Package epstopdf Info: Source file: <./FiguresMethods/AlgExample/A0.eps>
+(epstopdf)                    date: 2015-06-22 14:00:27
+(epstopdf)                    size: 21784 bytes
+(epstopdf)             Output file: <./FiguresMethods/AlgExample/A0-eps-convert
+ed-to.pdf>
+(epstopdf)                    date: 2015-06-22 15:49:38
+(epstopdf)                    size: 11494 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/AlgExampl
+e/A0-eps-converted-to.pdf ./FiguresMethods/AlgExample/A0.eps>
+(epstopdf)             \includegraphics on input line 269.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/AlgExample/A0-eps-converted-to.pdf, id=163, 527.9725pt x 432.
+61626pt>
+File: ./FiguresMethods/AlgExample/A0-eps-converted-to.pdf Graphic file (type pd
+f)
+ <use ./FiguresMethods/AlgExample/A0-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/AlgExample/A0-eps-converted-to.pdf us
+ed on input line 269.
+(pdftex.def)             Requested size: 150.32504pt x 123.1715pt.
+Package epstopdf Info: Source file: <./FiguresMethods/AlgExample/A2.eps>
+(epstopdf)                    date: 2015-06-22 14:24:12
+(epstopdf)                    size: 22014 bytes
+(epstopdf)             Output file: <./FiguresMethods/AlgExample/A2-eps-convert
+ed-to.pdf>
+(epstopdf)                    date: 2015-06-22 15:49:39
+(epstopdf)                    size: 11713 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/AlgExampl
+e/A2-eps-converted-to.pdf ./FiguresMethods/AlgExample/A2.eps>
+(epstopdf)             \includegraphics on input line 273.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/AlgExample/A2-eps-converted-to.pdf, id=164, 527.9725pt x 432.
+61626pt>
+File: ./FiguresMethods/AlgExample/A2-eps-converted-to.pdf Graphic file (type pd
+f)
+ <use ./FiguresMethods/AlgExample/A2-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/AlgExample/A2-eps-converted-to.pdf us
+ed on input line 273.
+(pdftex.def)             Requested size: 150.32504pt x 123.1715pt.
+Package epstopdf Info: Source file: <./FiguresMethods/AlgExample/A3.eps>
+(epstopdf)                    date: 2015-06-22 14:24:13
+(epstopdf)                    size: 21631 bytes
+(epstopdf)             Output file: <./FiguresMethods/AlgExample/A3-eps-convert
+ed-to.pdf>
+(epstopdf)                    date: 2015-06-22 15:49:40
+(epstopdf)                    size: 11372 bytes
+(epstopdf)             Command: <repstopdf --outfile=./FiguresMethods/AlgExampl
+e/A3-eps-converted-to.pdf ./FiguresMethods/AlgExample/A3.eps>
+(epstopdf)             \includegraphics on input line 277.
+Package epstopdf Info: Output file is already uptodate.
+
+<./FiguresMethods/AlgExample/A3-eps-converted-to.pdf, id=165, 527.9725pt x 432.
+61626pt>
+File: ./FiguresMethods/AlgExample/A3-eps-converted-to.pdf Graphic file (type pd
+f)
+ <use ./FiguresMethods/AlgExample/A3-eps-converted-to.pdf>
+Package pdftex.def Info: ./FiguresMethods/AlgExample/A3-eps-converted-to.pdf us
+ed on input line 277.
+(pdftex.def)             Requested size: 150.32504pt x 123.1715pt.
+
+(./Methods_ElectricalArtifact.bbl [15 <./FiguresMethods/AlgExample/Act0-eps-con
+verted-to.pdf> <./FiguresMethods/AlgExample/Act2-eps-converted-to.pdf> <./Figur
+esMethods/AlgExample/Act3-eps-converted-to.pdf> <./FiguresMethods/AlgExample/A0
+-eps-converted-to.pdf> <./FiguresMethods/AlgExample/A2-eps-converted-to.pdf> <.
+/FiguresMethods/AlgExample/A3-eps-converted-to.pdf>]
 Missing character: There is no Å in font ptmr7t!
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Å in font ptmr7t!
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Å in font ptmr7t!
 Missing character: There is no ‚ in font ptmr7t!
- [12]
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no ¤ in font ptmr7t!
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
-) [13]
+ [16]) [17]
 (./Methods_ElectricalArtifact.aux)
 
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 3988 strings out of 493117
- 58161 string characters out of 6135433
- 131716 words of memory out of 5000000
- 7356 multiletter control sequences out of 15000+600000
+ 4103 strings out of 493117
+ 62788 string characters out of 6135433
+ 139840 words of memory out of 5000000
+ 7448 multiletter control sequences out of 15000+600000
  33156 words of font info for 76 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,10n,38p,3869b,226s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,10n,38p,3827b,471s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
@@ -401,10 +796,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2014/texmf-dist
 /fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/typ
 e1/urw/times/utmr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/tim
 es/utmri8a.pfb>
-Output written on Methods_ElectricalArtifact.pdf (13 pages, 205718 bytes).
+Output written on Methods_ElectricalArtifact.pdf (17 pages, 335411 bytes).
 PDF statistics:
- 108 PDF objects out of 1000 (max. 8388607)
- 77 compressed objects within 1 object stream
+ 270 PDF objects out of 1000 (max. 8388607)
+ 191 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 101 words of extra memory for PDF output out of 10000 (max. 10000000)
 
