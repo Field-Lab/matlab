@@ -31,8 +31,8 @@ score_aggregator(glm_settings,metric_type,exps)%,special_arg)
 clear ; close all; clc;
 %metric_type.name  = 'crossval_BPS';
 %metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
-metric_type.name      = 'crossval_fracvar_10msec';
 metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
+metric_type.name       = 'crossval_victorspike_50msec';
 exps     = [1 2 3];
 glm_settings = {};
 special_arg = 'PS_Constrain_sub1';

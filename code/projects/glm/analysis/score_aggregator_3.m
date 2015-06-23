@@ -8,7 +8,6 @@
 
 % AKHEITMAN  Started: 2015-06-16, Closed: 2015-06-18
 % CALLS: GLM_settings, GLM_fitname NSEM_BaseDirectories cell_list
-% Version 4 Generalize to handle "special arguments"
 % Version 3 Has a way to handle post-filter NL  
 % Version 2 Function calling scheme.
 % Version 1 has cleaner auto-update and integrated viktor spike
@@ -25,18 +24,29 @@ glm_settings{1}.name = 'rieke_linear';
 metric_type.name       = 'crossval_victorspike_50msec';
 metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
 exps     = [1 2 3 4];
-score_aggregator(glm_settings,metric_type,exps)%,special_arg)
+score_aggregator(glm_settings,metric_type,exps)%,postfilterNL)
 
 
 clear ; close all; clc;
-%metric_type.name  = 'crossval_BPS';
-%metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
-metric_type.name      = 'crossval_fracvar_10msec';
-metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
-exps     = [1 2 3];
-glm_settings = {};
-special_arg = 'PS_Constrain_sub1';
-score_aggregator(glm_settings,metric_type,exps,special_arg)
+metric_type.name       = 'crossval_victorspike_50msec';
+metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
+exps     = [1 2 3 4];
+for i_loop = 1:2
+    if i_loop == 1
+        glm_settings{1}.type = 'cone_model';
+        glm_settings{1}.name = 'rieke_linear';
+    elseif i_loop == 2
+        glm_settings{1}.type = 'cone_model';
+        glm_settings{1}.name = 'rieke_fullcone';
+    elseif i_loop == 3
+        glm_settings{1}.type = 'cone_model';
+        glm_settings{1}.name = 'rieke_linear'
+        glm_settings{2}.type= 'input_pt_nonlinearity';
+        glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+    end
+    score_aggregator(glm_settings,metric_type,exps)
+    clear glm_settings
+end
 display('Yeah!')
 
 
@@ -53,31 +63,28 @@ display('Yeah!')
 %metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
 %metric_type.name       = 'crossval_victorspike_50msec';
 %metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
-%special_arg = 'Logistic_fixMU';
-%special_arg = 'PS_Constrain_sub1';
-%score_aggregator(glm_settings,metric_type,exps,special_arg)
+%postfilterNL = 'Logistic_fixMU';
+%score_aggregator(glm_settings,metric_type,exps,postfilterNL)
 
 %}
 
 
 
 
-function score_aggregator(glm_settings,metric_type,exps, special_arg)
+function score_aggregator(glm_settings,metric_type,exps, postfilterNL)
 % Standard Bookkeeping
 BD   = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
 model.GLMType     = GLM_settings('default',glm_settings);
 model.fitname     = GLM_fitname(model.GLMType);
-if exist('special_arg','var')  
-    if strcmp(special_arg, 'Logistic_fixMU')
+if exist('postfilterNL','var')  
+    if strcmp(postfilterNL, 'Logistic_fixMU')
         model.fitname = sprintf('%s/Logistic_fixMU', model.fitname)
-    elseif strcmp(special_arg, 'PS_Constrain_sub1')
-        model.fitname = sprintf('%s/PS_Constrain_sub1', model.fitname)
-    else
-        error('Need to register your special arg, assign folder')
     end
 end
+
 savedir = sprintf('%s/%s', BD.GLM_output_analysis, model.fitname)
+
 
 for i_exp = exps
     exp_nm  = allcells{i_exp}.exp_nm;
@@ -142,8 +149,8 @@ for i_exp = exps
 
                     if strcmp(metric_type.name,'crossval_BPS')
                         rawscores(i_index) = fittedGLM.xvalperformance.logprob_glm_bpspike;
-                        if exist('special_arg','var')  
-                            if strcmp(special_arg, 'Logistic_fixMU')
+                        if exist('postfilterNL','var')  
+                            if strcmp(postfilterNL, 'Logistic_fixMU')
                                 rawscores(i_index) = NL_xvalperformance.logprob_glm_withNL_bpspike;
                             end
                         end
@@ -153,8 +160,8 @@ for i_exp = exps
                         smoothbins = 12;
                         rast_rec = fittedGLM.xvalperformance.rasters.recorded;
                         rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
-                        if exist('special_arg','var')  
-                            if strcmp(special_arg, 'Logistic_fixMU')
+                        if exist('postfilterNL','var')  
+                            if strcmp(postfilterNL, 'Logistic_fixMU')
                                 clear rast_sim
                                 display('loading_NLalternate_rast')
                                 rast_sim = NL_xvalperformance.rasters.glm_withNL;
@@ -167,8 +174,8 @@ for i_exp = exps
                         smoothbins = 30;
                         rast_rec = fittedGLM.xvalperformance.rasters.recorded;
                         rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
-                        if exist('special_arg','var')  
-                            if strcmp(special_arg, 'Logistic_fixMU')
+                        if exist('postfilterNL','var')  
+                            if strcmp(postfilterNL, 'Logistic_fixMU')
                                 clear rast_sim
                                 display('loading_NLalternate_rast')
                                 rast_sim = NL_xvalperformance.rasters.glm_withNL;
@@ -186,8 +193,8 @@ for i_exp = exps
                         bindur = fittedGLM.t_bin;
                         rast_rec = fittedGLM.xvalperformance.rasters.recorded;
                         rast_sim = fittedGLM.xvalperformance.rasters.glm_sim; 
-                        if exist('special_arg','var')  
-                            if strcmp(special_arg, 'Logistic_fixMU')
+                        if exist('postfilterNL','var')  
+                            if strcmp(postfilterNL, 'Logistic_fixMU')
                                 clear rast_sim
                                 display('loading_NLalternate_rast')
                                 rast_sim = NL_xvalperformance.rasters.glm_withNL;
