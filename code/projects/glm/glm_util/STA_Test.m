@@ -41,7 +41,7 @@ for i = 1:length(fitspikes)
     end
 end
 
-for i = 1:30
+for i = 27
    imagesc(STA(:,:,1,i)')
    colormap gray
    axis image
@@ -49,17 +49,17 @@ for i = 1:30
    pause(0.1)
 end
 
-STA = squeeze(STA);
-STA = abs(sum(STA, 3));
-row = max(STA);
-col = max(STA');
-x = find(row == max(row));
-y = find(col == max(col));
-center = [y x];
+% STA = squeeze(STA);
+% STA = abs(sum(STA, 3));
+% row = max(STA);
+% col = max(STA');
+% x = find(row == max(row));
+% y = find(col == max(col));
+% center = [y x];
 
-imagesc(STA')
-axis image
-
+% imagesc(STA')
+% axis image
+center_verification = true;
 if center_verification
     title('Click on the center of the STA')
     [x, y] = ginput(1);
