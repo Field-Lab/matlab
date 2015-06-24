@@ -1,45 +1,12 @@
-% GOAL:
-% Modernization of glm_AH/newtestcode/comparemodels.m
-%
-% CALLS:
-% GLM_settings, GLM_fitname NSEM_BaseDirectories cell_list
-% Standard Bookkeeping
-
-% Version_2  Works! Automatically plots 2 versions (detailed, summary)
-%            over all experiments and single populations
-% Version_1  Cleaner Calling.. automatically plot everything
-% Version_0  Works, produces a single plot.  2015-06-18
-%  Continuation of hack_comparemodels_2
-
-
 % Calling Sequences
 %{
-clear ; close all; clc;
-%comparison_name = 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'; 
-metrics = [1 2 3 4 5 6]; 
-comparison_name = 'WNvsNSEM-standardGLM'; 
-%metrics = [2 5];
-cellselection_type = 'glmconv4pct';
-for i_metric = metrics
-    if i_metric == 1, metric = 'BPS_divideCRM'; end
-    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
-    if i_metric == 4, metric = 'FracVar10msec'; end
-    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
-    if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
-end
-
-
-%cellselection_type = 'glmconv4pct';
-%cellselection_type = 'all';
-%cellselection_type = 'shortlist';
 
 clear ; close all; clc;
+comparison_name = 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1';
+%clear; close all; clc
+%comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU';
 cellselection_type = 'glmconv4pct';
-comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WN-standardGLM-PSConstrain-Sub1';
+rundir = pwd;
 metrics = [1 3 4];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
@@ -48,12 +15,11 @@ for i_metric = metrics
     if i_metric == 4, metric = 'FracVar10msec'; end
     if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
     if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
+    [model_comparison, outputnotes] = delta_WNvsNSEM(comparison_name,metric,cellselection_type)
 end
 %}
 
-
-function [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
+function [model_comparison, outputnotes] = delta_WNvsNSEM(comparison_name,metric,cellselection_type)
 %% UNPACKING Comparison and Metic
 outputnotes.read = 'Readout of which model fits still need to have scores aggregated';
 outputnotes.problem_counter = 0;
@@ -62,72 +28,28 @@ celltypes = [1 2];
 plotparams.exps = exps;
 plotparams.celltypes = celltypes;
 
+
+plotparams.xlabel             = 'White Noise';
+plotparams.ylabel             = 'Natural Scenes';
+
 % Unpack comparison_name
-if strcmp(comparison_name, 'WNvsNSEM-standardGLM')
+if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings = {};
-    models{1}.fit_type = 'WN';
     models{2}.settings = {};
-    models{2}.fit_type = 'NSEM';
-    plotparams.xlabel             = 'White Noise';
-    plotparams.ylabel             = 'Natural Scenes';
-    plotparams.title_comparison   = 'Standard GLM (no coupling)';
-    plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, no coupling)';
-end
-if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
-    models{1}.settings{1}.type = 'PostSpikeFilter';
-    models{1}.settings{1}.name =  'OFF';
-    models{1}.fit_type = 'WN';
-    models{1}.special_arg = 'Logistic_fixMU';
-    models{2}.settings{1}.type = 'PostSpikeFilter';
-    models{2}.settings{1}.name =  'OFF';
-    models{2}.fit_type = 'NSEM';
-    models{2}.special_arg         = 'Logistic_fixMU';
-    plotparams.xlabel             = 'White Noise';
-    plotparams.ylabel             = 'Natural Scenes';
-    plotparams.title_comparison   = 'LN with Logistic';
-    plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
-end
-
-if strcmp(comparison_name, 'NSEM-standardGLM-PSConstrain-Sub1')
-    models{1}.settings = {};
-    models{1}.fit_type = 'NSEM';
-    models{2}.settings= {};
-    models{2}.fit_type = 'NSEM';
-    models{2}.special_arg         = 'PS_Constrain_sub1';
-    plotparams.xlabel             = 'standard GLM';
-    plotparams.ylabel             = 'Constrained PS';
-    plotparams.title_comparison   = 'Crude Constrain PS Filter';
-    plotparams.purpose            = 'Check NSEM magnitude of performance dip from crudely forcing PS filter to have net gain <= 1';
-end
-
-
-if strcmp(comparison_name, 'WN-standardGLM-PSConstrain-Sub1')
-    models{1}.settings = {};
-    models{1}.fit_type = 'WN';
-    models{2}.settings= {};
-    models{2}.fit_type = 'WN';
-    models{2}.special_arg         = 'PS_Constrain_sub1';
-    plotparams.xlabel             = 'standard GLM';
-    plotparams.ylabel             = 'Constrained PS';
-    plotparams.title_comparison   = 'Crude Constrain PS Filter';
-    plotparams.purpose            = 'Check WN magnitude of performance dip from crudely forcing PS filter to have net gain <= 1';
-end
-
-if strcmp(comparison_name, 'WNvsNSEM-standardGLM-PSConstrain-Sub1')
-    models{1}.settings={};
-    models{1}.fit_type = 'WN';
-    models{1}.special_arg = 'PS_Constrain_sub1';
-    models{2}.settings = {};
-    models{2}.fit_type = 'NSEM';
-    models{2}.special_arg         = 'PS_Constrain_sub1';
-    plotparams.xlabel             = 'White Noise';
-    plotparams.ylabel             = 'Natural Scenes';
-    plotparams.title_comparison   = 'Crude Constrain PS Filter';
+    models{2}.special_arg = 'PS_Constrain_sub1';
+    plotparams.title_comparison   = 'Crude PS Constraint';
     plotparams.purpose            = 'Verify that crude constraining of PS Filter still tells same story of WN vs NSEM';
 end
 
-
-
+if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{2}.settings{1}.type = 'PostSpikeFilter';
+    models{2}.settings{1}.name =  'OFF';
+    models{2}.special_arg         = 'Logistic_fixMU';
+    plotparams.title_comparison   = 'LN with Logistic';
+    plotparams.purpose            = 'Change in WN vs NSEM with modulation of Non-Linearity';
+end
 
 
 % Unpack metric
@@ -220,7 +142,6 @@ models{2}.fitname         = GLM_fitname(models{2}.GLMType);
 if isfield(models{2}, 'special_arg') 
     models{2}.fitname = sprintf('%s/%s', models{2}.fitname,models{2}.special_arg);
 end
-
 models{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{1}.fitname);
 models{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{2}.fitname);
 
@@ -308,34 +229,27 @@ for i_exp = exps
             scores_bycelltype{i_celltype}.cids = cell_subset{i_celltype}.subset_cids;
             
             % no way around it
-            if strcmp(models{i_model}.fit_type, 'WN')
-                rawscores_all = aggregated_scores.celltype{i_celltype}.scores_WN;
-            elseif strcmp(models{i_model}.fit_type, 'NSEM')
-                rawscores_all = aggregated_scores.celltype{i_celltype}.scores_NSEM;
-            end
-            rawscores_subset = rawscores_all(cell_subset{i_celltype}.subset_indices);
+            % Column 1 is White Noise, Column 2 is Natural Scenes
+            rawscores_all = [aggregated_scores.celltype{i_celltype}.scores_WN, aggregated_scores.celltype{i_celltype}.scores_NSEM];
+            rawscores_subset = rawscores_all(cell_subset{i_celltype}.subset_indices,:);
             
             if normalize.doit
-                if strcmp(models{i_model}.fit_type, 'WN')
-                    normalizers_struct = raster_scores.celltype{i_celltype}.scores_WN;
-                elseif strcmp(models{i_model}.fit_type, 'NSEM')
-                    normalizers_struct = raster_scores.celltype{i_celltype}.scores_NSEM;
-                end
+                norm_WN   = raster_scores.celltype{i_celltype}.scores_WN;
+                norm_NSEM = raster_scores.celltype{i_celltype}.scores_NSEM;
+                
                 % super hack no way around it for now 
                 if strcmp(normalize.extension,'uop_bps')
-                    normalizers_all = normalizers_struct.uop_bps;
+                    normalizers_all = [norm_WN.uop_bps norm_NSEM.uop_bps];
                 elseif strcmp(normalize.extension,'crm_bps')
-                    normalizers_all = normalizers_struct.crm_bps;
-                elseif strcmp(normalize.extension,'crm_bps')
-                    normalizers_all = normalizers_struct.crm_bps;
+                    normalizers_all = [norm_WN.crm_bps norm_NSEM.crm_bps];
                 elseif strcmp(normalize.extension,'rast_vspkd')
-                    normalizers_all = normalizers_struct.rast_vspkd;
+                    normalizers_all = [norm_WN.rast_vspkd norm_NSEM.rast_vspkd];
                 elseif isempty(normalize.extension)
-                    normalizers_all = normalizers_struct;
+                    normalizers_all = [norm_WN norm_NSEM];
                 else
                     error('Normalizers Extension is not Properly Defined!');
                 end
-                normalizers_subset = normalizers_all(cell_subset{i_celltype}.subset_indices);
+                normalizers_subset = normalizers_all(cell_subset{i_celltype}.subset_indices,:);
             end
            
             % Define the final score
@@ -406,8 +320,8 @@ printname_notext = sprintf('%s_NOTEXT',printname_base);
 printname_fullplot = sprintf('%s_FULLPLOTS',printname_base);
 
 cd(savedir)
-subR_plotcomparison_nolabels(model_comparison,plotparams,printname_notext);
-subR_plotcomparison_fullplots(model_comparison,plotparams,printname_fullplot);
+subR_plotdeltaWNNSEM_nolabels(model_comparison,plotparams,printname_notext);
+subR_plotdeltaWNNSEM_fullplots(model_comparison,plotparams,printname_fullplot);
 cd(homedir)
 
 % hack to get plot without the 2013-10-10-0
@@ -419,8 +333,8 @@ if strcmp(expstring, 'expsABCD')
     printname_fullplot = sprintf('%s_%s_FULLPLOTS',savename,expstring_no4);
     
     cd(savedir)
-    subR_plotcomparison_nolabels(model_comparison,plotparams_no4,printname_notext);
-    subR_plotcomparison_fullplots(model_comparison,plotparams_no4,printname_fullplot);
+    subR_plotdeltaWNNSEM_nolabels(model_comparison,plotparams_no4,printname_notext);
+    subR_plotdeltaWNNSEM_fullplots(model_comparison,plotparams_no4,printname_fullplot);
     cd(homedir)
     clear expstring_no4 plotparams_no4
 end
@@ -441,8 +355,8 @@ for i_exp = 1:length(plotparams.exps)
         printname_notext = sprintf('%s_%s_%s_NOTEXT',savename,expstring,celltypestring);
         printname_fullplot = sprintf('%s_%s_%s_FULLPLOTS',savename,expstring,celltypestring);
         cd(savedir)
-        subR_plotcomparison_nolabels(model_comparison,subset_params,printname_notext);
-        subR_plotcomparison_fullplots(model_comparison,subset_params,printname_fullplot);
+        subR_plotdeltaWNNSEM_nolabels(model_comparison,subset_params,printname_notext);
+        subR_plotdeltaWNNSEM_fullplots(model_comparison,subset_params,printname_fullplot);
         cd(homedir)
         
     end
@@ -450,7 +364,7 @@ end
 
 end
 
-function subR_plotcomparison_nolabels(model_comparison,plotparams,printname)
+function subR_plotdeltaWNNSEM_nolabels(model_comparison,plotparams,printname)
 % subRoutine form done 2015-06-18 AKHeitman
 % PreSet plotting limits, clean colors etc.
 % Main Call: only reference to model_comparison structure 
@@ -459,8 +373,9 @@ function subR_plotcomparison_nolabels(model_comparison,plotparams,printname)
 % plot_entries
 
 colors = {'r.','g.','b.','c.'};
-MS_A = 12;
-MS_B = 30; 
+MS_A = 14;
+MS_B = 24;
+MS_C = 30;
 clf; hold on
 axis square
 low_lim  = -Inf;
@@ -489,12 +404,32 @@ for i_exp = plotparams.exps
         scores1(find(scores1>=high_lim)) = high_lim;
         scores2(find(scores2>=high_lim)) = high_lim;
         
-        plot(scores1, scores2, colorstring, 'markersize', MS_B);
+        plot(scores1(:,1), scores1(:,2), colorstring, 'markersize', MS_B);
         if i_celltype == 1
-            plot(scores1, scores2, 'w.', 'markersize', MS_A);
+            plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores1(:,1), scores1(:,2),'w.', 'markersize', MS_A);
         elseif i_celltype == 2
-            plot(scores1, scores2, 'k.', 'markersize', MS_A);
-        end            
+            plot(scores1(:,1), scores1(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
+        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+            plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        check = size(scores1,1) - size(scores2,1);
+        if check == 0
+            for i_cell = 1:size(scores1,1)
+                delta_x   = linspace(scores1(i_cell,1),scores2(i_cell,1),100);
+                delta_y   = linspace(scores1(i_cell,2),scores2(i_cell,2),100);
+                plot(delta_x,delta_y, 'k')
+            end
+        end
+        
     end
 end
 orient portrait
@@ -502,7 +437,7 @@ eval(sprintf('print -dpdf plot_%s.pdf',printname))
 end
 
 
-function subR_plotcomparison_fullplots(model_comparison,plotparams,printname)
+function subR_plotdeltaWNNSEM_fullplots(model_comparison,plotparams,printname)
 % subRoutine form done 2015-06-18 AKHeitman
 % PreSet plotting limits, clean colors etc.
 % Main Call: only reference to model_comparison structure 
@@ -516,10 +451,10 @@ delta = .15;
 c=0;   text(-.1, 1-delta*c,sprintf('PURPOSE: %s', plotparams.purpose ));
 c=c+1; text(-.1, 1-delta*c,sprintf('Metric: %s,  Comparison Title: %s',...
     model_comparison.metric, model_comparison.comparison_name ),'interpreter','none');
-c=c+1; text(-.1, 1-delta*c,sprintf('X-axis: %s Fit: %s',...
-    model_comparison.models{1}.fit_type,model_comparison.models{1}.fitname),'interpreter','none');
-c=c+1; text(-.1, 1-delta*c,sprintf('Y-axis: %s Fit: %s',...
-    model_comparison.models{2}.fit_type,model_comparison.models{2}.fitname),'interpreter','none');
+c=c+1; text(-.1, 1-delta*c,sprintf('Old Points (no black highlight): %s',...
+    model_comparison.models{1}.fitname),'interpreter','none');
+c=c+1; text(-.1, 1-delta*c,sprintf('New Points (with black highlight): %s',...
+    model_comparison.models{2}.fitname),'interpreter','none');
 c=c+1; text(-.1, 1-delta*c,...
     'Outer Dot Color: { (Red: 2012-08-09-3), (Green: 2012-09-27-3), (Blue: 2013-08-19-6), (Cyan: 2013-10-10-0) }','interpreter','none');
 c=c+1; text(-.1, 1-delta*c,...
@@ -530,8 +465,9 @@ c=c+1; text(-.1, 1-delta*c,sprintf('Mfile: %s', mfilename('fullpath')),'interpre
 
 
 colors = {'r.','g.','b.','c.'};
-MS_A = 10;
+MS_A = 14;
 MS_B = 24;
+MS_C = 28;
 low_lim  = -Inf;
 high_lim = Inf;
 if isfield(plotparams, 'low_lim')
@@ -564,20 +500,42 @@ end
 plot(linspace(minval,maxval,100),linspace(minval,maxval,100),'k');
 xlim([minval, maxval]);
 ylim([minval, maxval]);
+
 for i_exp = plotparams.exps
     colorstring = colors{i_exp};
     for i_celltype = plotparams.celltypes
         scores1 = model_comparison.byexpnm{i_exp}.scores_bycelltype{i_celltype}.finalscores_model1;
         scores2 = model_comparison.byexpnm{i_exp}.scores_bycelltype{i_celltype}.finalscores_model2;
-        plot(scores1, scores2, colorstring, 'markersize', MS_B);
+
+       
+        plot(scores1(:,1), scores1(:,2), colorstring, 'markersize', MS_B);
         if i_celltype == 1
-            plot(scores1, scores2, 'w.', 'markersize', MS_A);
+            plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores1(:,1), scores1(:,2),'w.', 'markersize', MS_A);
         elseif i_celltype == 2
-            plot(scores1, scores2, 'k.', 'markersize', MS_A);
-        end            
+            plot(scores1(:,1), scores1(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
+        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+            plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        check = size(scores1,1) - size(scores2,1);
+        if check == 0
+            for i_cell = 1:size(scores1,1)
+                delta_x   = linspace(scores1(i_cell,1),scores2(i_cell,1),100);
+                delta_y   = linspace(scores1(i_cell,2),scores2(i_cell,2),100);
+                plot(delta_x,delta_y, 'k')
+            end
+        end
+        
     end
 end
-
 
 
 subplot(3,2,[4 6]);
@@ -590,6 +548,9 @@ xlabel(plotparams.xlabel);
 ylabel(plotparams.ylabel);
 title(sprintf('%s: Truncate Extreme Values', plotparams.title)); 
 plot(linspace(low_lim, high_lim,100),linspace(low_lim, high_lim,100),'k');
+
+
+
 for i_exp = plotparams.exps
     colorstring = colors{i_exp};
     for i_celltype = plotparams.celltypes
@@ -602,14 +563,35 @@ for i_exp = plotparams.exps
         scores1(find(scores1>=high_lim)) = high_lim;
         scores2(find(scores2>=high_lim)) = high_lim;
         
-        plot(scores1, scores2, colorstring, 'markersize', MS_B);
+        plot(scores1(:,1), scores1(:,2), colorstring, 'markersize', MS_B);
         if i_celltype == 1
-            plot(scores1, scores2, 'w.', 'markersize', MS_A);
+            plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores1(:,1), scores1(:,2),'w.', 'markersize', MS_A);
         elseif i_celltype == 2
-            plot(scores1, scores2, 'k.', 'markersize', MS_A);
-        end            
+            plot(scores1(:,1), scores1(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
+        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+            plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        check = size(scores1,1) - size(scores2,1);
+        if check == 0
+            for i_cell = 1:size(scores1,1)
+                delta_x   = linspace(scores1(i_cell,1),scores2(i_cell,1),100);
+                delta_y   = linspace(scores1(i_cell,2),scores2(i_cell,2),100);
+                plot(delta_x,delta_y, 'k')
+            end
+        end
+        
     end
 end
+
 
 orient landscape
 eval(sprintf('print -dpdf plot_%s.pdf',printname))

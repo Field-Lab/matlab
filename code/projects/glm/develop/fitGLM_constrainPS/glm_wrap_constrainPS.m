@@ -36,9 +36,9 @@
 
 %{
 clear
-exps = [3];
+exps = [4];
 stimtypes = [2 1];
-celltypes = [2 1];
+celltypes = [1 2];
 cell_subset = 'glmconv_4pct';
 base_glm_settings = {};
 glm_settings{1}.type = 'PostSpikeFilter';

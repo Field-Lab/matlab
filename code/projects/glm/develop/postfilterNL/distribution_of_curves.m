@@ -2,7 +2,7 @@ clear; close all; clc
 K_vec  = [1/8 .25 .5 1 2 4 8];
 X_vec_ofK = [-4 -2 -1 -.5 0 .5 1 2 4];
 
-SP0 = linspace(0,4,100);
+SP0 = linspace(-4,4,100);
 for i_K = 1:length(K_vec)
     figure; LW = 2
     for i_X0 = 1:length(X_vec_ofK)
@@ -14,7 +14,7 @@ for i_K = 1:length(K_vec)
         
         subplot(3,3, i_X0); hold on
         plot(SP0, logistic_vals, 'r','linewidth', LW)
-        ylim([1,ymax]);  set(gca, 'ytick', [1]);
+        ylim([0,ymax]);  set(gca, 'ytick', [1]);
         set(gca,'fontsize',10)
         title(sprintf('Offset: %d, Slope: %1.1e', X_vec_ofK(i_X0),K));
         
