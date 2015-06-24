@@ -61,7 +61,7 @@ p = inputParser;
 p.addParameter('stim_length', 900)
 p.addParameter('d_save', 0)
 p.addParameter('monitor_refresh', 120)
-p.addParameter('center_verification', false)
+p.addParameter('center_verification', true)
 p.parse(varargin{:});
 stim_length = p.Results.stim_length;
 d_save = p.Results.d_save;
