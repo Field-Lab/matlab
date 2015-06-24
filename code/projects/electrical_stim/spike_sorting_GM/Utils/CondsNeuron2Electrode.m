@@ -11,7 +11,7 @@ end
 for n = 1:nNeurons
     
     for e=prefElectrodes{n}
-        CondsE{e}=[CondsE{e} Conds{prefElectrodes{n}}];
+        CondsE{e}=[CondsE{e} Conds{n}];
     end
 end
 

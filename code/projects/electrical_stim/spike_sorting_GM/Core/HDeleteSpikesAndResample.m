@@ -78,10 +78,13 @@ for n=1:nNeurons
                         
                         continue
                     else
-                        CondExtrapolate =CondDel0;
+                        %CondExtrapolate =CondDel0+1;
                         Gibbs2 = extrapolateFromCondition(Gibbs2,input,n,CondExtrapolate,breakRange);
                         contLog(n)=contLog(n)+1;
-                        Log(n).Heuristic{contLog(n)}=['Deletion led to lack of activation in breakpoint range ' num2str(breakRange) '. Now Going to extrapolate starting at condition ' num2str(CondExtrapolate) ];
+                        %Log(n).Heuristic{contLog(n)}=['Deletion led to lack of activation in breakpoint range ' num2str(breakRange) '. Now Going to extrapolate starting at condition ' num2str(CondExtrapolate) ];
+                         Log(n).Heuristic{contLog(n)}=['Deletion led to lack of activation in breakpoint range ' num2str(breakRange) '. Now Going to Gibbs sample ' num2str(CondExtrapolate) ];
+                        
+                        Gibbs2 = GibbsSamplerSpikesArtifact(Gibbs2);
                         Log(n).params.contLogHeuristic = contLog(n);
                         
                     end
