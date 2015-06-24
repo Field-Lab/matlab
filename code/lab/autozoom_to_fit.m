@@ -23,6 +23,11 @@ if nargin < 5
     aspect_ratio = 1;
 end
 
+if nargin < 6
+   flag = 1;
+end
+
+
 
 % % cell_num = get_cell_indices(datarun, cell_id);
 if flag == 1
