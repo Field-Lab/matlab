@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta_new, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting, cell, num_cells, image, offset_x, offset_y, map, stixel_size, num_colors)
+function [sta_new, timecourse, sig_stixels] = compute_only_sta(datarun, mdf_file, num_frames, spikes, plotting, cell, num_cells, offset_x, offset_y, map, stixel_size, num_colors)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 
 
