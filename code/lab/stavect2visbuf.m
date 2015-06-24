@@ -17,9 +17,9 @@ function buf = stavect2visbuf(stavect, width, height)
 %
 % 2013-06 phli
 %
-
-ind = 1:size(stavect,1);
+stavect_shaped = reshape(stavect, height*width*3, []);
+ind = 1:size(stavect_shaped,1);
 ind = reshape(ind, height, width, []);
 ind = permute(ind, [3 2 1]);
 ind = reshape(ind, [], 1);
-buf = stavect(ind,:);
+buf = stavect_shaped(ind,:);
