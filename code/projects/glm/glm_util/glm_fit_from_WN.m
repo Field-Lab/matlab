@@ -164,19 +164,72 @@ for i_cell = 1:length(cells)
     clear spikes
     fitspikes=spikes_adj;
     clear spikes_adj;
-        
+    
+    % If coupling, load up the neighboring spikes and adjust them to the
+    % triggers
+    [GLMT, ~] = glm_parameters;
+    if GLMT.CouplingFilters
+        cell_ids = zeros(2, length(datarun.spikes));
+        cell_ids(2, :) = 1:length(datarun.spikes);
+        cell_ids(1, :) = datarun.cell_ids;
+        % if you want to only pair a certain cell type, you'd have to change
+        % this to only include the cell_ids and sta_fits of the candidate
+        % cells 
+        paired_cells = subR_pick_neighbor_cells(center_coord, cell_ids, datarun.vision.sta_fits);
+        for i_pair = 1:length(paired_cells)
+            n_block=0;
+            spikes = datarun.spikes{datarun.cell_ids == paired_cells(i_pair)}; 
+            for i=1:(length(datarun.triggers)-1)
+                actual_t_start=datarun.triggers(i);
+                supposed_t_start=n_block*frames_per_trigger/monitor_refresh;
+                idx1=spikes > actual_t_start;
+                idx2=spikes < datarun.triggers(i+1);
+                spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
+                n_block=n_block+1;
+            end
+            neighborspikes{i_pair} = spikes_adj;
+        end
+    else
+        neighborspikes = 0;
+    end
+    
     % Check that everything is working, and automatically find the center
     [STA, center] = STA_Test(fitspikes, fitmovie, center_verification);
     
     % Execute and save GLM
     tic
-    fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh);
+    fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh, 'neighborspikes', neighborspikes);
     toc
+    
+    if GLMT.CouplingFilters
+        fittedGLM.paired_cells = paired_cells;
+    end
     if isstr(d_save)
         eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
     end
     
+    
 end
 
+
+end
+
+function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
+    
+     [~, GLMPars] = glm_parameters;
+     NumCells = length(cell_ids);
+     distance=zeros(NumCells,1);
+     
+     % Calculate distance between RFs
+     for i_pair=1:NumCells
+         distance(i_pair)=norm(sta_fits{cell_ids(2,i_pair),1}.mean-mean);
+         if distance(i_pair)==0
+             distance(i_pair)=NaN; % if it is the cell itself, set distance to infinity
+         end
+     end
+     
+     % Choose the closest cells
+     [~,indices]=sort(distance);
+     paired_cells=cell_ids(1,indices(1:GLMPars.spikefilters.cp.n_couplings));
 
 end
