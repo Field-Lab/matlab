@@ -16,9 +16,9 @@
 %{
 clear ; close all; clc;
 %comparison_name = 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'; 
-metrics = [1 2 3 4 5 6]; 
+%metrics = [1 2 3 4 5 6]; 
 comparison_name = 'WNvsNSEM-standardGLM'; 
-%metrics = [2 5];
+metrics = [1 3 4 6];
 cellselection_type = 'glmconv4pct';
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
@@ -27,7 +27,7 @@ for i_metric = metrics
     if i_metric == 4, metric = 'FracVar10msec'; end
     if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
     if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
+    compareModels(comparison_name, metric,cellselection_type)
 end
 
 
@@ -35,21 +35,10 @@ end
 %cellselection_type = 'all';
 %cellselection_type = 'shortlist';
 
-clear ; close all; clc;
-cellselection_type = 'glmconv4pct';
 comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WN-standardGLM-PSConstrain-Sub1';
-metrics = [1 3 4];
-for i_metric = metrics
-    if i_metric == 1, metric = 'BPS_divideCRM'; end
-    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
-    if i_metric == 4, metric = 'FracVar10msec'; end
-    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
-    if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
-end
+
+
+
 %}
 
 
@@ -77,11 +66,11 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
-    models{1}.special_arg = 'Logistic_fixMU';
+    models{1}.postfilerNL = 'Logistic_fixMU';
     models{2}.settings{1}.type = 'PostSpikeFilter';
     models{2}.settings{1}.name =  'OFF';
     models{2}.fit_type = 'NSEM';
-    models{2}.special_arg         = 'Logistic_fixMU';
+    models{2}.postfilerNL         = 'Logistic_fixMU';
     plotparams.xlabel             = 'White Noise';
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'LN with Logistic';
@@ -93,41 +82,12 @@ if strcmp(comparison_name, 'NSEM-standardGLM-PSConstrain-Sub1')
     models{1}.fit_type = 'NSEM';
     models{2}.settings= {};
     models{2}.fit_type = 'NSEM';
-    models{2}.special_arg         = 'PS_Constrain_sub1';
-    plotparams.xlabel             = 'standard GLM';
-    plotparams.ylabel             = 'Constrained PS';
-    plotparams.title_comparison   = 'Crude Constrain PS Filter';
-    plotparams.purpose            = 'Check NSEM magnitude of performance dip from crudely forcing PS filter to have net gain <= 1';
-end
-
-
-if strcmp(comparison_name, 'WN-standardGLM-PSConstrain-Sub1')
-    models{1}.settings = {};
-    models{1}.fit_type = 'WN';
-    models{2}.settings= {};
-    models{2}.fit_type = 'WN';
-    models{2}.special_arg         = 'PS_Constrain_sub1';
-    plotparams.xlabel             = 'standard GLM';
-    plotparams.ylabel             = 'Constrained PS';
-    plotparams.title_comparison   = 'Crude Constrain PS Filter';
-    plotparams.purpose            = 'Check WN magnitude of performance dip from crudely forcing PS filter to have net gain <= 1';
-end
-
-if strcmp(comparison_name, 'WNvsNSEM-standardGLM-PSConstrain-Sub1')
-    models{1}.settings={};
-    models{1}.fit_type = 'WN';
-    models{1}.special_arg = 'PS_Constrain_sub1';
-    models{2}.settings = {};
-    models{2}.fit_type = 'NSEM';
-    models{2}.special_arg         = 'PS_Constrain_sub1';
+    models{2}.postfilerNL         = 'PS_Contrain_sub1';
     plotparams.xlabel             = 'White Noise';
     plotparams.ylabel             = 'Natural Scenes';
-    plotparams.title_comparison   = 'Crude Constrain PS Filter';
-    plotparams.purpose            = 'Verify that crude constraining of PS Filter still tells same story of WN vs NSEM';
+    plotparams.title_comparison   = 'LN with Logistic';
+    plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
 end
-
-
-
 
 
 % Unpack metric
@@ -212,13 +172,13 @@ clear expstring celltypestring
 
 models{1}.GLMType         = GLM_settings('default',models{1}.settings);
 models{1}.fitname         = GLM_fitname(models{1}.GLMType);
-if isfield(models{1}, 'special_arg') 
-    models{1}.fitname = sprintf('%s/%s', models{1}.fitname,models{1}.special_arg);
+if isfield(models{1}, 'postfilterNL') && strcmp(models{1}.postfilerNL,'Logistic_fixMU')
+    models{1}.fitname = sprintf('%s/Logistic_fixMU', models{1}.fitname);
 end
 models{2}.GLMType         = GLM_settings('default',models{2}.settings);
 models{2}.fitname         = GLM_fitname(models{2}.GLMType);
-if isfield(models{2}, 'special_arg') 
-    models{2}.fitname = sprintf('%s/%s', models{2}.fitname,models{2}.special_arg);
+if isfield(models{1}, 'postfilterNL') && strcmp(models{2}.postfilerNL,'Logistic_fixMU')
+    models{2}.fitname = sprintf('%s/Logistic_fixMU', models{2}.fitname);
 end
 
 models{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{1}.fitname);
@@ -231,7 +191,6 @@ model_comparison.metric          = metric;
 model_comparison.models          = models;
 model_comparison.timestamp       = datestr(clock);
 model_comparison.code_name       = mfilename('fullpath');
-
 %% GET CELLS SQUARED UP
 % Define Cell_Subset structure
 for i_exp = exps
@@ -449,6 +408,7 @@ for i_exp = 1:length(plotparams.exps)
 end
 
 end
+
 
 function subR_plotcomparison_nolabels(model_comparison,plotparams,printname)
 % subRoutine form done 2015-06-18 AKHeitman
