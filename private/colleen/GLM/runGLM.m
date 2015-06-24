@@ -2,6 +2,7 @@
 
 load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/NSEM_mapPRJ/organizedspikes_crap_2748.mat')
 
+
 %2012-08-09-3
 % NSEM_eye-120-3_0-3600 schemeA
 load '/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat';
