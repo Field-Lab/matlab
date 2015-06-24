@@ -14,6 +14,8 @@ function [XI, YI] = eiContour_wLinFit(eiAmps,varargin)
 %              showSoma   default is true, plots the location for the soma
 %              figureNum default creates a new figure, else specify the
 %              figure number (*not* handle) in which to plot
+%              plotCoords %if true, plots black dots at electrode locations
+%              % must be logical true or false
 %  outputs:  XI: vector of 1-D look-up table "x" points
 %            YI: vector of 1-D look-up table "y" points
 %
@@ -31,6 +33,7 @@ numContourLevels = 8;
 linFitThresh = 6; % Default threshold used for calculating piecewise linear fits to the EI
 showSoma = 'true'; 
 figureNum = 0; 
+plotCoords = true; 
 nbin = length(varargin);
 if mod(nbin,2)==1
     err = MException('MATLAB:InvArgIn','Unexpected number of arguments');
@@ -62,6 +65,8 @@ for j=1:(nbin/2)
             showSoma = varargin{j*2}; 
         case 'figurenum'
             figureNum = varargin{j*2}; 
+        case 'plotcoords'
+            plotCoords = varargin{j*2}; 
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -89,7 +94,7 @@ eiAmpsT(find(eiAmpsT>max(eiAmpsT)/threshForContours)) = max(eiAmpsT)/threshForCo
 
 % Generate contour plot in a new figure window
 hex_contour(xc, yc, eiAmpsT, numContourLevels, 'fig_or_axes', figureNum, ...
-    'contourSpacing', 'linear');
+    'contourSpacing', 'linear','plotCoords',plotCoords);
 
 % Calculate linear fit using only eiAmpls above a given threshold
 if size(eiAmps,2) == 1
@@ -124,7 +129,7 @@ COMx = 1/sum(largestAmps) * sum(xx(IA).*aa(IA));
 COMy = 1/sum(largestAmps) * sum(yy(IA).*aa(IA));
 YI(find(YI>max(xc))) = max(xc); 
 YI(find(YI<min(xc))) = min(xc); 
-hold on; plot(YI,XI,'*-','Color','black','LineWidth',2);
+hold on; plot(YI,XI,'-','Color','black','LineWidth',2);
 if showSoma
     hold on; scatter(COMy,COMx,8*mean(largestAmps), 'black','filled');
 end
