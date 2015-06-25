@@ -215,7 +215,7 @@ pathnames = {'/Volumes/Analysis/2012-09-24-3/data003/elecResp_n3457_p129.mat';
 '/Volumes/Analysis/2012-09-24-3/data006/elecResp_n6439_p508.mat';
 '/Volumes/Analysis/2012-09-24-3/data006/elecResp_n6439_p509.mat'}; 
 %%
-for p = 147:length(pathnames)
+for p = 1:length(pathnames)
     
     
     clear input
