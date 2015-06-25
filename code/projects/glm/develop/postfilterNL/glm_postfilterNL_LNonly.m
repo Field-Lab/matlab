@@ -54,7 +54,37 @@ baseGLM.settings = {};
 %baseGLM.settings{1}.name =  'OFF';
 postfilterNL.type        = 'Logistic_fixMU_noPS';
 %postfilterNL.type        = 'PieceLinear_FourPieces_2STD';
+runoptions.print         = true;
+glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
 
+clear
+exps = [1 2]; 
+stimtypes = [1 2];
+celltypes = [1 2];
+cell_subset = 'all';
+%cell_subset = 'glmconv_4pct';
+postfilterNL.debug = false;
+postfilterNL.type        = 'Logistic_fixMU_noPS';
+baseGLM.settings{1}.type = 'cone_model';
+baseGLM.settings{1}.name = 'rieke_linear'
+baseGLM.settings{2}.type = 'input_pt_nonlinearity';
+baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+runoptions.print         = true;
+glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
+
+
+clear
+exps = [2]; 
+stimtypes = [2 1];
+celltypes = [2 1];
+%cell_subset = 'all';
+cell_subset = 'glmconv_4pct';
+postfilterNL.debug = false;
+postfilterNL.type        = 'Logistic_fixMU_noPS';
+baseGLM.settings{1}.type = 'cone_model';
+baseGLM.settings{1}.name = 'rieke_linear'
+baseGLM.settings{2}.type = 'input_pt_nonlinearity';
+baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
 runoptions.print         = true;
 glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
 
@@ -182,7 +212,7 @@ for i_exp = exps
                     optim_struct = optimset(...
                     'derivativecheck','off','diagnostics','off',...  % 
                     'display','off','funvalcheck','off',... 
-                    'MaxIter',100,'TolFun',10^(-6),'TolX',10^(-12) );
+                    'MaxIter',100,'TolFun',10^(-6),'TolX',10^(-9) );
                     
                     display('Running refit of tonic drive without the PS Filter')
                     [SCALARS_OPT, new_objval, eflag, output] = fmincon(@(SCALARS) subR_rescale_stim...
