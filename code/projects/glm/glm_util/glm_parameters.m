@@ -8,7 +8,7 @@ GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
-GLMT.CouplingFilters = false;
+GLMT.CouplingFilters = true;
 
 % Use this to do a quick check that things are right
 GLMT.debug      = true;
