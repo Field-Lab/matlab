@@ -149,7 +149,7 @@ end
 % CONVEXT OPTIMIZATION
 if GLMType.CONVEX
     glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
-    % Maybe move this inside of the stimulus preparation % 
+    % Maybe move this inside of the stimulus preparation %
     bpf         = GLMPars.bins_per_frame;
     shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
     if isfield(GLMPars.stimfilter,'frames_negative')
@@ -168,7 +168,7 @@ if GLMType.CONVEX
         glm_covariate_vec( paramind.PS , : ) = PS_bin;
     end
     % NBCoupling 05-28-14
-    if isfield(paramind, 'CP') 
+    if isfield(paramind, 'CP')
         for j_pair=1:GLMPars.spikefilters.cp.n_couplings
             glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
         end
@@ -179,11 +179,11 @@ if GLMType.CONVEX
         ROIcoord        = ROI_coord(20, glm_cellinfo.slave_centercoord, stimsize);
         % C_shift = zeros(bins,1);
         contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
-%         for i_bin = 1:bins
-%             if i_bin > 99
-%                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
-%             end
-%         end
+        %         for i_bin = 1:bins
+        %             if i_bin > 99
+        %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
+        %             end
+        %         end
         glm_covariate_vec(paramind.C, :) = contrast;
     end
     
@@ -194,7 +194,7 @@ if GLMType.CONVEX
     if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
         [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
             (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
-        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);        
+        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
     end
 end
 
@@ -234,7 +234,7 @@ if ~GLMType.CONVEX
     filtertype = GLMType.stimfilter_mode;
     
     iterate = 1;
-while iterate < 2
+    while iterate < 2
         
         % Fit the "normal" parts of GLM: linear stim filter, PS filter,
         % CP filter, etc
@@ -255,9 +255,9 @@ while iterate < 2
             p_init_SU     = .01* ones(GLMPars.subunit_size^2,1);
             SU_cov = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord); % maybe eventually should add other filters to be fit again here? eg coupling
             convex_cov_SU = imresize(SU_cov, [9 bins],'nearest');
-
+            
             % Do optimization
-            [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_convex_optimizationfunction(p_SU,convex_cov_SU,home_spbins,t_bin),p_init_SU,optim_struct);
+            [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction(p_SU,convex_cov_SU,home_spbins,t_bin),p_init_SU,optim_struct);
             
             % Unpack the subunit filter
             SU_filter = reshape(pstar_SU(paramind.SU), [GLMPars.subunit_size, GLMPars.subunit_size]);

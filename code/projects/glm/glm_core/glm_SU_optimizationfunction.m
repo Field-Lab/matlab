@@ -1,4 +1,4 @@
-function  [f grad Hess log_cif]= glm_SU_optimizationfunction(linear_params,covariates,spikebins,bin_duration)
+function  [f grad Hess log_cif] = glm_SU_optimizationfunction(SU_params, SU_covariates, pooling_weights, spikebins, bin_duration, non_stim_lcif)
  %%% PURPOSE %%%
 % Compute the Objective Function being optimized (f)
 % Compute the grad/hess as well for the optimizer
@@ -22,38 +22,50 @@ function  [f grad Hess log_cif]= glm_SU_optimizationfunction(linear_params,covar
 
 % AKHEITMAN 2014-12-04
 %%
+
 % Initialize
-p = linear_params;
-COV = covariates;
 dt = bin_duration;
 spt = spikebins;
+SU_covariates = imresize(SU_covariates, [1, length(non_stim_lcif)],'nearest');
 
-f_eval = 0;
-hessbase = zeros(size(COV));
+% hessbase = zeros(size(COV));
 
 % Find Conditional Intensity and its log
-for i = 1:length(p)
-    lcif = p * COV(i,:);
-    cif  = exp(lcif);
+pixels = SU_covariates;
+for i = 1:length(SU_params)
+    SU_covariates(i, :, :) = SU_covariates(i, :, :) * SU_params(i);
 end
-    
-    % Evaluate the objective function (monotonic in log-likelihood)
-    f_eval = f_eval + sum( lcif(spt) ) - dt * sum(cif);
-    
-    % Evaluate the gradient
-    g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
-    
-    % Evaluate the hessian
-    hessbase(i_vec,:) = sqrt(cif) .* COV(i_vec,:) ;
+stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
+lcif = stim_lcif + non_stim_lcif;
+
+% Evaluate the objective function (monotonic in log-likelihood)
+f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
+% 
+% % Evaluate the gradient
+
+% gradient of the lcif
+del_lcif = zeros(9, length(SU_covariates));
+subunit_drive = exp(squeeze(sum(SU_covariates,1)));
+for i_SU = 1:9
+    for i_loc = 1:121
+        temp = pooling_weights(i_loc)*pixels(i_SU,i_loc,:).*subunit_drive(i_loc,:);
+        del_lcif(i_SU,:) = del_cif(i_SU,:)+temp;
+    end
 end
+g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
+% 
+% % Evaluate the hessian
+% hessbase(i_vec,:) = sqrt(cif) .* COV(i_vec,:) ;
+% 
+% H_eval = -dt * (hessbase * hessbase');
+% 
 
 
-H_eval = -dt * (hessbase * hessbase');
-
+%%
 
 % Switch signs because using a minimizer  fmin
 f       = -f_eval;
-grad    = -g_eval;
-Hess    = -H_eval;
-log_cif = lcif;
+% grad    = -g_eval;
+% Hess    = -H_eval;
+% log_cif = lcif;
 end
