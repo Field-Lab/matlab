@@ -1,4 +1,9 @@
 function NLOutput = LogFixMu_fmincon(NL_Input,home_spbins,t_bin)
+% 2015-06-24  AKHeitman
+
+% NL_Input needs: y_int (value with no drive)
+%                input_test(corresponding input to the NL for fit data)
+%                input_fit(corresponding input to the NL for test data) 
 
 optim_struct = optimset(...
                     'derivativecheck','off','diagnostics','off',...  % 
@@ -14,7 +19,7 @@ LOGI_Params0 = [100,1];
 [~, lcif_LOGI_crossvaltest] =  subR_objval_LOGISTIC(LOGI_Params_Opt,...
     NL_Input.y_int,NL_Input.input_test, 0, [],t_bin); 
 
-[new_objval2, lcif_LOGI_fit] =  subR_objval_LOGISTIC(LOGI_Params_Opt,...
+[~, lcif_LOGI_fit] =  subR_objval_LOGISTIC(LOGI_Params_Opt,...
     NL_Input.y_int,NL_Input.input_fit, 0, home_spbins,t_bin); 
 
 
@@ -25,10 +30,10 @@ NLOutput.maxrate = LOGI_Params_Opt(1);
 NLOutput.slope   = LOGI_Params_Opt(2);
 NLOutput.fmincon_output = output;
 NLOutput.eflag = eflag;
-NLOutput.crosvaltest_finalrate = exp(lcif_LOGI_crossvaltest);
+NLOutput.crossvaltest_finalrate = exp(lcif_LOGI_crossvaltest);
 NLOutput.new_objval = new_objval;
-NLOutput.new_objval2 = new_objval2;
 NLOutput.fit_rate = exp(lcif_LOGI_fit);
+NLOutput.codename = mfilename('fullpath');
 clear lcif_LOGI_crossvaltest dummy lowerbound upperbound LOGI_Params0
 % Check Code
 %{

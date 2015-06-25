@@ -7,7 +7,7 @@ comparison_name = 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1';
 %comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU';
 cellselection_type = 'glmconv4pct';
 rundir = pwd;
-metrics = [1 3 4];
+metrics = [2 5];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end

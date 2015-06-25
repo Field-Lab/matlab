@@ -47,7 +47,7 @@
 %{
 
 clear; clc
-exps = [1 2 3 4]; stimtypes = [1 2]; celltypes = [1 2]; 
+exps = [3]; stimtypes = [2]; celltypes = [1 2]; 
 cell_subset = 'all'; postfilterNL.debug = false;
 baseGLM.settings = {};
 %baseGLM.settings{1}.type = 'PostSpikeFilter';
@@ -168,9 +168,6 @@ for i_exp = exps
                 NL_Input.input_fit  = baseGLM.lcif_fit.stim  / std(baseGLM.lcif_fit.stim);
                 NL_Input.input_test = baseGLM.lcif_test.stim / std(baseGLM.lcif_fit.stim);
                 NL_Input.y_int      = exp( baseGLM.lcif_fit.mu(1) );
-                NL_input.rawfilteroutput    = baseGLM.lcif_fit.stim;
-                NL_input.scale_rawtoNLinput = std(baseGLM.lcif_fit.stim);
-                
                 
                 % CAREFULLY CONSTRAINED LOCAL SEARCH
                 if fittedGLM.GLMType.PostSpikeFilter
@@ -185,7 +182,7 @@ for i_exp = exps
                     'MaxIter',100,'TolFun',10^(-6),'TolX',10^(-12) );
                     
                     display('Running refit of tonic drive without the PS Filter')
-                    [SCALARS_OPT, new_objval, eflag, output] = fmincon(@(SCALARS) subR_rescale_stim...
+                    [SCALARS_OPT, new_objval, eflag, output] = fmincon(@(SCALARS) rescale_stim...
                     (SCALARS, lcif_stim0, home_spbins,fittedGLM.t_bin),...
                     SCALARS_INIT,[],[],[],[],lowerbound,upperbound,[],optim_struct);
                     display(sprintf('Tonic Drive with PS %1.2e hz, Without PS %1.2e hz',...
@@ -197,47 +194,169 @@ for i_exp = exps
                 end
 
                 if strcmp(postfilterNL.type, 'Logistic_fixMU_noPS')
-                    NL_Output = LogFixMu_fmincon(NL_Input,home_spbins,t_bin);
+                    NL_Output = LogFixMu_fmincon(NL_Input,home_spbins,t_bin)
                 end
                 
-                fittedGLM_preNL = fittedGLM; 
-                recorded_raster = fittedGLM_preNL.xvalperformance.rasters.recorded;
-                NL_xvalperformance = subR_xvalperformance_LNonly(NL_Output.crossvaltest_finalrate, recorded_raster, fittedGLM_preNL.t_bin);
-                clear fittedGLM recorded_raster
                 
-                % hack to save components in a somewhat consistent manner                
-                fittedGLM.cell_savename        = cell_savename;
-                fittedGLM.cellinfo             = fittedGLM_preNL.cellinfo;
+                fittedGLM_preNL = fittedGLM; 
+                NL_xvalperformance = subR_NLxvalperformance(fittedGLM_preNL,log(NL_Output.crosvaltest_finalrate));
+                clear fittedGLM
+                
+                % hack to save components in a somewhat reproducible manner
+                
+                fittedGLM.cell_savename        = fittedGLM_preNL.cell_savename;
                 fittedGLM.nonlinearity         = postfilterNL.type;
                 fittedGLM.NL_Output            = NL_Output;
-                fittedGLM.xvalperformance      = NL_xvalperformance;
+                fittedGLM.stim_cif_withNL_fit  = NL_Output.fit_rate;
+                fittedGLM.stim_cif_withNL_test = NL_Output.crossvaltest_finalrate;
                 
-                fittedGLM.stimtransform.normalized_filteroutput_fit= NL_Input.input_fit;
-                fittedGLM.stimtransform.cif_withNL_fit             = NL_Output.fit_rate;
-                fittedGLM.stimtransform.cif_rawGLM_fit             = exp( std(baseGLM.lcif_fit.stim) * NL_Input.input_fit  + baseGLM.lcif_fit.mu(1) );
-                fittedGLM.stimtransform.cif_withNL_test            = NL_Output.crossvaltest_finalrate;
-                fittedGLM.stimtransform.cif_rawGLM_test            = exp( std(baseGLM.lcif_fit.stim) * NL_Input.input_test + baseGLM.lcif_fit.mu(1) );
-                fittedGLM.stimtransform.inputNL                    = NL_Input;
-                
-                fittedGLM.t_bin                = fittedGLM_preNL.t_bin;
-                fittedGLM.bins_per_frame       = fittedGLM_preNL.bins_per_frame;
-                fittedGLM.rawfit.objective_val = NL_Output.new_objval;
                 fittedGLM.fit_time    = datestr(clock);
                 fittedGLM.writingcode =  mfilename('fullpath');
-                fittedGLM.linearfilters.Stimulus         = fittedGLM_preNL.linearfilters.Stimulus ;
-                fittedGLM.linearfilters.Stimulus_rescale = NL_input.scale_rawtoNLinput;
+                fittedGLM.linearfilters.Stimulus         = fittedGLM_preNL.Stimulus 
+                fittedGLM.linearfilters.Stimulus_rescale = std(baseGLM.lcif_fit.stim);
                 fittedGLM.linearfilters.Stimulus_rescalenote = ...
                     'multiply stimfilter by rescaler,convolve with stim, retrieve pre-Nonlinearity rate';
                 fittedGLM.d_save = savedir;
                 
-                savename = sprintf('%s/%s',savedir, cell_savename);
-                eval(sprintf('save %s.mat fittedGLM fittedGLM_preNL', savename));
                 
-                if runoptions.print
-                    subR_plotfittedNL(fittedGLM, fittedGLM_preNL, savedir)
-                end
+                
                 
 
+                
+                NL_xvalperformance.type = postfilterNL.type;
+                NL_xvalperformance.objval_glm_withNL = new_objval;
+                NL_xvalperformance.objval_glm        = baseGLM.objval;
+                savename = sprintf('%s/%s',savedir, cell_savename);
+                eval(sprintf('save %s.mat fittedGLM NL_xvalperformance NLParams', savename));
+                
+                
+                plotvec.normed_linearoutput       = sort(NL_Input.input_test);
+                plotvec.rate_standardGLM          = sort(exp( std(baseGLM.lcif_fit.stim) * plotvec.normed_linearoutput + baseGLM.lcif_fit.mu(1) ));
+                plotvec.rate_optNL                = sort(crosvaltest_finalrate);
+                %% PRINT
+                if runoptions.print
+                    printname = sprintf('DiagNLPlot_%s',cell_savename);
+                    clf;          
+                    info    = fittedGLM.cellinfo;
+                    GLMType = fittedGLM.GLMType;
+                    dt = fittedGLM.t_bin;
+                    performance = fittedGLM.xvalperformance;
+                    subplot(3,1,1)
+                    axis off
+                    set(gca, 'fontsize', 12)
+                    bps_NEW = NL_xvalperformance.logprob_glm_withNL_bpspike;
+                    bps_OLD = NL_xvalperformance.logprob_glm_bpspike;
+                    obj_NEW = NL_xvalperformance.objval_glm_withNL;
+                    obj_OLD = NL_xvalperformance.objval_glm;
+                    optNL_describe = NLParams.note_metric;
+                    optNL_string = NLParams.param_string;
+                    delta_c = 1.1;
+                    c = 0;
+                    offset = 0;
+                    text(-offset, 1-0.1*c,sprintf('%s: %s %d: %s-Fit (red): POSTNL refit with %s',...
+                        info.exp_nm, info.celltype,info.cid, GLMType.fit_type, NL_xvalperformance.type), 'interpreter','none')
+                    c = c + delta_c;
+                    text(-offset, 1-0.1*c,sprintf('Red is original GLM, Blue includes Postfilter Nonlinearity'))
+                    c = c + delta_c;
+                    text(-offset, 1-0.1*c,sprintf('BitsPerSpike PctChange:  %d, from %1.2e to %1.2e :: Objval PctChange %d: from %1.2e to %1.2e',...
+                       round(100*(bps_NEW-bps_OLD)/bps_OLD),bps_OLD,bps_NEW,round(100*(obj_NEW-obj_OLD)/obj_OLD),obj_OLD,obj_NEW), 'interpreter','none')
+                    c = c + delta_c;
+                    text(-offset, 1-0.1*c,sprintf('%s', optNL_describe), 'interpreter','none')
+
+                    c = c + delta_c;
+                    text(-offset, 1-0.1*c,sprintf('%s', optNL_string), 'interpreter','none')
+
+                    c = c + delta_c;
+                    text(-offset, 1-0.1*c,sprintf('Original Fit: %s',GLMType.fitname), 'interpreter','none')
+                    c = c + delta_c;
+                    text(-offset, 1-0.1*c,sprintf('NL fit Computated at %s',datestr(clock)), 'interpreter','none')
+                    c = c + delta_c; 
+                    text(-offset, 1-0.1*c,sprintf('Mfile: %s', mfilename('fullpath')), 'interpreter','none' );
+                    LW = 2;
+                    if fittedGLM.GLMType.PostSpikeFilter
+                        subplot(4,4,8)
+                        set(gca, 'fontsize', 10);
+                        bins    = [1:length(PS_OLD)];
+                        time_msec = 1000*dt*bins ;
+                        oneline = ones(1,length(time_msec)); 
+                        plot(time_msec, oneline, 'k-'); hold on
+                        plot(time_msec, exp(PS_OLD),'color', 'r','linewidth', LW);
+                        plot(time_msec, exp(PS_NEW),'color', 'b','linewidth', LW);
+                        xlim([0, time_msec(end)]);
+                        ylim([0, max(1.5, max(max(exp(PS_OLD)),max(exp(PS_NEW))))]);
+                        ylabel('gain'); xlabel('msec'); title('Post Spike Filter')
+                    end
+                    
+                    LW = 2;
+                    x1 = plotvec.normed_linearoutput;
+                    y1 = plotvec.rate_standardGLM;
+                    y2 = plotvec.rate_optNL;
+                    
+                    subplot(3,3,4); set(gca, 'fontsize', 10); hold on;
+                    plot(x1,y1,'r','linewidth',LW); 
+                    plot(x1,y2,'b','linewidth',LW);
+                    xlim([-4,4]);
+                    ylabel('Output (Hz)')
+                    xlabel('StimFilter / std(StimFilter)')
+                    title('Nonlinearity - Central Portion')
+                    
+                    subplot(3,3,5); set(gca, 'fontsize', 10); hold on;
+                    plot(x1,y1,'r','linewidth',LW); 
+                    plot(x1,y2,'b','linewidth',LW);
+                    xlim([ max(min(x1),-10),0]);
+                    ylabel('Output (Hz)')
+                    xlabel('StimFilter / std(StimFilter)')
+                    title('Nonlinearity: Inhibitory Portion')
+                    
+                    subplot(3,3,6); set(gca, 'fontsize', 10); hold on;
+                    plot(x1,y1,'r','linewidth',LW); 
+                    plot(x1,y2,'b','linewidth',LW);
+                    xlim([0,min(10,max(x1))]);
+                    ylabel('Output (Hz)')
+                    xlabel('StimFilter / std(StimFilter)')
+                    title('Nonlinearity: Excitatory Portion')
+                    
+
+                    
+                    
+                    subplot(3,1,3); set (gca, 'fontsize',10)
+                    secs     = 8;
+                     dt = fittedGLM.t_bin;
+                    bins     = 120 * 8 * fittedGLM.bins_per_frame;
+                    rec_rast = NL_xvalperformance.rasters.recorded(:,1:bins);
+                    glm_rast = NL_xvalperformance.rasters.glm_original(:,1:bins); 
+                    NL_rast  = NL_xvalperformance.rasters.glm_withNL(:,1:bins); 
+                    trials   = size(rec_rast,1);
+                    time     = dt*[1:bins];
+                    xlim([0, ceil(time(end))]);
+                    ylim([1 , 3*trials]); hold on
+                    for i_trial = 1:trials
+                        rec1 = time(find(rec_rast(i_trial,:)));
+                        glm1 = time(find(glm_rast(i_trial,:)));
+                        NL1  = time(find(NL_rast(i_trial,:)));
+                        % Plot the raster
+                        plot(rec1, i_trial, 'k.')
+                        
+
+                        yshift = i_trial;
+                        if length(glm1) < 4*length(rec1) 
+                            if length(glm1) > 0
+                                plot(glm1, yshift + trials, 'r.')
+                            end
+                        end
+                        if length(NL1) < 4*length(rec1) 
+                            if length(NL1) > 0
+                                plot(NL1, yshift + 2*trials, 'b.')
+                            end
+                        end
+                    end
+                    xlabel('seconds'); ylabel('trials')
+                    %}
+                    cd(savedir)
+                    orient landscape
+                    eval(sprintf('print -dpdf %s.pdf',printname))
+                    cd(currentdir)
+                end                                   
             end            
         end
     end
@@ -245,130 +364,24 @@ end
 
 end
 
-function subR_plotfittedNL(fittedGLM, fittedGLM_preNL, savedir)
-
-% Cleaned up AKHeitman 2015-06-24
-homedir = pwd;
-clf;  
-printname = sprintf('DiagNLPlot_%s',fittedGLM.cell_savename);
-info    = fittedGLM.cellinfo;
-GLMType = fittedGLM_preNL.GLMType;
-
-% text box
-subplot(3,1,1)
-axis off
-set(gca, 'fontsize', 12)
-obj_NEW = fittedGLM.rawfit.objective_val;
-obj_OLD = fittedGLM_preNL.rawfit.objective_val;
-optNL_describe  = fittedGLM.NL_Output.note_metric;
-optNL_string    = fittedGLM.NL_Output.param_string;
-
-c = 0; offset = 0; delta_c = 1.1;
-text(-offset, 1-0.1*c,sprintf('%s: %s %d: %s-Fit (red): POSTNL refit with %s',...
-    info.exp_nm, info.celltype,info.cid, GLMType.fit_type, fittedGLM.nonlinearity), 'interpreter','none')
-c = c + delta_c;
-text(-offset, 1-0.1*c,sprintf('Red is original GLM, Blue includes Postfilter Nonlinearity'))
-c = c + delta_c;
-text(-offset, 1-0.1*c,sprintf('Objval PctChange %d: from %1.2e to %1.2e',...
-   round(100*(obj_NEW-obj_OLD)/obj_OLD),obj_OLD,obj_NEW), 'interpreter','none')
-c = c + delta_c;
-text(-offset, 1-0.1*c,sprintf('%s', optNL_describe), 'interpreter','none')
-c = c + delta_c;
-text(-offset, 1-0.1*c,sprintf('%s', optNL_string), 'interpreter','none')
-c = c + delta_c;
-text(-offset, 1-0.1*c,sprintf('Original Fit: %s',GLMType.fitname), 'interpreter','none')
-c = c + delta_c;
-text(-offset, 1-0.1*c,sprintf('NL fit Computated at %s',datestr(clock)), 'interpreter','none')
-c = c + delta_c; 
-text(-offset, 1-0.1*c,sprintf('Mfile: %s', mfilename('fullpath')), 'interpreter','none' );
-
-
-
-% plotting non-linearities
-x1 = sort(fittedGLM.stimtransform.normalized_filteroutput_fit); 
-y1 = sort(fittedGLM.stimtransform.cif_rawGLM_fit);
-y2 = sort(fittedGLM.stimtransform.cif_withNL_fit);
-
-LW = 2;
-subplot(3,3,4); set(gca, 'fontsize', 10); hold on;
-plot(x1,y1,'r','linewidth',LW); 
-plot(x1,y2,'b','linewidth',LW);
-xlim([-4,4]);
-ylabel('Output (Hz)')
-xlabel('StimFilter / std(StimFilter)')
-title('Nonlinearity - Central Portion')
-
-subplot(3,3,5); set(gca, 'fontsize', 10); hold on;
-plot(x1,y1,'r','linewidth',LW); 
-plot(x1,y2,'b','linewidth',LW);
-xlim([ max(min(x1),-10),0]);
-ylabel('Output (Hz)')
-xlabel('StimFilter / std(StimFilter)')
-title('Nonlinearity: Inhibitory Portion')
-
-subplot(3,3,6); set(gca, 'fontsize', 10); hold on;
-plot(x1,y1,'r','linewidth',LW); 
-plot(x1,y2,'b','linewidth',LW);
-xlim([0,min(10,max(x1))]);
-ylabel('Output (Hz)')
-xlabel('StimFilter / std(StimFilter)')
-title('Nonlinearity: Excitatory Portion')
-
-
-% plot rasters
-subplot(3,1,3); set (gca, 'fontsize',10)
-secs     = 6;
-dt = fittedGLM.t_bin;
-bins     = 120 * 8 * fittedGLM.bins_per_frame;
-rec_rast = fittedGLM.xvalperformance.rasters.recorded(:,1:bins);
-glm_rast = fittedGLM_preNL.xvalperformance.rasters.glm_sim(:,1:bins);  
-NL_rast  = fittedGLM.xvalperformance.rasters.glm_sim(:,1:bins); 
-trials   = size(rec_rast,1);
-time     = dt*[1:bins];
-xlim([0, ceil(time(end))]);
-ylim([0 , 3*trials]); hold on
-for i_trial = 1:trials
-    rec1 = time(find(rec_rast(i_trial,:)));
-    glm1 = time(find(glm_rast(i_trial,:)));
-    NL1  = time(find(NL_rast(i_trial,:)));
-    % Plot the raster
-    plot(rec1, i_trial, 'k.')
-
-
-    yshift = i_trial;
-    if length(glm1) < 4*length(rec1) 
-        if length(glm1) > 0
-            plot(glm1, yshift + trials, 'r.')
-        end
-    end
-    if length(NL1) < 4*length(rec1) 
-        if length(NL1) > 0
-            plot(NL1, yshift + 2*trials, 'b.')
-        end
-    end
-end
-xlabel('seconds'); ylabel('trials')
-
-cd(savedir)
-orient landscape
-eval(sprintf('print -dpdf %s.pdf',printname))
-cd(homedir)
-end
-function NL_xvalperformance     = subR_xvalperformance_LNonly( stimdrivenrate, logicalspike, t_bin)
-% AKHEITMAN 2015-06-24  it works!
-params.bindur     = t_bin;
-params.bins       = length(stimdrivenrate);
-params.trials     = size(logicalspike,1);
+function NL_xvalperformance     = subR_NLxvalperformance(fittedGLM,lcif_teststim_NEW)
+bpf               = fittedGLM.bins_per_frame;
+params.bindur     = fittedGLM.t_bin;
+params.bins       = length(lcif_teststim_NEW);
+params.trials     = size(fittedGLM.xvalperformance.rasters.recorded,1);
 params.testdur_seconds = params.bindur * params.bins ;   
 
+logicalspike   = fittedGLM.xvalperformance.rasters.recorded;
+raster_GLM_OLD = fittedGLM.xvalperformance.rasters.glm_sim;
+
 % Set log-conditional as stim driven only
-lcif_teststim = log(stimdrivenrate);
-lcif = repmat(lcif_teststim, params.trials,1);  
+lcif_kx = repmat(lcif_teststim_NEW, params.trials,1);  
+lcif    = lcif_kx;
 
 
 % FOR NOW WE IGNORE PS FILTER  LN ONLY!!
 %{
-if PostSpikeFilter
+if fittedGLM.GLMType.PostSpikeFilter
     PS = otherfilters_NEW.PS; 
     lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
     lcif = lcif + lcif_ps;
@@ -389,20 +402,18 @@ glm_bits_perspike = glm_bits / (sum(model_null0));
 glm_bits_perbin   = glm_bits / params.bins;
 glm_bits_persecond   = glm_bits / params.testdur_seconds;
 
-NL_xvalperformance.note = 'Scores include optimized Non-Linearity';
 NL_xvalperformance.logprob_null_raw            = null_logprob;
-NL_xvalperformance.logprob_glm_raw      =  glm_logprob;
-NL_xvalperformance.logprob_glm_bpspike  =  glm_bits_perspike;
-NL_xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
+NL_xvalperformance.logprob_glm_withNL_raw      =  glm_logprob;
+NL_xvalperformance.logprob_glm_withNL_bpspike  =  glm_bits_perspike;
+NL_xvalperformance.logprob_glm_withNL_bpsec    =  glm_bits_persecond;
 
+NL_xvalperformance.logprob_glm_raw     = fittedGLM.xvalperformance.logprob_glm_raw;
+NL_xvalperformance.logprob_glm_bpspike = fittedGLM.xvalperformance.logprob_glm_bpspike;
+NL_xvalperformance.logprob_glm_bpsec   = fittedGLM.xvalperformance.logprob_glm_bpsec;
 
-
-lcif_const  = lcif(1,:);
+lcif_const  = lcif_kx(1,:);
 logical_sim = zeros(params.trials, params.bins);
-
-% FOR NOW WE IGNORE PS FILTER  LN ONLY!!
-%{
-if PostSpikeFilter
+if fittedGLM.GLMType.PostSpikeFilter
     cif_psgain = exp(PS);
     ps_bins     = length(cif_psgain);
     for i_trial = 1 : size(logicalspike,1)
@@ -419,23 +430,23 @@ if PostSpikeFilter
         logical_sim(i_trial,:) = binary_simulation ;
     end
 else
-%}
-for i_trial = 1 : size(logicalspike,1)
-    cif         = exp(lcif_const);         
-    binary_simulation = zeros(1,params.bins);
-    for i = 1 : params.bins;
-        roll = rand(1);
-        if roll >  exp(-params.bindur*cif(i));
-            binary_simulation(i)= 1;
+    for i_trial = 1 : size(logicalspike,1)
+        cif         = exp(lcif_const);         
+        binary_simulation = zeros(1,params.bins);
+        for i = 1 : params.bins;
+            roll = rand(1);
+            if roll >  exp(-params.bindur*cif(i));
+                binary_simulation(i)= 1;
+            end
         end
+        logical_sim(i_trial,:) = binary_simulation ;
     end
-    logical_sim(i_trial,:) = binary_simulation ;
 end
-NL_xvalperformance.rasters.note           = 'glmsim includes altered non-linearity';
 NL_xvalperformance.rasters.recorded       = logicalspike;
-NL_xvalperformance.rasters.glm_sim        = logical_sim;
+NL_xvalperformance.rasters.glm_withNL     = logical_sim;
+NL_xvalperformance.rasters.glm_original   = raster_GLM_OLD;
 NL_xvalperformance.rasters.bintime        = params.bindur;
-end              
+end             
 function [lcif_stim]            = subR_lcifstim_fittedGLM(pstar, GLMType,GLMPars,fitmovie,inputstats,glm_cellinfo)
 
 if isfield(GLMType, 'specialchange') && GLMType.specialchange
