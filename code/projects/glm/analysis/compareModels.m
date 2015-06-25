@@ -37,10 +37,10 @@ end
 
 clear ; close all; clc;
 cellselection_type = 'glmconv4pct';
-comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
+%comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
+comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
 %comparison_name = 'WN-standardGLM-PSConstrain-Sub1';
-metrics = [1 3 4];
+metrics = [2 5];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
