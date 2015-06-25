@@ -1,96 +1,9 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% AKHeitman 2015-04-02
-
-% Creates structure which dictates GLMType
-% Loads cells 
-% Loads stimuli / basic stimuli processing
-% Loads spike trains / basic spike train processing
-% Requires the organizedspikes structure with spike times relative
-%    to start of each block of stimulus
-% No direct GLM Paramater usage
-% Feeds into glm_execute which is located in glm_core directory
-% glm_execute along with glm_core 
-%    which has no additional code dependencies, no loading of matfiles
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Wrap_bookeeping Calls %
-%  NSEM_BaseDirectories
-%  GLM_Settings
-%  GLM_fitname
-%  NSEM_secondaryDirectories
-%  loadmoviematfiles
-%  StimulusParams
-
-% Main Call %
-%   glm_execute  
-
-% Subroutines at bottom of function
-%  subR_concat_fitspikes_fromorganizedspikes
-%  subR_createraster
-%  subR_concat_fitmovie_fromblockedcell
-%  subR_visionSTA_to_xymviCoord
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Unique Subroutine for this wrapper
-%   subR_lcifdecomp_fittedGLM
-%   subR_lcifstim_fittedGLM  (only stimulus portion .. good for testmovie)
-
-
-% Version 4 Finds optimal LN (throws away all other terms)
-% Version 3 Pulled out minimization functions.  Cleaned, but same saving.
-%           2015-06-23
-% Version 2 is last hack to work  (closed ~2015-06-16)
-
-
-% Calling Sequences
 %{
 
-clear; clc
-exps = [1 2 3 4]; stimtypes = [1 2]; celltypes = [1 2]; 
-cell_subset = 'all'; postfilterNL.debug = false;
-baseGLM.settings = {};
-%baseGLM.settings{1}.type = 'PostSpikeFilter';
-%baseGLM.settings{1}.name =  'OFF';
-postfilterNL.type        = 'Logistic_fixMU_noPS';
-%postfilterNL.type        = 'PieceLinear_FourPieces_2STD';
-runoptions.print         = true;
-glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
-
-clear
-exps = [1 2]; 
-stimtypes = [1 2];
-celltypes = [1 2];
-cell_subset = 'all';
-%cell_subset = 'glmconv_4pct';
-postfilterNL.debug = false;
-postfilterNL.type        = 'Logistic_fixMU_noPS';
-baseGLM.settings{1}.type = 'cone_model';
-baseGLM.settings{1}.name = 'rieke_linear'
-baseGLM.settings{2}.type = 'input_pt_nonlinearity';
-baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
-runoptions.print         = true;
-glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
-
-
-clear
-exps = [3]; 
-stimtypes = [2 1];
-celltypes = [2 1];
-%cell_subset = 'all';
-cell_subset = 'glmconv_4pct';
-postfilterNL.debug = false;
-postfilterNL.type        = 'Logistic_fixMU_noPS';
-baseGLM.settings{1}.type = 'cone_model';
-baseGLM.settings{1}.name = 'rieke_linear'
-baseGLM.settings{2}.type = 'input_pt_nonlinearity';
-baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
-runoptions.print         = true;
-glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
-
 %}
+function read_NL_fits(exps,stimtypes,celltypes,cell_subset,baseGLM_settings,postfilterNL,runoptions)
+% started: AKHeitman 2015-06-25
 
-function glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM_settings,postfilterNL,runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -114,28 +27,12 @@ for i_exp = exps
         if i_stimtype == 1, stimtype = 'WN';   end
         if i_stimtype == 2, stimtype = 'NSEM'; end
         baseGLM.Type.fit_type = stimtype;        
-        % Load and process stimulus
-        [StimulusPars, exp_info] = StimulusParams(exp_nm, stimtype, baseGLM.Type.map_type);
-        [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, baseGLM.Type.cone_model,'fitmovie');
-        [testmovie0]          = loadmoviematfile(exp_nm , stimtype, baseGLM.Type.cone_model,'testmovie');
-        testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
         baseGLM.Type.fitmoviefile  = origmatfile;
         if postfilterNL.debug
             display('shorten stimulus for post filter debugging mode')
             StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:2);
         end
-        fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
-        % Directories  
-        secondDir.exp_nm        = exp_nm; 
-        secondDir.map_type      = baseGLM.Type.map_type; 
-        secondDir.stim_type     = stimtype;
-        secondDir.fitname       = baseGLM.Type.fitname;
-        
-        Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
-        Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        Dirs.baseglm            = NSEM_secondaryDirectories('loaddir_GLMfit', secondDir);
-        
-        
+                
         % Hack to get the correct save directory  
         BD_hack = BD;
         if isfield(postfilterNL,'debug') && postfilterNL.debug
@@ -266,7 +163,6 @@ for i_exp = exps
                     subR_plotfittedNL(fittedGLM, fittedGLM_preNL, savedir)
                 end
                 
-
             end            
         end
     end
@@ -382,89 +278,7 @@ cd(savedir)
 orient landscape
 eval(sprintf('print -dpdf %s.pdf',printname))
 cd(homedir)
-end
-function NL_xvalperformance     = subR_xvalperformance_LNonly( stimdrivenrate, logicalspike, t_bin)
-% AKHEITMAN 2015-06-24  it works!
-params.bindur     = t_bin;
-params.bins       = length(stimdrivenrate);
-params.trials     = size(logicalspike,1);
-params.testdur_seconds = params.bindur * params.bins ;   
-
-% Set log-conditional as stim driven only
-lcif_teststim = log(stimdrivenrate);
-lcif = repmat(lcif_teststim, params.trials,1);  
-
-
-% FOR NOW WE IGNORE PS FILTER  LN ONLY!!
-%{
-if PostSpikeFilter
-    PS = otherfilters_NEW.PS; 
-    lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
-    lcif = lcif + lcif_ps;
-end
-%}
-
-glm_ratepersec  = exp(lcif);
-glm_rateperbin  = params.bindur * glm_ratepersec;
-
-spikerate_bin    = size(find(logicalspike(:))) /  size(logicalspike(:));      
-model_null0      = spikerate_bin * ones(1, params.bins);
-model_null       = repmat(model_null0, params.trials, 1);
-null_logprob     = sum(eval_rasterlogprob(logicalspike, model_null, 'binary', 'conditioned'));
-[raster_logprob_bin] = eval_rasterlogprob( logicalspike, glm_rateperbin,  'binary', 'conditioned') ;
-glm_logprob       = sum(raster_logprob_bin);
-glm_bits          = glm_logprob - null_logprob;
-glm_bits_perspike = glm_bits / (sum(model_null0));
-glm_bits_perbin   = glm_bits / params.bins;
-glm_bits_persecond   = glm_bits / params.testdur_seconds;
-
-NL_xvalperformance.note = 'Scores include optimized Non-Linearity';
-NL_xvalperformance.logprob_null_raw            = null_logprob;
-NL_xvalperformance.logprob_glm_raw      =  glm_logprob;
-NL_xvalperformance.logprob_glm_bpspike  =  glm_bits_perspike;
-NL_xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
-
-
-
-lcif_const  = lcif(1,:);
-logical_sim = zeros(params.trials, params.bins);
-
-% FOR NOW WE IGNORE PS FILTER  LN ONLY!!
-%{
-if PostSpikeFilter
-    cif_psgain = exp(PS);
-    ps_bins     = length(cif_psgain);
-    for i_trial = 1 : size(logicalspike,1)
-        cif0         = exp(lcif_const);         
-        cif_ps       = cif0;
-        binary_simulation = zeros(1,params.bins);
-        for i = 1 : params.bins- ps_bins;
-            roll = rand(1);
-            if roll >  exp(-params.bindur*cif_ps(i));
-                cif_ps(i+1: i + ps_bins) =  cif_ps(i+1: i + ps_bins) .* (cif_psgain');
-                binary_simulation(i)= 1;
-            end
-        end
-        logical_sim(i_trial,:) = binary_simulation ;
-    end
-else
-%}
-for i_trial = 1 : size(logicalspike,1)
-    cif         = exp(lcif_const);         
-    binary_simulation = zeros(1,params.bins);
-    for i = 1 : params.bins;
-        roll = rand(1);
-        if roll >  exp(-params.bindur*cif(i));
-            binary_simulation(i)= 1;
-        end
-    end
-    logical_sim(i_trial,:) = binary_simulation ;
-end
-NL_xvalperformance.rasters.note           = 'glmsim includes altered non-linearity';
-NL_xvalperformance.rasters.recorded       = logicalspike;
-NL_xvalperformance.rasters.glm_sim        = logical_sim;
-NL_xvalperformance.rasters.bintime        = params.bindur;
-end              
+end       
 function [lcif_stim]            = subR_lcifstim_fittedGLM(pstar, GLMType,GLMPars,fitmovie,inputstats,glm_cellinfo)
 
 if isfield(GLMType, 'specialchange') && GLMType.specialchange
@@ -592,141 +406,6 @@ if GLMType.CONVEX
 
 end
 
-end
-function [f grad Hess log_cif]  = subr_optimizationfunction(linear_params,covariates,spikebins,bin_duration)
-p = linear_params;
-COV = covariates;
-dt = bin_duration;
-spt = spikebins;
-% Find Conditional Intensity and its log
-lcif = p' * COV;
-cif  = exp(lcif);
-% Evaluate the objective function (monotonic in log-likelihood)
-f_eval = sum( lcif(spt) ) - dt * sum(cif);
-% Evaluate the gradient
-g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
-% Evaluate the hessian
-hessbase = zeros(size(COV));
-for i_vec = 1:size(COV,1)
-    hessbase(i_vec,:) = sqrt(cif) .* COV(i_vec,:) ;
-end
-H_eval = -dt * (hessbase * hessbase');
-% Switch signs because using a minimizer  fmin
-f       = -f_eval;
-grad    = -g_eval;
-Hess    = -H_eval;
-log_cif = lcif;
-end
-function spikesconcat           = subR_concat_fitspikes_fromorganizedspikes(blockedspikes, FitPars)
-% AKHeitman 2014-04-14
-% Concatenate Spikes from different blocks to a single spike train
-% blocekdspikes: needs
-%   .t_sp_withinblock
-%
-% FitPars needs
-%   .fittest_skipseconds
-%   .tstim
-%   .fitframes
-%   .FitBlocks
-
-
-t_start   = FitPars.fittest_skipseconds;
-tstim     = FitPars.computedtstim;
-fitframes = FitPars.fitframes;
-FitBlocks = FitPars.FitBlocks;
-
-
-T_SP = []; blk_count = 0;
-dur = tstim * length(fitframes);
-for k = FitBlocks
-	blk_count = blk_count + 1;
-	t_sp_full = blockedspikes.t_sp_withinblock{k} ; % unit of time: sec, 0 for the onset of the block
-	t_sp      = t_sp_full(find(t_sp_full >  t_start));
-	t_sp = t_sp - t_start;
-	t_spcontext = t_sp + ( blk_count -1 )*dur;
-	T_SP = [T_SP ; t_spcontext];
-end
-spikesconcat = T_SP;
-end
-function raster_spiketimes      = subR_createraster(blockedspikes, TestPars)
-% AKHeitman 2014-04-14
-% Make a raster which takes into account GLM processing
-% blocekdspikes: needs
-%   .t_sp_withinblock
-%
-% TestPars needs
-%   .fittest_skipseconds
-%   .TestBlocks
-
-rasterblocks = TestPars.TestBlocks;
-t_start      = TestPars.fittest_skipseconds;
-
-raster_spiketimes = cell(length(rasterblocks),1);
-
-for i_blk = 1 : length(rasterblocks)
-	blknum = rasterblocks(i_blk);
-	sptimes = blockedspikes.t_sp_withinblock{blknum} - t_start;
-	sptimes = sptimes(find(sptimes > 0 ) );
-    % HACK NEEDED FOR 2013-10-10-0 and other long runs
-    if isfield(TestPars, 'test_skipENDseconds')
-        sptimes = sptimes(find(sptimes < (TestPars.test_skipENDseconds - TestPars.fittest_skipseconds - .1)));
-    end
-    
-    raster_spiketimes{i_blk} = sptimes;
-end 
-
-end
-function concat_fitmovie        = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , FitPars)
-% AKHeitman 2014-04-14
-% Concatenate the fit movie (different blocks)
-% FitPars needs
-%   .width
-%   .height
-%   .FitBlocks
-%   .novelblocks
-%   .fitframes
-
-height       = FitPars.height;
-width        = FitPars.width;
-fitblocks    = FitPars.FitBlocks;
-fitframes    = FitPars.fitframes;
-novelblocks  = FitPars.NovelBlocks;
-
-fitframesperblock = length(fitframes) ;
-totalframes       = length(fitblocks) * ( fitframesperblock) ;
-concat_fullfitMovie = uint8(zeros(width, height, totalframes)) ;
-for i_blk = fitblocks
-        blkind = find(fitblocks == i_blk);
-        framenums = ( (blkind -1)*fitframesperblock + 1 ) :  (blkind *fitframesperblock);  
-        n_blkind = find(novelblocks == i_blk);
-        concat_fullfitMovie(:,:,framenums) = blockedmoviecell{n_blkind}.matrix (:,:, fitframes);    
-end
-
-concat_fitmovie = concat_fullfitMovie;
-
-end
-function [center,sd]            = subR_visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, masterdim, slvdim)
-% AKHeitman  2013-12-08
-% Grab x, y coordinates of STA center of the master
-% Convert to coordinates of the enslaved dataset 
-x_coord   = round( stafit_centercoord(1)* (slvdim.width  /masterdim.width)  );
-y_coord   = slvdim.height - round( stafit_centercoord(2)* (slvdim.height /masterdim.height) );
-
-center.x_coord = x_coord;
-center.y_coord = y_coord;
-
-sd.xdir = round( stafit_sd(1)* (slvdim.width   / masterdim.width)  );
-sd.ydir = round( stafit_sd(2)* (slvdim.height  / masterdim.height)  );
-
-end
-function obj_val = subR_rescale_stim(scalars, lcif_stim0, home_spbins,t_bin)
-
-offset    = scalars(1);
-lcif_stim = scalars(2) * lcif_stim0;
-
-total_lcif = offset + lcif_stim;
-cif        = exp(total_lcif);
-obj_val    = -(sum( total_lcif(home_spbins) ) - t_bin * sum(cif));
 end
 
 

@@ -19,6 +19,9 @@ clear ; close all; clc;
 metrics = [1 2 3 4 5 6]; 
 comparison_name = 'WNvsNSEM-standardGLM'; 
 %metrics = [2 5];
+
+
+comparison_name = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
 cellselection_type = 'glmconv4pct';
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
@@ -39,6 +42,7 @@ clear ; close all; clc;
 cellselection_type = 'glmconv4pct';
 %comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
 comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
+
 %comparison_name = 'WN-standardGLM-PSConstrain-Sub1';
 metrics = [2 5];
 for i_metric = metrics
@@ -50,6 +54,24 @@ for i_metric = metrics
     if i_metric == 6, metric = 'BPS_divideUOP'; end
     [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
 end
+
+clear ; close all; clc;
+% comparison_name  = 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS';
+comparison_name  = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
+
+comparison_name  = 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS';
+metrics = [6];
+cellselection_type = 'all';
+for i_metric = metrics
+    if i_metric == 1, metric = 'BPS_divideCRM'; end
+    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
+    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
+    if i_metric == 4, metric = 'FracVar10msec'; end
+    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
+    if i_metric == 6, metric = 'BPS_divideUOP'; end
+    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
+end
+
 %}
 
 
@@ -88,6 +110,69 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
 end
 
+if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.settings{2}.type = 'input_pt_nonlinearity';
+    models{1}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{1}.special_arg = 'Logistic_fixMU_noPS';
+    models{1}.fit_type = 'WN';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
+    models{2}.fit_type = 'NSEM';
+    
+    plotparams.xlabel             = 'White Noise';
+    plotparams.ylabel             = 'Natural Scenes';
+    plotparams.title_comparison   = 'Full Input and Output optimization, NLN.. no PS';
+    plotparams.purpose            = 'Check WN vs NSEM for optimal poisson cascade NLN';
+end
+    
+    
+if strcmp(comparison_name, 'WNvsNSEM-standardGLM-LogisticfixMUnoPS')
+    
+    models{1}.fit_type = 'WN';
+    models{1}.special_arg = 'Logistic_fixMU_noPS';
+    models{2}.settings = {};
+    models{2}.fit_type = 'NSEM';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
+    plotparams.xlabel             = 'White Noise';
+    plotparams.ylabel             = 'Natural Scenes';
+    plotparams.title_comparison   = 'Logistic_noPS';
+    plotparams.purpose            = 'Check WN vs NSEM for LN optimized after PS filter removal';
+end
+    
+if strcmp(comparison_name, 'NSEM-noPSLogisticfixMU_vsLogisticfixMUnoPS')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'NSEM';
+    models{1}.special_arg = 'Logistic_fixMU';
+    models{2}.settings = {};
+    models{2}.fit_type = 'NSEM';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
+    plotparams.xlabel             = 'GLMwithoutPS then LogisticfixMU';
+    plotparams.ylabel             = 'GLMwithPS then LogisticfixMUnoPS';
+    plotparams.title_comparison   = 'Order of PS removal';
+    plotparams.purpose            = 'See if NSEM LN fitting robust to PS removal';
+end
+if strcmp(comparison_name, 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{1}.special_arg = 'Logistic_fixMU';
+    models{2}.settings = {};
+    models{2}.fit_type = 'WN';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
+    plotparams.xlabel             = 'GLMwithoutPS then LogisticfixMU';
+    plotparams.ylabel             = 'GLMwithPS then LogisticfixMUnoPS';
+    plotparams.title_comparison   = 'Order of PS removal';
+    plotparams.purpose            = 'See if WN LN fitting robust to PS removal';
+end    
+    
+    
 if strcmp(comparison_name, 'NSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings = {};
     models{1}.fit_type = 'NSEM';
