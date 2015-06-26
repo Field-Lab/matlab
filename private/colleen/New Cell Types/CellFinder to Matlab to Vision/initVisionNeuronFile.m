@@ -64,29 +64,18 @@ MAX_CONTAM = 0.1;
 
 % Fill in the Vision header object
 visionHeader.magic = MAGIC;
-visionHeader.headerVersion = 1;%1;
+visionHeader.headerVersion = 1;
 
 % visionHeader.headerCapacity = uint(NEURONS_HEADER_CAPACITY);
 visionHeader.version = int32(VERSION);
-% visionHeader.meanTimeConstant =0%-1;
-% visionHeader.threshold = 0%-1;
-% visionHeader.arrayID = rawDataHeader.getArrayID();
 visionHeader.nSamples = int32(rawDataHeader.getNumberOfSamples());
 visionHeader.samplingFrequency = int32(rawDataHeader.getSamplingFrequency());
 visionHeader.visionVersion = int32(VISION_VERSION);
-% visionHeader.nDimensions = 0%5;
 visionHeader.minNeuronSpikes = double(MIN_SPIKES);
 visionHeader.maxContamination = double(MAX_CONTAM);
-visionHeader.removeDuplicates = int32(1);%-2;
+visionHeader.removeDuplicates = int32(1);
 visionHeader.covarianceType = int32(-2);
-% visionHeader.acfT1 = 0 %0.5;
-% visionHeader.acfT2 = 0% 1;
-% visionHeader.coincidenceTime = 0%1;
-% visionHeader.maxCorrelation = 0%1;
-% visionHeader.time = long(0)%;
-% visionHeader.minCovarianceSpikes =0
-% visionHeader.maxCovarianceSpikes =0
-% visionHeader.electrodeUsage = 1
+
 % TTL times should be integers. Cast them to int32 just in case
 ttlTimes = int32(ttlTimes);
 
