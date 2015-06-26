@@ -1,9 +1,17 @@
 %{
 
-%}
-function read_NL_fits(exps,stimtypes,celltypes,cell_subset,baseGLM_settings,postfilterNL,runoptions)
-% started: AKHeitman 2015-06-25
+clear; clc
+exps = [1 2 3 4]; stimtypes = 'NSEM'; 
+cell_subset = 'glmconv_4pct'; 
+%baseGLM.settings{1}.type = 'PostSpikeFilter';
+%baseGLM.settings{1}.name =  'OFF';
+baseGLM.settings = {};
+postfilterNL.type        = 'Logistic_fixMU_noPS';
+read_NL_fits(exps,stimtypes,cell_subset,baseGLM.settings,postfilterNL)%runoptions)
 
+%}
+function read_NL_fits(exps,stimtype,cell_subset,baseGLM_settings,postfilterNL,runoptions)
+% started: AKHeitman 2015-06-25
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -16,37 +24,33 @@ else
     baseGLM.Type = GLM_settings('default');
 end
 baseGLM.Type.fitname    = GLM_fitname(baseGLM.Type); 
-currentdir = pwd;
 
+Dirs.basedir = sprintf('%s/%s/%s', BD.GLM_output_analysis, ...
+    baseGLM.Type.fitname, postfilterNL.type);
+
+Dirs.home    = pwd;
+Dirs.save    = sprintf('%s/Plots/Fitted_NL/%s', BD.GLM_output_analysis, postfilterNL.type);
+if ~exist(Dirs.save, 'dir'), mkdir(Dirs.save); end
+
+
+% Compute and Save Means and STDS  (OR LOAD IF ALREADY DONE)
+fittedNL_crossprep = cell(4,1);
 for i_exp = exps    
-    for i_stimtype = stimtypes
-        % Load master datarun, bookkeep
-        exp_nm  = allcells{i_exp}.exp_nm;
-        expname = allcells{i_exp}.expname;
-        eval(sprintf('load %s/%s/datarun_master.mat', BD.BlockedSpikes,exp_nm));
-        if i_stimtype == 1, stimtype = 'WN';   end
-        if i_stimtype == 2, stimtype = 'NSEM'; end
-        baseGLM.Type.fit_type = stimtype;        
-        baseGLM.Type.fitmoviefile  = origmatfile;
-        if postfilterNL.debug
-            display('shorten stimulus for post filter debugging mode')
-            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:2);
-        end
-                
-        % Hack to get the correct save directory  
-        BD_hack = BD;
-        if isfield(postfilterNL,'debug') && postfilterNL.debug
-            BD_hack.GLM_output_raw = sprintf('%s/PostFilterNL/dbug_%s', BD.GLM_develop_output_raw,postfilterNL.type)
-        else 
-            BD_hack.GLM_output_raw = sprintf('%s/PostFilterNL/%s', BD.GLM_develop_output_raw,postfilterNL.type);
-        end
-        savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir,'',BD_hack)
-        if ~exist(savedir,'dir'), mkdir(savedir); end
-        
-        
-        
+    % Load master datarun, bookkeep
+    exp_nm  = allcells{i_exp}.exp_nm;
+    expname = allcells{i_exp}.expname;
+    
+    savename    = sprintf('%s_%s',cell_subset,exp_nm);
+    matfilename = sprintf('%s/%s.mat',Dirs.save,savename);
+    
+    if exist(matfilename)
+        eval(sprintf('load %s/%s.mat fittedNL', Dirs.save, savename));
+        fittedNL_crossprep{i_exp} = fittedNL;
+    else
+        Dirs.loadfits = sprintf('%s/%s_mapPRJ/%s', Dirs.basedir,stimtype,exp_nm);
+        fittedNL = allcells{i_exp};
         % Loop through cells 
-        for i_celltype = celltypes            
+        for i_celltype = [1 2];            
             if i_celltype == 1; cellgroup = allcells{i_exp}.ONP;  celltype = 'ONPar'; end
             if i_celltype == 2; cellgroup = allcells{i_exp}.OFFP; celltype = 'OFFPar'; end
             if strcmp(cell_subset,'all')
@@ -61,116 +65,113 @@ for i_exp = exps
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
             end
-            cellgroup = intersect(candidate_cells, cellgroup)
+            cellgroup = intersect(candidate_cells, cellgroup);
+
+            NL.input  = linspace(-10,10,1000);
+            NL.output_opt_bycell = cell(length(cellgroup),1); 
+            NL.output_standardGLM_bycell = cell(length(cellgroup),1);
+            NL.cellgroup = cellgroup;
+
             for i_cell = 1:length(cellgroup)
                 %% Actual Computation
                 cid = cellgroup(i_cell); 
                 cell_savename = sprintf('%s_%d', celltype,cid);
-                display(sprintf('working on %s: %s', expname, cell_savename))
-                eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir, cell_savename));
-                % Process spikes for glm_execute with proper subroutines
-                fitspikes_concat.home  = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
-                testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
-                % load fittedGLM
-                eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
-                glm_cellinfo = fittedGLM.cellinfo;
-                
-                
-                
-                % works
-                [baseGLM.lcif_fit,baseGLM.objval] =  subR_lcifdecomp_fittedGLM(fittedGLM.rawfit.opt_params,...
-                    fittedGLM.GLMType,fittedGLM.GLMPars,fitspikes_concat,fitmovie_concat,inputstats,glm_cellinfo);
-                [baseGLM.lcif_test.stim] = subR_lcifstim_fittedGLM(fittedGLM.rawfit.opt_params,...
-                    fittedGLM.GLMType,fittedGLM.GLMPars,testmovie,inputstats,glm_cellinfo);
-                
-                % Necessary for refitting
-                t_bin        = fittedGLM.t_bin;
-                home_sptimes = fitspikes_concat.home';
-                home_spbins  = ceil(home_sptimes / t_bin);
-                home_spbins  = home_spbins(find(home_spbins < length(baseGLM.lcif_fit.stim)) );
-                
-                
-                % normalized output of the stimulus filter
-                NL_Input.input_fit  = baseGLM.lcif_fit.stim  / std(baseGLM.lcif_fit.stim);
-                NL_Input.input_test = baseGLM.lcif_test.stim / std(baseGLM.lcif_fit.stim);
-                NL_Input.y_int      = exp( baseGLM.lcif_fit.mu(1) );
-                NL_input.rawfilteroutput    = baseGLM.lcif_fit.stim;
-                NL_input.scale_rawtoNLinput = std(baseGLM.lcif_fit.stim);
-                
-                
-                % CAREFULLY CONSTRAINED LOCAL SEARCH
-                if fittedGLM.GLMType.PostSpikeFilter
-                    lcif_stim0 = baseGLM.lcif_fit.stim;                    
-                    SCALARS_INIT = [ baseGLM.lcif_fit.mu(1) , 1];
-                    lowerbound = (1/10) * SCALARS_INIT;
-                    upperbound = 10 * SCALARS_INIT;
+                display(sprintf('working on %s: %s', expname, cell_savename))            
 
-                    optim_struct = optimset(...
-                    'derivativecheck','off','diagnostics','off',...  % 
-                    'display','off','funvalcheck','off',... 
-                    'MaxIter',100,'TolFun',10^(-6),'TolX',10^(-9) );
-                    
-                    display('Running refit of tonic drive without the PS Filter')
-                    [SCALARS_OPT, new_objval, eflag, output] = fmincon(@(SCALARS) subR_rescale_stim...
-                    (SCALARS, lcif_stim0, home_spbins,fittedGLM.t_bin),...
-                    SCALARS_INIT,[],[],[],[],lowerbound,upperbound,[],optim_struct);
-                    display(sprintf('Tonic Drive with PS %1.2e hz, Without PS %1.2e hz',...
-                        exp( baseGLM.lcif_fit.mu(1) ),   exp(SCALARS_OPT(1))));
-                    display(sprintf('Without PS, Stim rescaled a factor %1.2e', SCALARS_OPT(2)))
-                    
-                    NL_Input.y_int      = exp(SCALARS_OPT(1));
-                    clear SCALARS_INIT upperbound lowerbound new_objval eflag output lcif_stim0
+                if strcmp(postfilterNL.type,'Logistic_fixMU_noPS')
+                    eval(sprintf('load %s/%s.mat fittedGLM', Dirs.loadfits, cell_savename))
+                    MAX           = fittedGLM.NL_Output.maxrate;
+                    RATE          = fittedGLM.NL_Output.slope;
+                    Y_INT         = fittedGLM.stimtransform.inputNL.y_int;
+                    [output_NL]   = subR_compute_LOGISTIC(MAX,RATE,Y_INT,NL.input);
+                    scale_forexp        = fittedGLM.linearfilters.Stimulus_rescale;
+                    output_standardGLM = exp(scale_forexp*NL.input)*Y_INT;
                 end
 
-                if strcmp(postfilterNL.type, 'Logistic_fixMU_noPS')
-                    NL_Output = LogFixMu_fmincon(NL_Input,home_spbins,t_bin);
-                end
-                
-                fittedGLM_preNL = fittedGLM; 
-                recorded_raster = fittedGLM_preNL.xvalperformance.rasters.recorded;
-                NL_xvalperformance = subR_xvalperformance_LNonly(NL_Output.crossvaltest_finalrate, recorded_raster, fittedGLM_preNL.t_bin);
-                clear fittedGLM recorded_raster
-                
-                % hack to save components in a somewhat consistent manner                
-                fittedGLM.cell_savename        = cell_savename;
-                fittedGLM.cellinfo             = fittedGLM_preNL.cellinfo;
-                fittedGLM.nonlinearity         = postfilterNL.type;
-                fittedGLM.NL_Output            = NL_Output;
-                fittedGLM.xvalperformance      = NL_xvalperformance;
-                
-                fittedGLM.stimtransform.normalized_filteroutput_fit= NL_Input.input_fit;
-                fittedGLM.stimtransform.cif_withNL_fit             = NL_Output.fit_rate;
-                fittedGLM.stimtransform.cif_rawGLM_fit             = exp( std(baseGLM.lcif_fit.stim) * NL_Input.input_fit  + baseGLM.lcif_fit.mu(1) );
-                fittedGLM.stimtransform.cif_withNL_test            = NL_Output.crossvaltest_finalrate;
-                fittedGLM.stimtransform.cif_rawGLM_test            = exp( std(baseGLM.lcif_fit.stim) * NL_Input.input_test + baseGLM.lcif_fit.mu(1) );
-                fittedGLM.stimtransform.inputNL                    = NL_Input;
-                
-                fittedGLM.t_bin                = fittedGLM_preNL.t_bin;
-                fittedGLM.bins_per_frame       = fittedGLM_preNL.bins_per_frame;
-                fittedGLM.rawfit.objective_val = NL_Output.new_objval;
-                fittedGLM.fit_time    = datestr(clock);
-                fittedGLM.writingcode =  mfilename('fullpath');
-                fittedGLM.linearfilters.Stimulus         = fittedGLM_preNL.linearfilters.Stimulus ;
-                fittedGLM.linearfilters.Stimulus_rescale = NL_input.scale_rawtoNLinput;
-                fittedGLM.linearfilters.Stimulus_rescalenote = ...
-                    'multiply stimfilter by rescaler,convolve with stim, retrieve pre-Nonlinearity rate';
-                fittedGLM.d_save = savedir;
-                
-                savename = sprintf('%s/%s',savedir, cell_savename);
-                eval(sprintf('save %s.mat fittedGLM fittedGLM_preNL', savename));
-                
-                if runoptions.print
-                    subR_plotfittedNL(fittedGLM, fittedGLM_preNL, savedir)
-                end
-                
-            end            
+                NL.output_opt_bycell{i_cell} = output_NL;
+                NL.output_standardGLM_bycell{i_cell} = output_standardGLM;
+            end
+            NL.opt_mean = mean(cell2mat(NL.output_opt_bycell));
+            NL.opt_std  = std(cell2mat(NL.output_opt_bycell));
+            NL.standardGLM_mean = mean(cell2mat(NL.output_standardGLM_bycell));
+            NL.standardGLM_std  = std(cell2mat(NL.output_standardGLM_bycell));
+            
+            if i_celltype == 1, fittedNL.ONP_fits = NL; end
+            if i_celltype == 2, fittedNL.OFFP_fits = NL; end
         end
+        eval(sprintf('save %s/%s.mat fittedNL', Dirs.save, savename));
+        fittedNL_crossprep{i_exp} = fittedNL;
     end
 end
 
+
+% Plot HERE
+%{
+plotparams.exps = exps;
+expstring = 'exps';
+plotname = sprintf('plots_%s', cell_subset)
+if find(plotparams.exps ==1), expstring = sprintf('%sA',expstring); end
+if find(plotparams.exps ==2), expstring = sprintf('%sB',expstring); end
+if find(plotparams.exps ==3), expstring = sprintf('%sC',expstring); end
+if find(plotparams.exps ==4), expstring = sprintf('%sD',expstring); end
+printname_base = sprintf('%s_%s',plotname,expstring);
+printname_notext = sprintf('%s_NOTEXT',printname_base);
+printname_fullplot = sprintf('%s_FULLPLOTS',printname_base);
+
+cd(savedir)
+subR_plotcomparison_nolabels(model_comparison,plotparams,printname_notext);
+subR_plotcomparison_fullplots(model_comparison,plotparams,printname_fullplot);
+cd(homedir)
+
+% hack to get plot without the 2013-10-10-0
+if strcmp(expstring, 'expsABCD')
+    expstring_no4  = 'expsABC';
+    plotparams_no4 = plotparams;
+    plotparams_no4.exps = [2 3 1];
+    printname_notext   = sprintf('%s_%s_NOTEXT',plotname,expstring_no4);
+    printname_fullplot = sprintf('%s_%s_FULLPLOTS',plotname,expstring_no4);
+    
+    cd(savedir)
+    subR_plotcomparison_nolabels(model_comparison,plotparams_no4,printname_notext);
+    subR_plotcomparison_fullplots(model_comparison,plotparams_no4,printname_fullplot);
+    cd(homedir)
+    clear expstring_no4 plotparams_no4
 end
 
-function subR_plotfittedNL(fittedGLM, fittedGLM_preNL, savedir)
+subset_params = plotparams;
+for i_exp = 1:length(plotparams.exps)
+    subset_params.exps = plotparams.exps(i_exp);
+    expstring = 'exps';
+    if find(subset_params.exps ==1), expstring = sprintf('%sA',expstring); end
+    if find(subset_params.exps ==2), expstring = sprintf('%sB',expstring); end
+    if find(subset_params.exps ==3), expstring = sprintf('%sC',expstring); end
+    if find(subset_params.exps ==4), expstring = sprintf('%sD',expstring); end
+
+    for i_celltype = 1:2
+        subset_params.celltypes = i_celltype;
+        if i_celltype == 1, celltypestring = 'ONParasols'; end
+        if i_celltype == 2, celltypestring = 'OFFParasols'; end
+        printname_notext = sprintf('%s_%s_%s_NOTEXT',plotname,expstring,celltypestring);
+        printname_fullplot = sprintf('%s_%s_%s_FULLPLOTS',plotname,expstring,celltypestring);
+        cd(savedir)
+        subR_plotcomparison_nolabels(model_comparison,subset_params,printname_notext);
+        subR_plotcomparison_fullplots(model_comparison,subset_params,printname_fullplot);
+        cd(homedir)
+        
+    end
+end
+%}
+
+
+
+
+end
+function [output_LOGI] = subR_compute_LOGISTIC(MAX,RATE, Y_INT, input_LOGI)
+    OFFSET   = log( (MAX/Y_INT) - 1  ) / RATE;     
+    output_LOGI = (MAX ./ (1 + exp(-RATE * (input_LOGI- OFFSET) )));
+end
+
+function subR_plotfittedNL_pop(fittedGLM, fittedGLM_preNL, savedir)
 
 % Cleaned up AKHeitman 2015-06-24
 homedir = pwd;
@@ -279,133 +280,5 @@ orient landscape
 eval(sprintf('print -dpdf %s.pdf',printname))
 cd(homedir)
 end       
-function [lcif_stim]            = subR_lcifstim_fittedGLM(pstar, GLMType,GLMPars,fitmovie,inputstats,glm_cellinfo)
-
-if isfield(GLMType, 'specialchange') && GLMType.specialchange
-    GLMPars = GLMParams(GLMType.specialchange_name);
-end
-frames = size(fitmovie,3);
-bins   = frames * GLMPars.bins_per_frame;
-t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
-fittedGLM.t_bin = t_bin;
-fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
-clear bin_size basis_params
-% PREPARE PARAMETERS
-[paramind] =  prep_paramindGP(GLMType, GLMPars); 
-
-% ORGANIZE STIMULUS COVARIATES
-center_coord       = glm_cellinfo.slave_centercoord;
-WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
-clear WN_STA center_coord
-if GLMType.CONVEX
-    glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
-    % Maybe move this inside of the stimulus preparation % 
-    bpf         = GLMPars.bins_per_frame;
-    shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    if isfield(GLMPars.stimfilter,'frames_negative')
-        shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    end
-    X_bin_shift = prep_timeshift(X_bin,shifts);
-    pstar = pstar';
-    lcif_stim = pstar(paramind.X) *X_bin_shift;
-end
-end
-function [lcif, obj_val]        = subR_lcifdecomp_fittedGLM(pstar, GLMType,GLMPars,fitspikes,fitmovie,inputstats,glm_cellinfo)
-if isfield(GLMType, 'specialchange') && GLMType.specialchange
-    GLMPars = GLMParams(GLMType.specialchange_name);
-end
-frames = size(fitmovie,3);
-bins   = frames * GLMPars.bins_per_frame;
-t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
-fittedGLM.t_bin = t_bin;
-fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
-
-
-% Perhaps we should combine this! With convolving with spikes !
-bin_size      = t_bin;
-if GLMType.PostSpikeFilter
-    basis_params  = GLMPars.spikefilters.ps;
-    ps_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
-end
-if GLMType.CouplingFilters
-    basis_params  = GLMPars.spikefilters.cp;
-    cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
-end
-clear bin_size basis_params
-
-% Convolve Spike Times with appropriate basis
-% Think about flushing dt out to the wrapper
-% Take care of all timing in glm_execute or in glmwrap.
-t_bin        = t_bin;
-home_sptimes = fitspikes.home';
-home_spbins  = ceil(home_sptimes / t_bin);
-home_spbins  = home_spbins(find(home_spbins < bins) );
-if GLMType.PostSpikeFilter
-    basis         = ps_basis';
-    PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
-end
-if GLMType.CouplingFilters;
-    basis = cp_basis';
-    display('figure out coupling here!  CP_bin');
-end
-if GLMType.TonicDrive
-    MU_bin = ones(1,bins);
-end
-
-
-% PREPARE PARAMETERS
-[paramind] =  prep_paramindGP(GLMType, GLMPars); 
-
-
-
-% ORGANIZE STIMULUS COVARIATES
-center_coord       = glm_cellinfo.slave_centercoord;
-WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
-clear WN_STA center_coord
-
-
-
-%% Run through optimization .. get out pstart, fstar, eflag, output
-% CONVEXT OPTIMIZATION
-if GLMType.CONVEX
-    glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
-    % Maybe move this inside of the stimulus preparation % 
-    bpf         = GLMPars.bins_per_frame;
-    shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    if isfield(GLMPars.stimfilter,'frames_negative')
-        shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    end
-    X_bin_shift = prep_timeshift(X_bin,shifts);
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if isfield(paramind, 'MU')
-        glm_covariate_vec( paramind.MU , : ) = MU_bin;
-    end
-    if isfield(paramind, 'X')
-        glm_covariate_vec( paramind.X , : ) = X_bin_shift;
-    end
-    if isfield(paramind, 'PS')
-        glm_covariate_vec( paramind.PS , : ) = PS_bin;
-    end
-    pstar = pstar';
-    lcif.mu   = pstar(paramind.MU)*glm_covariate_vec(paramind.MU,:);
-    lcif.stim = pstar(paramind.X) *glm_covariate_vec(paramind.X,:); 
-    total_lcif = lcif.mu + lcif.stim;
-    
-    if GLMType.PostSpikeFilter
-        lcif.ps   = pstar(paramind.PS)*glm_covariate_vec(paramind.PS,:);    
-        lcif.ps_unoptimized.glm_covariate_vec = glm_covariate_vec(paramind.PS,:);
-        lcif.ps_unoptimized.basis             = ps_basis;
-        total_lcif = total_lcif + lcif.ps;
-    end
-    
-    cif        = exp(total_lcif);
-    obj_val    = -(sum( total_lcif(home_spbins) ) - t_bin * sum(cif));
-
-end
-
-end
 
 
