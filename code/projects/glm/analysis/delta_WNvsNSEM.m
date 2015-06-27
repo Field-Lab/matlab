@@ -2,12 +2,17 @@
 %{
 
 clear ; close all; clc;
-comparison_name = 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1';
+%comparison_name = 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1';
 %clear; close all; clc
-%comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU';
+%%comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU';
+
+
+comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-LogisticfixMUnoPS';
+
+
 cellselection_type = 'glmconv4pct';
 rundir = pwd;
-metrics = [2 5];
+metrics = [2];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -50,8 +55,22 @@ if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU')
     plotparams.title_comparison   = 'LN with Logistic';
     plotparams.purpose            = 'Change in WN vs NSEM with modulation of Non-Linearity';
 end
-
-
+if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-LogisticfixMUnoPS');
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+   
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
+    
+    
+    plotparams.title_comparison   = 'GLMnoPS to full NLN (no PS)';
+    plotparams.purpose            = 'Change in WN vs NSEM with both NL (no PS)';
+end   
+    
+    
 % Unpack metric
 switch metric
     case 'BPS_divideUOP'
