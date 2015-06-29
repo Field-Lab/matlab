@@ -118,6 +118,10 @@ if strcmp(GLMType.fitname_preconstrainPS(end-14:end), '/standardparams')
     end
 end
 
+fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+fittedGLM.constrained_search.lowerbound = lowerbound;
+fittedGLM.constrained_search.upperbound = upperbound;
+
 %p_init    =  zeros(paramind.paramcount,1);  
 p_init     = .01* ones(paramind.paramcount,1);
 if isfield(glm_cellinfo, 'p_init')
