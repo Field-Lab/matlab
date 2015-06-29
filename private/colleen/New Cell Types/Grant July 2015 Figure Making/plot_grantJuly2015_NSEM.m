@@ -5,7 +5,6 @@ finalname='-from-data000_data002_data005_data006_data008_data009_data017_data018
 nmruns=['data017'; 'data005']; % NSEM runs high to low NDF
 staruns=['data000'; 'data009']; % long WN runs for STA low to high NDF
 stacoarseruns=['data002'; 'data008']; % coarse long WN runs for STA % low to high NDF
-
 wnruns=['data018'; 'data006']; % WN repeats high to low NDF
 cell_specification = [7340];
 num_repeats = 20;
@@ -192,95 +191,97 @@ for i=1:length(cell_numbers)
 %     xlabel('WN repeats,s')
     
     % plot coarse STA
-    for k=1:size(stacoarseruns,1)
-        h=subplot('position',sta_coords(k,:));
-        sta=squeeze(stacoarserun{k}.stas.stas{ind});
-        colormap gray
-        if size(sta, 3) ~= 3
-            [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
-            
-            imagesc(sta(:,:,start_index))
-        else
-            [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
-            
-            sta = norm_image(sta);
-            image(sta(:,:,:,start_index))
-        end
-        
-        plot_rf_summaries(stacoarserun{k}, visionID, 'clear', false,  'plot_fits', true, 'fit_color', 'r')
-        title('NDF 5.0, 26')
-        set(h,'xtick',0,'ytick',0)
-        tmp = size(sta);
-        axis([0.5 tmp(1)+0.5 0.5 tmp(2)+0.5])
-        NDF = {'0', '2'};
-        title(['NDF',NDF{k}, ', frame ',int2str(start_index), ', spikes: ', int2str(length(stacoarserun{k}.spikes{ind})), ' in ', int2str(ceil(stacoarserun{k}.triggers(end))), ' seconds'], 'fontsize', 12)
-    end
+%     for k=1:size(stacoarseruns,1)
+%         h=subplot('position',sta_coords(k,:));
+%         sta=squeeze(stacoarserun{k}.stas.stas{ind});
+%         colormap gray
+%         if size(sta, 3) ~= 3
+%             [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
+%             
+%             imagesc(sta(:,:,start_index))
+%         else
+%             [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
+%             
+%             sta = norm_image(sta);
+%             image(sta(:,:,:,start_index))
+%         end
+%         
+%         plot_rf_summaries(stacoarserun{k}, visionID, 'clear', false,  'plot_fits', true, 'fit_color', 'r')
+%         title('NDF 5.0, 26')
+%         set(h,'xtick',0,'ytick',0)
+%         tmp = size(sta);
+%         axis([0.5 tmp(1)+0.5 0.5 tmp(2)+0.5])
+%         NDF = {'0', '2'};
+%         title(['NDF',NDF{k}, ', frame ',int2str(start_index), ', spikes: ', int2str(length(stacoarserun{k}.spikes{ind})), ' in ', int2str(ceil(stacoarserun{k}.triggers(end))), ' seconds'], 'fontsize', 12)
+%     end
     
         % plot fine STA
-    for k=1:size(staruns,1)
-        h=subplot('position',sta_coords(k+3,:));
-        sta=squeeze(starun{k}.stas.stas{ind});
-        colormap gray
-        if size(sta, 3) ~= 3
-            [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
-            
-            imagesc(sta(:,:,start_index))
-        else
-            [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
-            
-            sta = norm_image(sta);
-            image(sta(:,:,:,start_index))
-        end
-        
-        plot_rf_summaries(starun{k}, visionID, 'clear', false,  'plot_fits', true, 'fit_color', 'r')
-        title('NDF 5.0, 26')
-        set(h,'xtick',0,'ytick',0)
-        tmp = size(sta);
-        axis([0.5 tmp(1)+0.5 0.5 tmp(2)+0.5])
-        NDF = {'0', '2'};
-        title(['NDF',NDF{k}, ', frame ',int2str(start_index) , ', spikes: ', int2str(length(starun{k}.spikes{ind})), ' in ', int2str(ceil(starun{k}.triggers(end))), ' seconds'], 'fontsize', 12)
-    end
+%     for k=1:size(staruns,1)
+%         h=subplot('position',sta_coords(k+3,:));
+%         sta=squeeze(starun{k}.stas.stas{ind});
+%         colormap gray
+%         if size(sta, 3) ~= 3
+%             [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
+%             
+%             imagesc(sta(:,:,start_index))
+%         else
+%             [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
+%             
+%             sta = norm_image(sta);
+%             image(sta(:,:,:,start_index))
+%         end
+%         
+%         plot_rf_summaries(starun{k}, visionID, 'clear', false,  'plot_fits', true, 'fit_color', 'r')
+%         title('NDF 5.0, 26')
+%         set(h,'xtick',0,'ytick',0)
+%         tmp = size(sta);
+%         axis([0.5 tmp(1)+0.5 0.5 tmp(2)+0.5])
+%         NDF = {'0', '2'};
+%         title(['NDF',NDF{k}, ', frame ',int2str(start_index) , ', spikes: ', int2str(length(starun{k}.spikes{ind})), ' in ', int2str(ceil(starun{k}.triggers(end))), ' seconds'], 'fontsize', 12)
+%     end
     
     
     % plot coarse time course from vision
-    h=subplot('position',[0.5 0.15, 0.32,0.17]);
-    sta_tc=zeros(30,size(stacoarserun,1));
-    sta_tc_bins=zeros(30,size(stacoarserun,1));
-    for k = 1:size(stacoarseruns,1)
-        if ~isempty(stacoarserun{k}.vision.timecourses(ind).g)
-            sta_tc(:,k)=stacoarserun{k}.vision.timecourses(ind).g;
-            tc_bin=starun{k}.stimulus.refresh_period;
-            sta_tc_bins(:,k)=-tc_bin*27:tc_bin:tc_bin*2;
-        end
-    end
-    plot(sta_tc_bins,sta_tc, 'linewidth',2);
-    hold on
+%     h=subplot('position',[0.5 0.15, 0.32,0.17]);
+%     sta_tc=zeros(30,size(stacoarserun,1));
+%     sta_tc_bins=zeros(30,size(stacoarserun,1));
+%     for k = 1:size(stacoarseruns,1)
+%         if ~isempty(stacoarserun{k}.vision.timecourses(ind).g)
+%             sta_tc(:,k)=stacoarserun{k}.vision.timecourses(ind).g;
+%             tc_bin=starun{k}.stimulus.refresh_period;
+%             sta_tc_bins(:,k)=-tc_bin*27:tc_bin:tc_bin*2;
+%         end
+%     end
+%     plot(sta_tc_bins,sta_tc, 'linewidth',2);
+%     hold on
 %     line([min(sta_tc_bins(:)) max(sta_tc_bins(:))],[0,0],'color','k')
 %     axis tight
     
     % plot fine time course from vision
 %     h=subplot('position',[0.5 0.15, 0.32,0.17]);
-    sta_tc=zeros(30,size(starun,1));
-    sta_tc_bins=zeros(30,size(starun,1));
-    for k = 1:size(staruns,1)
-        if ~isempty(starun{k}.vision.timecourses(ind).g)
-            sta_tc(:,k)=starun{k}.vision.timecourses(ind).g;
-            tc_bin=starun{k}.stimulus.refresh_period;
-            sta_tc_bins(:,k)=-tc_bin*27:tc_bin:tc_bin*2;
-        end
-    end
-    plot(sta_tc_bins,sta_tc, 'linewidth',2);
-    legend('0 coarse','2 coarse','0 fine','2 fine','location','northwest')
-    hold on
-    line([min(sta_tc_bins(:)) max(sta_tc_bins(:))],[0,0],'color','k')
-    title('Time courses')
-    axis tight
-    
+%     sta_tc=zeros(30,size(starun,1));
+%     sta_tc_bins=zeros(30,size(starun,1));
+%     for k = 1:size(staruns,1)
+%         if ~isempty(starun{k}.vision.timecourses(ind).g)
+%             sta_tc(:,k)=starun{k}.vision.timecourses(ind).g;
+%             tc_bin=starun{k}.stimulus.refresh_period;
+%             sta_tc_bins(:,k)=-tc_bin*27:tc_bin:tc_bin*2;
+%         end
+%     end
+%     plot(sta_tc_bins,sta_tc, 'linewidth',2);
+%     legend('0 coarse','2 coarse','0 fine','2 fine','location','northwest')
+%     hold on
+%     line([min(sta_tc_bins(:)) max(sta_tc_bins(:))],[0,0],'color','k')
+%     title('Time courses')
+%     axis tight
+%     
     
     
     % save figure
     print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]));
     %     close(fig)
-    
+   
+%     export_fig(sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]), '-pdf', 'renderer', 'opengl');
 end
+
 
