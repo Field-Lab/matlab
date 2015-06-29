@@ -22,7 +22,7 @@ nin=nargin;
 %%%%%%%%%%%%%% Plot variables %%%%%%%%%%%%%%
 plotwidth=1;     % spike thickness
 plotcolor='k';   % spike color
-trialgap=1.5;    % distance between trials % was 1.5
+trialgap=2;    % distance between trials % was 1.5
 defaultfs=1000;  % default sampling rate
 showtimescale=1; % display timescale
 showlabels=0;    % display x and y labels
