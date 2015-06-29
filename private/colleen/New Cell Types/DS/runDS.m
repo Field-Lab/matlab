@@ -1,50 +1,70 @@
-% ds_cells
+% runDS
+% Colleen Rhoades
+% June 2015
+% rhoades@stanford.edu
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The purpose of this file is to analyze the results from drifting gratings.
+
+% You will see a graph showing the number of total spikes during the stimulus presentation versus the direction of the stimulus.
+% If a direction is preferred by the cell, then the spike count should be higher.
+% The plot is divided for different spatial and temporal frequencies.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 
+%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load the Data for the DS run
 run_opt.data_set = '2015-05-27-5';
-run_opt.data_run = 3; % 12-19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
-if strcmp(run_opt.data_set, '2015-05-27-5')
-    datarun{1}.names.rrs_params_path='/Volumes/Analysis/2015-05-27-5/data003/data003.params';
-    datarun{2}.names.rrs_neurons_path=('/Volumes/Analysis/2015-05-27-5/data003/data003.neurons');
-    datarun{2}.names.stimulus_path=('/Volumes/Data/2015-05-27-5/Visual/s03');
-end
-opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
-datarun=load_data(datarun,opt);
-datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
-datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0, 'trigger_iti_thr', 0.1); % manually set threshold until got right number of triggers
-% Something went wrong with the first two stimuli
-% datarun{2}.stimulus.triggers= [datarun{2}.stimulus.triggers(1:33) 187.0086, datarun{2}.stimulus.triggers(34:70) 396.0097 datarun{2}.stimulus.triggers(71:72) 412.5063 datarun{2}.stimulus.triggers(73:72); % Remove the first trigger
-% datarun{2}.stimulus.trials = datarun{2}.stimulus.trials(3:end); % Remove the first two trials
+run_opt.data_run = 'data003';
 
 interval = 5; % each stimulus was displayed for 5 seconds
+
+% Where to save the data
+filepath= ['/Users/colleen/Desktop/DS/', run_opt.data_set, '/', run_opt.data_run, '/'];
+
+% You can give the cells as all of them (datarun{2}.cell_ids) or give
+% specific vision ids
+% Find the cell to run by mapping a large cell EI from a white noise run
+% cells = datarun{2}.cell_ids;
+cells = 18;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+datarun{1}.names.rrs_params_path=['/Volumes/Analysis/2015-05-27-5/', run_opt.data_run, '/', run_opt.data_run, '.params'];
+datarun{2}.names.rrs_neurons_path=['/Volumes/Analysis/2015-05-27-5/', run_opt.data_run, '/', run_opt.data_run, '.neurons'];
+datarun{2}.names.stimulus_path=['/Volumes/Data/2015-05-27-5/Visual/s', run_opt.data_run(end-1:end)];
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
+
+datarun=load_data(datarun,opt);
+datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
+
+% If the trigger interval in LabView is set long enought (~6 seconds for 5
+% second stimuli), then this trigger_iti_thr should be fine.
+datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0, 'trigger_iti_thr', 0.1); % manually set threshold until got right number of triggers
+
 spatial_tested = fliplr(datarun{2}.stimulus.params.SPATIAL_PERIOD);
 temporal_tested = fliplr(datarun{2}.stimulus.params.TEMPORAL_PERIOD);
-% Where to save the data
-filepath= ['/Users/colleen/Desktop/DS/', run_opt.data_set, '/data003/'];
 
-
-% Find the cell to run by mapping a large cell EI from a white noise run
-cells = datarun{2}.cell_ids;
-% cells = 513;
 
 % get spikes per bin
-    
-    % These triggers depend on the Labview trigger. 7.5 seconds prevents
-    % triggers from being missed on the large spatial scales
-    tr=datarun{2}.stimulus.triggers; % all start triggers
-    run_opt.config_num = 1;
-    
+
+% These triggers depend on the Labview trigger. 7.5 seconds prevents
+% triggers from being missed on the large spatial scales
+tr=datarun{2}.stimulus.triggers; % all start triggers
+
 for x = 1:length(cells)
-    x
+    x % see progress
     cell_to_run = cells(x);
     cell_indices1=get_cell_indices(datarun{1}, [cell_to_run]);
     cell_indices2=get_cell_indices(datarun{2},[cell_to_run]);
     
-    
-    
-    
+    % Get spikes times for the specified cell   
     n = datarun{2}.spikes{cell_indices2(1)}';
     psth_r = [];
     for z = 1:size(tr,2)
