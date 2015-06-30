@@ -5,13 +5,37 @@
 
 %{
 clear
-exps = [3];
-stimtypes = [1 2];
-celltypes = [1 2];
+exps = [1];
+stimtypes = [2];
+celltypes = [1];
 cell_subset = 'glmconv_4pct';
 glm_settings = {};
-ps_constrain.type = 'PS_inhibitorydomainconstrain_post10msec';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
 glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
+clear
+exps = [3];
+stimtypes = [1];
+celltypes = [1];
+cell_subset = 'glmconv_4pct';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
+clear
+exps = [1 2];
+stimtypes = [2 1];
+celltypes = [1 2];
+cell_subset = 'all';
+glm_settings = {};
+%ps_constrain.type = 'PS_inhibitorydomainconstrain_post10msec';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
 save('dbug_glmexecute_constrainPS', 'GLMType','fitspikes_concat','fitmovie_concat','testspikes_raster','testmovie','inputstats','glm_cellinfo')
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,6 +138,7 @@ for i_exp = exps
                 cell_savename = sprintf('%s_%d', celltype,cid);             
                 if ~exist(sprintf('%s/%s.mat', Dirs.fittedGLM_savedir,cell_savename)) || (exist('replace_existing','var') && replace_existing)
                     % Create cell information structure
+                    cell_savename
                     glm_cellinfo.cid            = cid;
                     glm_cellinfo.exp_nm         = exp_nm;
                     glm_cellinfo.celltype       = celltype;
@@ -139,15 +164,22 @@ for i_exp = exps
                     % Process spikes for glm_execute with proper subroutines
                     fitspikes_concat.home  = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
                     testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
-                    
+                    tStart = tic;
                     % Load a previous initializer
-                    eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
-                    glm_cellinfo.p_init = fittedGLM.rawfit.opt_params;
-                    fittedGLM_old = fittedGLM; clear fittedGLM;
+                    
+                    loadmatfile = sprintf('%s/%s.mat', Dirs.baseglm, cell_savename)
+                    if exist(loadmatfile)
+                        display('loading p_init')
+                        eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
+                        glm_cellinfo.p_init = fittedGLM.rawfit.opt_params;
+                        fittedGLM_old = fittedGLM; clear fittedGLM;
+                    end
                    
-                      [fittedGLM] = glm_execute_domainconstrainPS(ps_constrain.type,GLMType,...
+                    tStart = tic;
+                    [fittedGLM] = glm_execute_domainconstrainPS(ps_constrain.type,GLMType,...
                         fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);            
-
+                    duration = toc(tStart);
+                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                                
                 end
             end
