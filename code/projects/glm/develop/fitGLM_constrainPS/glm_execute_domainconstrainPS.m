@@ -109,30 +109,19 @@ end
 
 % Super Hack to determine PS filter type
 % AKHeitman 2015-06-29
-if strcmp(GLMType.fitname_preconstrainPS(end-14:end), '/standardparams')
-    if strcmp(domainconstrain_name, 'PS_inhibitorydomainconstrain_post10msec')
+if strcmp(domainconstrain_name, 'PS_inhibitorydomainconstrain_post10msec')
+    if strcmp(GLMType.fitname_preconstrainPS(end-14:end), '/standardparams')
          lowerbound = -Inf(paramind.paramcount,1);
          upperbound  = Inf(paramind.paramcount,1);
-         
          upperbound(paramind.PS(4:end)) = 0;
     end
-end
-
-fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
-fittedGLM.constrained_search.lowerbound = lowerbound;
-fittedGLM.constrained_search.upperbound = upperbound;
-
-%p_init    =  zeros(paramind.paramcount,1);  
-p_init     = .01* ones(paramind.paramcount,1);
-if isfield(glm_cellinfo, 'p_init')
-    p_init = glm_cellinfo.p_init;
-end
-
-
-%}
-% INITIALIZE OPTIMIZATION STRUCTURE FOR MATLAB FMIN SOLVERS
-if GLMType.CONVEX
+    
+    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.lowerbound = lowerbound;
+    fittedGLM.constrained_search.upperbound = upperbound;
+    
     optim_struct = optimset(...
+   'Algorithm','trust-region-reflective',...
    'derivativecheck','off',...
    'diagnostics','off',...  % 
    'display','iter',...  %'iter-detailed',... 
@@ -142,21 +131,93 @@ if GLMType.CONVEX
    'Hessian','on',...
    'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
-   'TolX',10^(-(GLMPars.optimization.tolx))   );
+   'TolX',10^(-(GLMPars.optimization.tolx))   ) ;
 end
-if ~GLMType.CONVEX
+
+if strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain')
+    A = zeros(1,paramind.paramcount);
+    A(paramind.PS) = sum(ps_basis,1);
+    b              = 0;
+    
+    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.linearinequality_matrix = A;
+    fittedGLM.constrained_search.linearinequality_bound  = b;
+    
+    
+    % Try to figure out how to supply the Hessian
+    
+    
+    %%% OLD VERSION IS REALLY SLOW FOR NSEM %%%'
+    % 30 minutes o 3 hours 
+    %{
     optim_struct = optimset(...
-    'derivativecheck','off',...
+   'Algorithm','interior-point',...
+   'derivativecheck','off',...
    'diagnostics','off',...  % 
    'display','iter',...  %'iter-detailed',... 
    'funvalcheck','off',... % don't turn this on for 'raw' condition (edoi).
    'GradObj','on',...
-   'Hessian','on',...
    'largescale','on',...
+   'Hessian','fin-diff-grads',...
+   'SubproblemAlgorithm', 'cg',...
    'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
    'TolX',10^(-(GLMPars.optimization.tolx))   );
+    display('!!!! INTERIOR POINT, FINITE DIFFERENCE OF GRADS!!!')
+    %}
 end
+
+if strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain_COB') 
+    ps_basis_0 = ps_basis; clear ps_basis
+    v        = sum(ps_basis_0,1);
+    v        = v / norm(v) ;
+    orthog_v = null(v);
+    COB      = [v', orthog_v] ;
+    ps_basis = (inv(COB) * ps_basis_0')' ;
+    
+    %%%    
+    basis         = ps_basis';
+    PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
+    
+    
+    lowerbound = -Inf(paramind.paramcount,1);
+    upperbound  = Inf(paramind.paramcount,1);
+    upperbound(paramind.PS(1)) = 0;
+    
+    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.lowerbound = lowerbound;
+    fittedGLM.constrained_search.upperbound = upperbound;
+    
+    
+    %%%
+    optim_struct = optimset(...
+   'Algorithm','trust-region-reflective',...
+   'derivativecheck','off',...
+   'diagnostics','off',...  % 
+   'display','iter',...  %'iter-detailed',... 
+   'funvalcheck','off',... % don't turn this on for 'raw' condition (edoi).
+   'GradObj','on',...
+   'largescale','on',...
+   'Hessian','on',...
+   'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
+   'TolFun',10^(-(GLMPars.optimization.tolfun)),...
+   'TolX',10^(-(GLMPars.optimization.tolx))   ) ;
+end
+
+
+
+
+
+
+
+%p_init    =  zeros(paramind.paramcount,1);  
+p_init     = .01* ones(paramind.paramcount,1);
+if isfield(glm_cellinfo, 'p_init')
+    p_init = glm_cellinfo.p_init;
+end
+
+
+
 
 
 %% Run through optimization .. get out pstart, fstar, eflag, output
@@ -185,10 +246,16 @@ if GLMType.CONVEX
         glm_covariate_vec( paramind.CP , : ) = CP_bin;
     end
     
-    
-    [pstar fstar eflag output] = fmincon(@(p) ...
-        glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
-        p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
+    if strcmp(domainconstrain_name, 'PS_inhibitorydomainconstrain_post10msec')...
+            || strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain_COB')
+        [pstar fstar eflag output] = fmincon(@(p) ...
+            glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
+            p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
+    elseif strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain')
+         [pstar fstar eflag output] = fmincon(@(p) ...
+            glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
+            p_init,A,b,[],[],[],[],[],optim_struct);
+    end
     [f grad Hess log_cif] = glm_convex_optimizationfunction(pstar,glm_covariate_vec,home_spbins,t_bin);
     
     
@@ -325,7 +392,7 @@ fittedGLM.fit_time = datestr(clock);
 fittedGLM.writingcode = mfilename('fullpath');
 
 %% Evaluate cross-validated fits,  Print and Save
-[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats)
+[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats);
 fittedGLM.xvalperformance  = xvalperformance; 
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
