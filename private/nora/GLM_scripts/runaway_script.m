@@ -13,12 +13,12 @@ fittypepath{1}=[fit_type{1} '_mapPRJ/'];
 
 %%
 % Experiment 1
-% cells = 'ON';
-% Iexp = 1;
+cells = 'ON';
+Iexp = 1;
 
 % Experiment 3
-Iexp = 2;
-cells = 'OFF';
+% Iexp = 2;
+% cells = 'OFF';
 
 % Just looking at NSEM
 fittype = 2;
@@ -105,3 +105,17 @@ for file=1:n_cells
 end
 
 end
+
+hold on
+counts{1}, centers] = hist(runaway_trials(:,1));
+counts{2} = hist(runaway_trials(:,2), centers);
+hold off
+
+hold on
+for i = 1:4
+    plot(centers, counts{i})
+end
+
+legend('fixedSP CP', 'fixedSP noCP', 'fitSP CP', 'fitSP no CP')
+ylabel('Number of Cells')
+xlabel('Number of Runaway Trials')

@@ -11,6 +11,8 @@ datarun_class = load_params(datarun_class);
 %%
 disp('loading fit movie')
 load('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/fitmovie_2015_05_27_11_data002.mat')
+disp('loading test movie')
+load('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/testmovie_2015_05_27_11_data002.mat')
 
 %% Find block starts
 % Finding block starts
@@ -41,12 +43,14 @@ end
 clear WN8 WN4 repeats_within_block repeat_starts block_starts
 
 % cells{1} = [10 14 45 4];
-cells{2} = [285 268 339 5386];
+% cells{2} = [285 268 339 5386];
 % cells{1} = [14 4];
+
+cells{1} = [206 207 183 148];
 
 %% Load up cell info
 
-for i_cell = 2%:length(cells)
+for i_cell = 1%:length(cells)
     
     disp(i_cell)
     cell = cells{i_cell}(1);
@@ -62,6 +66,14 @@ for i_cell = 2%:length(cells)
         concat_spikes = [concat_spikes; block_spikes-fitblocks(i)+start];
         start = start + fitmovie_seconds_per_block;
     end
+    % Organize test spikes
+    testblocks = NSEM(1:2:end);
+    testmovie_frames_per_block = 20*120;
+    testmovie_seconds_per_block = testmovie_frames_per_block/120;
+    for i = 1:length(testblocks)
+        tspikes{i} = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
+    end
+    
     center = datarun_class.vision.sta_fits{cell}.mean;
     center(2) = 40 - center(2);
     
@@ -76,11 +88,16 @@ for i_cell = 2%:length(cells)
             start = start + fitmovie_seconds_per_block;
         end
         nspikes{cell} = nconcat_spikes;
+        for i = 1:length(testblocks)
+            ntspikes{cell}{i} = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
+        end
     end
 
-    STA = STA_Test(concat_spikes, double(fitmovie), round(center));
-    fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'WN_STA', STA, 'neighborspikes', nspikes);
+    STA = STA_Test(concat_spikes, double(fitmovie), false);
+    fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'WN_STA', squeeze(STA), 'neighborspikes', nspikes);
+    
+    glm_predict(fittedGLM{i_cell}, testmovie, 'testspikes', tspikes, 'neighborspikes', ntspikes)
     
 end
 
-save('/Volumes/Lab/Users/Nora/amacrine_coupled.mat','fittedGLM')
+% save('/Volumes/Lab/Users/Nora/amacrine_coupled.mat','fittedGLM')

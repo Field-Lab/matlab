@@ -69,3 +69,24 @@ disp('saving movie')
 tic
 save('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/fitmovie_2015_05_27_11_data002.mat', 'fitmovie', '-v7.3')
 toc
+
+%% 
+% load the test movie
+disp('making test movie')
+total_frames = 20*120;
+testmovie = zeros(80, 40, total_frames, 'uint8');
+total_images = total_frames/120;
+for i = 1:total_images
+    k = i; % using movie A for testing
+    load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/movie_chunk_' num2str(k) '.mat'])
+    bin_movie = imresize(movie, 0.25);
+    idx = (1:120) + 120*(i-1);
+    testmovie(:,:,idx) = uint8(bin_movie);
+    if ~mod(i, 50)
+        disp(i)
+    end
+end
+disp('saving movie')
+tic
+save('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/testmovie_2015_05_27_11_data002.mat', 'testmovie', '-v7.3')
+toc

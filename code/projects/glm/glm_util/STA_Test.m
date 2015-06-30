@@ -1,6 +1,6 @@
 
 % NB 2015-05-06 
-function [STA, center] = STA_Test(fitspikes, fitmovie, center_verification)
+function [STA_full, center] = STA_Test(fitspikes, fitmovie, center_verification)
 %
 % DESCRIPTION
 % Code for testing the input into glm_fit and finding the cell's location
@@ -48,6 +48,8 @@ for i = 1:30
    title('You should see an STA here')
    pause(0.1)
 end
+
+STA_full = STA;
 
 STA = squeeze(STA);
 STA = abs(sum(STA, 3));

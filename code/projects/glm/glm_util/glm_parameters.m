@@ -3,15 +3,15 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
-% GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
+% GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
+GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
 GLMT.CouplingFilters = true;
 
 % Use this to do a quick check that things are right
-GLMT.debug      = true;
+GLMT.debug      = false;
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
@@ -43,7 +43,7 @@ GLMP.timenotes_3    = 'true tstim only matters for binning the spike times when 
 GLMP.stimfilter.fixedSP_type = 'WNSTA';
 
 
-GLMP.stimfilter.ROI_length = 11;  % This is the SIZE of the spatial filter in pixels
+GLMP.stimfilter.ROI_length = 19;  % This is the SIZE of the spatial filter in pixels
 GLMP.stimfilter.frames = 30;  % This is the number of frames in the temporal filter
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
@@ -67,7 +67,7 @@ GLMP.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in millisec
 %GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 %GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMP.spikefilters.BiDirect_CP     = false;
-GLMP.spikefilters.ps.filternumber = 10;
+GLMP.spikefilters.ps.filternumber = 20;
 GLMP.spikefilters.cp.filternumber = 8;
 GLMP.spikefilters.ps.spacing      = pi/2;
 GLMP.spikefilters.cp.spacing      = pi/2;
@@ -77,7 +77,7 @@ GLMP.spikefilters.cp.bstretch     = 0.05;
 GLMP.spikefilters.cp.alpha        = 0;
 GLMP.spikefilters.ps.fratio = .5  ;  % legacy afraid to take out
 GLMP.spikefilters.cp.fratio = .4  ;  % legacy afraid to take out
-GLMP.spikefilters.cp.n_couplings = 6  ;
+GLMP.spikefilters.cp.n_couplings = 3  ;
 GLMP.others.fitblockchange = false;
 end
 
