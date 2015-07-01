@@ -5,13 +5,13 @@
 
 %{
 clear
-exps = [1];
-stimtypes = [2];
-celltypes = [1];
-cell_subset = 'glmconv_4pct';
+exps = [1 2 3 4];
+stimtypes = [1 2];
+celltypes = [1 2];
+cell_subset = 'shortlist';
 glm_settings = {};
 ps_constrain.type = 'PS_netinhibitory_domainconstrain';
-ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB'
 glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
 
 
@@ -20,10 +20,44 @@ exps = [3];
 stimtypes = [1];
 celltypes = [1];
 cell_subset = 'glmconv_4pct';
-glm_settings{1}.type = 'debug';
-glm_settings{1}.name = 'true';
+glm_settings{1}.type = 'cone_model';
+glm_settings{1}.name = 'rieke_linear'
+glm_settings{2}.type= 'input_pt_nonlinearity';
+glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
 ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
 glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
+clear
+exps = [1 3 2 4];
+stimtypes = [2];
+celltypes = [2 1];
+cell_subset = 'glmconv_4pct';
+glm_settings = {};
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+clear
+exps = [1 3 2 4];
+stimtypes = [1];
+celltypes = [2 1];
+cell_subset = 'all';
+glm_settings = {};
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
+
+
+clear
+exps = [1 3 2 4];
+stimtypes = [1];
+celltypes = [2 1];
+cell_subset = 'all';
+glm_settings = {};
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
 
 
 clear
@@ -172,6 +206,10 @@ for i_exp = exps
                         display('loading p_init')
                         eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
                         glm_cellinfo.p_init = fittedGLM.rawfit.opt_params;
+                        if strcmp(baseGLMType.fitname,...
+                                'fixedSP_rk1_linear_MU_PS_noCP_timekernelCONEMODEL_stimnonlin_piecelinear_fourpiece_eightlevels/Man_DoubleOpt_standardparams')
+                            glm_cellinfo.GLMPars = fittedGLM.GLMPars;
+                        end
                         fittedGLM_old = fittedGLM; clear fittedGLM;
                     end
                    
