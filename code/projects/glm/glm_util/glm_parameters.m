@@ -8,7 +8,7 @@ GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false;
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
-GLMT.CouplingFilters = true;
+GLMT.CouplingFilters = false;
 
 % Use this to do a quick check that things are right
 GLMT.debug      = false;
@@ -44,7 +44,7 @@ GLMP.stimfilter.fixedSP_type = 'WNSTA';
 
 
 GLMP.stimfilter.ROI_length = 19;  % This is the SIZE of the spatial filter in pixels
-GLMP.stimfilter.frames = 30;  % This is the number of frames in the temporal filter
+GLMP.stimfilter.frames = 60;  % This is the number of frames in the temporal filter
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMP.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';

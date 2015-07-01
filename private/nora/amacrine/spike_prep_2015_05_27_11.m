@@ -46,7 +46,10 @@ clear WN8 WN4 repeats_within_block repeat_starts block_starts
 % cells{2} = [285 268 339 5386];
 % cells{1} = [14 4];
 
-cells{1} = [206 207 183 148];
+% cells{1} = [206 207 183 148];
+
+% On par
+cells{1} = 41;
 
 %% Load up cell info
 
@@ -93,7 +96,7 @@ for i_cell = 1%:length(cells)
         end
     end
 
-    STA = STA_Test(concat_spikes, double(fitmovie), false);
+    [STA, center2] = STA_Test(concat_spikes, double(fitmovie), true); 
     fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'WN_STA', squeeze(STA), 'neighborspikes', nspikes);
     
     glm_predict(fittedGLM{i_cell}, testmovie, 'testspikes', tspikes, 'neighborspikes', ntspikes)

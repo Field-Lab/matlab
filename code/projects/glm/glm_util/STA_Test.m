@@ -31,17 +31,17 @@ function [STA_full, center] = STA_Test(fitspikes, fitmovie, center_verification)
 
 
 movie_size = size(fitmovie);
-STA = zeros(movie_size(1),movie_size(2),1,30);
+STA = zeros(movie_size(1),movie_size(2),1,60);
 fitframes = movie_size(3);
 
 for i = 1:length(fitspikes)
     sp_frame = floor(fitspikes(i) * 120);
-    if sp_frame > 29 && sp_frame<fitframes
-        STA = STA+reshape(double(fitmovie(:,:,(sp_frame-29):sp_frame)),[movie_size(1),movie_size(2),1,30]);
+    if sp_frame > 59 && sp_frame<fitframes
+        STA = STA+reshape(double(fitmovie(:,:,(sp_frame-59):sp_frame)),[movie_size(1),movie_size(2),1,60]);
     end
 end
 
-for i = 1:30
+for i = 1:60
    imagesc(STA(:,:,1,i)')
    colormap gray
    axis image
