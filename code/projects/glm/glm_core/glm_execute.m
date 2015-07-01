@@ -99,7 +99,19 @@ p_init     = .01* ones(paramind.paramcount,1);
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
-clear WN_STA center_coord
+
+
+if GLMType.STA_init
+    % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
+    stimsize.width  = size(fitmovie,1);
+    stimsize.height = size(fitmovie,2);
+    ROIcoord        = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, stimsize);
+    clear stimsize
+    [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
+    p_init(paramind.time1) = STA_time;
+    p_init(paramind.space1) = STA_sp;
+    clear WN_STA center_coord STA_time STA_sp
+end
 
 %
 if ~GLMType.CONVEX
@@ -230,6 +242,7 @@ fittedGLM.fminunc_output = output;
 
 %% Unpack the output into filters
 
+rawfit.p_init            = p_init;
 rawfit.opt_params        = pstar;
 rawfit.paramind          = paramind;
 rawfit.objective_val     = fstar;
