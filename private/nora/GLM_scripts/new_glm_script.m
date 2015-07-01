@@ -1,5 +1,5 @@
-addpath(genpath('/Users/Nora/Documents/MATLAB/matlab/code/projects/glm'))
-% addpath(genpath('/home/vision/Nora/matlab/code/projects/glm')) %BERTHA
+% addpath(genpath('/Users/Nora/Documents/MATLAB/matlab/code/projects/glm'))
+addpath(genpath('/home/vision/Nora/matlab/code/projects/glm')) %BERTHA
 
 glmpath_Lovelight
 
@@ -39,7 +39,7 @@ runoptions.replace_existing = true;
 
 
 %% Other inputs
-experiments = [2]; % 1-4
+experiments = [1]; % 1-4
 stimulus = [1]; % 1 is WN, 2 is NSEM
 celltypes = [1]; % 1 is ON, 2 is OFF
 cellsubset = 'debug'; % options are debug, shortlist, or all;

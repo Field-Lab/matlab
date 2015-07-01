@@ -26,7 +26,8 @@ function  [f grad Hess log_cif] = glm_SU_optimizationfunction(SU_params, SU_cova
 % Initialize
 dt = bin_duration;
 spt = spikebins;
-SU_covariates = imresize(SU_covariates, [1, length(non_stim_lcif)],'nearest');
+n_bins = size(non_stim_lcif);
+%SU_covariates = imresize(SU_covariates, [1, length(non_stim_lcif)],'nearest');
 
 % hessbase = zeros(size(COV));
 
@@ -36,7 +37,7 @@ for i = 1:length(SU_params)
     SU_covariates(i, :, :) = SU_covariates(i, :, :) * SU_params(i);
 end
 stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
-lcif = stim_lcif + non_stim_lcif;
+lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
 
 % Evaluate the objective function (monotonic in log-likelihood)
 f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
@@ -44,15 +45,19 @@ f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
 % % Evaluate the gradient
 
 % gradient of the lcif
-del_lcif = zeros(9, length(SU_covariates));
+del_LL = zeros(9, 1);
 subunit_drive = exp(squeeze(sum(SU_covariates,1)));
 for i_SU = 1:9
+    del_lcif = zeros(1, length(SU_covariates));
     for i_loc = 1:121
-        temp = pooling_weights(i_loc)*pixels(i_SU,i_loc,:).*subunit_drive(i_loc,:);
-        del_lcif(i_SU,:) = del_cif(i_SU,:)+temp;
+        temp = pooling_weights(i_loc)*squeeze(pixels(i_SU,i_loc,:))'.*squeeze(subunit_drive(i_loc,:));
+        del_lcif = del_lcif+temp;
     end
+    del_lcif = imresize(del_lcif, n_bins, 'nearest');
+    del_LL(i_SU) = sum(del_lcif(spt))- dt * sum(exp(lcif).*del_lcif); 
 end
-g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
+grad = -del_LL;
+% g_eval = sum(COV(:,spt),2)  - dt * ( COV * (cif') );
 % 
 % % Evaluate the hessian
 % hessbase(i_vec,:) = sqrt(cif) .* COV(i_vec,:) ;

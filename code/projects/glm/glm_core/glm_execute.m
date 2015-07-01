@@ -253,11 +253,11 @@ if ~GLMType.CONVEX
             
             % Set up the covariate vector
             p_init_SU     = .01* ones(GLMPars.subunit_size^2,1);
-            SU_cov = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord); % maybe eventually should add other filters to be fit again here? eg coupling
-            convex_cov_SU = imresize(SU_cov, [9 bins],'nearest');
+            [SU_cov, pooling_filters] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord); % maybe eventually should add other filters to be fit again here? eg coupling
+            non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
             
             % Do optimization
-            [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction(p_SU,convex_cov_SU,home_spbins,t_bin),p_init_SU,optim_struct);
+            [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction(p_SU,SU_cov,pooling_weights,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             
             % Unpack the subunit filter
             SU_filter = reshape(pstar_SU(paramind.SU), [GLMPars.subunit_size, GLMPars.subunit_size]);
