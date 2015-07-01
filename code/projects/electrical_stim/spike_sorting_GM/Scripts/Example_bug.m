@@ -8,9 +8,9 @@ clear initial
 clear Gibbs
 clear GibbsNoDelete
 clear Log
-temp = load('/Volumes/Analysis/2012-09-24-3/data003/elecResp_n2796_p138.mat');
+temp = load('/Users/gomena/Research/EJBigData/Datasetsvisitjun15/Debugging/elecResp_n2796_p138.mat');
 patternNo = temp.elecResp.stimInfo.patternNo;
-pathToAnalysisData = temp.elecResp.names.data_path;
+pathToAnalysisData = '/Users/gomena/Research/EJBigData/Datasetsvisitjun15/Debugging/';
 neuronIds = temp.elecResp.cells.main;
 
 
