@@ -29,14 +29,10 @@ score_aggregator(glm_settings,metric_type,exps)%,special_arg)
 
 
 clear ; close all; clc;
-metric_type.name      = 'crossval_fracvar_10msec';
-metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
+metric_type.name  = 'crossval_BPS';
+metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 exps     = [1 2 3 4];
 glm_settings = {};
-glm_settings{1}.type = 'cone_model';
-glm_settings{1}.name = 'rieke_linear'
-glm_settings{2}.type= 'input_pt_nonlinearity';
-glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
 special_arg = 'Logistic_fixMU_noPS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')

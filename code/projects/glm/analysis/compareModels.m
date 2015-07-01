@@ -110,6 +110,7 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
 end
 
+comparison_name = 'WNvsNSEM-standardGLMwithlinearcones-inputNL';
 if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
     models{1}.settings{1}.type = 'cone_model';
     models{1}.settings{1}.name = 'rieke_linear';

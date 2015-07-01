@@ -9,7 +9,7 @@ clear ; close all; clc;
 
 comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-LogisticfixMUnoPS';
 
-
+comparison_name = 'deltaWNvsNSEM-standardGLMwithlinearcones-inputNL';
 cellselection_type = 'glmconv4pct';
 rundir = pwd;
 metrics = [2];
@@ -45,6 +45,17 @@ if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1')
     plotparams.title_comparison   = 'Crude PS Constraint';
     plotparams.purpose            = 'Verify that crude constraining of PS Filter still tells same story of WN vs NSEM';
 end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMwithlinearcones-inputNL')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    plotparams.title_comparison   = 'Input Point NL';
+    plotparams.purpose            = 'Compare WN vs NSEM for linear cones and optimal static non-linear';
+end    
 
 if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';

@@ -43,6 +43,14 @@ GLMPars           = GLMParams;
 if isfield(GLMType, 'specialchange') && GLMType.specialchange
     GLMPars = GLMParams(GLMType.specialchange_name);
 end
+
+% IF RUNNING OFF OF INPUT NL LOAD THOSE COEFFS
+if isfield(glm_cellinfo, 'GLMPars')
+   GLMPars = glm_cellinfo.GLMPars; 
+end
+
+
+
 fittedGLM.GLMPars = GLMPars;
 fittedGLM.GLMType = GLMType;
 if isfield(GLMType, 'debug') && GLMType.debug
@@ -214,7 +222,18 @@ end
 p_init     = .01* ones(paramind.paramcount,1);
 if isfield(glm_cellinfo, 'p_init')
     p_init = glm_cellinfo.p_init;
+    
+    if strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain_COB')
+        p_init_psbase = p_init(paramind.PS);
+        p_init_new    = inv(COB) * p_init_psbase;        
+        p_init(paramind.PS) = p_init_new;
+        display('modulating p init to new basis')
+    end
+    
 end
+
+
+
 
 
 
