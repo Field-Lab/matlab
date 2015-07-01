@@ -12,6 +12,8 @@ function unpack_greyscale_rawmovie(moviepath, outputpath, framesperchunk)
 %
 %  WARNING: this function should not be used for color raw movies. It will
 %  return incorrect results if used for this purpose.
+%
+%  Author: Georges Goetz - ggoetz@stanford.edu
 
 if nargin == 2
     framesperchunk = 120;
@@ -76,11 +78,13 @@ for i = 1:nframes
      % Load
     t = fread(fid,width*height*3,'ubit8');  % 3 RGB guns
     tt = reshape(t,3,width,height);
-    frames{i} = squeeze(tt(1,:,:));
     
     if mod(i, framesperchunk) == 0
+        frames{framesperchunk} = squeeze(tt(1,:,:));
         save(fullfile(outputpath, sprintf(filename, i/framesperchunk)), 'frames');
         frames = cell(framesperchunk, 1);
+    else
+        frames{mod(i, framesperchunk)} = squeeze(tt(1,:,:));
     end
 end
 % There could be a few last frames that haven't been saved yet
