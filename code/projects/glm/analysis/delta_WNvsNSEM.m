@@ -9,10 +9,14 @@ clear ; close all; clc;
 
 comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-LogisticfixMUnoPS';
 
-comparison_name = 'deltaWNvsNSEM-standardGLMwithlinearcones-inputNL';
+comparison_name = 'deltaWNvsNSEM-standardGLM-netinhibPSCOB';
 cellselection_type = 'glmconv4pct';
+
+clear
+comparison_name = 'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB';
+cellselection_type = 'glmconv1pct';
 rundir = pwd;
-metrics = [2];
+metrics = [1];;
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -79,7 +83,29 @@ if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-Logisticf
     
     plotparams.title_comparison   = 'GLMnoPS to full NLN (no PS)';
     plotparams.purpose            = 'Change in WN vs NSEM with both NL (no PS)';
-end   
+end
+if strcmp(comparison_name,'deltaWNvsNSEM-standardGLM-netinhibPSCOB')
+    models{1}.settings = {};
+    models{2}.settings = {};
+    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
+    plotparams.title_comparison   = 'Proper Constrained Search of PS';
+    plotparams.purpose            = 'Verify that proper constraining of PS Filter still tells same story of WN vs NSEM for base GLM';
+end
+if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.settings{2}.type = 'input_pt_nonlinearity';
+    models{1}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
+    
+    plotparams.title_comparison   = 'Proper Constrained PS after inputNL';
+    plotparams.purpose            = 'Verify that proper constraining of PS Filter still tells same story of WN vs NSEM for GLM with optimal inputNL';
+end
     
     
 % Unpack metric
@@ -152,7 +178,7 @@ plotparams.title = sprintf('%s: %s', plotparams.title_metric, plotparams.title_c
 %% Bookkeeping
 BD   = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
-if strcmp(cellselection_type, 'glmconv4pct')
+if strcmp(cellselection_type, 'glmconv4pct') || strcmp(cellselection_type, 'glmconv1pct')
     eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection)); 
 end
 currentdir = pwd;
@@ -202,6 +228,13 @@ for i_exp = exps
         clear candidate_cells
     elseif strcmp(cellselection_type,'glmconv4pct')
         conv_column     = 2; 
+        conv_index_ON   = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
+        conv_index_OFF  = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
+        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
+        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
+        clear conv_index_ON conv_index_OFF conv_columns
+    elseif strcmp(cellselection_type,'glmconv1pct')
+        conv_column     = 4; 
         conv_index_ON   = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
         conv_index_OFF  = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);

@@ -414,7 +414,11 @@ fittedGLM.writingcode = mfilename('fullpath');
 [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats);
 fittedGLM.xvalperformance  = xvalperformance; 
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
-printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
+
+currentdir = pwd;
+cd(glm_cellinfo.d_save)
+printname = sprintf('DiagPlots_%s',fittedGLM.cellinfo.cell_savename);
 printglmfit(fittedGLM,printname)
+cd(currentdir)
 
 end
