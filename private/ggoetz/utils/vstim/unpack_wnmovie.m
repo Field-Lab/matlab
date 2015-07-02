@@ -21,6 +21,15 @@ end
 % Create an instance of a vision movie file
 wnmovie = edu.ucsc.neurobiology.vision.stimulus.WhiteNoiseMovie(moviepath, globalspath);
 
+% Check if we're suppose to be unpacking a color or greyscale movie
+bwmovie = strcmp(wnmovie.colorType().toString(), 'DEPENDENT');
+if bwmovie
+    nframes = nframes/3;
+    if mod(framesperchunk, 3) ~= 0
+        error('For BW movies, the number of frames per chunk should be a multiple of 3.')
+    end
+end
+
 % Figure out the file name 
 if exist(outputpath) %#ok<EXIST>
     assert(isdir(outputpath))
@@ -48,15 +57,33 @@ for i = 1:nframes
     end
     
     % Load. Note: frames are 0-indexed (java convention)
-    framedata = double(reshape(wnmovie.getFrame(i-1).getBuffer(), ...
-        wnmovie.getHeight(), wnmovie.getWidth(), 3));
+    bufferdata = double(reshape(wnmovie.getFrame(i-1).getBuffer(), ...
+        3, wnmovie.getWidth(), wnmovie.getHeight()));
+    framedata = cat(3, squeeze(bufferdata(1,:,:)).', ...
+        squeeze(bufferdata(2,:,:)).', squeeze(bufferdata(3,:,:)).');
     
-    if mod(i, framesperchunk) == 0
-        frames{framesperchunk} = framedata;
-        save(fullfile(outputpath, sprintf(filename, i/framesperchunk)), 'frames');
-        frames = cell(framesperchunk, 1);
+    if bwmovie
+        if mod(i, framesperchunk/3) == 0
+            frames{framesperchunk-2} = squeeze(framedata(:,:,1));
+            frames{framesperchunk-1} = squeeze(framedata(:,:,2));
+            frames{framesperchunk} = squeeze(framedata(:,:,3));
+            save(fullfile(outputpath, ...
+                sprintf(filename, round(i*3/framesperchunk))), 'frames');
+            frames = cell(framesperchunk, 1);
+        else
+            frames{(mod(i, framesperchunk/3)-1)*3 + 1} = squeeze(framedata(:,:,1));
+            frames{(mod(i, framesperchunk/3)-1)*3 + 2} = squeeze(framedata(:,:,2));
+            frames{(mod(i, framesperchunk/3)-1)*3 + 3} = squeeze(framedata(:,:,3));
+        end
     else
-        frames{mod(i, framesperchunk)} = framedata;
+        if mod(i, framesperchunk) == 0
+            frames{framesperchunk} = framedata;
+            save(fullfile(outputpath, ...
+                sprintf(filename, i/framesperchunk)), 'frames');
+            frames = cell(framesperchunk, 1);
+        else
+            frames{mod(i, framesperchunk)} = framedata;
+        end
     end
 end
 % There could be a few last frames that haven't been saved yet
@@ -66,8 +93,5 @@ if mod(i, framesperchunk) ~= 0
 end
 % Done!
 fprintf('\nConversion done.\n');
-
-fclose(fid);
-
 
 end % unpack_wnmovie
