@@ -20,9 +20,11 @@ metrics = [1 2 3 4 5 6];
 comparison_name = 'WNvsNSEM-standardGLM'; 
 %metrics = [2 5];
 
-
-comparison_name = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
+clear; clc
+comparison_name = 'NSEM-standardGLMwithinputNL-netinhibPSCOB';
+comparison_name = 'NSEM-standardGLM-netinhibPSCOB';
 cellselection_type = 'glmconv4pct';
+metrics = 1;
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -110,7 +112,6 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
 end
 
-comparison_name = 'WNvsNSEM-standardGLMwithlinearcones-inputNL';
 if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
     models{1}.settings{1}.type = 'cone_model';
     models{1}.settings{1}.name = 'rieke_linear';
@@ -132,6 +133,39 @@ if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
     plotparams.purpose            = 'Check WN vs NSEM for optimal poisson cascade NLN';
 end
     
+if strcmp(comparison_name,'NSEM-standardGLMwithinputNL-netinhibPSCOB')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.settings{2}.type = 'input_pt_nonlinearity';
+    models{1}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{1}.fit_type    = 'NSEM';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.fit_type    = 'NSEM';
+    
+    plotparams.xlabel             = 'inputNL freePS';
+    plotparams.ylabel             = 'inputNL constrained PS';
+    plotparams.title_comparison   = 'Proper Constrained PS after inputNL';
+    plotparams.purpose            = 'Verify that proper constraining of PS Filter doesnt have huge effect on NSEM';
+end
+
+if strcmp(comparison_name,'NSEM-standardGLM-netinhibPSCOB')
+    models{1}.settings= {};
+    models{1}.fit_type    = 'NSEM';
+    
+    models{2}.settings = {};
+    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.fit_type    = 'NSEM';
+    
+    plotparams.xlabel             = 'standardGLM freePS';
+    plotparams.ylabel             = 'standardGLM constrained PS';
+    plotparams.title_comparison   = 'Proper Constrained PS after inputNL';
+    plotparams.purpose            = 'Verify that proper constraining of PS Filter doesnt have huge effect on NSEM';
+end    
     
 if strcmp(comparison_name, 'WNvsNSEM-standardGLM-LogisticfixMUnoPS')
     
