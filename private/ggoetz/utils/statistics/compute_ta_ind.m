@@ -12,18 +12,23 @@ function tai = compute_ta_ind(st, ter, tparams)
 %  events can be calculated by averaging each of the events with indices
 %  TAI(:, kk) with 1 <= kk <= k.
 %
+%  TAI = COMPUTE_TA_IND(ST, MAP_EVENTS_REFRESH) uses a cached map of
+%  samples to event indices to calculate the STA indices instead. The map
+%  should be a binary .stf file as calculated by MAP_SAMPLES_TO_FRAMES.
+%
 %  TAI = COMPUTE_TA_IND(..., TPARAMS) lets you further speficy how far into
 %  the future/past and with what time granularity the triggered average
 %  should be computed. TSTEPS should be a 3x1 vector such that 
 %  TPARAMS = [T_PRE, T_POST, STEP_SZ] with T_PRE the number of samples
-%  preceeding each spike used for the computation (defaults to 1500), 
+%  preceeding each spike used for the computation (defaults to 4500), 
 %  T_POST the number of samples following each spike (defaults to 0) and
-%  STEP_SZ the STA step (defaults to 20 samples).
+%  STEP_SZ the STA step (defaults to 60 samples). Default params result in
+%  a STA depth of 76.
 
 if nargin == 2
-    t_pre = 1500;
+    t_pre = 4500;
     t_post = 0;
-    step_sz = 20;
+    step_sz = 60;
 else
     assert(numel(tparams) == 3);
     t_pre = tparams(1);
@@ -31,6 +36,13 @@ else
     step_sz = tparams(3);
 end
 t_steps = (-t_pre):step_sz:t_post;
+
+if strcmp(class(ter), 'char')
+    use_cached_indices = 1;
+    fid = fopen(ter);
+else
+    use_cached_indices = 0;
+end
 
 % Trim the spike train: remove spikes for which calculating in the TA
 % would make us look at parts of the recording that took place before
@@ -51,6 +63,14 @@ end
 tai = repmat(st, 1, length(t_steps)) + repmat(t_steps, length(st), 1);
 
 % Then, convert those times in samples to event indices
-tai = arrayfun(@(x)(sum(ter<x)), tai);
+if use_cached_indices
+    for k = 1:numel(tai)
+        fseek(fid, (tai(k) - 1)*4, -1);
+        tai(k) = fread(fid, 1, 'uint32');
+    end
+    fclose(fid);
+else
+    tai = arrayfun(@(x)(sum(ter<x)), tai);
+end
 
 end % compute_ta_indices
