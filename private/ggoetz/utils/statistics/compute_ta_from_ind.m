@@ -14,16 +14,27 @@ function [ta, e_ta] = compute_ta_from_ind(tai, imfolder, zeroval)
 %  [~, E_TA] = COMPUTE_TA_FROM_IND further returns the standard error 
 %  of the mean for the triggered average.
 
+% Maximum number of movie chunks in memory at one time
+MAX_CHUNKS_LOADED = 3; 
+movie_chunks = cell(MAX_CHUNKS_LOADED, 1);
+chunksloaded = zeros(MAX_CHUNKS_LOADED, 1);
+
 if nargin == 2
     zeroval = 0.5;
 end
+neventsaveraged = size(tai, 1);
+tadepth = size(tai, 2);
+nevents = numel(tai);
+
+% We'll work on the transpose of the TA indices matrix, as it is more
+% natural to index in column-major mode in Matlab.
+tai = tai.';
 
 % First, we need to figure out where all the event chunks are stored, and
 % in which chunk we should be looking for each event.
 
 % Get the list of all chunk files
 allchunks = dir(fullfile(imfolder, '*.mat'));
-nchunks = length(allchunks);
 
 % Open the first one to figure out how many events are stored per chunk
 load(fullfile(imfolder, allchunks(1).name));
@@ -32,71 +43,64 @@ eventsperchunk = length(frames);
 % Event 0 is the special event "no frame" (gray), create it here
 eventzero = zeroval*ones(size(frames{1}));
 
-% Figure out where the events of interest are
-allevents = sort(unique(tai(:)), 'ascend');
-nevents = length(allevents);
-if size(allevents, 1) < size(allevents, 2)
-    allevents = allevents.';
-end
-% Check that we can account for all the events that are taken into account
-if sum(allevents > nchunks*eventsperchunk)
-    error('Number of events expected by the STA and known events do not match')
-end
-% First column: chunk file; second column: frame in the chunk
-alleventlocations = mod(allevents, eventsperchunk);
-alleventlocations(alleventlocations == 0) = 120;
-alleventlocations = [ceil(allevents/eventsperchunk) ...
-    alleventlocations];
-
 % Now we can calculate the TA and its associated error
-ta = repmat({zeros(size(frames{1}))}, size(tai,2), 1);
-e_ta = repmat({zeros(size(frames{1}))}, size(tai,2), 1);
-event_counter = zeros(length(ta), 1);
-neventsaveraged = size(tai, 1);
+ta = repmat({zeros(size(frames{1}))}, tadepth, 1);
+e_ta = repmat({zeros(size(frames{1}))}, tadepth, 1);
+event_counter = zeros(tadepth, 1);
 
-chunkloaded = -1;
 for kk = 1:nevents
-    % Find which frames the current event contributed to
-    [~, framesofinterest] = find(tai == allevents(kk));
+    cevent = tai(kk);
+    cframe = mod(kk, tadepth) + 1;
+    
+    % Find which chunk corresponds to the event and what its index in the
+    % chunk is
+    chunkindex = ceil(cevent/eventsperchunk);
+    posinchunk = mod(cevent, eventsperchunk);
+    if posinchunk == 0
+        posinchunk = eventsperchunk;
+    end
     
     % Add the event accordingly to mean and variance
     % Event 0 is a special case handled differently
-    if allevents(kk)>0
+    if tai(kk)>0
         
         % We only load a movie chunk if it wasn't already in memory
-        if chunkloaded ~= alleventlocations(kk,1)
-            load(fullfile(imfolder, allchunks(alleventlocations(kk,1)).name));
-            chunkloaded = alleventlocations(kk,1);
+        if sum(chunksloaded == chunkindex) == 0
+            % Pop the last chunk
+            movie_chunks(2:end) = movie_chunks(1:(end-1));
+            chunksloaded(2:end) = chunksloaded(1:(end-1));
+            
+            % Push in the new chunk
+            load(fullfile(imfolder, allchunks(chunkindex).name));
+            movie_chunks{1} = frames;
+            chunksloaded(1) = chunkindex;
+            
+            % We'll use this chunk
+            bufchunkind = 1;
+        else
+            bufchunkind = find(chunksloaded == chunkindex);
         end
         
         % For each time the event contributed, update mean/variance.
         % This is our new sample
-        x = frames{alleventlocations(kk,2)} - zeroval;
-        for ll=1:length(framesofinterest)
-            % Current frame
-            cframe = framesofinterest(ll);
-            % Update event counter
-            event_counter(cframe) = event_counter(cframe) + 1;
-            % Running mean and variance
-            delta = x - ta{framesofinterest(ll)};
-            ta{cframe} = ta{cframe} + delta/event_counter(cframe);
-            e_ta{cframe} = e_ta{cframe} + delta.*(x - ta{cframe});
-        end
+        x = movie_chunks{bufchunkind}{posinchunk} - zeroval;
+        % Update event counter
+        event_counter(cframe) = event_counter(cframe) + 1;
+        % Running mean and variance
+        delta = x - ta{cframe};
+        ta{cframe} = ta{cframe} + delta/event_counter(cframe);
+        e_ta{cframe} = e_ta{cframe} + delta.*(x - ta{cframe});
         
     else
         
         % New sample
         x = eventzero - zeroval;
-        for ll=1:length(framesofinterest)
-            % Current frame
-            cframe = framesofinterest(ll);
-            % Update event counter
-            event_counter(cframe) = event_counter(cframe) + 1;
-            % Running mean and variance
-            delta = x - ta{framesofinterest(ll)};
-            ta{cframe} = ta{cframe} + delta/event_counter(cframe);
-            e_ta{cframe} = e_ta{cframe} + delta.*(x - ta{cframe});
-        end
+        % Update event counter
+        event_counter(cframe) = event_counter(cframe) + 1;
+        % Running mean and variance
+        delta = x - ta{cframe};
+        ta{cframe} = ta{cframe} + delta/event_counter(cframe);
+        e_ta{cframe} = e_ta{cframe} + delta.*(x - ta{cframe});
         
     end
 end
