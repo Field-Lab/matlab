@@ -48,57 +48,64 @@ alleventlocations(alleventlocations == 0) = 120;
 alleventlocations = [ceil(allevents/eventsperchunk) ...
     alleventlocations];
 
-% Now we can calculate the TA. 
+% Now we can calculate the TA and its associated error
 ta = repmat({zeros(size(frames{1}))}, size(tai,2), 1);
+e_ta = repmat({zeros(size(frames{1}))}, size(tai,2), 1);
+event_counter = zeros(length(ta), 1);
 neventsaveraged = size(tai, 1);
 
-% Start with the TA itself
 chunkloaded = -1;
 for kk = 1:nevents
-    [~, colofinterest] = find(tai == allevents(kk));
+    % Find which frames the current event contributed to
+    [~, framesofinterest] = find(tai == allevents(kk));
+    
+    % Add the event accordingly to mean and variance
+    % Event 0 is a special case handled differently
     if allevents(kk)>0
+        
+        % We only load a movie chunk if it wasn't already in memory
         if chunkloaded ~= alleventlocations(kk,1)
             load(fullfile(imfolder, allchunks(alleventlocations(kk,1)).name));
             chunkloaded = alleventlocations(kk,1);
         end
-        for ll=1:length(colofinterest)
-            ta{colofinterest(ll)} = ta{colofinterest(ll)} + ...
-                (frames{alleventlocations(kk,2)} - zeroval)/neventsaveraged;
+        
+        % For each time the event contributed, update mean/variance.
+        % This is our new sample
+        x = frames{alleventlocations(kk,2)} - zeroval;
+        for ll=1:length(framesofinterest)
+            % Current frame
+            cframe = framesofinterest(ll);
+            % Update event counter
+            event_counter(cframe) = event_counter(cframe) + 1;
+            % Running mean and variance
+            delta = x - ta{framesofinterest(ll)};
+            ta{cframe} = ta{cframe} + delta/event_counter(cframe);
+            e_ta{cframe} = e_ta{cframe} + delta.*(x - ta{cframe});
         end
+        
     else
-        for ll=1:length(colofinterest)
-            ta{colofinterest(ll)} = ta{colofinterest(ll)} + ...
-                (eventzero - zeroval)/neventsaveraged;
+        
+        % New sample
+        x = eventzero - zeroval;
+        for ll=1:length(framesofinterest)
+            % Current frame
+            cframe = framesofinterest(ll);
+            % Update event counter
+            event_counter(cframe) = event_counter(cframe) + 1;
+            % Running mean and variance
+            delta = x - ta{framesofinterest(ll)};
+            ta{cframe} = ta{cframe} + delta/event_counter(cframe);
+            e_ta{cframe} = e_ta{cframe} + delta.*(x - ta{cframe});
         end
-    end
-end
-
-% Then calculate the error. 
-% TODO: do both at once - should speed things up
-e_ta = repmat({zeros(size(frames{1}))}, size(tai,2), 1);
-chunkloaded = -1;
-for kk = 1:nevents
-    [~, colofinterest] = find(tai == allevents(kk));
-    if allevents(kk)>0
-        if chunkloaded ~= alleventlocations(kk,1)
-            load(fullfile(imfolder, allchunks(alleventlocations(kk,1)).name));
-            chunkloaded = alleventlocations(kk,1);
-        end
-        for ll=1:length(colofinterest)
-            e_ta{colofinterest(ll)} = e_ta{colofinterest(ll)} + ...
-                (frames{alleventlocations(kk,2)} - zeroval).^2/neventsaveraged;
-        end
-    else
-        for ll=1:length(colofinterest)
-            e_ta{colofinterest(ll)} = e_ta{colofinterest(ll)} + ...
-            (eventzero - zeroval).^2/neventsaveraged;
-        end
+        
     end
 end
 
 % Normalize things
 for kk=1:length(e_ta)
-    e_ta{kk} = e_ta{kk} - ta{kk}.^2;
+    % Go from M2 to variance
+    e_ta{kk} = e_ta{kk} / (event_counter(kk) - 1);
+    % And we actually want to return the standard error of the mean
     e_ta{kk} = sqrt(e_ta{kk})/sqrt(neventsaveraged);
 end
 
