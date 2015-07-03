@@ -18,7 +18,7 @@ staDepth = int32(76);
 staOffset = int32(0);
 stixelwidth = 10;
 stixelheight = 10;
-refreshtime = 2;
+refreshtime = 3;
 stafilepath = '/Volumes/Lab/Projects/mining/output/2013-08-19-3/data000-debug2/data000-debug2.sta';
 staFile = edu.ucsc.neurobiology.vision.io.STAFile(stafilepath, headerCapacity, width, height, staDepth, staOffset, stixelwidth, stixelwidth, refreshtime);
 
@@ -40,8 +40,7 @@ ndots = 0;
 
 % Get the STAs
 ncells = length(datarun.cell_ids);
-ncells = 1;
-for k = 1:ncells
+for k = 2:2
     % Update progress bar
     if (k/ncells)*80 > ndots
         fprintf('.');
