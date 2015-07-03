@@ -46,29 +46,58 @@
 %{
 
 clear; clc
-exps = [1 2 3 4]; stimtypes = [1 2]; celltypes = [1 2]; 
-cell_subset = 'shortlist'; postfilterNL.debug = false;
-baseGLM.settings = {};
+exps = [3 2 4]; stimtypes = [2]; celltypes = [2 1]; 
+cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
+baseGLM.settings{1}.type = 'cone_model';
+baseGLM.settings{1}.name = 'rieke_linear'
+baseGLM.settings{2}.type= 'input_pt_nonlinearity';
+baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+baseGLM.special_arg = 'PS_netinhibitory_domainconstrain_COB';
 postfilterNL.type = 'Logistic_fixMU_includePS';
 runoptions.print  = true;
-glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM.settings,postfilterNL,runoptions)
+glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
+
+
+clear; clc
+exps = [1 2 4]; stimtypes = [2]; celltypes = [1 2]; 
+cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
+baseGLM.settings{1}.type = 'cone_model';
+baseGLM.settings{1}.name = 'rieke_linear'
+baseGLM.settings{2}.type= 'input_pt_nonlinearity';
+baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+baseGLM.special_arg = 'PS_netinhibitory_domainconstrain_COB';
+postfilterNL.type = 'Logistic_fixMU_includePS';
+runoptions.print  = true;
+glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
+
+
+clear; clc
+exps = [1 2 3 4]; stimtypes = [1]; celltypes = [1 2]; 
+cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
+baseGLM.settings{1}.type = 'cone_model';
+baseGLM.settings{1}.name = 'rieke_linear'
+baseGLM.settings{2}.type= 'input_pt_nonlinearity';
+baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+baseGLM.special_arg = 'PS_netinhibitory_domainconstrain_COB';
+postfilterNL.type = 'Logistic_fixMU_includePS';
+runoptions.print  = true;
+glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
+
 
 
 %}
 
-function glm_postfilterNL_LNonly(exps,stimtypes,celltypes,cell_subset,baseGLM_settings,postfilterNL,runoptions)
+function glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
 eval(sprintf('load %s/allcells.mat', BD.Cell_Selection));
 % Define structure which uniquely defines GLM to be used 
-if exist('baseGLM_settings', 'var')
-    baseGLM.settings = baseGLM_settings; clear baseGLM_settings;
-    baseGLM.Type = GLM_settings('default',baseGLM.settings);
-else
-    baseGLM.Type = GLM_settings('default');
-end
+baseGLM.Type = GLM_settings('default',baseGLM.settings);
 baseGLM.Type.fitname    = GLM_fitname(baseGLM.Type); 
+if isfield(baseGLM, 'special_arg')
+    baseGLM.Type.fitname = sprintf('%s/%s', baseGLM.Type.fitname, baseGLM.special_arg);
+end
 currentdir = pwd;
 
 for i_exp = exps    
@@ -232,7 +261,7 @@ for i_exp = exps
                 fittedGLM.fit_time    = datestr(clock);
                 fittedGLM.writingcode =  mfilename('fullpath');
                 fittedGLM.linearfilters.Stimulus         = fittedGLM_preNL.linearfilters.Stimulus ;
-                fittedGLM.linearfilters.Stimulus_rescale = NL_input.scale_rawtoNLinput;
+                fittedGLM.linearfilters.Stimulus_rescale = NL_Input.scale_rawtoNLinput;
                 fittedGLM.linearfilters.Stimulus_rescalenote = ...
                     'multiply stimfilter by rescaler,convolve with stim, retrieve pre-Nonlinearity rate';
                 if strcmp(postfilterNL.type,'Logistic_fixMU_includePS')
@@ -495,6 +524,18 @@ bin_size      = t_bin;
 if GLMType.PostSpikeFilter
     basis_params  = GLMPars.spikefilters.ps;
     ps_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
+    
+    if isfield(GLMType, 'PS_constrain')
+        if strcmp(GLMType.PS_constrain.type, 'PS_netinhibitory_domainconstrain_COB')
+            ps_basis_0 = ps_basis; clear ps_basis
+            v        = sum(ps_basis_0,1);
+            v        = v / norm(v) ;
+            orthog_v = null(v);
+            COB      = [v', orthog_v] ;
+            ps_basis = (inv(COB) * ps_basis_0')' ;
+        end
+    end
+            
 end
 if GLMType.CouplingFilters
     basis_params  = GLMPars.spikefilters.cp;

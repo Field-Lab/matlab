@@ -13,10 +13,11 @@ comparison_name = 'deltaWNvsNSEM-standardGLM-netinhibPSCOB';
 cellselection_type = 'glmconv4pct';
 
 clear
-comparison_name = 'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB';
+%comparison_name = 'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB';
+comparison_name = 'deltaWNvsNSEM-standardGLM-netinhibPSCOB';
 cellselection_type = 'glmconv1pct';
 rundir = pwd;
-metrics = [1];;
+metrics = [5];;
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -30,6 +31,8 @@ end
 
 function [model_comparison, outputnotes] = delta_WNvsNSEM(comparison_name,metric,cellselection_type)
 %% UNPACKING Comparison and Metic
+% Default plotter : 2015-07-02
+
 outputnotes.read = 'Readout of which model fits still need to have scores aggregated';
 outputnotes.problem_counter = 0;
 exps = [1 2 3 4];

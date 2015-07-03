@@ -21,10 +21,10 @@ comparison_name = 'WNvsNSEM-standardGLM';
 %metrics = [2 5];
 
 clear; clc
-comparison_name = 'NSEM-standardGLMwithinputNL-netinhibPSCOB';
+%comparison_name = 'NSEM-standardGLMwithinputNL-netinhibPSCOB';
 comparison_name = 'NSEM-standardGLM-netinhibPSCOB';
 cellselection_type = 'glmconv4pct';
-metrics = 1;
+metrics = [1];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end

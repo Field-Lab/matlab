@@ -43,8 +43,17 @@ glm_settings = {};
 metric_type.name  = 'crossval_BPS';
 metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 exps     = [1 2 3 4];
-special_arg = 'PS_netinhibitory_domainconstrain_COB';
+special_arg = 'Logistic_fixMU_includePS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
+
+clear ; close all; clc;
+glm_settings = {};
+metric_type.name      = 'crossval_fracvar_10msec';
+metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
+exps     = [1 2 3 4];
+special_arg = 'Logistic_fixMU_includePS';
+score_aggregator(glm_settings,metric_type,exps,special_arg)
+
 
 
 
@@ -67,8 +76,8 @@ score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
 clear ; close all; clc;
-metric_type.name  = 'crossval_BPS';
-metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
+metric_type.name       = 'crossval_victorspike_50msec';
+metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
 exps     = [1 2 3 4];
 glm_settings{1}.type = 'cone_model';
 glm_settings{1}.name = 'rieke_linear'
