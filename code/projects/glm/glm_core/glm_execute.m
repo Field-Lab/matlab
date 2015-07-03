@@ -102,15 +102,22 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 
 
 if GLMType.STA_init
-    % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
     stimsize.width  = size(fitmovie,1);
     stimsize.height = size(fitmovie,2);
     ROIcoord        = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, stimsize);
     clear stimsize
-    [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
-    p_init(paramind.time1) = STA_time;
-    p_init(paramind.space1) = STA_sp;
-    clear WN_STA center_coord STA_time STA_sp
+    STA = WN_STA(ROIcoord.xvals,ROIcoord.yvals,:);
+    klen = size(STA,1);
+    duration = size(STA, 3);
+    STA = reshape(STA, [klen^2,duration])  - mean(STA(:));
+    [U,S,V]  = svd (STA);
+    % p_init(paramind.time1) = V(:,1)*S(1,1);
+    p_init(paramind.space1) = U(:,1);
+    if strcmp(GLMType.stimfilter_mode, 'rk2')
+        p_init(paramind.space2) = U(:,2);
+    end
+    % [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
+    clear WN_STA center_coord STA U S V
 end
 
 %
