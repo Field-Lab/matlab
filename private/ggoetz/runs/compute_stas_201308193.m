@@ -40,7 +40,7 @@ ndots = 0;
 
 % Get the STAs
 ncells = length(datarun.cell_ids);
-for k = 2:2
+for k = 1:ncells
     % Update progress bar
     if (k/ncells)*80 > ndots
         fprintf('.');
