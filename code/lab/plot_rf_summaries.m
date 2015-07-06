@@ -315,7 +315,7 @@ if params.plot_fits
         if ~strcmpi(params.fill_color, 'none')
             fill(X,Y,params.fill_color)
         end
-        plot_axes = plot(X,Y,'Color',params.fit_color, 'LineWidth', params.fit_width)
+       plot(X,Y,'Color',params.fit_color, 'LineWidth', params.fit_width);
         hold on
     end
     set(gca, 'ydir', 'reverse')
