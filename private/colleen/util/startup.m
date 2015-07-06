@@ -28,7 +28,7 @@
 disp('Running startup file...');
 
 % addpath('/home/vision/alex/matlab/code/lab/utilities')
-addpath('../../utilities')
+addpath('../../../utilities')
 
 % addpath(genpath2('/home/vision/alex/matlab/code', {'.svn'}));
 % addpath(genpath2('matlab/private/alex/matlab/code', {'.svn'}));
