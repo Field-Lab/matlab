@@ -1,7 +1,7 @@
 % format receptive fields for Dario
 
-datarun=load_data('2009-12-03-0/data003-nwpca/daat003/daat003.neurons');
-
+% datarun=load_data('2009-12-03-0/data003-nwpca/daat003/daat003.neurons');
+datarun=load_data('2008-04-30-1/data021/data021.neurons');
 % Loading other information
 %   Other information you might want including STAs, params, ei, neurons
 %   (includes spike times) and polarities
