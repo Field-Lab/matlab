@@ -35,7 +35,7 @@ metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset
 %metric_type.name      = 'crossval_fracvar_10msec';
 %metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
 exps     = [1 2 3 4];
-special_arg = 'PS_netinhibitory_domainconstrain_COB';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 clear ; close all; clc;
@@ -43,7 +43,7 @@ glm_settings = {};
 metric_type.name  = 'crossval_BPS';
 metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 exps     = [1 2 3 4];
-special_arg = 'Logistic_fixMU_includePS';
+special_arg{1} = 'Logistic_fixMU_includePS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 clear ; close all; clc;
@@ -51,7 +51,16 @@ glm_settings = {};
 metric_type.name      = 'crossval_fracvar_10msec';
 metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
 exps     = [1 2 3 4];
-special_arg = 'Logistic_fixMU_includePS';
+special_arg{1} = 'Logistic_fixMU_includePS';
+score_aggregator(glm_settings,metric_type,exps,special_arg)
+
+
+clear ; close all; clc;
+glm_settings = {};
+metric_type.name      = 'crossval_fracvar_10msec';
+metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
+exps     = [1 2 3 4];
+special_arg{1} = 'Logistic_fixMU_includePS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 
 
@@ -62,7 +71,7 @@ metric_type.name      = 'crossval_fracvar_10msec';
 metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
 exps     = [1 2 3 4];
 glm_settings = {};
-special_arg = 'PS_netinhibitory_domainconstrain_COB';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -71,7 +80,7 @@ metric_type.name      = 'crossval_fracvar_10msec';
 metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
 exps     = [1 2 3 4];
 glm_settings = {};
-special_arg = 'PS_netinhibitory_domainconstrain_COB';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -83,7 +92,7 @@ glm_settings{1}.type = 'cone_model';
 glm_settings{1}.name = 'rieke_linear'
 glm_settings{2}.type= 'input_pt_nonlinearity';
 glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
-special_arg = 'PS_netinhibitory_domainconstrain_COB';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -95,7 +104,8 @@ glm_settings{1}.type = 'cone_model';
 glm_settings{1}.name = 'rieke_linear'
 glm_settings{2}.type= 'input_pt_nonlinearity';
 glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
-special_arg = 'PS_netinhibitory_domainconstrain_COB';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+special_arg{2} = 'Logistic_fixMU_includePS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -108,7 +118,7 @@ metric_type.name  = 'crossval_BPS';
 metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
 exps     = [1 2 3 4];
 glm_settings = {};
-special_arg = 'Logistic_fixMU_noPS';
+special_arg{1} = 'Logistic_fixMU_noPS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -123,7 +133,7 @@ glm_settings{1}.type = 'cone_model';
 glm_settings{1}.name = 'rieke_linear'
 glm_settings{2}.type= 'input_pt_nonlinearity';
 glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
-special_arg = 'Logistic_fixMU_noPS';
+special_arg{1} = 'Logistic_fixMU_noPS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -132,7 +142,7 @@ metric_type.name      = 'crossval_fracvar_10msec';
 metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
 exps     = [1 2 3 4];
 glm_settings = {};
-special_arg = 'Logistic_fixMU_noPS';
+special_arg{1} = 'Logistic_fixMU_noPS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -141,7 +151,7 @@ metric_type.name       = 'crossval_victorspike_50msec';
 metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
 exps     = [1 2 3 4];
 glm_settings = {};
-special_arg = 'Logistic_fixMU_noPS';
+special_arg{1} = 'Logistic_fixMU_noPS';
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 display('Yeah!')
 
@@ -162,10 +172,10 @@ display('Yeah!')
 %metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset';
 %metric_type.name       = 'crossval_victorspike_50msec';
 %metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset';
-%special_arg = 'Logistic_fixMU';
-%special_arg = 'Logistic_fixMU_noPS';
-%special_arg = 'PS_Constrain_sub1';
-%special_arg = 'PS_Constrain_sub1';
+%special_arg{1} = 'Logistic_fixMU';
+%special_arg{1} = 'Logistic_fixMU_noPS';
+%special_arg{1} = 'PS_Constrain_sub1';
+%special_arg{1} = 'PS_Constrain_sub1';
 %score_aggregator(glm_settings,metric_type,exps,special_arg)
 %%
 
@@ -181,15 +191,10 @@ eval(sprintf('load %s/allcells.mat', BD.Cell_Selection));
 model.GLMType     = GLM_settings('default',glm_settings);
 model.fitname     = GLM_fitname(model.GLMType);
 if exist('special_arg','var')  
-    
-    %if strcmp(special_arg, 'Logistic_fixMU')
-    %    model.fitname = sprintf('%s/Logistic_fixMU', model.fitname)
-    %elseif strcmp(special_arg, 'PS_Constrain_sub1')
-    %    model.fitname = sprintf('%s/PS_Constrain_sub1', model.fitname)
-    %else
-    %   error('Need to register your special arg, assign folder')
-    %end
-    model.fitname = sprintf('%s/%s', model.fitname, special_arg);
+    args = length(special_arg)
+    for i_arg = 1:args
+        model.fitname = sprintf('%s/%s', model.fitname, special_arg{i_arg});
+    end
 end
 savedir = sprintf('%s/%s', BD.GLM_output_analysis, model.fitname)
 
