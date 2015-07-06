@@ -1,3 +1,6 @@
+%% DON'T USE
+% USE generator_signal_usingFunctions
+
 %generator signal
 clear
 
