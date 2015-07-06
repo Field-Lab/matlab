@@ -8,7 +8,7 @@ file_names  = {'2010-09-24-0/data001-nwpca/data001-nwpca', '2009-04-13-7/data000
 % zero_crossing = zeros(size(file_names, 2),size(4,2));
 % peak_ratio = zeros(size(file_names, 2),size(4,2));
 
-    for files = 1:size(file_names, 2)
+    for files = 3:size(file_names, 2)
         file_name = file_names{files};
         datarun.names.rrs_neurons_path=['/Volumes/Analysis/', file_name, '.neurons'];
         datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
@@ -54,23 +54,117 @@ file_names  = {'2010-09-24-0/data001-nwpca/data001-nwpca', '2009-04-13-7/data000
                 avg_timecourse = -avg_timecourse;
             end
             
-            [ind,t0] = crossing(avg_timecourse(13:30));
-            t0= t0(1)+12;
+            [ind,t0] = crossing(avg_timecourse(7:27));
+            t0= t0(end)+8;
             
-            [Y,I] = max(avg_timecourse(13:30))
-            peak_time = I(1)+ 12;
+            [Y,I] = max(avg_timecourse(7:27))
+            peak_time = I(end)+ 8;
             
-             [Y,I] = min(avg_timecourse(13:30))
-            trough_time = I(1)+ 12;
-            
+             [Y,I] = min(avg_timecourse(7:27))
+            trough_time = I(end)+ 8;
+           
             zero_crossing(files,cell_type) = (30-t0)*datarun.stimulus.interval*8.33;
             peak_ratio(files,cell_type) = abs(max(avg_timecourse))/abs(min(avg_timecourse));
-            peak_to_zero(files, cell_type)  = peak_time - t0;
-            trough_to_zero(files, cell_type)  = t0 - trough_time;
-            peak_to_trough(files,cell_type) = peak_time - trough_time;
+            peak_to_zero(files, cell_type)  = zero_crossing(files,cell_type) - (30-peak_time)*datarun.stimulus.interval*8.33;
+            trough_to_zero(files, cell_type)  =(30-trough_time)*datarun.stimulus.interval*8.33 - zero_crossing(files,cell_type);
+            peak_to_trough(files,cell_type) = (30-trough_time)*datarun.stimulus.interval*8.33 - (30-peak_time)*datarun.stimulus.interval*8.33;
      
 
         end
         clear datarun
     end
 
+zero_cross_ON = zero_crossing(:,2)./zero_crossing(:,1)    
+figure; hist(zero_cross_ON)
+xlabel('ON Parasol Zero Crossing/ON Midget Zero Crossing')
+ylabel('Number of datasets')
+title('Zero Crossing ON Cells')
+
+zero_cross_OFF = zero_crossing(:,4)./zero_crossing(:,3)    
+figure; hist(zero_cross_OFF)
+xlabel('OFF Parasol Zero Crossing/OFF Midget Zero Crossing')
+ylabel('Number of datasets')
+title('Zero Crossing OFF Cells')
+
+peak_ratio_ON = peak_ratio(:,2)./peak_ratio(:,1)    
+figure; hist(peak_ratio_ON)
+xlabel('ON Parasol Peak Ratio/ON Midget Peak Ratio')
+ylabel('Number of datasets')
+title('Peak Ratio ON Cells')
+
+peak_ratio_OFF = peak_ratio(:,4)./peak_ratio(:,3)    
+figure; hist(peak_ratio_OFF)
+xlabel('OFF Parasol Peak Ratio/OFF Midget Peak Ratio')
+ylabel('Number of datasets')
+title('Peak Ratio OFF Cells')
+
+
+peak_to_zero_cross_ON = peak_to_zero(:,2)./peak_to_zero(:,1)    
+figure; hist(peak_to_zero_cross_ON)
+xlabel('ON Parasol Peak to Zero Crossing/ON MidgetPeak to Zero Crossing')
+ylabel('Number of datasets')
+title('Peak to Zero Crossing ON Cells')
+
+peak_to_zero_cross_OFF = peak_to_zero(:,4)./peak_to_zero(:,3)    
+figure; hist(peak_to_zero_cross_OFF)
+xlabel('OFF Parasol Peak to Zero Crossing/OFF Midget Peak to Zero Crossing')
+ylabel('Number of datasets')
+title('Peak to Zero Crossing OFF Cells')
+
+figure
+plot(zero_crossing(:,1), peak_to_zero(:,1), 'xk')
+hold on
+plot(zero_crossing(:,2), peak_to_zero(:,2), 'or')
+legend('ON Parasol', 'ON Midget')
+xlabel('Zero Crossing')
+ylabel('Peak to Zero')
+title('Compare ON parasols and midgets on 2 dimensions')
+
+figure
+plot(zero_crossing(:,3), peak_to_zero(:,3), 'xk')
+hold on
+plot(zero_crossing(:,4), peak_to_zero(:,4), 'or')
+legend('OFF Parasol', 'OFF Midget')
+xlabel('Zero Crossing')
+ylabel('Peak to Zero')
+title('Compare OFF parasols and midgets on 2 dimensions')
+
+
+figure
+plot(trough_to_zero(:,1), peak_to_zero(:,1), 'xk')
+hold on
+plot(trough_to_zero(:,2), peak_to_zero(:,2), 'or')
+legend('ON Parasol', 'ON Midget')
+xlabel('Trough to Zero')
+ylabel('Peak to Zero')
+title('Compare ON parasols and midgets on 2 dimensions')
+
+figure
+plot(trough_to_zero(:,3), peak_to_zero(:,3), 'xk')
+hold on
+plot(trough_to_zero(:,4), peak_to_zero(:,4), 'or')
+legend('OFF Parasol', 'OFF Midget')
+xlabel('Trough to Zero')
+ylabel('Peak to Zero')
+title('Compare OFF parasols and midgets on 2 dimensions')
+
+
+
+figure
+plot(zero_crossing(:,3), peak_ratio(:,3), 'xk')
+hold on
+plot(zero_crossing(:,4), peak_ratio(:,4), 'or')
+legend('OFF Parasol', 'OFF Midget')
+xlabel('Zero Crossing')
+ylabel('Peak Ratio')
+title('Compare OFF parasols and midgets on 2 dimensions')
+
+
+figure
+plot(zero_crossing(:,1), peak_ratio(:,1), 'xk')
+hold on
+plot(zero_crossing(:,2), peak_ratio(:,2), 'or')
+legend('ON Parasol', 'ON Midget')
+xlabel('Zero Crossing')
+ylabel('Peak Ratio')
+title('Compare ON parasols and midgets on 2 dimensions')
