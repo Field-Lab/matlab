@@ -1,5 +1,5 @@
 Nora Brackbill
-2015-05-07
+2015-06-18
 
 
 
@@ -12,7 +12,7 @@ The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
 
 FUNCTIONS
 
-glm_fit(fitspikes, fitmovie, center, varargin)
+fittedGLM = glm_fit(fitspikes, fitmovie, center, varargin)
 	This takes in a movie, spikes, and location of the cell, and returned a fittedGLM structure.
 	The movie must be greyscale, and contain a frame for every 1/120 seconds.
     The spikes need to be aligned to the triggers already.
@@ -20,29 +20,30 @@ glm_fit(fitspikes, fitmovie, center, varargin)
 	make sure your timing and indexing is right. You also need to pass neighbor spikes and a WN_STA
 	if you want to use coupling or a fixed spatial fit, respectively.
 	
-glm_predict(fittedGLM, testmovie, varargin)
+xval = glm_predict(fittedGLM, testmovie, varargin)
 	This takes in a movie and a fittedGLM, and returns predicted spike trains. 
 	In addition, if spikes are provided, it calculates bits per spike. The test movie should
 	be in the same dimensions as the movie used to fit the cell.
 	
-glm_fit_from_WN(cells, dataset, stim, varargin)
+fittedGLM = glm_fit_from_WN(cells, dataset, stim, varargin)
 	This takes in a dataset name, cell ids, and an string specifying the XML movie, 
 	and passes everything needed for glm_fit, and returns the fittedGLM.
 	This is currently NOT set up for coupling!
 	
-STA_Test(fitspikes, fitmovie)
+[STA, center] = STA_Test(fitspikes, fitmovie)
 	Pass the same arguments as you would to glm_fit, and make sure you get an STA. It also returns 
     the location of the cell. This checks timing and indexing.
 	
 plotfilters(fittedGLM)
 	Quick look at the fitted filters
 	
-plotraster(xval, fittedGLM)
+plotrasters(xval, fittedGLM)
 	This takes in the output from glm_predict and glm_fit and plots the rasters, both recorded and predicted, and the PSTH
+    It only plots the recorded rasters if you inputted testspikes to glm_predict
 	
-RGB_to_BW calculates the RGB weights from the STA, and returns a pseudoBW movie.
+[RGB_weights, movie] = RGB_to_BW calculates the RGB weights from the STA, and returns a pseudoBW movie.
 
-glm_parameters contains the architecture of the GLM (eg is there a postspike filter? is there
+[GLMType, GLMParams] = glm_parameters contains the architecture of the GLM (eg is there a postspike filter? is there
 	coupling? what filter rank? etc) and specific parameters (how many basis filters are there
 	for the postspike filter, etc). You can change those things in this function.
 	

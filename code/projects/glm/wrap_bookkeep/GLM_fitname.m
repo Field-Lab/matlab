@@ -32,6 +32,9 @@ if ~exist('condition','var')
     if GLMType.contrast
         core = sprintf('%s_C'  , core); 
     end
+    if GLMType.STA_init 
+        core = sprintf('%s_init', core);
+    end
     GLM_fitname_core = sprintf('%s_%s', core, GLMType.cone_sname);
     
     % modify core name is we are running a reduced debug mode

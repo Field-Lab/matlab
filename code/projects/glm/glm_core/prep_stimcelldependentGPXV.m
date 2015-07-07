@@ -48,11 +48,11 @@ fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
 stim   = double(stim);
-stim   = stim / fitmoviestats.span;
-%
+stim   = stim / double(fitmoviestats.span);
+
 
 if strcmp(GLMType.nullpoint, 'mean')
-    stim = stim - fitmoviestats.normmean;
+    stim = stim - double(fitmoviestats.normmean);
 else
     error('you need to fill in how to account for stimulus with a different nullpoint')
 end

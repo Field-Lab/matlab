@@ -48,6 +48,7 @@ if strcmp(base_type, 'default')
     GLMType.debug      = false;
     GLMType.contrast   = false;
     GLMType.Subunits   = false;
+    GLMType.STA_init   = true;
 end
 %%%%% Cone Names %%%%%%%
 
@@ -59,6 +60,13 @@ end
 if exist('changes_cell','var') && length(changes_cell)>=1
     for i_change = 1:length(changes_cell)
         change = changes_cell{i_change};
+        
+        if strcmp(change.type, 'init')
+           if strcmp(change.name, 'OFF')
+               GLMType.STA_init = false;
+           end
+        end
+            
         
         if strcmp(change.type, 'cone_model')
             if strcmp(change.name, 'rieke_linear')

@@ -85,7 +85,6 @@ display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
         replace_existing  = true;
-        disp('here')
     end
     if isfield(runoptions,'reverseorder')
         reverseorder  = true;

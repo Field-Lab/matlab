@@ -1,6 +1,6 @@
 
 % NB 2015-05-06 
-function [STA, center] = STA_Test(fitspikes, fitmovie, center_verification)
+function [STA_full, center] = STA_Test(fitspikes, fitmovie, center_verification)
 %
 % DESCRIPTION
 % Code for testing the input into glm_fit and finding the cell's location
@@ -31,23 +31,25 @@ function [STA, center] = STA_Test(fitspikes, fitmovie, center_verification)
 
 
 movie_size = size(fitmovie);
-STA = zeros(movie_size(1),movie_size(2),1,30);
+STA = zeros(movie_size(1),movie_size(2),1,60);
 fitframes = movie_size(3);
 
 for i = 1:length(fitspikes)
     sp_frame = floor(fitspikes(i) * 120);
-    if sp_frame > 29 && sp_frame<fitframes
-        STA = STA+reshape(double(fitmovie(:,:,(sp_frame-29):sp_frame)),[movie_size(1),movie_size(2),1,30]);
+    if sp_frame > 59 && sp_frame<fitframes
+        STA = STA+reshape(double(fitmovie(:,:,(sp_frame-59):sp_frame)),[movie_size(1),movie_size(2),1,60]);
     end
 end
 
-for i = 1:30
+for i = 1:60
    imagesc(STA(:,:,1,i)')
    colormap gray
    axis image
    title('You should see an STA here')
    pause(0.1)
 end
+
+STA_full = STA;
 
 STA = squeeze(STA);
 STA = abs(sum(STA, 3));

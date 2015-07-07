@@ -110,6 +110,25 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
 % clear WN_STA
 
+if GLMType.STA_init
+    stimsize.width  = size(fitmovie,1);
+    stimsize.height = size(fitmovie,2);
+    ROIcoord        = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, stimsize);
+    clear stimsize
+    STA = WN_STA(ROIcoord.xvals,ROIcoord.yvals,:);
+    klen = size(STA,1);
+    duration = size(STA, 3);
+    STA = reshape(STA, [klen^2,duration])  - mean(STA(:));
+    [U,S,V]  = svd (STA);
+    % p_init(paramind.time1) = V(:,1)*S(1,1);
+    p_init(paramind.space1) = U(:,1);
+    if strcmp(GLMType.stimfilter_mode, 'rk2')
+        p_init(paramind.space2) = U(:,2);
+    end
+    % [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
+    clear center_coord STA U S V
+end
+
 %
 if ~GLMType.CONVEX
     GLMPars.optimization.tolfun = GLMPars.optimization.tolfun - 1;
@@ -282,6 +301,7 @@ fittedGLM.fminunc_output = output;
 
 %% Unpack the output into filters
 
+rawfit.p_init            = p_init;
 rawfit.opt_params        = pstar;
 rawfit.paramind          = paramind;
 rawfit.objective_val     = fstar;
