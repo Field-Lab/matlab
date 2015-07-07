@@ -33,6 +33,11 @@ if GLMType.contrast
     numParams = numParams + 1;%00;
 end
 
+% if GLMType.Subunits
+%     paramind.SU = (numParams+1):(numParams+GLMPars.subunit_size^2);
+%     numParams = numParams+GLMPars.subunit_size^2;
+% end
+
 
 % Assign indices to the stim filter
 % If CONVEX assign here
