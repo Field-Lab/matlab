@@ -38,36 +38,25 @@
 
 
 %{
-clear; clc
-exps = [1 2 3 4]; stimtypes = [2]; celltypes = [1 2]; 
-cell_subset = 'shortlist'; postfilterNL.debug = false;
-base_glmsettings = {}
-postfilterNL.type = 'PosLogistic_refitPS'
-runoptions.print = true;
-glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
-
-
-
-
-
-
-
-
 
 clear; clc
-exps = [1 2 3 4]; stimtypes = [2]; celltypes = [1 2]; 
-cell_subset = 'shortlist'; postfilterNL.debug = false;
-base_glmsettings = {}
-%base_glmsettings{1}.type = 'cone_model';
-%base_glmsettings{1}.name = 'rieke_linear'
-%base_glmsettings{2}.type= 'input_pt_nonlinearity';
-%base_glmsettings{2}.name= 'piecelinear_fourpiece_eightlevels';
-postfilterNL.type = 'PosLogistic_refitPS'
-%postfilterNL.type = 'Hinge_fixedPS'
+exps = [3]; stimtypes = [2]; celltypes = [1]; 
+cell_subset = 'debug'; postfilterNL.debug = true;
+base_glmsettings = {};
+base_glmsettings{1}.type = 'PostSpikeFilter';
+base_glmsettings{1}.name =  'OFF';
+postfilterNL.type = 'Logistic_max500';
 runoptions.print = true;
 glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
 
 clear; clc
+exps = [3]; stimtypes = [2]; celltypes = [1]; 
+cell_subset = 'debug'; postfilterNL.debug = true;
+base_glmsettings = {};
+postfilterNL.type = 'Hinge_fixedPS'
+runoptions.print = true;
+glm_postfilterNL_wrap(exps,stimtypes,celltypes,cell_subset,base_glmsettings,postfilterNL,runoptions)
+
 exps = [4]; stimtypes = [2]; celltypes = [2 1]; 
 cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
 base_glmsettings{1}.type = 'cone_model';
@@ -89,12 +78,6 @@ else
     base_GLMType = GLM_settings('default');
 end
 base_GLMType.fitname    = GLM_fitname(base_GLMType); 
-
-if isfield(postfilterNL,'debug') && postfilterNL.debug
-    BD.GLM_output_raw = sprintf('%s/PostFilterNL/dbug_%s', BD.GLM_output_raw,postfilterNL.type)
-else 
-    BD.GLM_output_raw = sprintf('%s/PostFilterNL/%s', BD.GLM_output_raw,postfilterNL.type);
-end
 currentdir = pwd;
 
 for i_exp = exps    
@@ -122,10 +105,20 @@ for i_exp = exps
         secondDir.map_type      = base_GLMType.map_type; 
         secondDir.stim_type     = stimtype;
         secondDir.fitname       = base_GLMType.fitname;
+        
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
         Dirs.baseglm            = NSEM_secondaryDirectories('loaddir_GLMfit', secondDir);
-        savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir,'',BD)
+        
+        
+        % Hack to get the correct save directory  
+        BD_hack = BD;
+        if isfield(postfilterNL,'debug') && postfilterNL.debug
+            BD_hack.GLM_output_raw = sprintf('%s/PostFilterNL/dbug_%s', BD.GLM_develop_output_raw,postfilterNL.type)
+        else 
+            BD_hack.GLM_output_raw = sprintf('%s/PostFilterNL/%s', BD.GLM_develop_output_raw,postfilterNL.type);
+        end
+        savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir,'',BD_hack)
         if ~exist(savedir,'dir'), mkdir(savedir); end
         
         
@@ -443,11 +436,8 @@ for i_exp = exps
                 NL_xvalperformance.computetime   = datestr(clock);
                 NL_xvalperformance.param_refit = new_p;
                 NL_xvalperformance.rescale   = rescale;
-                
-                
                 savename = sprintf('%s/%s',savedir, cell_savename);
-                
-                eval(sprintf('save %s.mat fittedGLM NL_xvalperformance', savename))
+                eval(sprintf('save %s.mat fittedGLM NL_xvalperformance', savename));
                                 
                 %% PRINT
                 if runoptions.print
@@ -868,12 +858,15 @@ if GLMType.CONVEX
     pstar = pstar';
     lcif.mu   = pstar(paramind.MU)*glm_covariate_vec(paramind.MU,:);
     lcif.stim = pstar(paramind.X) *glm_covariate_vec(paramind.X,:); 
-    lcif.ps   = pstar(paramind.PS)*glm_covariate_vec(paramind.PS,:);
+    total_lcif = lcif.mu + lcif.stim;
     
-    lcif.ps_unoptimized.glm_covariate_vec = glm_covariate_vec(paramind.PS,:);
-    lcif.ps_unoptimized.basis             = ps_basis;
+    if GLMType.PostSpikeFilter
+        lcif.ps   = pstar(paramind.PS)*glm_covariate_vec(paramind.PS,:);    
+        lcif.ps_unoptimized.glm_covariate_vec = glm_covariate_vec(paramind.PS,:);
+        lcif.ps_unoptimized.basis             = ps_basis;
+        total_lcif = total_lcif + lcif.ps;
+    end
     
-    total_lcif = lcif.mu + lcif.stim + lcif.ps;
     cif        = exp(total_lcif);
     obj_val    = -(sum( total_lcif(home_spbins) ) - t_bin * sum(cif));
 
