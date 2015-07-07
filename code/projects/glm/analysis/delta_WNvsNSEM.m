@@ -10,14 +10,26 @@ clear ; close all; clc;
 comparison_name = 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-LogisticfixMUnoPS';
 
 comparison_name = 'deltaWNvsNSEM-standardGLM-netinhibPSCOB';
-cellselection_type = 'glmconv4pct';
+cellselection_type = 'glmconv1pct';
+
+%comparison_name = 'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB';
+%comparison_name = 'deltaWNvsNSEM-standardGLM-netinhibPSCOB';
+
+
+% comparison_name = 'deltaWNvsNSEM-linearconesGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS';
+% comparison_name = 'deltaWNvsNSEM-linearconesGLM-Input4Piece-LogisticfixMUwithPS';
+% comparison_name = 'deltaWNvsNSEM-standardGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS';
+% comparison_name = 'deltaWNvsNSEM-netinhibPSCOBOVER-Input4piece-LogisticfixMUwithPS';
+
 
 clear
-%comparison_name = 'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB';
-comparison_name = 'deltaWNvsNSEM-standardGLM-netinhibPSCOB';
-cellselection_type = 'glmconv1pct';
+%comparison_name  = 'deltaWNvsNSEM-standardGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS';
+%comparison_name = 'deltaWNvsNSEM-linearconesGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS';
+%comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLnetinhibPSCOB';
+comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLLogisticfixMUnetinhibPSCOB';
+cellselection_type = 'glmconv4pct';
 rundir = pwd;
-metrics = [5];;
+metrics = [1 2 3 4 5];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -48,7 +60,7 @@ plotparams.ylabel             = 'Natural Scenes';
 if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings = {};
     models{2}.settings = {};
-    models{2}.special_arg = 'PS_Constrain_sub1';
+    models{2}.special_arg{1} = 'PS_Constrain_sub1';
     plotparams.title_comparison   = 'Crude PS Constraint';
     plotparams.purpose            = 'Verify that crude constraining of PS Filter still tells same story of WN vs NSEM';
 end
@@ -62,14 +74,43 @@ if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMwithlinearcones-inputNL')
     models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
     plotparams.title_comparison   = 'Input Point NL';
     plotparams.purpose            = 'Compare WN vs NSEM for linear cones and optimal static non-linear';
-end    
+end
+if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLnetinhibPSCOB')
+    models{1}.settings = {}; 
+    models{1}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    
+    plotparams.title_comparison   = 'InputNL over standard GLM(with PS constrain)';
+    plotparams.purpose            = 'Effect of Input pt non-lin with PS constrain';
+end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLLogisticfixMUnetinhibPSCOB')
+    models{1}.settings = {}; 
+    models{1}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg{2}   = 'Logistic_fixMU_includePS';
+    
+    plotparams.title_comparison   = 'Optimized Scalar Non-linearities';
+    plotparams.purpose            = 'Combined Input/Output NL on Score (with constrain PS)';
+end
+
 
 if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{2}.settings{1}.type = 'PostSpikeFilter';
     models{2}.settings{1}.name =  'OFF';
-    models{2}.special_arg         = 'Logistic_fixMU';
+    models{2}.special_arg{1}         = 'Logistic_fixMU';
     plotparams.title_comparison   = 'LN with Logistic';
     plotparams.purpose            = 'Change in WN vs NSEM with modulation of Non-Linearity';
 end
@@ -81,7 +122,7 @@ if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-noPS-Input4Piece-Logisticf
     models{2}.settings{1}.name = 'rieke_linear';
     models{2}.settings{2}.type = 'input_pt_nonlinearity';
     models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
-    models{2}.special_arg = 'Logistic_fixMU_noPS';
+    models{2}.special_arg{1} = 'Logistic_fixMU_noPS';
     
     
     plotparams.title_comparison   = 'GLMnoPS to full NLN (no PS)';
@@ -90,7 +131,7 @@ end
 if strcmp(comparison_name,'deltaWNvsNSEM-standardGLM-netinhibPSCOB')
     models{1}.settings = {};
     models{2}.settings = {};
-    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg{1}         = 'PS_netinhibitory_domainconstrain_COB';
     plotparams.title_comparison   = 'Proper Constrained Search of PS';
     plotparams.purpose            = 'Verify that proper constraining of PS Filter still tells same story of WN vs NSEM for base GLM';
 end
@@ -104,10 +145,70 @@ if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMInput4Piece-netinhibPSCOB')
     models{2}.settings{1}.name = 'rieke_linear';
     models{2}.settings{2}.type = 'input_pt_nonlinearity';
     models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
-    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
     
     plotparams.title_comparison   = 'Proper Constrained PS after inputNL';
     plotparams.purpose            = 'Verify that proper constraining of PS Filter still tells same story of WN vs NSEM for GLM with optimal inputNL';
+end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-linearconesGLM-Input4Piece-LogisticfixMUwithPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg{1}   = 'Logistic_fixMU_includePS';
+    
+    plotparams.title_comparison   = 'Total net change if INOUT NL (unconstrainedPS)';
+    plotparams.purpose            = 'Show net improvement (with PS filter) of both nonlinearities';
+end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-netinhibPSCOBOVER-Input4piece-LogisticfixMUwithPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.settings{2}.type = 'input_pt_nonlinearity';
+    models{1}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{1}.special_arg{1}   = 'Logistic_fixMU_includePS';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg{2}   = 'Logistic_fixMU_includePS';
+    
+    plotparams.title_comparison   = 'Effect of Constrain PS (after optimized NLN)';
+    plotparams.purpose            = 'Demonstrate minimal nature of effect of Constrained PS (after optimizing input and output NL)';
+end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-standardGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS')
+    models{1}.settings = {};
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg{2}   = 'Logistic_fixMU_includePS';
+    
+    plotparams.title_comparison   = 'Total net change if INOUT NL (with ConstrainedPS)';
+    plotparams.purpose            = 'Show net improvement (with PS filter) of both nonlinearities';
+end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-linearconesGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
+    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg{2}   = 'Logistic_fixMU_includePS';
+    
+    plotparams.title_comparison   = 'Total net change if INOUT NL (with ConstrainedPS)';
+    plotparams.purpose            = 'Show net improvement (with PS filter) of both nonlinearities';
 end
     
     
@@ -194,12 +295,18 @@ clear expstring celltypestring
 models{1}.GLMType         = GLM_settings('default',models{1}.settings);
 models{1}.fitname         = GLM_fitname(models{1}.GLMType);
 if isfield(models{1}, 'special_arg') 
-    models{1}.fitname = sprintf('%s/%s', models{1}.fitname,models{1}.special_arg);
+    args = length(models{1}.special_arg)
+    for i_arg = 1:args
+        models{1}.fitname = sprintf('%s/%s', models{1}.fitname,models{1}.special_arg{i_arg});
+    end
 end
 models{2}.GLMType         = GLM_settings('default',models{2}.settings);
 models{2}.fitname         = GLM_fitname(models{2}.GLMType);
 if isfield(models{2}, 'special_arg') 
-    models{2}.fitname = sprintf('%s/%s', models{2}.fitname,models{2}.special_arg);
+    args = length(models{2}.special_arg)
+    for i_arg = 1:args
+        models{2}.fitname = sprintf('%s/%s', models{2}.fitname,models{2}.special_arg{i_arg});
+    end
 end
 models{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{1}.fitname);
 models{2}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{2}.fitname);
@@ -472,19 +579,10 @@ for i_exp = plotparams.exps
         
         plot(scores1(:,1), scores1(:,2), colorstring, 'markersize', MS_B);
         if i_celltype == 1
-            plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
+           % plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
             plot(scores1(:,1), scores1(:,2),'w.', 'markersize', MS_A);
         elseif i_celltype == 2
             plot(scores1(:,1), scores1(:,2), 'k.', 'markersize', MS_A);
-        end
-        
-        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
-        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
-        if i_celltype == 1
-            plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
-            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
-        elseif i_celltype == 2
-            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
         end
         
         check = size(scores1,1) - size(scores2,1);
@@ -495,6 +593,18 @@ for i_exp = plotparams.exps
                 plot(delta_x,delta_y, 'k')
             end
         end
+        
+        
+        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
+        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+           % plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+       
         
     end
 end
@@ -576,19 +686,11 @@ for i_exp = plotparams.exps
        
         plot(scores1(:,1), scores1(:,2), colorstring, 'markersize', MS_B);
         if i_celltype == 1
-            plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
+            %black highlight iinner white cirlce ..dumb idea
+                   % plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
             plot(scores1(:,1), scores1(:,2),'w.', 'markersize', MS_A);
         elseif i_celltype == 2
             plot(scores1(:,1), scores1(:,2), 'k.', 'markersize', MS_A);
-        end
-        
-        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
-        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
-        if i_celltype == 1
-            plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
-            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
-        elseif i_celltype == 2
-            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
         end
         
         check = size(scores1,1) - size(scores2,1);
@@ -599,6 +701,19 @@ for i_exp = plotparams.exps
                 plot(delta_x,delta_y, 'k')
             end
         end
+        
+        
+        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
+        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+            %plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
+            
+        end
+        
+        
         
     end
 end
@@ -631,19 +746,10 @@ for i_exp = plotparams.exps
         
         plot(scores1(:,1), scores1(:,2), colorstring, 'markersize', MS_B);
         if i_celltype == 1
-            plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
+            %plot(scores1(:,1), scores1(:,2),'k.', 'markersize', MS_A+1);
             plot(scores1(:,1), scores1(:,2),'w.', 'markersize', MS_A);
         elseif i_celltype == 2
             plot(scores1(:,1), scores1(:,2), 'k.', 'markersize', MS_A);
-        end
-        
-        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
-        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
-        if i_celltype == 1
-            plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
-            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
-        elseif i_celltype == 2
-            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
         end
         
         check = size(scores1,1) - size(scores2,1);
@@ -654,6 +760,18 @@ for i_exp = plotparams.exps
                 plot(delta_x,delta_y, 'k')
             end
         end
+        
+        
+        plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_C);
+        plot(scores2(:,1), scores2(:,2), colorstring, 'markersize', MS_B);
+        if i_celltype == 1
+            %plot(scores2(:,1), scores2(:,2),'k.', 'markersize', MS_A+1);
+            plot(scores2(:,1), scores2(:,2),'w.', 'markersize', MS_A);
+        elseif i_celltype == 2
+            plot(scores2(:,1), scores2(:,2), 'k.', 'markersize', MS_A);
+        end
+        
+        
         
     end
 end
