@@ -43,10 +43,10 @@ end
 clear ; close all; clc;
 cellselection_type = 'glmconv4pct';
 %comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
+comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
 
 comparison_name = 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB';
-metrics = [1];
+metrics = [1 2 3 4 5];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -101,7 +101,7 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
-    models{1}.special_arg{1} = 'Logistic_fixMU';
+    models{1}.special_arg = 'Logistic_fixMU';
     models{2}.settings{1}.type = 'PostSpikeFilter';
     models{2}.settings{1}.name =  'OFF';
     models{2}.fit_type = 'NSEM';
@@ -117,14 +117,14 @@ if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
     models{1}.settings{1}.name = 'rieke_linear';
     models{1}.settings{2}.type = 'input_pt_nonlinearity';
     models{1}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
-    models{1}.special_arg{1}= 'Logistic_fixMU_noPS';
+    models{1}.special_arg = 'Logistic_fixMU_noPS';
     models{1}.fit_type = 'WN';
     
     models{2}.settings{1}.type = 'cone_model';
     models{2}.settings{1}.name = 'rieke_linear';
     models{2}.settings{2}.type = 'input_pt_nonlinearity';
     models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
-    models{2}.special_arg{1} = 'Logistic_fixMU_noPS';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
     models{2}.fit_type = 'NSEM';
     
     plotparams.xlabel             = 'White Noise';
@@ -158,7 +158,7 @@ if strcmp(comparison_name,'NSEM-standardGLM-netinhibPSCOB')
     models{1}.fit_type    = 'NSEM';
     
     models{2}.settings = {};
-    models{2}.special_arg{1}         = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.special_arg         = 'PS_netinhibitory_domainconstrain_COB';
     models{2}.fit_type    = 'NSEM';
     
     plotparams.xlabel             = 'standardGLM freePS';
@@ -170,10 +170,10 @@ end
 if strcmp(comparison_name, 'WNvsNSEM-standardGLM-LogisticfixMUnoPS')
     
     models{1}.fit_type = 'WN';
-    models{1}.special_arg{1} = 'Logistic_fixMU_noPS';
+    models{1}.special_arg = 'Logistic_fixMU_noPS';
     models{2}.settings = {};
     models{2}.fit_type = 'NSEM';
-    models{2}.special_arg{1} = 'Logistic_fixMU_noPS';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
     plotparams.xlabel             = 'White Noise';
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Logistic_noPS';
@@ -184,10 +184,10 @@ if strcmp(comparison_name, 'NSEM-noPSLogisticfixMU_vsLogisticfixMUnoPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'NSEM';
-    models{1}.special_arg{1} = 'Logistic_fixMU';
+    models{1}.special_arg = 'Logistic_fixMU';
     models{2}.settings = {};
     models{2}.fit_type = 'NSEM';
-    models{2}.special_arg{1} = 'Logistic_fixMU_noPS';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
     plotparams.xlabel             = 'GLMwithoutPS then LogisticfixMU';
     plotparams.ylabel             = 'GLMwithPS then LogisticfixMUnoPS';
     plotparams.title_comparison   = 'Order of PS removal';
@@ -197,38 +197,17 @@ if strcmp(comparison_name, 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
-    models{1}.special_arg{1} = 'Logistic_fixMU';
+    models{1}.special_arg = 'Logistic_fixMU';
     models{2}.settings = {};
     models{2}.fit_type = 'WN';
-    models{2}.special_arg{1} = 'Logistic_fixMU_noPS';
+    models{2}.special_arg = 'Logistic_fixMU_noPS';
     plotparams.xlabel             = 'GLMwithoutPS then LogisticfixMU';
     plotparams.ylabel             = 'GLMwithPS then LogisticfixMUnoPS';
     plotparams.title_comparison   = 'Order of PS removal';
     plotparams.purpose            = 'See if WN LN fitting robust to PS removal';
 end    
 if strcmp( comparison_name , 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB')
-    models{1}.settings{1}.type = 'cone_model';
-    models{1}.settings{1}.name = 'rieke_linear';
-    models{1}.settings{2}.type = 'input_pt_nonlinearity';
-    models{1}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
-    models{1}.special_arg{1}   = 'Logistic_fixMU_includePS';
-    models{1}.fit_type         = 'NSEM'; 
     
-    
-    
-    models{2}.settings{1}.type = 'cone_model';
-    models{2}.settings{1}.name = 'rieke_linear';
-    models{2}.settings{2}.type = 'input_pt_nonlinearity';
-    models{2}.settings{2}.name = 'piecelinear_fourpiece_eightlevels';
-    models{2}.special_arg{1}   = 'PS_netinhibitory_domainconstrain_COB';
-    models{2}.special_arg{2}   = 'Logistic_fixMU_includePS';
-    models{2}.fit_type         = 'NSEM';  
-    
-    
-    plotparams.xlabel             = 'GLM: optimized INOUT NL';
-    plotparams.ylabel             = 'Constrained PS';
-    plotparams.title_comparison   = 'Proper PS Constrain over Opt GLM';
-    plotparams.purpose            = 'Check Proper Constrain PS NSEM performance dip after optimal INOUT NL';
 end
 
     
@@ -260,7 +239,7 @@ end
 if strcmp(comparison_name, 'WNvsNSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings={};
     models{1}.fit_type = 'WN';
-    models{1}.special_arg{1} = 'PS_Constrain_sub1';
+    models{1}.special_arg = 'PS_Constrain_sub1';
     models{2}.settings = {};
     models{2}.fit_type = 'NSEM';
     models{2}.special_arg         = 'PS_Constrain_sub1';
@@ -356,20 +335,13 @@ clear expstring celltypestring
 
 models{1}.GLMType         = GLM_settings('default',models{1}.settings);
 models{1}.fitname         = GLM_fitname(models{1}.GLMType);
-if isfield(models{1}, 'special_arg')
-    args = length(models{1}.special_arg);
-    for i_arg = 1:args
-        models{1}.fitname = sprintf('%s/%s', models{1}.fitname,models{1}.special_arg{i_arg});
-    end 
+if isfield(models{1}, 'special_arg') 
+    models{1}.fitname = sprintf('%s/%s', models{1}.fitname,models{1}.special_arg);
 end
-
 models{2}.GLMType         = GLM_settings('default',models{2}.settings);
 models{2}.fitname         = GLM_fitname(models{2}.GLMType);
-if isfield(models{2}, 'special_arg')
-    args = length(models{2}.special_arg);
-    for i_arg = 1:args
-        models{2}.fitname = sprintf('%s/%s', models{2}.fitname,models{2}.special_arg{i_arg});
-    end
+if isfield(models{2}, 'special_arg') 
+    models{2}.fitname = sprintf('%s/%s', models{2}.fitname,models{2}.special_arg);
 end
 
 models{1}.aggscores_dir   = sprintf('%s/%s', BD.GLM_output_analysis, models{1}.fitname);

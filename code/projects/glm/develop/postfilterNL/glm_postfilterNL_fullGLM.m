@@ -46,16 +46,28 @@
 %{
 
 clear; clc
-exps = [3 2 4]; stimtypes = [2]; celltypes = [2 1]; 
+exps = [1 3 2 4]; stimtypes = [2]; celltypes = [2]; 
 cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
 baseGLM.settings{1}.type = 'cone_model';
 baseGLM.settings{1}.name = 'rieke_linear'
 baseGLM.settings{2}.type= 'input_pt_nonlinearity';
 baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
-baseGLM.special_arg = 'PS_netinhibitory_domainconstrain_COB';
 postfilterNL.type = 'Logistic_fixMU_includePS';
 runoptions.print  = true;
 glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
+
+clear; clc
+exps = [1 3 2 4]; stimtypes = [2]; celltypes = [1]; 
+cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
+baseGLM.settings{1}.type = 'cone_model';
+baseGLM.settings{1}.name = 'rieke_linear'
+baseGLM.settings{2}.type= 'input_pt_nonlinearity';
+baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+postfilterNL.type = 'Logistic_fixMU_includePS';
+runoptions.print  = true;
+glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
+
+
 
 
 clear; clc
