@@ -43,6 +43,7 @@
 %{
 
 %%% TEST CODE DON"T DELETE %%%
+clear
 exps = 3;
 stimtypes = [1]; % white noise only  (2 is natural scens)
 celltypes = [1]; % only ON Parasol

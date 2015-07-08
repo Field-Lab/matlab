@@ -76,6 +76,9 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         end
         
         if strcmp(change.type, 'filter_mode')
+            if strcmp(change.name, 'nostim')
+                GLMType.stimfilter_mode = 'nostim'; 
+            end
             
             if strcmp(change.name, 'rk2')
                 GLMType.stimfilter_mode = 'rk2'; 
