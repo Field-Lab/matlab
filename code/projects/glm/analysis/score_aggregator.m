@@ -20,6 +20,24 @@
 % Dictate GLM_SETTING
 
 clear ; close all; clc;
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk1';
+metric_type.name  = 'crossval_BPS';
+metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
+exps     = [1 2 3 4];
+score_aggregator(glm_settings,metric_type,exps)%,special_arg)
+
+clear ; close all; clc;
+glm_settings{1}.type = 'CouplingFilters';
+glm_settings{1}.name =  'ON';
+metric_type.name  = 'crossval_BPS';
+metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes';
+exps     = [1 2 3 4];
+score_aggregator(glm_settings,metric_type,exps)%,special_arg)
+
+
+
+clear ; close all; clc;
 glm_settings{1}.type = 'cone_model';
 glm_settings{1}.name = 'rieke_linear';
 metric_type.name       = 'crossval_victorspike_50msec';
