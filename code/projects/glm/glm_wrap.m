@@ -41,6 +41,9 @@
 
 % Sample Call and Output to verify that it works
 %{
+
+%%% TEST CODE DON"T DELETE %%%
+clear
 exps = 3;
 stimtypes = [1]; % white noise only  (2 is natural scens)
 celltypes = [1]; % only ON Parasol
@@ -49,7 +52,6 @@ glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
 runoptions.replace_existing = true;
 glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
-
 %%% Should have the following minimization sequence  
 ### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
 

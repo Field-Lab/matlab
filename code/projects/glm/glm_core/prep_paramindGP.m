@@ -63,6 +63,8 @@ if GLMType.CONVEX
         paramind.inhibitoryfilter_index = paramind.time2;
         
         paramind.X = union(paramind.time1,paramind.time2);
+    elseif strcmp(GLMType.stimfilter_mode, 'nostim')
+        paramind.Xnote = 'no field devoted to the stimulus';        
     else
         error('you need to properly specifiy the stimfilter in prep_paramind')
     end

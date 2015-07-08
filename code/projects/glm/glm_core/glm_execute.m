@@ -98,7 +98,10 @@ p_init     = .01* ones(paramind.paramcount,1);
 % ORGANIZE STIMULUS COVARIATES
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
+if isfield(paramind, 'X')
+    [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
+end
+
 clear WN_STA center_coord
 
 %
@@ -146,13 +149,14 @@ if GLMType.CONVEX
     if isfield(GLMPars.stimfilter,'frames_negative')
         shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
     end
-    X_bin_shift = prep_timeshift(X_bin,shifts);
+    
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if isfield(paramind, 'MU')
         glm_covariate_vec( paramind.MU , : ) = MU_bin;
     end
     if isfield(paramind, 'X')
+        X_bin_shift = prep_timeshift(X_bin,shifts);
         glm_covariate_vec( paramind.X , : ) = X_bin_shift;
     end
     if isfield(paramind, 'PS')
@@ -297,6 +301,30 @@ if GLMType.CONVEX
         linearfilters.Stimulus.note2              = 'Recall each bin is housed in a frame (multiple bins per frame';
         linearfilters.Stimulus.note3              = 'frame_shifts describes the transfrom from time index to frames ahead of current bin';
     end
+    
+    % Hacked no stim mode AH 2015-07-08
+    if strcmp(GLMType.stimfilter_mode, 'nostim')
+        
+        timefilter           = zeros(GLMPars.stimfilter.frames,1);
+        stimfilter           = STA_sp * (timefilter');
+        stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,GLMPars.stimfilter.frames]);
+        rawfit.spatialfilter = STA_sp;
+        linearfilters.Stimulus.Filter             = stimfilter;
+        linearfilters.Stimulus.Filter_rank        = 1;
+        linearfilters.Stimulus.space_rk1          = reshape(STA_sp, [ROI_length,ROI_length]);
+        linearfilters.Stimulus.time_rk1           = zeros(GLMPars.stimfilter.frames,1);
+        %linearfilters.Stimulus.WN_note           = 'use WN STA as a reference to compare to fitted filters'
+        %linearfilters.Stimulus.WN_STA             = WN_STA;
+        %linearfilters.Stimulus.WN_STA_space_rk1   = reshape(STA_sp, [ROI_length,ROI_length]);
+        %linearfilters.Stimulus.WN_STA_time_rk1    = STA_time;
+        linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
+        linearfilters.Stimulus.y_coord            = ROIcoord.yvals;
+        linearfilters.Stimulus.frame_shifts       = [0:1:(GLMPars.stimfilter.frames-1)];
+        linearfilters.Stimulus.bin_shifts         = [0:bpf:(GLMPars.stimfilter.frames-1)*bpf];
+
+        linearfilters.Stimulus.note1              = 'Hack fill in so rest of code works.  Just put a zero stimulus fiter';
+    end
+    
 end 
 if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2')) 
     if strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2') 
@@ -349,7 +377,7 @@ fittedGLM.fit_time = datestr(clock);
 fittedGLM.writingcode = mfilename('fullpath');
 
 %% Evaluate cross-validated fits,  Print and Save
-[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
+[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test);
 fittedGLM.xvalperformance  = xvalperformance; 
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
