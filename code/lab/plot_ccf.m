@@ -50,6 +50,9 @@ p = inputParser;
 p.addParamValue('verbose', false);
 p.addParamValue('fig_or_axes', []);
 p.addParamValue('offset', 100e-3);
+p.addParamValue('dt', 100e-3/63);
+p.addParamValue('shuffle', 'none');
+p.addParamValue('trial', 10);
 
 %p.addParamValue('options', struct('offset',100e-3,'scale','ms','shuffle','none'), @isstruct) %passed to compute_ccf
 
@@ -58,7 +61,7 @@ p.parse(varargin{:});
 
 % get params struct
 params = p.Results;
-options = p.Unmatched;
+% options = p.Unmatched;
 options = params;
 % generate structs to pass on
 
