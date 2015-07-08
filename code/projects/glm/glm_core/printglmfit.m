@@ -78,9 +78,11 @@ end
 if GLMType.CouplingFilters
     subplot(5,4,[8,12])
     set(gca, 'fontsize', 10);
-    plot(time_msec, oneline, 'k-'); hold on
+    
     bins    = [1:length(CP{1})];
     time_msec = 1000*dt*bins ;
+    oneline = ones(1,length(time_msec));
+    plot(time_msec, oneline, 'k-'); hold on
     for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
         plot(time_msec, exp(CP{pair}));
     end
