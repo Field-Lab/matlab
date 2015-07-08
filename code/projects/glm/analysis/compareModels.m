@@ -35,17 +35,8 @@ for i_metric = metrics
     [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
 end
 
-
-%cellselection_type = 'glmconv4pct';
-%cellselection_type = 'all';
-%cellselection_type = 'shortlist';
-
-clear ; close all; clc;
+comparison_name = 'WNvsNSEM-standardGLMwithCP'; 
 cellselection_type = 'glmconv4pct';
-%comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
-
-comparison_name = 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB';
 metrics = [1];
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
@@ -56,6 +47,34 @@ for i_metric = metrics
     if i_metric == 6, metric = 'BPS_divideUOP'; end
     [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
 end
+
+
+%cellselection_type = 'glmconv4pct';
+%cellselection_type = 'all';
+%cellselection_type = 'shortlist';
+
+clear ; close all; clc;
+cellselection_type = 'glmconv4pct';
+%comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
+%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
+
+clear
+%comparison_name = 'WNvsNSEM-rk1';
+cellselection_type = 'shortlist';
+comparison_name = 'WNvsNSEM-standardGLMwithCP';
+metrics = [1];
+for i_metric = metrics
+    if i_metric == 1, metric = 'BPS_divideCRM'; end
+    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
+    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
+    if i_metric == 4, metric = 'FracVar10msec'; end
+    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
+    if i_metric == 6, metric = 'BPS_divideUOP'; end
+    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
+end
+
+
+
 
 clear ; close all; clc;
 % comparison_name  = 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS';
@@ -97,6 +116,43 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM')
     plotparams.title_comparison   = 'Standard GLM (no coupling)';
     plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, no coupling)';
 end
+if strcmp(comparison_name,'WNvsNSEM-standardGLMwithCP') 
+    models{1}.settings{1}.type = 'CouplingFilters';
+    models{1}.settings{1}.name =  'ON';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'CouplingFilters';
+    models{2}.settings{1}.name =  'ON';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'White Noise';
+    plotparams.ylabel             = 'Natural Scenes';
+    plotparams.title_comparison   = 'Standard GLM with Coupling';
+    plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, WITH coupling)';
+end
+if strcmp(comparison_name,'WN-standardGLM-standardGLMwithCP') 
+    models{1}.settings = {};
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'CouplingFilters';
+    models{2}.settings{1}.name =  'ON';
+    models{2}.fit_type = 'WN';
+    plotparams.xlabel             = 'No Coupling';
+    plotparams.ylabel             = 'Coupling';
+    plotparams.title_comparison   = 'Effect of Coupling on WN scores';
+    plotparams.purpose            = 'See how Coupling affects WN scores';
+end
+if strcmp(comparison_name,'NSEM-standardGLM-standardGLMwithCP') 
+    models{1}.settings = {};
+    models{1}.fit_type = 'NSEM';
+    models{2}.settings{1}.type = 'CouplingFilters';
+    models{2}.settings{1}.name =  'ON';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'No Coupling';
+    plotparams.ylabel             = 'Coupling';
+    plotparams.title_comparison   = 'Effect of Coupling on NSEM scores';
+    plotparams.purpose            = 'See how Coupling affects NSEM scores';
+end
+
+
+
 if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
@@ -132,6 +188,91 @@ if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
     plotparams.title_comparison   = 'Full Input and Output optimization, NLN.. no PS';
     plotparams.purpose            = 'Check WN vs NSEM for optimal poisson cascade NLN';
 end
+
+if strcmp(comparison_name,'WNvsNSEM-rk1')
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'rk1';
+    models{1}.fit_type    = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk1';
+    models{2}.fit_type    = 'NSEM';
+    
+    plotparams.xlabel             = 'WN';
+    plotparams.ylabel             = 'NSEM';
+    plotparams.title_comparison   = 'Rank 1 WN vs NSEM';
+    plotparams.purpose            = 'See how well rank1 works';
+end
+if strcmp(comparison_name,'WNvsNSEM-rk2')
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'rk2';
+    models{1}.fit_type    = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk2';
+    models{2}.fit_type    = 'NSEM';
+    
+    plotparams.xlabel             = 'WN';
+    plotparams.ylabel             = 'NSEM';
+    plotparams.title_comparison   = 'Rank 2 WN vs NSEM';
+    plotparams.purpose            = 'See how well rank 2 works';
+end
+
+
+
+if strcmp(comparison_name,'NSEM-standardGLM-rk1')
+    models{1}.settings = {};
+    models{1}.fit_type    = 'NSEM';
+    
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk1';
+    models{2}.fit_type    = 'NSEM';
+    
+    plotparams.xlabel             = 'standard GLM';
+    plotparams.ylabel             = 'rank-1';
+    plotparams.title_comparison   = 'Rank1 instead of spatial STA';
+    plotparams.purpose            = 'See how well rank1 fits cross validate for NSEM';
+end
+if strcmp(comparison_name,'WN-standardGLM-rk1')
+    models{1}.settings = {};
+    models{1}.fit_type    = 'WN';
+    
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk1';
+    models{2}.fit_type    = 'WN';
+    
+    plotparams.xlabel             = 'standard GLM';
+    plotparams.ylabel             = 'rank-1';
+    plotparams.title_comparison   = 'Rank1 instead of spatial STA';
+    plotparams.purpose            = 'See how well rank1 fits cross validate for WN';
+end;
+
+if strcmp(comparison_name,'NSEM-standardGLM-rk2')
+    models{1}.settings = {};
+    models{1}.fit_type    = 'NSEM';
+    
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk2';
+    models{2}.fit_type    = 'NSEM';
+    plotparams.xlabel             = 'standard GLM';
+    plotparams.ylabel             = 'rank-2';
+    plotparams.title_comparison   = 'Rank2 instead of spatial STA';
+    plotparams.purpose            = 'See how well rank2 fits cross validate for NSEM';
+end
+    
+
+if strcmp(comparison_name,'WN-standardGLM-rk2')
+    models{1}.settings = {};
+    models{1}.fit_type    = 'WN';
+    
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk2';
+    models{2}.fit_type    = 'WN';
+    
+    plotparams.xlabel             = 'standard GLM';
+    plotparams.ylabel             = 'rank-2';
+    plotparams.title_comparison   = 'Rank2 instead of spatial STA';
+    plotparams.purpose            = 'See how well rank2 fits cross validate for WN';
+end
+
     
 if strcmp(comparison_name,'NSEM-standardGLMwithinputNL-netinhibPSCOB')
     models{1}.settings{1}.type = 'cone_model';
