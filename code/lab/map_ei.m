@@ -1,4 +1,4 @@
-function [cell_list_map, failed_cells] = map_ei(master_datarun, slave_datarun, varargin)
+function [cell_list_map, failed_cells, output_matrix] = map_ei(master_datarun, slave_datarun, varargin)
 % 
 % map_ei
 %
@@ -170,6 +170,7 @@ for i = 1:length(master_indices)
         else
         	fprintf('master cell_ID:%4d best slave %4d (correlation:%1.3f) taken by master %4d(%1.3f)\n', master_datarun.cell_ids(master_indices(i)), slave_datarun.cell_ids(slave_indices(max_corr_index)), largest_corr,...
                     master_datarun.cell_ids(master_indices(max_corr_index_col)),largest_corr_col )
+                output_matrix(i,:) = [master_datarun.cell_ids(master_indices(i)), slave_datarun.cell_ids(slave_indices(max_corr_index)), master_datarun.cell_ids(master_indices(max_corr_index_col))];
         end
     else
         if troubleshoot

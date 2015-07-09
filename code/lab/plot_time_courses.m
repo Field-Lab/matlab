@@ -46,8 +46,8 @@ params = p.Results;
 
 
 % set up plot axes
-[junk,plot_fig] = set_up_fig_or_axes(params.figure);
-
+% [junk,plot_fig] = set_up_fig_or_axes(params.figure, 'clear_it', 0);
+plot_fig = gcf;
 % get cell ids
 cell_ids = get_cell_ids(datarun,cell_spec);
 
@@ -74,9 +74,14 @@ if p.Results.all
     if ~p.Results.bw % If time courses have rgb columns they have to each be plotted separately and then superimposed
         for a = 1:length(cell_ids)
             cell_index = get_cell_indices(datarun,cell_ids(a));
-            time_course = datarun.stas.time_courses{cell_index};
+            time_course_struct = datarun.vision.timecourses(cell_index);
+            time_course(:,1) = time_course_struct.r;
+            time_course(:,2) = time_course_struct.g;
+            time_course(:,3) = time_course_struct.b;
             if ~isempty(time_course)
                 time_course = time_course./norm(time_course); %normalize time course
+                            hold on;
+
                 plot_time_course_(time_course)
                 xlabel('frame number')
                 ylabel('contrast')

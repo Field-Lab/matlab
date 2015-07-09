@@ -48,7 +48,7 @@ num_cells = length(strfs);
 
 % Convert strf into visbuf format
 for cc = 1:num_cells
-    strfs{cc} = stavect2visbuf(strfs{cc}, movie.getWidth(), movie.getHeight());
+    strfs{cc} = stavect2visbuf(strfs{cc}, movie.getWidth(), movie.getHeight(), opts.isRGB);
 end
 
 
@@ -95,8 +95,8 @@ end
 % efficient way to get Matlab to sum down all the diagonals.
 gen_signals = zeros(num_stims - num_frames + 1, num_cells);
 diag_sum_kernel = eye(num_frames);
-size(diag_gen_signals{cc})
-size(diag_sum_kernel)
+% size(diag_gen_signals{cc});
+% size(diag_sum_kernel)
 for cc = 1:num_cells
     gen_signals(:,cc) = conv2(diag_gen_signals{cc}, diag_sum_kernel, 'valid');
 end
