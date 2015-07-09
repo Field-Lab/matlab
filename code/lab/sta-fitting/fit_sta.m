@@ -1,4 +1,4 @@
-function fit_info = fit_sta(sta, varargin)
+function [fit_info , sta, sig_stixels] = fit_sta(sta, varargin)
 %
 % fit_sta.m fits a spatial-temporal-chromatic STA with a differences of
 % Gaussians (in space), a difference of a cascade of filters (in time), and
@@ -42,7 +42,9 @@ function fit_info = fit_sta(sta, varargin)
 %   initial_scale_two               []      temporal filter 2 amplitude
 %   initial_tau_one                 []      filter 1 time constant
 %   initial_tau_two                 []      filter 2 time constant
-%   initial_n_filters               6       number of filters in each
+%   initial_n_one_filters               6       number of filters in each
+%   initial_n_two_filters               6       number of filters in each
+
 %                                           cascade
 %   fit_center_point_x              true
 %   fit_center_point_y              true
@@ -58,7 +60,8 @@ function fit_info = fit_sta(sta, varargin)
 %   fit_scale_two                   true
 %   fit_tau_one                     true
 %   fit_tau_two                     true
-%   fit_n_filters                   false
+%   fit_n_one_filters                   false
+%   fit_n_two_filters                   false
 %
 %   fit_color_weight_a              true    unless STA is BW
 %   fit_color_weight_b              true    unless STA is BW
@@ -174,14 +177,16 @@ p.addParamValue('initial_scale_one', [], @isnumeric);
 p.addParamValue('initial_scale_two', [], @isnumeric);
 p.addParamValue('initial_tau_one', [], @isnumeric);
 p.addParamValue('initial_tau_two', [], @isnumeric);
-p.addParamValue('initial_n_filters', 6, @isnumeric);
+p.addParamValue('initial_n_one_filters', 6, @isnumeric);
+p.addParamValue('initial_n_two_filters', 6, @isnumeric);
 
 % time course parameters to vary
 p.addParamValue('fit_scale_one', true, @islogical);
 p.addParamValue('fit_scale_two', true, @islogical);
 p.addParamValue('fit_tau_one', true, @islogical);
 p.addParamValue('fit_tau_two', true, @islogical);
-p.addParamValue('fit_n_filters', false, @islogical);
+p.addParamValue('fit_n_one_filters', false, @islogical);
+p.addParamValue('fit_n_two_filters', false, @islogical);
 
 % fit_only_sig stixels
 p.addParamValue('fit_sig_stixels_only', false, @islogical);
@@ -191,6 +196,8 @@ p.addParamValue('verbose', false, @islogical);
 % fiting options
 p.addParamValue('optim',{'TolFun',0.001,'Display','off', 'MaxIter', 10000, 'MaxFunEvals', 10000});
 
+% Sig stixels option
+p.addParamValue('biggest_blob', true, @islogical);
 
 p.parse(sta, varargin{:});
 
@@ -208,7 +215,8 @@ initial_scale_one = p.Results.initial_scale_one;
 initial_scale_two = p.Results.initial_scale_two;
 initial_tau_one = p.Results.initial_tau_one;
 initial_tau_two = p.Results.initial_tau_two;
-initial_n_filters = p.Results.initial_n_filters;
+initial_n_one_filters = p.Results.initial_n_one_filters;
+initial_n_two_filters = p.Results.initial_n_two_filters;
 
 
 fit_center_point_x = p.Results.fit_center_point_x;
@@ -226,7 +234,8 @@ fit_scale_one = p.Results.fit_scale_one;
 fit_scale_two = p.Results.fit_scale_two;
 fit_tau_one = p.Results.fit_tau_one;
 fit_tau_two = p.Results.fit_tau_two;
-fit_n_filters = p.Results.fit_n_filters;
+fit_n_one_filters = p.Results.fit_n_one_filters;
+fit_n_two_filters = p.Results.fit_n_two_filters;
 
 verbose = p.Results.verbose;
 fit_sig_stixels_only = p.Results.fit_sig_stixels_only;
@@ -238,6 +247,7 @@ y_dim = p.Results.y_dim;
 num_colors = p.Results.num_colors;
 frame_number = p.Results.frame_number;
 color_to_normalize = p.Results.color_to_normalize;
+biggest_blob = p.Results.biggest_blob; 
 
 optim = p.Results.optim;
 
@@ -275,9 +285,21 @@ if sum(sum(sig_stixels)) == 0
 end
 
 
-% get matrix subscripts to these pixels
-[matrix_subscript_i, matrix_subscript_j] = find(sig_stixels);
-matrix_subscripts = [matrix_subscript_i, matrix_subscript_j];
+% get matrix subscripts to these pixels for the eigenvalue calculation
+if biggest_blob
+    biggestBlob_stixs = ExtractNLargestBlobs(full(sig_stixels), 1);
+    [matrix_subscript_i_eig, matrix_subscript_j_eig] = find(biggestBlob_stixs);
+    matrix_subscripts_eig = [matrix_subscript_i_eig, matrix_subscript_j_eig];
+else
+    [matrix_subscript_i_eig, matrix_subscript_j_eig] = find(sig_stixels);
+    matrix_subscripts_eig = [matrix_subscript_i_eig, matrix_subscript_j_eig];
+end
+
+
+% get matrix subscripts of all sig stixels
+
+% [matrix_subscript_i, matrix_subscript_j] = find(sig_stixels);
+% matrix_subscripts = [matrix_subscript_i, matrix_subscript_j];
 
 
 
@@ -342,7 +364,7 @@ if isempty(initial_scale_two)
 end
 
 if isempty(initial_tau_one)
-    initial_tau_one = peak_frame * 1.05;
+    initial_tau_one = peak_frame *1.05;
 end
 
 % initial tau_two depends a bit on  trough_scale
@@ -366,20 +388,20 @@ end
 % Get initial center points
 if any(isempty([initial_center_point_x, initial_center_point_y]))
     % compute the initial center of spatial fit
-    if size(matrix_subscripts,1) > 1
-        tmp = centroid(matrix_subscripts);
+    if size(matrix_subscripts_eig,1) > 1
+        tmp = centroid(matrix_subscripts_eig);
         initial_center_point_x = tmp(2);
         initial_center_point_y = tmp(1);
     else
-        initial_center_point_x = matrix_subscripts(2);
-        initial_center_point_y = matrix_subscripts(1);
+        initial_center_point_x = matrix_subscripts_eig(2);
+        initial_center_point_y = matrix_subscripts_eig(1);
     end
 end
   
 % Get initial sigmas (x and y) and rotation angle
-if size(matrix_subscripts,1) >= 3
+if size(matrix_subscripts_eig,1) >= 3
     % base initial conds on PCA permformed on marks
-    [correlation_matrix, ~, eigvalues] = princomp(matrix_subscripts);
+    [correlation_matrix, ~, eigvalues] = princomp(matrix_subscripts_eig);
 
     if isempty(initial_center_rotation_angle)
         initial_center_rotation_angle = pi/2 * correlation_matrix(2);
@@ -470,8 +492,9 @@ input_params = [...
     initial_scale_two,...
     initial_tau_one,...
     initial_tau_two,...
-    initial_n_filters,...
+    initial_n_one_filters,...
     frame_number,...
+    initial_n_two_filters,...
     ];
     
 % make a logical matrix that identifies which parameters are free
@@ -494,8 +517,9 @@ fit_list = [...
     fit_scale_two,...
     fit_tau_one,...
     fit_tau_two,...
-    fit_n_filters,...
+    fit_n_one_filters,...
     false,... % frame number is not fit
+    fit_n_two_filters,...
     ];   
 
 
@@ -513,7 +537,7 @@ input_params = double(input_params);
 [final_fit_params, fval] = fminsearch(@(fit_params)sta_fit_error(sta,...
                               fit_params, input_params(fixed_indices),...
                               fit_indices, fixed_indices,...
-                              verbose),...
+                              verbose, mark_params),...
                               input_params(fit_indices),...
                               optimset(optim{:}));
                           
@@ -669,18 +693,43 @@ else
     fit_info.fit_tau_two = false;
 end
 
-% n filters
+% n one filters
 if fit_list(19)
-    fit_info.n_filters = final_fit_params(temp_pointer);
-    fit_info.fit_n_filters = true;
+    fit_info.n_one_filters = final_fit_params(temp_pointer);
+    fit_info.fit_n_one_filters = true;
     temp_pointer = temp_pointer +1;
 else
     fit_info.n_filters = initial_n_filters;
     fit_info.fit_n_filters = false;
 end
 
+% frame number
+if fit_list(20)
+    fit_info.frame_number = final_fit_params(temp_pointer);
+    fit_info.frame_number = true;
+    temp_pointer = temp_pointer +1;
+else
+    fit_info.frame_number= frame_number;
+    fit_info.fit_frame_number = false;
+end
+
+% n two filters
+if fit_list(21)
+    fit_info.n_two_filters = final_fit_params(temp_pointer);
+    fit_info.fit_n_two_filters = true;
+    temp_pointer = temp_pointer +1;
+else
+    fit_info.n_two_filters = initial_n_two_filters;
+    fit_info.fit_n_two_filters = false;
+end
+
+
 fit_info.fit_surround = fit_surround;
 fit_info.frame_number = frame_number;
 fit_info.rmse = fval;
 fit_info.initial_params = input_params;
+    fit_info.fit_indices = fit_indices;
+    fit_info.fixed_indices = fixed_indices;
+    fit_info.fit_params = final_fit_params;
+    fit_info.fixed_params = input_params(fixed_indices);
 

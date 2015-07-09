@@ -1,4 +1,4 @@
-function fit_error = sta_fit_error(sta, fit_params, fixed_params, fit_indices, fixed_indices, verbose)
+function fit_error = sta_fit_error(sta, fit_params, fixed_params, fit_indices, fixed_indices, verbose, mark_params)
 % sta_fit_error returns the error between an STA fit and an STA
 %
 % USAGE: fit_error = sta_fit_error(sta, fit_params, fixed_params, fit_indices,fixed_indices, verbose)
@@ -40,7 +40,6 @@ all_params(fixed_indices) = fixed_params;
 
 % get sta fit
 sta_fit = sta_fit_function(all_params);
-
 % plot stuff if verbose is true
 if verbose
     % spatial fit
@@ -56,14 +55,18 @@ if verbose
     
     % temporal fit
    
-    temp_stix = significant_stixels(sta, 'time', 'max', 'select', 'max', 'thresh', 3.5, 'robust_std_method', 1);
+    temp_stix = significant_stixels(sta, mark_params); %changed from 3.5 to 3.0
+%     biggestBlob = ExtractNLargestBlobs(full(temp_stix), 1);
+%     temp_stix = biggestBlob;
     fit_tc = time_course_from_sta(sta_fit, temp_stix);
     norm_factor = max(abs(reshape(fit_tc, 1, [])));
 %     plot(fit_tc)
 %     size(norm_factor)
 %     size(fit_tc)
     fit_tc = fit_tc ./ norm_factor;
+    hold on
     subplot(2,1,2)
+    hold on
     if size(sta_fit, 3) == 3
         plot(fit_tc(:,1), '--r')
         hold on
@@ -75,8 +78,8 @@ if verbose
     else 
         error('dimensions of sta color is not recognized')
     end
-    real_stix = significant_stixels(sta, 'time', 'max', 'select', 'max', 'thresh', 3.5, 'robust_std_method', 1);
-    tc = time_course_from_sta(sta, real_stix);
+    
+    tc = time_course_from_sta(sta, temp_stix);
     norm_factor = max(abs(reshape(tc, 1, [])));
     tc = tc ./ norm_factor;
     if size(sta_fit, 3) == 3
@@ -97,7 +100,7 @@ end
 
 fit_error = sqrt(mean((reshape(sta,1,[]) - reshape(sta_fit,1,[])).^2)) +...
             (norm(all_params(6:8)) -1).^2; % this last bit constrains the color vector to be norm 1.
-
+% fit_error = sqrt(mean((reshape(sta,1,[]) - reshape(sta_fit,1,[])).^2)); % this last bit constrains the color vector to be norm 1.
 % % apply constraints
 constraint_error = apply_constraints(all_params);
 fit_error = fit_error + constraint_error;
@@ -134,12 +137,12 @@ function constraint_error = apply_constraints(all_params)
     constraint_error = 0;
 
     % ensure surround_radius >= center_radius
-    if all_params(13) < 1; constraint_error = constraint_error + 1000; end
+%     if all_params(13) < 1; constraint_error = constraint_error + 1000; end
     
     if all_params(13) > 5; constraint_error = constraint_error + 1000; end
     
     % ensure surround_scale >= 0
-    if all_params(14) < 0;  constraint_error = constraint_error + 1000; end
+%     if all_params(14) < 0;  constraint_error = constraint_error + 1000; end
     
     % ensure surround_scale < 1
     if all_params(14) >= 1;  constraint_error = constraint_error + 1000; end

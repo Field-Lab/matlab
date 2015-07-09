@@ -31,8 +31,8 @@ run_opt.courseIter = 6;
 run_opt.tau = .01; % tuning parameter
 run_opt.tol = 1e-4;
 
-run_opt.data_set_vec = {'2007-03-27-1'};
-run_opt.data_run_vec = 15; % 12-}19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
+run_opt.data_set_vec = {'2007-08-24-4'};
+run_opt.data_run_vec =10; % 12-}19 for 2007-03-27, 2-11 for 2007-08-24, 13-17 for 2005-04-26
 run_opt.direction_vec = {'right'}; % right or left
 run_opt.contrast_vec = {'bright'};  %bright or dark
 run_opt.velocity_exp_vec = 96; % >0
@@ -105,7 +105,7 @@ for i = 1:length(run_opt.data_run_vec)
     run_opt.auto_set = false; % T/F -- note: overwrites run_opt params
     run_opt.downsample_spikes = false; % must run on bertha
     run_opt.raster = false; % T/F
-    run_opt.rasterPerTrial = false; % T/F
+    run_opt.rasterPerTrial = true; % T/F
     run_opt.trial_estimate = true; % T/F
     
     
@@ -312,7 +312,7 @@ for i = 1:length(run_opt.data_run_vec)
     % ONLY WORKS FOR RIGHT MOVING BAR
     if run_opt.rasterPerTrial
         
-        toPlot = cell(1,length(t));
+        toPlot = cell(1,length(cell_indices2));
         
         % Takes in start and stop time (0-0.7274)
         % Spikes of the cell with the lowest firing rate first
@@ -322,8 +322,13 @@ for i = 1:length(run_opt.data_run_vec)
         % axis
         % If tracking motion, the cell should respond to the bar at the same
         % time on every trial
+        psth_r =[];
+         Color = ['k', '.'];
+         figure
+         hold on
+         
         for counter = 1:length(cell_indices2)
-            psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr);
+            psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr, '','',counter);
             posThisCell = datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1);
             
             posFarthestCell = datarun{1}.vision.sta_fits{cell_indices1(1)}.mean(1);
@@ -332,81 +337,171 @@ for i = 1:length(run_opt.data_run_vec)
             cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
             % Title is the cell id according to vision and the mean firing rate
             %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
-            for trialNum = 1:length(t)
-                [x,y] = find(psth_r == trialNum-1);
-                toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
-            end
+        
+%             for trialNum = 1:length(t)
+%                 [x,y] = find(psth_r == trialNum-1);
+                toPlot{counter}= [[psth_r(:,1), repmat(cellNumber, size(psth_r,1),1), repmat(posThisCell, size(psth_r,1),1)]];
+             hold on
+                plot(toPlot{counter}(:,1),toPlot{counter}(:,3),Color);
+      
         end
         
         k=1; kmin=1; kmax=length(t); hk=loop_slider(k,kmin,kmax);
         
-        while k
-            if ~ishandle(hk)
-                break % script breaks until figure is closed
-            end
-            k=round(get(hk,'Value'));
-            y_scale = 1;
-            Color = ['k', '.'];
-            plot(toPlot{k}(:,1),toPlot{k}(:,3)*y_scale,Color);
-            title({run_opt.cell_type{type}, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],'Bright bar moving right', sprintf(' Trial Number %d',  k)})
-            xlabel('time (ms)');
-            ylabel('Cell''s centroid distance from reference');
-            uiwait;
+        %         while k
+        if ~ishandle(hk)
+            break % script breaks until figure is closed
         end
-        
+        k=round(get(hk,'Value'));
+        y_scale = 1;
+       
+        %             title({run_opt.cell_type{type}, [run_opt.data_set, ' Run ', num2str(run_opt.data_run)],'Bright bar moving right', sprintf(' Trial Number %d',  k)})
+        xlabel('time (ms)');
+        ylabel('Cell''s centroid distance from reference');
+        %             uiwait;
     end
     
+end
+
+
+
+if run_opt.trial_estimate
+    
+    toPlot = cell(1,length(t));
+    
+    % Takes in start and stop time (0-0.7274)
+    % Spikes of the cell with the lowest firing rate first
+    % start time of each stimulus type 2 trigger
+    % Finds the spikes that happened on a cell from stimulus onset to end
+    % Plot those spike times on the x axis versus the trial number on the y
+    % axis
+    % If tracking motion, the cell should respond to the bar at the same
+    % time on every trial
+    %         for counter = 1:length(cell_indices2)
+    %             psth_r = psth_raster_noPlotting(start,stop,datarun{2}.spikes{cell_indices2(counter)}',tr(1));
+    %             posThisCell = datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1);
+    %
+    %             posFarthestCell = datarun{1}.vision.sta_fits{cell_indices1(1)}.mean(1);
+    %
+    %
+    %             cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
+    %             % Title is the cell id according to vision and the mean firing rate
+    %             %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
+    %             for trialNum = 1%:length(t)
+    %                 [x,y] = find(psth_r == trialNum-1);
+    %                 toPlot{trialNum}= [toPlot{trialNum}; [psth_r(x,1), repmat(cellNumber, length(x),1), repmat(posThisCell, length(x),1)]];
+    %             end
+    %         end
+    %
+    k=1; kmin=1; kmax=length(t); hk=loop_slider(k,kmin,kmax);
     
     
-    if run_opt.trial_estimate
-        options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
-        spikes = datarun{2}.spikes;
-        
-        %Prior is +/-25% of expected value
-        velocity = linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, run_opt.courseIter);
-        strsig1 = zeros(1,length(velocity));
-        
-        % Run coarse error function to initialize velocity
-        for i =1:length(tr)
-            parfor j = 1:length(velocity)
-                v = velocity(j);
-                [strsig1(j)] = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx);
-            end
-            %       figure; plot(velocity, strsig1)
-            i
-            [x1,y1] = min(strsig1);
+    k=round(get(hk,'Value'));
+    y_scale = 1;
+    Color = ['k', '.'];
+    
+    
+    options = optimset('Display', 'iter', 'TolFun', run_opt.tol , 'MaxFunEvals', 60, 'LargeScale', 'off');
+    spikes = datarun{2}.spikes;
+    
+    %Prior is +/-25% of expected value
+    velocity = 186:0.5:198;%linspace(0.75*run_opt.velocity_exp, 1.25*run_opt.velocity_exp, run_opt.courseIter);
+    strsig1 = zeros(1,length(velocity));
+    
+    % Run coarse error function to initialize velocity
+    %         for i =1:length(tr)
+    %             parfor j = 1:length(velocity)
+    %                 v = velocity(j);
+    %                 [strsig1(j)] = -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx);
+    %             end
+    %                   figure; plot(velocity, strsig1)
+    %             i
+    %             [x1,y1] = min(strsig1);
+    %
+    %             Initialize minimization
+    %         end
+    %
+    % Find speed estimate
+    end_trial = stop;
+    
+    for j =0:29%:length(tr)
+%         for 
+vel = 1%:length(velocity)
+            run_opt.trial_estimate_start(vel) = velocity(vel);
             
-            % Initialize minimization
-            run_opt.trial_estimate_start(i) = velocity(y1);
-        end
-        
-        % Find speed estimate
-        parfor i =1:length(tr)
-            
-            [estimates(i)] = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(i), stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx), run_opt.trial_estimate_start(i), options);
-            
-            fprintf('for trial %d, the estimated speed was %d', i, estimates(i))
-        end
-        run_opt.elapsedTime=toc;
-        %save results
-        %     foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/%s/BrightRight/OnMandOnP', run_opt.data_set);
-        %     filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
-        if run_opt.save
-            foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/%s/DarkLeft/OnMandOnP', run_opt.data_set);
-            filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/%s/DarkLeft/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
-            
-            if exist(foldername)
-                save(filename, 'estimates', 'run_opt');
+            start= 0;%j*end_trial/10;
+            stop = (j+1)*end_trial/30;
+            if j > 0
+            [estimates(j+1)] = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), start,stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx), estimates(j), options);
             else
-                mkdir(foldername);
-                save(filename, 'estimates', 'run_opt');
+                [estimates(j+1)] = fminunc(@(v) -pop_motion_signal(v, spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), start,stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx), run_opt.velocity_exp_vec, options);
             end
-        end
+            
+                
+%             [trash(vel), spksShiftedRight(:, vel)] = pop_motion_signal_getSpikes(estimates(vel), spikes, cell_indices1, cell_indices2, cell_x_pos, tr(1), start,stop, run_opt.tau, run_opt.tol, datarun, run_opt.direction, run_opt.stx);
+            
+            
+            
+            
+%             estimates(vel) = -estimates(vel);
+            
+            %             fprintf('for trial %d, the estimated speed was %d', j, estimates(j))
+%         end
+        
+        
+        
+%         figure; plot(velocity, estimates);
+%         [x,y] = min(estimates);
+%         vel_tot(j+1) = estimates(j+1)%velocity(y);
+%         spksShiftedRight = spksShiftedRight(:, y);
+%         for counter = 1:length(cell_indices2)
+%             posThisCell = datarun{1}.vision.sta_fits{cell_indices1(counter)}.mean(1);
+%             
+%             
+%             cellNumber = datarun{2}.cell_ids(cell_indices2(counter));
+%             % Title is the cell id according to vision and the mean firing rate
+%             %          [psth, bins] = get_psth(datarun{2}.spikes{cell_indices2(counter)}, tr, 'plot_hist', true)
+%             for trialNum = 1%:length(t)
+%                
+%                 toPlot{trialNum}= [toPlot{trialNum}; [spksShiftedRight{counter}*1000, repmat(cellNumber, length(spksShiftedRight{counter}),1), repmat(posThisCell, length(spksShiftedRight{counter}),1)]];
+%             end
+%         end
+        
+        
+%         window(j+1) = estimates(vel)% velocity(y);
+%         figure;
+%         plot(toPlot{1}(:,1),toPlot{1}(:,3)*y_scale,Color);
+        xlabel('time (ms)');
+        ylabel('Cell''s centroid distance from reference');
+        
         
     end
+    x_axis = linspace(start,stop, length(estimates));
+    figure; plot(x_axis, estimates', 'o-')
+    title('Speed Estimate Given Spikes Up To Certain Time')
+    xlabel('Time')
+    ylabel('Speed estimate')
     
-    % send email when done
-    % gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+    run_opt.elapsedTime=toc;
+    %save results
+    %     foldername = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/%s/BrightRight/OnMandOnP', run_opt.data_set);
+    %     filename = sprintf('/Users/vision/Desktop/GitHub code repository/private/colleen/Results/%s/BrightRight/OnMAndOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+    if run_opt.save
+        foldername = sprintf('/home/vision/Colleen/matlab/private/colleen/results/%s/DarkLeft/OnMandOnP', run_opt.data_set);
+        filename = sprintf('/home/vision/Colleen/matlab/private/colleen/results/%s/DarkLeft/OnMandOnP/%s_data_run_%02d_config_%d.mat', run_opt.data_set, run_opt.cell_type{type}, run_opt.data_run, run_opt.config_num);
+        
+        if exist(foldername)
+            save(filename, 'estimates', 'run_opt');
+        else
+            mkdir(foldername);
+            save(filename, 'estimates', 'run_opt');
+        end
+    end
     
-    
+end
+
+% send email when done
+% gmail('crhoades227@gmail.com', sprintf('Done with %s %s_data_run_%02d_config_%d_darkright_newmethod',run_opt.data_set, run_opt.cell_type, run_opt.data_run, run_opt.config_num))
+
+
 end

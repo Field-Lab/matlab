@@ -1,4 +1,4 @@
-function plot_axes = plot_rf_summaries(datarun, cell_specification, varargin)
+function plot_axes = plot_rf_summaries(datarun, cell_specification,varargin)
 % plot_rf_summaries     Plot collection of RFs in a variety of ways
 %
 %
@@ -269,10 +269,24 @@ end
 % PLOT FITS
 
 if params.plot_fits
-    
+%     figure
     % 2D Gaussian fits
     
     % go through each cell
+    
+    %% Debug code for format_mosaics_dario.m
+    %     ctr = ON.xy;
+    %     rad = ON.sd;
+    %     the_fit.angle = ON.ang;
+    %     for i = 1:size(ctr,1)
+    %                 [X,Y] = drawEllipse([ctr(i,:) rad(i,:) the_fit.angle(i,:)]);
+    %         [X, Y] = tformfwd(coord_tform, X, Y);
+    %         plot_axes = plot(X,Y,'Color',params.fit_color, 'LineWidth', params.fit_width)
+    %         hold on
+    %
+    %     end
+    %     set(gca, 'ydir', 'reverse')
+    % figure
     for cell_index = cell_indices(~ismember(datarun.cell_ids(cell_indices), params.skip))
 
         % get the fit
@@ -283,27 +297,28 @@ if params.plot_fits
 
         % get center
         ctr = the_fit.mean * params.scale;
-
         % get center radius
         rad = the_fit.sd * params.scale;
- 
+
         % get points of an ellipse with these parameters
+
         [X,Y] = drawEllipse([ctr rad the_fit.angle]);
         
         % if any are NaN, skip
-        if any(isnan([X Y]));continue;end
+%         if any(isnan([X Y]));continue;end
         
         % transform to desired coordinates
-        [X, Y] = tformfwd(coord_tform, X, Y);
+%         [X, Y] = tformfwd(coord_tform, X, Y);
 
         % plot the points and fill
         
         if ~strcmpi(params.fill_color, 'none')
             fill(X,Y,params.fill_color)
         end
-        plot(X,Y,'Color',params.fit_color, 'LineWidth', params.fit_width)
+       plot(X,Y,'Color',params.fit_color, 'LineWidth', params.fit_width);
+        hold on
     end
-    
+    set(gca, 'ydir', 'reverse')
     % cone fits
     if 0
         % plot gaussian fit to each cell

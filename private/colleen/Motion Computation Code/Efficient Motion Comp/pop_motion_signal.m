@@ -1,4 +1,4 @@
-function [sig_str] = pop_motion_signal(velocity, spikes, indices1, indices2, x_pos, trigger, trial_length, tau, tol, datarun, direction, stx)
+function [sig_str] = pop_motion_signal(velocity, spikes, indices1, indices2, x_pos, trigger, start, trial_length, tau, tol, datarun, direction, stx)
 %POP_MOTION_SIGNAL calculates the cumulative motion signal for a given velocity between all pairs in population of neurons.
 %   sig_str = POP_MOTION_SIGNAL(velocity, spikes, indices1, indices2, x_pos, trigger, stop, tau)
 %   caluclates the signal strength for the given velocity where:
@@ -47,8 +47,9 @@ sig_str = 0;
 % create a list of all possible pairs between the neurons
 RelTol = tol;
 AbsTol = tol * .1;
-numberOfT = 100; % determined to be good enough
-t = linspace(0, trial_length, numberOfT);
+trial_length = trial_length - start;
+numberOfT = trial_length*138; % determined to be good enough
+t = linspace(start, trial_length, numberOfT);
 valueAtEachT = zeros(length(t),2);
 
 
@@ -66,7 +67,7 @@ spks_2 = spikes(indices2); % Cell array of spike trains of all types considering
 spks_2=cellfun(@(x) x-trigger, spks_2,'UniformOutput',false);
 
 % only consider spikes that occured in the trial
-spks_2 = cellfun(@(y) y(y >= 0 & y <= trial_length), spks_2, 'UniformOutput', false);
+spks_2 = cellfun(@(y) y(y >= start & y <= start+trial_length), spks_2, 'UniformOutput', false);
 
 % circularly shift spikes by dt
 
@@ -74,12 +75,14 @@ dx_cell = num2cell(dx);
 
 if strcmp(direction, 'right') % bar moving right
 spks_2_shiftedRight = cellfun(@(z, c) z - c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
+spks_out = spks_2_shiftedRight;
 spks_2_shiftedRight = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedRight, 'UniformOutput', false);
 spks_2_shiftedLeft = cellfun(@(z, c) z + c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
 spks_2_shiftedLeft = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedLeft, 'UniformOutput', false);
 
 else % bar moving left
 spks_2_shiftedRight = cellfun(@(z, c) z + c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
+spks_out = spks_2_shiftedRight;
 spks_2_shiftedRight = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedRight, 'UniformOutput', false);
 spks_2_shiftedLeft = cellfun(@(z, c) z - c / velocity, spks_2,dx_cell, 'UniformOutput', false); %right shift
 spks_2_shiftedLeft = cellfun(@(z) sort(mod(z, trial_length)), spks_2_shiftedLeft, 'UniformOutput', false);
@@ -92,6 +95,8 @@ spks_2_shiftedLeft(idx)={0}; %It replaces all empty cells with number 0
 
 idx=cellfun('isempty',spks_2_shiftedRight);
 spks_2_shiftedRight(idx)={0}; %It replaces all empty cells with number 0
+
+
 
 % changed both sides to use ceil
 spks_2_shiftedRight = cellfun(@(z) [z(ceil(end/2):end) - trial_length; z; z(1:ceil(end/2)) + trial_length], spks_2_shiftedRight, 'UniformOutput', false);
