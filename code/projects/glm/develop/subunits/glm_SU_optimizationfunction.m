@@ -49,14 +49,14 @@ f_penalty = penalty_strength*SU_params'*SU_params;
 % gradient of the lcif
 del_LL = zeros(n_params, 1);
 subunit_drive = exp(squeeze(sum(SU_covariates,1)));
+del_lcif = zeros(n_params, length(SU_covariates));
 for i_SU = 1:n_params
-    del_lcif = zeros(1, length(SU_covariates));
     for i_loc = 1:121
         temp = pooling_weights(i_loc)*squeeze(pixels(i_SU,i_loc,:))'.*squeeze(subunit_drive(i_loc,:));
-        del_lcif = del_lcif+temp;
+        del_lcif(i_SU,:) = del_lcif+temp;
     end
-    del_lcif = conv(del_lcif, flip(time_filter), 'same');
-    del_lcif = imresize(del_lcif, n_bins, 'nearest');
+    del_lcif(i_SU,:) = conv(del_lcif, flip(time_filter), 'same');
+    del_lcif(i_SU,:) = imresize(del_lcif, n_bins, 'nearest');
     del_LL(i_SU) = sum(del_lcif(spt))- dt * sum(exp(lcif).*del_lcif); 
 end
 del_penalty = zeros(n_params, 1);
@@ -66,13 +66,22 @@ end
 grad = -del_LL + del_penalty;
 
 % % Evaluate the hessian
-
+for i = 1:n_params
+    for j = 1:n_params
+        di_dj_lcif = 0;
+        for i_loc = 1:121
+            temp = pooling_weights(i_loc)*(squeeze(pixels(j_SU,i_loc,:)).*squeeze(pixels(i_SU,i_loc,:))).*squeeze(subunit_drive(i_loc,:));
+            di_dj_lcif = di_dj_lcif+temp;
+        end
+        H_eval(i,j) = sum(di_dj_lcif(spt)) - dt * sum( exp(lcif) .* (di_dj_lcif + del_lcif(i,:).*del_lcif(j,:)));
+    end
+end
 
 %%
 
 % Switch signs because using a minimizer  fmin
 f       = -f_eval+f_penalty;
-% grad    = -g_eval;
-% Hess    = -H_eval;
+grad    = -g_eval;
+Hess    = -H_eval;
 % log_cif = lcif;
 end
