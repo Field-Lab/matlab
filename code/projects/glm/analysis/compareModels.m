@@ -24,11 +24,12 @@ comparison_name = 'NSEM-stimnoCPnoPS-stimCPnoPS';
 
 
 clear ; close all; clc;
-comparison_name = 'WN-stimnoPS-stimPS'
+%comparison_name = 'WN-stimnoPS-stimPS'
+comparison_name = 'NSEM-stimnoPS-stimPSconstrainCOB'
 metrics = [1 2 3 4 5 6];
 cellselection_type = 'glmconv4pct';
 %cellselection_type = 'shortlist';
-for i_metric = metrics
+for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
     if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
@@ -92,7 +93,23 @@ if strcmp(comparison_name,'WN-stimnoPS-stimPS')
     plotparams.title_comparison   = 'PS filter effect on WN';
     plotparams.purpose            = 'How strongly does PS filter effect White Noise metrics';
 end
+
+if strcmp(comparison_name,'NSEM-stimnoPS-stimPSconstrainCOB')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'NSEM';
+    models{2}.settings = {};
+    models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'GLM no PS';
+    plotparams.ylabel             = 'GLM with PS';
+    plotparams.title_comparison   = 'PS filter effect on NSEM';
+    plotparams.purpose            = 'How strongly does PS filter effect NSEM metrics (with net inhibitory caveat)';
+end
     
+    
+
+
 if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'nostim';
