@@ -14,75 +14,20 @@
 
 % Calling Sequences
 %{
-clear ; close all; clc;
-%comparison_name = 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'; 
-metrics = [1 2 3 4 5 6]; 
-comparison_name = 'WNvsNSEM-standardGLM'; 
-%metrics = [2 5];
-
-clear; clc
-%comparison_name = 'NSEM-standardGLMwithinputNL-netinhibPSCOB';
-comparison_name = 'NSEM-standardGLM-netinhibPSCOB';
-cellselection_type = 'glmconv4pct';
-metrics = [1];
-for i_metric = metrics
-    if i_metric == 1, metric = 'BPS_divideCRM'; end
-    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
-    if i_metric == 4, metric = 'FracVar10msec'; end
-    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
-    if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
-end
-
-comparison_name = 'WNvsNSEM-standardGLMwithCP'; 
-cellselection_type = 'glmconv4pct';
-metrics = [1];
-for i_metric = metrics
-    if i_metric == 1, metric = 'BPS_divideCRM'; end
-    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
-    if i_metric == 4, metric = 'FracVar10msec'; end
-    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
-    if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
-end
-
-
-%cellselection_type = 'glmconv4pct';
-%cellselection_type = 'all';
-%cellselection_type = 'shortlist';
-
-clear ; close all; clc;
-cellselection_type = 'glmconv4pct';
-%comparison_name = 'NSEM-standardGLM-PSConstrain-Sub1';
-%comparison_name = 'WNvsNSEM-standardGLM-PSConstrain-Sub1';
-
-clear
-%comparison_name = 'WNvsNSEM-rk1';
-cellselection_type = 'shortlist';
-comparison_name = 'WNvsNSEM-standardGLMwithCP';
-metrics = [1];
-for i_metric = metrics
-    if i_metric == 1, metric = 'BPS_divideCRM'; end
-    if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
-    if i_metric == 4, metric = 'FracVar10msec'; end
-    if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
-    if i_metric == 6, metric = 'BPS_divideUOP'; end
-    [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
-end
-
-
-
 
 clear ; close all; clc;
 % comparison_name  = 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS';
-comparison_name  = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
+%comparison_name  = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
+%comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP'
+%comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP';
+comparison_name = 'NSEM-stimnoCPnoPS-stimCPnoPS';
 
-comparison_name  = 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS';
-metrics = [6];
-cellselection_type = 'all';
+
+clear ; close all; clc;
+comparison_name = 'WN-stimnoPS-stimPS'
+metrics = [1 2 3 4 5 6];
+cellselection_type = 'glmconv4pct';
+%cellselection_type = 'shortlist';
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -116,6 +61,182 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM')
     plotparams.title_comparison   = 'Standard GLM (no coupling)';
     plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, no coupling)';
 end
+if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS-withCP')
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'nostim';
+    models{1}.settings{2}.type = 'CouplingFilters';
+    models{1}.settings{2}.name =  'ON';
+    models{1}.settings{3}.type = 'PostSpikeFilter';
+    models{1}.settings{3}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'CouplingFilters';
+    models{2}.settings{2}.name =  'ON';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'White Noise';
+    plotparams.ylabel             = 'Natural Scenes';
+    plotparams.title_comparison   = 'Only Coupling';
+    plotparams.purpose            = 'Check WN vs NSEM for only Coupling and MU, no other terms';
+end
+if strcmp(comparison_name,'WN-stimnoPS-stimPS')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings = {};
+    models{2}.fit_type = 'WN';
+    plotparams.xlabel             = 'GLM no PS';
+    plotparams.ylabel             = 'GLM with PS';
+    plotparams.title_comparison   = 'PS filter effect on WN';
+    plotparams.purpose            = 'How strongly does PS filter effect White Noise metrics';
+end
+    
+if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS')
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'nostim';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'White Noise';
+    plotparams.ylabel             = 'Natural Scenes';
+    plotparams.title_comparison   = 'Only Tonic Drive';
+    plotparams.purpose            = 'How well tonic drive scores the metrics for WN and NSEM';
+end
+
+if strcmp(comparison_name, 'WNvsNSEM-GLMwithCPnoPS')
+    models{1}.settings{1}.type = 'CouplingFilters';
+    models{1}.settings{1}.name =  'ON';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'CouplingFilters';
+    models{2}.settings{1}.name =  'ON';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'White Noise';
+    plotparams.ylabel             = 'Natural Scenes';
+    plotparams.title_comparison   = 'GLMwith CP (no PS)';
+    plotparams.purpose            = 'Check WN vs NSEM with Coupling..no PS to avoid runaway spikes';
+end
+
+if strcmp(comparison_name,'WN-nostimnoPS-nostimnoPSwithCP')
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'nostim';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'CouplingFilters';
+    models{2}.settings{2}.name =  'ON';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.fit_type = 'WN';
+    plotparams.xlabel             = 'Tonic Drive (MU) Only';
+    plotparams.ylabel             = 'MU and CP';
+    plotparams.title_comparison   = 'WN Effect of CP on MU only';
+    plotparams.purpose            = 'How does CP affect WN scores in abscence of other filters except tonic drive';
+end
+if strcmp(comparison_name,'NSEM-nostimnoPS-nostimnoPSwithCP')
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'nostim';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.fit_type = 'NSEM';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'CouplingFilters';
+    models{2}.settings{2}.name =  'ON';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'Tonic Drive (MU) Only';
+    plotparams.ylabel             = 'MU and CP';
+    plotparams.title_comparison   = 'NSEM Effect of CP on MU only';
+    plotparams.purpose            = 'How does CP affect NSEM scores in abscence of other filters except tonic drive';
+end
+
+if strcmp(comparison_name,'WN-stimnoCPnoPS-stimCPnoPS')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    
+    models{2}.settings{1}.type = 'CouplingFilters';
+    models{2}.settings{1}.name =  'ON';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.fit_type = 'WN';
+    
+    plotparams.xlabel             = 'GLM no PS';
+    plotparams.ylabel             = 'GLM with CP (no PS)';
+    plotparams.title_comparison   = 'Effect of CP (no PS) on WN';
+    plotparams.purpose            = 'See how WN fits are affected by CP, in the abscence of PS filter';
+end
+
+if strcmp(comparison_name,'NSEM-stimnoCPnoPS-stimCPnoPS')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'NSEM';
+    
+    models{2}.settings{1}.type = 'CouplingFilters';
+    models{2}.settings{1}.name =  'ON';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    
+    plotparams.xlabel             = 'GLM no PS';
+    plotparams.ylabel             = 'GLM with CP (no PS)';
+    plotparams.title_comparison   = 'Effect of CP (no PS) on NSEM';
+    plotparams.purpose            = 'See how NSEM fits are affected by CP, in the abscence of PS filter';
+end
+
+    
+    
+if strcmp(comparison_name,'NSEM-noPSnoCP-noPSnoSTIM')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'NSEM';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'CouplingFilters';
+    models{2}.settings{2}.name =  'ON';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'Stim Filter (noCP)';
+    plotparams.ylabel             = 'CP (no StimFilter)';
+    plotparams.title_comparison   = 'Coupling versus Stim Filter';
+    plotparams.purpose            = 'Check for NSEM which has larger effect.  Coupling or Stim Filter';
+end
+
+
+if strcmp(comparison_name,'WN-noPSnoCP-noPSnoSTIM')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'CouplingFilters';
+    models{2}.settings{2}.name =  'ON';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.fit_type = 'WN';
+    plotparams.xlabel             = 'Stim Filter (noCP)';
+    plotparams.ylabel             = 'CP (no StimFilter)';
+    plotparams.title_comparison   = 'Coupling versus Stim Filter';
+    plotparams.purpose            = 'Check for NSEM which has larger effect.  Coupling or Stim Filter';
+end
+
+
+
 if strcmp(comparison_name,'WNvsNSEM-standardGLMwithCP') 
     models{1}.settings{1}.type = 'CouplingFilters';
     models{1}.settings{1}.name =  'ON';
@@ -440,7 +561,7 @@ switch metric
     case 'FracVar10msec'
         rawmetric_name = 'crossval_fracvar_10msec';
         normalize.doit = false;
-        plotparams.low_lim = 0;
+        plotparams.low_lim = -1;
         plotparams.high_lim = 1;
         plotparams.title_metric = 'Fraction of Variance';
         
@@ -450,7 +571,7 @@ switch metric
         normalize.name = 'fracvar_10msec_ODDEVEN';
         normalize.extension = '';
         normalize.operation = 'divide';
-        plotparams.low_lim = 0;
+        plotparams.low_lim = -1;
         plotparams.high_lim = 1;
         plotparams.title_metric = 'Normed Fraction of Variance';
         

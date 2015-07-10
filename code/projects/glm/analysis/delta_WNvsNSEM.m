@@ -26,10 +26,12 @@ clear
 %comparison_name  = 'deltaWNvsNSEM-standardGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS';
 %comparison_name = 'deltaWNvsNSEM-linearconesGLM-Input4Piece-netinhibPSCOB-LogisticfixMUwithPS';
 %comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLnetinhibPSCOB';
-comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLLogisticfixMUnetinhibPSCOB';
-cellselection_type = 'glmconv4pct';
+%comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLLogisticfixMUnetinhibPSCOB';
+comparison_name = 'deltaWNvsNSEM-noPSnoCP-noPSnoSTIM';
+cellselection_type = 'shortlist';
 rundir = pwd;
 metrics = [1 2 3 4 5];
+metrics = 6;
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -63,6 +65,19 @@ if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1')
     models{2}.special_arg{1} = 'PS_Constrain_sub1';
     plotparams.title_comparison   = 'Crude PS Constraint';
     plotparams.purpose            = 'Verify that crude constraining of PS Filter still tells same story of WN vs NSEM';
+end
+
+if strcmp(comparison_name,'deltaWNvsNSEM-noPSnoCP-noPSnoSTIM')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'nostim';
+    models{2}.settings{2}.type = 'CouplingFilters';
+    models{2}.settings{2}.name =  'ON';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    plotparams.title_comparison   = 'Stim no CP  vs CP no stim';
+    plotparams.purpose            = 'See how WN vs NSEM changes by swapping CP for Stim';
 end
 
 if strcmp(comparison_name,'deltaWNvsNSEM-standardGLMwithlinearcones-inputNL')
