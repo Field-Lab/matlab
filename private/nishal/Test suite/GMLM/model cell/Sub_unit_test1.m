@@ -76,7 +76,7 @@ subunits{4}=subunits{4}.*tfRep;
 
 % sub-unit weights
 subunitWeights=zeros(nSubunits,1);
-subunitWeights(1)=0%1;
+subunitWeights(1)=1%1;
 subunitWeights(2)=1%1.2;
 subunitWeights(3)=1%0.7;
 subunitWeights(4)=1%1.5;
@@ -84,16 +84,16 @@ subunitWeights(4)=1%1.5;
 % sub-unit non-linearity
 
 % Dense model - Model used regularly
-% f= @(x) double(x>0).*(1.6*x);
-% N1=@(x) double(x>0)*(0.02).*(3.4*x).^2 ; % use it! , 2 is DC current
+f= @(x) double(x>0).*(1.6*x);
+N=@(x) double(x>0)*(0.02).*(3.4*x).^2 ; % use it! , 2 is DC current
 
 %  model2
 %f= @(x) double(x>0).*(1.6*x);
 %N=@(x) double(x>0)*(0.02).*(3.4*x/12).^12 ; % use it! , 2 is DC current
 
 % Exp su nl, linear overall nl - with model assumptions
- f =@(x)  0.5*exp(x);
- N = @(x) double(x>0)*(0.02).*(3.4*x);
+%  f =@(x)  0.5*exp(x);
+%  N = @(x) double(x>0)*(0.02).*(3.4*x);
 
 
 
@@ -200,12 +200,12 @@ hold on;
  %% EM like Max Expected Likelihood .. 
  interval=1;
  %[fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov2,8,4,interval);   
- nSU=3;
+ nSU=4;
  [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,7,nSU,interval); 
  fitGMLM1=fitGMLM;
  
   interval=1;
-  nSU=3;
+  nSU=4;
   [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponses,maskedMov,7,nSU,interval,2);  
   fitGMLM2=fitGMLM;
   
@@ -283,7 +283,7 @@ indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
 masked_frame = indexedframe(logical(mask));
 
 figure;
-for ifilt=1:3
+for ifilt=1:4
 subplot(2,2,ifilt)
 u_spatial = reshape_vector(fitGMLM1.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
 imagesc((u_spatial));
@@ -299,14 +299,14 @@ indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
 masked_frame = indexedframe(logical(mask));
 
 figure;
-for ifilt=1:3
+for ifilt=1:4
 subplot(2,2,ifilt)
 u_spatial = reshape_vector(fitGMLM2.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
 imagesc((u_spatial));
 %caxis([-0.3,0.3]);
 colormap gray
 colorbar
-title(sprintf('GMLM Filter: %d',ifilt));
+title(sprintf('Quad-ASM Filter: %d',ifilt));
 end
 %% Generate white noise movie
  movieLen=120*10;
@@ -418,6 +418,57 @@ hold on;
 plot(x5/10,y5+max(y2),'r');
 hold on;
 plot(x6/10,y6,'k');
+
+ylim([0,6*max(y2)])
+xlim([0,max(x1)]);
+title('Original & Null movie');
+set(gca,'ytick',[]);
+set(gca,'xtick',[]);
+%legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
+
+%% Nulling experiment with Quadratic GMLM
+movieLen=120*15;
+null_compute_subUnit_test
+ 
+nTrials=50;
+analyse_null_subUnit_ts
+
+% Compare actual and predicted for original movie.
+mov=movOrig(:,:,Filtlen:movie_new_len+Filtlen-1);
+binnedResponses = binnedResponseOrig;
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+
+[predictedResponses1,lam] = predictGMLM_gamma2(fitGMLM2,maskedMov,nTrials,2,1);
+ 
+[x1,y1]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
+
+[x2,y2]=plotSpikeRaster(predictedResponses1'>0,'PlotType','vertline');
+
+ % Compare actual and predicted for Null movie.
+mov=movNull(:,:,Filtlen:movie_new_len+Filtlen-1);
+binnedResponses = binnedResponseNull;
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+nTrials=50;
+[predictedResponses1,lam] = predictGMLM_gamma2(fitGMLM2,maskedMov,nTrials,2,1);
+ 
+[x3,y3]=plotSpikeRaster(binnedResponses'>0,'PlotType','vertline');
+
+
+[x4,y4]=plotSpikeRaster(predictedResponses1'>0,'PlotType','vertline');
+ % Compare actual and predicted for Original movie
+
+figure;
+plot(x1,y1+5*max(y2),'r');
+hold on;
+plot(x2/10,y2+4*max(y2),'k');
+hold on;
+hold on;
+plot(x3,y3+3*max(y2),'r');
+hold on;
+plot(x4/10,y4+2*max(y2),'k');
+
 
 ylim([0,6*max(y2)])
 xlim([0,max(x1)]);

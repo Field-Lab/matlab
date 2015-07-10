@@ -93,14 +93,16 @@ end
         stas=stas_new;
         
         % Used in movie post process
-        cell_params.STAlen=14;
-        [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
-        
+%         cell_params.STAlen=14;
+%         [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
+%         
+
+% Calculate STA
         STA_depth=30;
-        dim1=size(totalMaskAccept2,1);
-        dim2=size(totalMaskAccept2,2);
-        
+       
         mov = fitmovie_color-0.5;
+        dim1=size(mov,1);
+        dim2=size(mov,2);
         iisp = 1:size(mov,4);
         iisp = iisp(spksGen~=0 & iisp' > STA_depth+1);
         
@@ -110,13 +112,20 @@ end
         end
         STA_recalc =STA_recalc/numel(iisp);
         
+        % Find the mask using freshly calculated STA
+        stas{1} = STA_recalc(:,:,:,end:-1:1);
+         cell_params.STAlen=14;
+       %[stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
+        [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs_largestblob(stas,cell_params);
         figure; 
         subplot(1,2,1);
-        imagesc(mean(STA_recalc(:,:,:,24),3));
+        imagesc(mean(stas{1}(:,:,:,6),3));
         colormap gray
+        axis square
         subplot(1,2,2);
         imagesc(totalMaskAccept2);
         colormap gray
+        axis square
         %tf ? 
         
         xx = abs(mean(STA_recalc(:,:,:,24),3));

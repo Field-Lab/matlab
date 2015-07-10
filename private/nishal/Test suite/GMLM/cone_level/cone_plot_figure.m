@@ -1,11 +1,20 @@
-% make figure. 
-for cellID =  [1321,1351,2251,3586,3736,4576];
+
 folder = '/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm/gmlm_detailed';
 load('/Volumes/Analysis/2011-12-13-2/subunits/data008/conepreprocess.mat');
 coneidx=1:size(datarun.cones.weights,1);
+thr=0.33;
+  %%
+    
+% make figure. 
+for cellID =  [6332,4681,2851,5851,4460,3346,1157,2341,4306,4081];
+folder = '/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/quad_gmlm/gmlm_detailed';
+load('/Volumes/Analysis/2010-09-24-1/subunits/data036-from-d05_36/conepreprocess.mat');
+coneidx=1:size(datarun.cones.weights,1);
+thr=0.5; %[827,1157,1907,2341,2851,3346,3961,4081,4306,4460,4637,4681,4862,4876,4936,4998,5011,5176,5191,5251,5476,5701,5851,5911,6076,6151,6241,6332,7036];
+%        
 iidx=1:length(datarun.cell_ids);
 ref_cell=iidx(datarun.cell_ids == cellID)%1:10;% 4 is interesting.
-thr=0.33;          
+         
 
 %% 
             
@@ -31,13 +40,13 @@ for ispktm=spk_tm
 end
 sta=sta/double(sum(spks));
 %%
-% 
+
 % h=figure('Color','w','PaperSize',[35,5],'PaperPosition',[0 0 35 5]);
 % 
 % for isuu =1:5
 % subplot(1,5,isuu);
 % nFilters = nc - 4 +isuu-1; 
-% load(strcat(folder,sprintf('/quadGMLM_%d_su_%d.mat',cellID,nFilters)));
+% load(strcat(folder,sprintf('/quad_gmlm_%d_su_%d.mat',cellID,nFilters)));
 % %load(strcat(folder,sprintf('/nnmf_%d_su_%d.mat',cellID,nFilters)));
 %   
 % % make su_log
@@ -100,9 +109,9 @@ sta=sta/double(sum(spks));
 %      ylim([min(-datarun.cones.centers(cones,2))-2,max(-datarun.cones.centers(cones,2))+2])
 %        title(sprintf('n SU: %d',nFilters));
 % end
-%  print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm/gmlm_summary/gmlm_%d.pdf',cellID))
+%  print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/quad_gmlm/gmlm_summary/gmlm_%d.pdf',cellID))
 
-%% 
+%% TOP sub-units
 h=figure('Color','w','PaperSize',[35,5],'PaperPosition',[0 0 35 5]);
 
 for isuu =1:5
@@ -111,11 +120,11 @@ nFilters = nc - 4 +isuu-1;
 if(nFilters<1)
     continue;
 end
-load(strcat(folder,sprintf('/quadGMLM_%d_su_%d.mat',cellID,nFilters)));
+load(strcat(folder,sprintf('/quad_gmlm_%d_su_%d.mat',cellID,nFilters)));
   
 
 % make SU log
-su_log=zeros(nc,nc)
+su_log=zeros(nc,nc);
 for ifit=1:50
 fitGMLM = fitGMLM_log{ifit};
 k_est = zeros(nFilters,nc);
@@ -194,7 +203,7 @@ end
 
 % s=hgexport('readstyle','cone_1x7');
 % hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/nnmf/nnmf_summary/nnmf_%d.eps',cellID),s);
- print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm/gmlm_top/gmlm_%d.pdf',cellID))
+ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/quad_gmlm/gmlm_top/gmlm_%d.pdf',cellID))
 
 
 

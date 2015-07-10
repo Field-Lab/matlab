@@ -1,4 +1,4 @@
-function [new_stas,totalMaskAccept,CellMasks]=clipSTAs(stas,cell_params)
+function [new_stas,totalMaskAccept,CellMasks]=clipSTAs_largestblob(stas,cell_params)
 
 nCells=length(stas);
 CellNoiseSigmas=[];
@@ -20,6 +20,7 @@ else
 end
 
 [sig_stixels, params, rf_strength_out] = significant_stixels(dummySTA,'select','thresh','thresh',thres);
+sig_stixels = ExtractNLargestBlobs(full(sig_stixels),1)
 % figure;
 % imagesc(sig_stixels)    
 

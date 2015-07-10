@@ -80,7 +80,7 @@ lam=lam+mu;
 
 likelihood = (sum(-lam*(interval/120)) + sum(y_tsp.*log(lam(tsp))))/size(mov_filtered,2);
 f_val_prev=f_val;
-f_val=-likelihood
+f_val=-likelihood;
 icnt=icnt+1; f_val_log(icnt)=f_val;
 if((abs(f_val-f_val_prev)/abs(f_val))<tol)
 togo=0;
@@ -91,7 +91,7 @@ if(iter==max_iter)
 display('Stopping because max iter reached');    
 end
 
-phase2=1;
+phase2=0;
 if(phase2==1)
 
     nc=filteredStimDim; nFilters = nFrontEnds;

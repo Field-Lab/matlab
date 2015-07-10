@@ -76,11 +76,11 @@ data=allElecData{imov};
 dt=1/20000;
 samplingRate=20000;
 close all
-save('/Volumes/Analysis/nishal/SS/ss_data.mat','data','dt','-v7.3');
-cd '/Volumes/Analysis/nishal/CBPSpikesortDemo-master/spikesort_demo/'
-[waveforms{imov},spike_times{imov},spike_amps{imov},recon_snippets{imov}]=nsemSpikeSort('nsem_data',no_cells,noise); % need to give number of potential cells and noise amount .. 
+save('/Volumes/Lab/Users/bhaishahster/SS/ss_data.mat','data','dt','-v7.3');
+cd '/Volumes/Lab/Users/bhaishahster/CBPSpikesortDemo-master/spikesort_demo/'
+[waveforms{imov},spike_times{imov},spike_amps{imov},recon_snippets{imov}]=nsemSpikeSort('ss_data',no_cells,noise); % need to give number of potential cells and noise amount .. 
 % Store spike sorting result ? 
-cd ('~/Nishal/matlab/private/nishal/NSEM');
-save(sprintf('/Volumes/Analysis/nishal/SS/SS_dataset_%s_cell%d_data00%d_a_%dcells.mat',dataset,vision_id,imov,no_cells),'waveforms','spike_times','spike_amps','recon_snippets','init_waveform_all_channels','imov','dataset','analysis_datafile','bin_datafile','vision_id','no_cells');
+%cd ('~/Nishal/matlab/private/nishal/NSEM');
+save(sprintf('/Volumes/Lab/Users/bhaishahster/SS_dataset_%s_cell%d_data00%d_a_%dcells.mat',dataset,vision_id,imov,no_cells),'waveforms','spike_times','spike_amps','recon_snippets','init_waveform_all_channels','imov','dataset','analysis_datafile','bin_datafile','vision_id','no_cells');
 %save(sprintf('/Volumes/Analysis/nishal/NSEM_SS/NSEM_dataset_%s_cell%d_data00%d_b_%dcells.mat',dataset,vision_id,imov,no_cells),'-v7.3');
 

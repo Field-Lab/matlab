@@ -16,7 +16,7 @@ end
 
 
 
-h3= figure;
+h3= figure('Color','w');
 
 jump=0;
 icnt=0;
@@ -39,5 +39,5 @@ for imov=nmov:-1:1
 end
 ylim([0,jump]);
 xlim([0,max(xx{imov})]);
-
+set(gca,'YTick',[]);
 end

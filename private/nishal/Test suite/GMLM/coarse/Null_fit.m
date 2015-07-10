@@ -7,7 +7,7 @@
 WN_datafile = '2015-03-09-3/streamed/data000/data000';
 movie_xml = 'BW-8-1-0.48-11111';
 stim_length=1800;% in seconds
-cellID =5581;
+for cellID =[5581,2448,4144,872,7368];
 
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
@@ -79,36 +79,42 @@ ss=spksGen';
 spksGen = ss(:);
 movNull=repmat(condMov{useCond},[1,1,5]);
 
+spksGen_hr =  makeSpikeMat(spkCondColl(useCond).spksColl,1/1200,condDuration*1200);
+ss=spksGen_hr';
+spksGen_hr = ss(:);
 %% Fit 
 
- maskedMovdd= filterMov(movNull,totalMaskAccept2,squeeze(tf));
+ maskedMovdd= filterMov(movNull,totalMaskAccept2,squeeze(ttf));
  
   interval=1;
 %  idx = [1:end]
 trainData=[1:floor(length(spksGen)*1)];
 %testData=[floor(length(spksGen)*0.8)+1 :length(spksGen)];
  binnedResponsesbigd = spksGen(trainData);
+ 
+ 
  mov_use=maskedMovdd(:,trainData);
  
  filteredStimDim=size(mov_use,1); 
 
- for nSU =2:2;
+ for nSU =1:7;
  binnedResponsesbigd = spksGen(trainData);
  mov_use=maskedMovdd(:,trainData);
- 
- for ifit=1:1
-% [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
- [fitGMLM,f_val(nSU)] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
- fitGMLM_sulog{nSU}=fitGMLM;
- %[fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
- % fitGMLM_log(ifit).fitGMLM = fitGMLM;  %%
- [fitGMLM_full2,output]= fitGMLM_full(fitGMLM,spike.home,mov_use);
- fitGMLM_full2_log{nSU}=fitGMLM_full2;
+ f_val=[];
+ fitGMLM_fitlog=cell(50,1);
+ for ifit=1:50
+     ifit
+ [fitGMLM,f_val(ifit)] = fitGMLM_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
+ fitGMLM_fitlog{ifit}=fitGMLM;
+ end %%
+ [fitGMLM_full2,output]= fitGMLM_full(fitGMLM,spksGen_hr,mov_use);
+% fitGMLM_full2_log{nSU}=fitGMLM_full2;
 % figure;
 % plot(fitGMLM_full2.hist.hexpanded)
+save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_3/gmlm_detailed/cellID_%d_su_%d.mat',cellID,nSU),'fitGMLM_fitlog','f_val','fitGMLM_full2');
  end
  
- end
+end
 % save('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_3/fits1939','fitGMLM_sulog','fitGMLM_full2_log');
 %  % Training Err 
 %   nTrials=1;
@@ -149,11 +155,14 @@ trainData=[1:floor(length(spksGen)*1)];
 % title('Training and Testing R-sq value');
 
 %% 
+cellID=5581;
 nSU=2;
-%fitGMLM_full2=fitGMLM_full2_log{useSU};
-fitGMLM=fitGMLM_sulog{nSU};
+load(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_3/gmlm_detailed/cellID_%d_su_%d.mat',cellID,nSU));
 
- mask = totalMaskAccept;
+%fitGMLM_full2=fitGMLM_full2_log{useSU};
+%fitGMLM=fitGMLM_sulog{nSU};
+fitGMLM=fitGMLM_full2;
+ mask = totalMaskAccept2;
 sta_dim1 = size(mask,1);
 sta_dim2 = size(mask,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
@@ -165,7 +174,7 @@ figure;
 for ifilt=1:nSU
 subplot(2,2,ifilt)
 u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
-imagesc(u_spatial(x_coord,y_coord));
+imagesc(u_spatial);
 colormap gray
 colorbar
 title(sprintf('GMLM Filter: %d',ifilt));
@@ -177,7 +186,7 @@ end
 [v,I] = max(u_spatial_log,[],3);
 
 xx=I.*(v>0.1);
-xx=xx(x_coord,y_coord);
+xx=xx;
 figure;
 imagesc(xx);
 
@@ -187,11 +196,12 @@ imagesc(xx);
 %% data003 movies
 % make movies
 interval=1;
+nConditions=5;
 condMov2=cell(nConditions,1);
 rawMovFrames=1270/(interval);
 icnt=0;
 % make pixel histogram
-for imov=[1,2,4]
+for imov=[1,2,4,6,8]
     [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-03-09-3/Visual/Null Movies/pc2015_03_09_3_data000/%d.rawMovie',imov),rawMovFrames,1);
     subtract_movies{3}=mean(stim,1);
     subtract_movies{3}=mean(stim,1)*0+127.5;
@@ -213,23 +223,27 @@ for imov=[1,2,4]
 end
 
 %% data003 spikes
+
+
 Null_datafile = '/Volumes/Analysis/2015-03-09-3/data003-from-data000_streamed_nps';
 neuronPath = [Null_datafile,sprintf('/data003-from-data000_streamed_nps.neurons')];
-nConditions=3;
+nConditions=5;
 condDuration=1270/120;
+cond_str={};
 [spkColl,spkCondColl2,h]=plot_raster_script_pc2015_03_09_3_light(cellID,nConditions,condDuration,cond_str,neuronPath);
 
 %% make prediction
 
+
 % Make predictions
 pred=cell(nConditions,1); lam=cell(nConditions,1);
 for  icond=1:nConditions
- maskedMov= filterMov(condMov2{icond},mask,squeeze(tf));
+ maskedMov= filterMov(condMov2{icond},mask,squeeze(ttf));
  %maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=30;
 interval=1;
  %[pred{icond},lam{icond}]= predictGMLM_bias(fitGMLM,maskedMov,nTrials,interval);
-pred{icond} = predictGMLM_full(fitGMLM_full2,maskedMov,nTrials);
+[pred{icond},lam] = predictGMLM_full(fitGMLM_full2,maskedMov,nTrials);
   %pred{icond}= predictGMLM(fitGMLM,maskedMov,nTrials)';
  % pred{icond}= predictGMLM_gamma2(fitGMLM,maskedMov,nTrials,2)';
   pred{icond}=pred{icond}';
