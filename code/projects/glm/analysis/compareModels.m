@@ -19,13 +19,14 @@ clear ; close all; clc;
 % comparison_name  = 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS';
 %comparison_name  = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
 %comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP'
-%comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP';
-comparison_name = 'NSEM-stimnoCPnoPS-stimCPnoPS';
+comparison_name = 'WN-nostimnoPS-nostimnoPSwithCP';
+%comparison_name = 'NSEM-stimnoCPnoPS-stimCPnoPS';
 
 
 clear ; close all; clc;
 %comparison_name = 'WN-stimnoPS-stimPS'
-comparison_name = 'NSEM-stimnoPS-stimPSconstrainCOB'
+%comparison_name = 'NSEM-stimnoPS-stimPSconstrainCOB';
+comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP';
 metrics = [1 2 3 4 5 6];
 cellselection_type = 'glmconv4pct';
 %cellselection_type = 'shortlist';

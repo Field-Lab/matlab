@@ -5,20 +5,20 @@
 % Sample Call and Output to verify that it works
 %{
 clear;
-exps = [3];
-stimtypes = 1;
-celltypes=  2;
-cell_subset = 'debug';
+exps = [3 1 2 4];
+stimtypes = 2;
+celltypes=  1;
+cell_subset = 'shortlist';
 glm_settings{1}.type = 'PostSpikeFilter';
 glm_settings{1}.name =  'OFF';
-%glm_settings{2}.type = 'filter_mode';
-%glm_settings{2}.name = 'rk1';
-%crossval.name = 'fit_crossval';
-crossval.name= 'fit_crossval_oddeven';
-runoptions.replace_existing = true
-glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
+glm_settings{2}.type = 'filter_mode';
+glm_settings{2}.name = 'rk1';
+
+fit_type = 'fit_crossval'
+glm_fitcrossval_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings)%, runoptions)
 
 
+fit_type = 'fit_crossval_oddeven';
 
 
 clear;
@@ -34,26 +34,13 @@ runoptions.reverseorder =true;
 glm_fitcrossval_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
 
 
-clear;
-exps = [3 1 2 4];
-stimtypes = 2;
-celltypes=  2;
-cell_subset = 'shortlist';
-glm_settings{1}.type = 'PostSpikeFilter';
-glm_settings{1}.name =  'OFF';
-glm_settings{2}.type = 'filter_mode';
-glm_settings{2}.name = 'rk1';
-crossval.name= 'fit_crossval_oddeven';
-glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings)
-
-
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 
-function glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
+function glm_fitcrossval_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -111,7 +98,7 @@ for i_exp = exps
         
         % Hack to get the correct save directory  
         BD_hack = BD;
-        BD_hack.GLM_output_raw = sprintf('%s/%s', BD.GLM_develop_output_raw,crossval.name);
+        BD_hack.GLM_output_raw = sprintf('%s/fit_crossval', BD.GLM_develop_output_raw);
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir,'',BD_hack);
         clear BD_hack
         savedir = Dirs.fittedGLM_savedir
@@ -204,7 +191,7 @@ for i_exp = exps
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
   
-                    [fittedGLM] = glm_fitcrossval_execute(crossval,GLMType, testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                    [fittedGLM] = glm_fitcrossval_execute(GLMType, testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     duration = toc(tStart);
                     display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                 end
