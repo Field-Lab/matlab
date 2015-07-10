@@ -1,33 +1,23 @@
-% AKHEITMAN 2015-07-10
-% Exploratory code to see what happens if we fit with the crossval set
-% Way to say that our fitting of linear filter isn't the problem
+%% AKHeitman 2014-04-27
+% This will be admittedly long and ugly.  But more self contained.
+% GLMPars = GLMParams  or GLMPars = GLMParams(GLMType.specialchange_name)
+% Sensitive to naming changes in GLMParams.
+% Only saves stuff (and calls directories) if we are in a troubleshooting mode
+% Heavily GLMType dependent computations will be carried out here
+% Outsourcable computations will be made into their own functions
+% troubleshoot optional
+% need troublshoot.doit (true or false), 
+% troubleshoot.plotdir,
+% troubleshoot.name
+
+
+
 % CALLS which use GLMType:
 %  prep_paramindGP
 %  prep_stimcelldependentGPXV
 
 
-function [fittedGLM] = glm_fitcrossval_execute(crossval,GLMType,spikes_raster,movie,inputstats,glm_cellinfo,neighborspikes)
-
-if strcmp(crossval.name, 'fit_crossval')
-    fitspikes_raster = spikes_raster;
-    testspikes_raster = spikes_raster;
-    fitmovie = movie;
-    testmovie = movie;
-end
-
-if strcmp(crossval.name,'fit_crossval_oddeven')
-    reps = floor(.5*length(spikes_raster.home));
-    
-    fitspikes_raster.home  = cell(reps,1);
-    testspikes_raster.home = cell(reps,1); 
-    for i_rep = 1:reps
-        fitspikes_raster.home{i_rep}  = spikes_raster.home{2*i_rep-1};
-        testspikes_raster.home{i_rep} = spikes_raster.home{2*i_rep};
-    end
-    
-    fitmovie = movie;
-    testmovie = movie;
-end
+function [fittedGLM] = glm_fitcrossval_execute(GLMType,spikes_raster,movie,inputstats,glm_cellinfo,neighborspikes)
 
 %% Setup Covariates
 fittedGLM.cell_savename = glm_cellinfo.cell_savename;
@@ -47,8 +37,8 @@ if isfield(GLMType, 'debug') && GLMType.debug
 end
 
 % Timing
-reps = length(fitspikes_raster.home);
-frames = size(fitmovie,3);
+reps = length(spikes_raster.home);
+frames = size(movie,3);
 bins_perrep   = frames * GLMPars.bins_per_frame;
 bins = bins_perrep * reps;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
@@ -79,7 +69,7 @@ t_bin        = t_bin;
 home_spbins.perrep     = cell(reps,1);
 home_spbins.continuous = []; 
 for i_rep = 1:reps
-    sptimes = fitspikes_raster.home{i_rep}';
+    sptimes = spikes_raster.home{i_rep}';
     spbins  = ceil(sptimes / t_bin);
     spbins  = spbins(find(spbins < bins_perrep) );
     
@@ -88,6 +78,7 @@ for i_rep = 1:reps
     offset_spbins = spbins + offset;
     home_spbins.continuous = [home_spbins.continuous,offset_spbins];    
 end
+
 
 if GLMType.PostSpikeFilter
     basis         = ps_basis';
@@ -107,7 +98,7 @@ p_init     = .01* ones(paramind.paramcount,1);
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 if isfield(paramind, 'X')
-    [X_frame_0,X_bin_0]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
+    [X_frame_0,X_bin_0]    = prep_stimcelldependentGPXV(GLMType, GLMPars, movie, inputstats, center_coord, WN_STA);
     X_frame = repmat(X_frame_0, [1,reps]);
     X_bin   = repmat(X_bin_0, [1,reps]);
     
@@ -220,7 +211,8 @@ end
 fittedGLM.fminunc_output = output;
 
 %% Unpack the output into filters
-
+testmovie = movie;
+testspikes_raster = spikes_raster;
 rawfit.opt_params        = pstar;
 rawfit.paramind          = paramind;
 rawfit.objective_val     = fstar;
@@ -253,8 +245,8 @@ end
 % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
 center_coord    = glm_cellinfo.slave_centercoord;
 ROI_length      = GLMPars.stimfilter.ROI_length;
-stimsize.width  = size(fitmovie,1);
-stimsize.height = size(fitmovie,2);
+stimsize.width  = size(movie,1);
+stimsize.height = size(movie,2);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
