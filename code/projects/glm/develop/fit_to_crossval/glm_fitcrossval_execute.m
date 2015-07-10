@@ -40,7 +40,7 @@ end
 reps = length(spikes_raster.home);
 frames = size(movie,3);
 bins_perrep   = frames * GLMPars.bins_per_frame;
-bins = bins_perrep * reps
+bins = bins_perrep * reps;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
@@ -205,7 +205,7 @@ if ~GLMType.CONVEX
     filtertype = GLMType.stimfilter_mode;
     
     [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
-            (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
+            (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins.continuous,t_bin),p_init,optim_struct);
 
 end
 fittedGLM.fminunc_output = output;
@@ -245,8 +245,8 @@ end
 % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
 center_coord    = glm_cellinfo.slave_centercoord;
 ROI_length      = GLMPars.stimfilter.ROI_length;
-stimsize.width  = size(fitmovie,1);
-stimsize.height = size(fitmovie,2);
+stimsize.width  = size(movie,1);
+stimsize.height = size(movie,2);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;

@@ -6,7 +6,7 @@
 %{
 clear;
 exps = 3;
-stimtypes = 2;
+stimtypes = 1;
 celltypes= 2;
 cell_subset = 'debug';
 glm_settings{1}.type = 'PostSpikeFilter';
