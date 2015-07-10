@@ -126,7 +126,7 @@ if GLMType.STA_init
         p_init(paramind.space2) = U(:,2);
     end
     % [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
-    clear center_coord STA U S V
+    % clear center_coord STA U S V
 end
 
 %
@@ -156,7 +156,7 @@ if ~GLMType.CONVEX
    'display','iter',...  %'iter-detailed',... 
    'funvalcheck','off',... % don't turn this on for 'raw' condition (edoi).
    'GradObj','on',...
-   'Hessian','on',...
+   'Hessian','off',...
    'largescale','on',...
    'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
@@ -253,7 +253,7 @@ if ~GLMType.CONVEX
     filtertype = GLMType.stimfilter_mode;
     
     iterate = 1;
-    while iterate < 2
+    while iterate < 5
         
         % Fit the "normal" parts of GLM: linear stim filter, PS filter,
         % CP filter, etc
