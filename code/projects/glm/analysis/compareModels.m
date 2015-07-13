@@ -15,21 +15,21 @@
 % Calling Sequences
 %{
 
-clear ; close all; clc;
 % comparison_name  = 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS';
 %comparison_name  = 'WNvsNSEM-standardGLM-LogisticfixMUnoPS';
 %comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP'
 comparison_name = 'WN-nostimnoPS-nostimnoPSwithCP';
 %comparison_name = 'NSEM-stimnoCPnoPS-stimCPnoPS';
-
-
-clear ; close all; clc;
 %comparison_name = 'WN-stimnoPS-stimPS'
 %comparison_name = 'NSEM-stimnoPS-stimPSconstrainCOB';
-comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP';
+%comparison_name = 'NSEM-nostimnoPS-nostimnoPSwithCP';
+%comparison_name = 'WNvsNSEM_rk2noPS';
+
+clear ; close all; clc;
 metrics = [1 2 3 4 5 6];
-cellselection_type = 'glmconv4pct';
-%cellselection_type = 'shortlist';
+%cellselection_type = 'glmconv4pct';
+comparison_name = 'WNstandardnoPS_vsNSEMfitcrossval-oddeven';
+cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -39,6 +39,9 @@ for i_metric = metrics
     if i_metric == 6, metric = 'BPS_divideUOP'; end
     [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
 end
+
+
+
 
 %}
 
@@ -63,6 +66,43 @@ if strcmp(comparison_name, 'WNvsNSEM-standardGLM')
     plotparams.title_comparison   = 'Standard GLM (no coupling)';
     plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, no coupling)';
 end
+
+if strcmp(comparison_name,'WNvsNSEM_rk1noPS')  
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'rk1';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk1';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'WN';
+    plotparams.ylabel             = 'NSEM';
+    plotparams.title_comparison   = 'rk1 no ps';
+    plotparams.purpose            = 'Rank1 no post-spike filter. so spike metrics converge';
+end
+
+if strcmp(comparison_name,'WNvsNSEM_rk2noPS')  
+    models{1}.settings{1}.type = 'filter_mode';
+    models{1}.settings{1}.name = 'rk2';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk2';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'WN';
+    plotparams.ylabel             = 'NSEM';
+    plotparams.title_comparison   = 'rk2 no ps';
+    plotparams.purpose            = 'Rank2 no post-spike filter. so spike metrics converge';
+end
+
+
+
 if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS-withCP')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'nostim';
@@ -83,6 +123,45 @@ if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS-withCP')
     plotparams.title_comparison   = 'Only Coupling';
     plotparams.purpose            = 'Check WN vs NSEM for only Coupling and MU, no other terms';
 end
+
+if strcmp(comparison_name,'WNstandardnoPS_vsNSEMfitcrossval')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.settings{2}.type = 'filter_mode';
+    models{1}.settings{2}.name = 'rk1';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk1';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.special_arg{1} = 'fit_crossval'
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'WN fit by Fit';
+    plotparams.ylabel             = 'NSEM rk1 fit by test';
+    plotparams.title_comparison   = 'Fun Comparison';
+    plotparams.purpose            = 'If rk1 NSEM fit by test, how does it do';
+end
+
+
+if strcmp(comparison_name,'WNstandardnoPS_vsNSEMfitcrossval-oddeven')
+    models{1}.settings{1}.type = 'PostSpikeFilter';
+    models{1}.settings{1}.name =  'OFF';
+    models{1}.settings{2}.type = 'filter_mode';
+    models{1}.settings{2}.name = 'rk1';
+    models{1}.fit_type = 'WN';
+    models{2}.settings{1}.type = 'filter_mode';
+    models{2}.settings{1}.name = 'rk1';
+    models{2}.settings{2}.type = 'PostSpikeFilter';
+    models{2}.settings{2}.name =  'OFF';
+    models{2}.special_arg{1} = 'fit_crossval_oddeven'
+    models{2}.fit_type = 'NSEM';
+    plotparams.xlabel             = 'WN fit by Fit';
+    plotparams.ylabel             = 'NSEM rk1 fit by test';
+    plotparams.title_comparison   = 'Fun Comparison';
+    plotparams.purpose            = 'If rk1 NSEM fit by test (but still crossvalidated), how does it do';
+end
+    
+
 if strcmp(comparison_name,'WN-stimnoPS-stimPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
