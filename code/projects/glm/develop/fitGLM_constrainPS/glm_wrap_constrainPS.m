@@ -4,16 +4,6 @@
 % Output: standardparams/ps_constrain.type
 
 %{
-clear
-exps = [1 2 3 4];
-stimtypes = [1 2];
-celltypes = [1 2];
-cell_subset = 'shortlist';
-glm_settings = {};
-ps_constrain.type = 'PS_netinhibitory_domainconstrain';
-ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB'
-glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
-
 
 clear
 exps = [3];
