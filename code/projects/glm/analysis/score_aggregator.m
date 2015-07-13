@@ -23,11 +23,10 @@ for i_loop = 1:3
 exps     = [1 2 3 4];
 clear glm_settings metric_type
 glm_settings{1}.type = 'filter_mode';
-glm_settings{1}.name = 'nostim';
+glm_settings{1}.name = 'rk1';
 glm_settings{2}.type = 'PostSpikeFilter';
 glm_settings{2}.name =  'OFF';
-glm_settings{3}.type = 'CouplingFilters';
-glm_settings{3}.name =  'ON';
+special_arg{1} = 'fit_crossval';
 if i_loop == 1
     metric_type.name  = 'crossval_BPS';
     metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
@@ -38,8 +37,74 @@ elseif i_loop == 3
     metric_type.name       = 'crossval_victorspike_50msec';
     metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset'
 end
-score_aggregator(glm_settings,metric_type,exps)%,special_arg)
+score_aggregator(glm_settings,metric_type,exps,special_arg)
 end
+
+
+for i_loop = 1:3
+exps     = [1 2 3 4];
+clear glm_settings metric_type
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk1';
+glm_settings{2}.type = 'PostSpikeFilter';
+glm_settings{2}.name =  'OFF';
+special_arg{1} = 'fit_crossval_oddeven';
+if i_loop == 1
+    metric_type.name  = 'crossval_BPS';
+    metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
+elseif i_loop == 2
+    metric_type.name      = 'crossval_fracvar_10msec';
+    metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
+elseif i_loop == 3
+    metric_type.name       = 'crossval_victorspike_50msec';
+    metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset'
+end
+score_aggregator(glm_settings,metric_type,exps,special_arg)
+end
+
+
+for i_loop = 1:3
+exps     = [1 2 3 4];
+clear glm_settings metric_type
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk1';
+glm_settings{2}.type = 'PostSpikeFilter';
+glm_settings{2}.name =  'OFF';
+if i_loop == 1
+    metric_type.name  = 'crossval_BPS';
+    metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
+elseif i_loop == 2
+    metric_type.name      = 'crossval_fracvar_10msec';
+    metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
+elseif i_loop == 3
+    metric_type.name       = 'crossval_victorspike_50msec';
+    metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset'
+end
+score_aggregator(glm_settings,metric_type,exps)
+end
+
+for i_loop = 1:3
+exps     = [1 2 3 4];
+clear glm_settings metric_type
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk2';
+glm_settings{2}.type = 'PostSpikeFilter';
+glm_settings{2}.name =  'OFF';
+if i_loop == 1
+    metric_type.name  = 'crossval_BPS';
+    metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
+elseif i_loop == 2
+    metric_type.name      = 'crossval_fracvar_10msec';
+    metric_type.note  = 'Fraction of Variance Explained: CrossValidated Dataset'
+elseif i_loop == 3
+    metric_type.name       = 'crossval_victorspike_50msec';
+    metric_type.note  = 'Victor Spike with 50 msec timescale: CrossValidated Dataset'
+end
+score_aggregator(glm_settings,metric_type,exps)
+end
+
+
+
 
 clear ; close all; clc;
 glm_settings{1}.type = 'CouplingFilters';

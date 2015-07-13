@@ -11,15 +11,12 @@ celltypes=  2;
 cell_subset = 'debug';
 glm_settings{1}.type = 'PostSpikeFilter';
 glm_settings{1}.name =  'OFF';
-%glm_settings{2}.type = 'filter_mode';
-%glm_settings{2}.name = 'rk1';
+glm_settings{2}.type = 'filter_mode';
+glm_settings{2}.name = 'rk1';
 %crossval.name = 'fit_crossval';
-crossval.name= 'fit_crossval_oddeven';
+crossval.name= 'fit_crossval_oddeven_DS';
 runoptions.replace_existing = true
 glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
-
-
-
 
 clear;
 exps = [3 1 2 4];
@@ -37,7 +34,7 @@ glm_fitcrossval_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoption
 clear;
 exps = [3 1 2 4];
 stimtypes = 2;
-celltypes=  2;
+celltypes=  [1 2];
 cell_subset = 'shortlist';
 glm_settings{1}.type = 'PostSpikeFilter';
 glm_settings{1}.name =  'OFF';
@@ -45,6 +42,19 @@ glm_settings{2}.type = 'filter_mode';
 glm_settings{2}.name = 'rk1';
 crossval.name= 'fit_crossval_oddeven';
 glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings)
+
+clear;
+exps = [3 1 2 4];
+stimtypes = 2;
+celltypes=  [2 1];
+cell_subset = 'shortlist';
+glm_settings{1}.type = 'PostSpikeFilter';
+glm_settings{1}.name =  'OFF';
+glm_settings{2}.type = 'filter_mode';
+glm_settings{2}.name = 'rk1';
+crossval.name= 'fit_crossval_oddeven';
+runoptions.reverseorder =true;
+glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
 
 
 %}
@@ -203,8 +213,12 @@ for i_exp = exps
                     % Call appropriate glm_execute
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
-  
-                    [fittedGLM] = glm_fitcrossval_execute(crossval,GLMType, testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                    if strcmp(crossval.name(end-1:end), 'DS')
+                        [fittedGLM] = glm_fitcrossval_execute_DS(crossval,GLMType,...
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes);
+                    else
+                        [fittedGLM] = glm_fitcrossval_execute(crossval,GLMType, testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                    end
                     duration = toc(tStart);
                     display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                 end
