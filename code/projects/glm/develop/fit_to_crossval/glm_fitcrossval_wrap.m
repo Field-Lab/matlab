@@ -5,9 +5,9 @@
 % Sample Call and Output to verify that it works
 %{
 clear;
-exps = [3];
+exps = [3 1 2 4];
 stimtypes = 1;
-celltypes=  2;
+celltypes=  [1 2];
 cell_subset = 'debug';
 glm_settings{1}.type = 'PostSpikeFilter';
 glm_settings{1}.name =  'OFF';
