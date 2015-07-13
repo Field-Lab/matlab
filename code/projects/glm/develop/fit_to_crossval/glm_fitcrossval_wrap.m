@@ -6,17 +6,17 @@
 %{
 clear;
 exps = [3 1 2 4];
-stimtypes = 1;
-celltypes=  [1 2];
-cell_subset = 'debug';
+stimtypes = 2;
+celltypes=  [2 1];
+cell_subset = 'shortlist';
 glm_settings{1}.type = 'PostSpikeFilter';
 glm_settings{1}.name =  'OFF';
 glm_settings{2}.type = 'filter_mode';
 glm_settings{2}.name = 'rk1';
 %crossval.name = 'fit_crossval';
-crossval.name= 'fit_crossval_oddeven_DS';
-runoptions.replace_existing = true
-glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
+crossval.name= 'fit_crossval_oddeven_3DS';
+%runoptions.reverseorder = true
+glm_fitcrossval_wrap(crossval,exps,stimtypes,celltypes,cell_subset,glm_settings)%,runoptions)
 
 clear;
 exps = [3 1 2 4];
