@@ -15,7 +15,7 @@ if strcmp(crossval.name, 'fit_crossval_DS')
     testmovie = movie;
 end
 
-if strcmp(crossval.name,'fit_crossval_oddeven_DS')
+if strcmp(crossval.name,'fit_crossval_oddeven_DS') || strcmp(crossval.name,'fit_crossval_oddeven_3DS')
     reps = floor(.5*length(spikes_raster.home));
     
     fitspikes_raster.home  = cell(reps,1);
@@ -106,9 +106,10 @@ p_init     = .01* ones(paramind.paramcount,1);
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 % DOWN SAMPLING
-ROI_length0 = GLMPars.stimfilter.ROI_length;
-ROI_length  = floor(ROI_length0/2);
-if isfield(paramind, 'X')
+
+if strcmp(crossval.name,'fit_crossval_oddeven_DS')
+    ROI_length0 = GLMPars.stimfilter.ROI_length;
+    ROI_length  = floor(ROI_length0/2);
     [X_frame_0,X_bin_0]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
     
     xf = reshape(X_frame_0, [ROI_length0 ROI_length0 frames]);
@@ -158,6 +159,59 @@ if isfield(paramind, 'X')
 end
 
 
+if strcmp(crossval.name,'fit_crossval_oddeven_3DS')
+    ROI_length0 = GLMPars.stimfilter.ROI_length;
+    ROI_length  = floor(ROI_length0/3);
+    [X_frame_0,X_bin_0]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
+    
+    xf = reshape(X_frame_0, [ROI_length0 ROI_length0 frames]);
+    xb = reshape(X_bin_0, [ROI_length0 ROI_length0 bins_perrep]);
+    if 3*ROI_length == (ROI_length0-1)
+        xf = xf(2:end,2:end,:);
+        xb = xb(2:end,2:end,:);
+    end
+    
+    xf_ds = NaN([ROI_length ROI_length frames]);
+    xb_ds = NaN([ROI_length ROI_length bins_perrep]);
+    
+    for i_row = 1:ROI_length
+        for i_col = 1:ROI_length
+            rows = 3*i_row + [-2 -1 0];
+            cols = 3*i_col + [-2 -1 0];
+            clump = xf([rows],[cols],:);
+            new_vec = squeeze( mean(mean(clump,1),2) ); 
+            xf_ds(i_row,i_col,:) = new_vec;
+        end
+    end
+    for i_row = 1:ROI_length
+        for i_col = 1:ROI_length
+            rows = 3*i_row + [-2 -1 0];
+            cols = 3*i_col + [-2 -1 0];
+            clump = xb([rows],[cols],:);
+            new_vec = squeeze( mean(mean(clump,1),2) ); 
+            xb_ds(i_row,i_col,:) = new_vec;
+        end
+    end
+    
+    X_frameDS_0 = reshape(xf_ds, [ROI_length^2 frames]);
+    X_binDS_0 = reshape(xb_ds, [ROI_length^2 bins_perrep]);
+    
+    X_frame = repmat(X_frameDS_0, [1,reps]);
+    X_bin   = repmat(X_binDS_0, [1,reps]);  
+    
+    paramind_0 = paramind; clear paramind
+    paramind.MU = 1;
+    paramind.X  = 1 + [1:(ROI_length^2 + GLMPars.stimfilter.frames)];
+    paramind.space1 = 1 + [1:ROI_length^2];
+    paramind.time1  = 1 + ROI_length^2 + [1:GLMPars.stimfilter.frames];
+    paramind.convParams = 1;
+    paramind.convParams_ind = 1;
+    paramind.paramcount = 1 + ROI_length^2 + GLMPars.stimfilter.frames;
+    p_init     = .01* ones(paramind.paramcount,1);
+end
+
+
+
 
 clear WN_STA center_coord
 
@@ -177,7 +231,7 @@ if GLMType.CONVEX
    'GradObj','on',...
    'largescale','on',...
    'Hessian','on',...
-   'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
+   'MaxIter',100,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
    'TolX',10^(-(GLMPars.optimization.tolx))   );
 end
@@ -190,7 +244,7 @@ if ~GLMType.CONVEX
    'GradObj','on',...
    'Hessian','on',...
    'largescale','on',...
-   'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
+   'MaxIter',100,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
    'TolX',10^(-(GLMPars.optimization.tolx))   );
 end

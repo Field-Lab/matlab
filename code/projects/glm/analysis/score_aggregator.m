@@ -19,14 +19,14 @@
 %{
 % Dictate GLM_SETTING
 
-for i_loop = 1:3
+for i_loop = 1:2
 exps     = [1 2 3 4];
 clear glm_settings metric_type
 glm_settings{1}.type = 'filter_mode';
 glm_settings{1}.name = 'rk1';
 glm_settings{2}.type = 'PostSpikeFilter';
 glm_settings{2}.name =  'OFF';
-special_arg{1} = 'fit_crossval';
+special_arg{1} = 'fit_crossval_oddeven_DS';
 if i_loop == 1
     metric_type.name  = 'crossval_BPS';
     metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
