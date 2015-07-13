@@ -558,12 +558,9 @@ end
 
 function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 % Unpack comparison_name
-% hack code.. just one by one
-% define the models and plotparams necessary to make comparison
 
-switch comparison_name
-    
-case 'WNvsNSEM-standardGLM'
+
+if strcmp(comparison_name, 'WNvsNSEM-standardGLM')
     models{1}.settings = {};
     models{1}.fit_type = 'WN';
     models{2}.settings = {};
@@ -572,9 +569,9 @@ case 'WNvsNSEM-standardGLM'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Standard GLM (no coupling)';
     plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, no coupling)';
+end
 
-
-case 'WNvsNSEM_rk1noPS'  
+if strcmp(comparison_name,'WNvsNSEM_rk1noPS')  
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'rk1';
     models{1}.settings{2}.type = 'PostSpikeFilter';
@@ -589,9 +586,9 @@ case 'WNvsNSEM_rk1noPS'
     plotparams.ylabel             = 'NSEM';
     plotparams.title_comparison   = 'rk1 no ps';
     plotparams.purpose            = 'Rank1 no post-spike filter. so spike metrics converge';
+end
 
-
-case 'WNvsNSEM_rk2noPS'  
+if strcmp(comparison_name,'WNvsNSEM_rk2noPS')  
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'rk2';
     models{1}.settings{2}.type = 'PostSpikeFilter';
@@ -606,11 +603,11 @@ case 'WNvsNSEM_rk2noPS'
     plotparams.ylabel             = 'NSEM';
     plotparams.title_comparison   = 'rk2 no ps';
     plotparams.purpose            = 'Rank2 no post-spike filter. so spike metrics converge';
+end
 
 
 
-
-case 'WNvsNSEM-nostimnoPS-withCP'
+if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS-withCP')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'nostim';
     models{1}.settings{2}.type = 'CouplingFilters';
@@ -629,9 +626,9 @@ case 'WNvsNSEM-nostimnoPS-withCP'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Only Coupling';
     plotparams.purpose            = 'Check WN vs NSEM for only Coupling and MU, no other terms';
+end
 
-
-case 'WNstandardnoPS_vsNSEMfitcrossval'
+if strcmp(comparison_name,'WNstandardnoPS_vsNSEMfitcrossval')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.settings{2}.type = 'filter_mode';
@@ -647,10 +644,10 @@ case 'WNstandardnoPS_vsNSEMfitcrossval'
     plotparams.ylabel             = 'NSEM rk1 fit by test';
     plotparams.title_comparison   = 'Fun Comparison';
     plotparams.purpose            = 'If rk1 NSEM fit by test, how does it do';
+end
 
 
-
-case 'WNstandardnoPS_vsNSEMfitcrossval-oddeven'
+if strcmp(comparison_name,'WNstandardnoPS_vsNSEMfitcrossval-oddeven')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.settings{2}.type = 'filter_mode';
@@ -666,9 +663,9 @@ case 'WNstandardnoPS_vsNSEMfitcrossval-oddeven'
     plotparams.ylabel             = 'NSEM rk1 fit by test';
     plotparams.title_comparison   = 'Fun Comparison';
     plotparams.purpose            = 'If rk1 NSEM fit by test (but still crossvalidated), how does it do';
+end
 
-
-case 'WNstandardnoPS_vsNSEMfitcrossval-oddevenDS'
+if strcmp(comparison_name,'WNstandardnoPS_vsNSEMfitcrossval-oddevenDS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.settings{2}.type = 'filter_mode';
@@ -684,9 +681,9 @@ case 'WNstandardnoPS_vsNSEMfitcrossval-oddevenDS'
     plotparams.ylabel             = 'NSEM rk1 fit by test';
     plotparams.title_comparison   = 'Fun Comparison';
     plotparams.purpose            = 'If rk1 NSEM fit by test (but still crossvalidated), how does it do';
+end
 
-
-case 'WNstandardnoPS_vsWNfitcrossval-oddevenDS'
+if strcmp(comparison_name,'WNstandardnoPS_vsWNfitcrossval-oddevenDS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.settings{2}.type = 'filter_mode';
@@ -702,11 +699,11 @@ case 'WNstandardnoPS_vsWNfitcrossval-oddevenDS'
     plotparams.ylabel             = 'DS WN fit by test';
     plotparams.title_comparison   = 'Full res versus fit by test';
     plotparams.purpose            = 'Compare fitting full res with fit, versus down sampled test fit';
+end
 
 
 
-
-case 'WN-stimnoPS-stimPS'
+if strcmp(comparison_name,'WN-stimnoPS-stimPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
@@ -716,9 +713,9 @@ case 'WN-stimnoPS-stimPS'
     plotparams.ylabel             = 'GLM with PS';
     plotparams.title_comparison   = 'PS filter effect on WN';
     plotparams.purpose            = 'How strongly does PS filter effect White Noise metrics';
+end
 
-
-case 'NSEM-stimnoPS-stimPSconstrainCOB'
+if strcmp(comparison_name,'NSEM-stimnoPS-stimPSconstrainCOB')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'NSEM';
@@ -729,12 +726,12 @@ case 'NSEM-stimnoPS-stimPSconstrainCOB'
     plotparams.ylabel             = 'GLM with PS';
     plotparams.title_comparison   = 'PS filter effect on NSEM';
     plotparams.purpose            = 'How strongly does PS filter effect NSEM metrics (with net inhibitory caveat)';
+end
 
 
 
 
-
-case 'WNvsNSEM-nostimnoPS'
+if strcmp(comparison_name, 'WNvsNSEM-nostimnoPS')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'nostim';
     models{1}.settings{2}.type = 'PostSpikeFilter';
@@ -749,9 +746,9 @@ case 'WNvsNSEM-nostimnoPS'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Only Tonic Drive';
     plotparams.purpose            = 'How well tonic drive scores the metrics for WN and NSEM';
+end
 
-
-case 'WNvsNSEM-GLMwithCPnoPS'
+if strcmp(comparison_name, 'WNvsNSEM-GLMwithCPnoPS')
     models{1}.settings{1}.type = 'CouplingFilters';
     models{1}.settings{1}.name =  'ON';
     models{1}.settings{2}.type = 'PostSpikeFilter';
@@ -766,9 +763,9 @@ case 'WNvsNSEM-GLMwithCPnoPS'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'GLMwith CP (no PS)';
     plotparams.purpose            = 'Check WN vs NSEM with Coupling..no PS to avoid runaway spikes';
+end
 
-
-case 'WN-nostimnoPS-nostimnoPSwithCP'
+if strcmp(comparison_name,'WN-nostimnoPS-nostimnoPSwithCP')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'nostim';
     models{1}.settings{2}.type = 'PostSpikeFilter';
@@ -785,8 +782,8 @@ case 'WN-nostimnoPS-nostimnoPSwithCP'
     plotparams.ylabel             = 'MU and CP';
     plotparams.title_comparison   = 'WN Effect of CP on MU only';
     plotparams.purpose            = 'How does CP affect WN scores in abscence of other filters except tonic drive';
-
-case 'NSEM-nostimnoPS-nostimnoPSwithCP'
+end
+if strcmp(comparison_name,'NSEM-nostimnoPS-nostimnoPSwithCP')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'nostim';
     models{1}.settings{2}.type = 'PostSpikeFilter';
@@ -803,9 +800,9 @@ case 'NSEM-nostimnoPS-nostimnoPSwithCP'
     plotparams.ylabel             = 'MU and CP';
     plotparams.title_comparison   = 'NSEM Effect of CP on MU only';
     plotparams.purpose            = 'How does CP affect NSEM scores in abscence of other filters except tonic drive';
+end
 
-
-case 'WN-stimnoCPnoPS-stimCPnoPS'
+if strcmp(comparison_name,'WN-stimnoCPnoPS-stimCPnoPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
@@ -820,9 +817,9 @@ case 'WN-stimnoCPnoPS-stimCPnoPS'
     plotparams.ylabel             = 'GLM with CP (no PS)';
     plotparams.title_comparison   = 'Effect of CP (no PS) on WN';
     plotparams.purpose            = 'See how WN fits are affected by CP, in the abscence of PS filter';
+end
 
-
-case 'NSEM-stimnoCPnoPS-stimCPnoPS'
+if strcmp(comparison_name,'NSEM-stimnoCPnoPS-stimCPnoPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'NSEM';
@@ -837,11 +834,11 @@ case 'NSEM-stimnoCPnoPS-stimCPnoPS'
     plotparams.ylabel             = 'GLM with CP (no PS)';
     plotparams.title_comparison   = 'Effect of CP (no PS) on NSEM';
     plotparams.purpose            = 'See how NSEM fits are affected by CP, in the abscence of PS filter';
+end
 
 
 
-
-case 'NSEM-noPSnoCP-noPSnoSTIM'
+if strcmp(comparison_name,'NSEM-noPSnoCP-noPSnoSTIM')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'NSEM';
@@ -856,10 +853,10 @@ case 'NSEM-noPSnoCP-noPSnoSTIM'
     plotparams.ylabel             = 'CP (no StimFilter)';
     plotparams.title_comparison   = 'Coupling versus Stim Filter';
     plotparams.purpose            = 'Check for NSEM which has larger effect.  Coupling or Stim Filter';
+end
 
 
-
-case 'WN-noPSnoCP-noPSnoSTIM'
+if strcmp(comparison_name,'WN-noPSnoCP-noPSnoSTIM')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
@@ -874,11 +871,11 @@ case 'WN-noPSnoCP-noPSnoSTIM'
     plotparams.ylabel             = 'CP (no StimFilter)';
     plotparams.title_comparison   = 'Coupling versus Stim Filter';
     plotparams.purpose            = 'Check for NSEM which has larger effect.  Coupling or Stim Filter';
+end
 
 
 
-
-case 'WNvsNSEM-standardGLMwithCP' 
+if strcmp(comparison_name,'WNvsNSEM-standardGLMwithCP') 
     models{1}.settings{1}.type = 'CouplingFilters';
     models{1}.settings{1}.name =  'ON';
     models{1}.fit_type = 'WN';
@@ -889,8 +886,8 @@ case 'WNvsNSEM-standardGLMwithCP'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Standard GLM with Coupling';
     plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, fit post-spike, WITH coupling)';
-
-case 'WN-standardGLM-standardGLMwithCP' 
+end
+if strcmp(comparison_name,'WN-standardGLM-standardGLMwithCP') 
     models{1}.settings = {};
     models{1}.fit_type = 'WN';
     models{2}.settings{1}.type = 'CouplingFilters';
@@ -900,8 +897,8 @@ case 'WN-standardGLM-standardGLMwithCP'
     plotparams.ylabel             = 'Coupling';
     plotparams.title_comparison   = 'Effect of Coupling on WN scores';
     plotparams.purpose            = 'See how Coupling affects WN scores';
-
-case 'NSEM-standardGLM-standardGLMwithCP' 
+end
+if strcmp(comparison_name,'NSEM-standardGLM-standardGLMwithCP') 
     models{1}.settings = {};
     models{1}.fit_type = 'NSEM';
     models{2}.settings{1}.type = 'CouplingFilters';
@@ -911,11 +908,11 @@ case 'NSEM-standardGLM-standardGLMwithCP'
     plotparams.ylabel             = 'Coupling';
     plotparams.title_comparison   = 'Effect of Coupling on NSEM scores';
     plotparams.purpose            = 'See how Coupling affects NSEM scores';
+end
 
 
 
-
-case 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'
+if strcmp(comparison_name, 'WNvsNSEM-standardGLM-noPS-LogisticfixMU')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
@@ -928,9 +925,9 @@ case 'WNvsNSEM-standardGLM-noPS-LogisticfixMU'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'LN with Logistic';
     plotparams.purpose            = 'Check WN vs NSEM for a general LN model (GLM no PS then fit logistic)';
+end
 
-
-case 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS'
+if strcmp(comparison_name, 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS')
     models{1}.settings{1}.type = 'cone_model';
     models{1}.settings{1}.name = 'rieke_linear';
     models{1}.settings{2}.type = 'input_pt_nonlinearity';
@@ -949,9 +946,9 @@ case 'WNvsNSEM-inputNLpiecelinear-LogisticfixMUnoPS'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Full Input and Output optimization, NLN.. no PS';
     plotparams.purpose            = 'Check WN vs NSEM for optimal poisson cascade NLN';
+end
 
-
-case 'WNvsNSEM-rk1'
+if strcmp(comparison_name,'WNvsNSEM-rk1')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'rk1';
     models{1}.fit_type    = 'WN';
@@ -963,8 +960,8 @@ case 'WNvsNSEM-rk1'
     plotparams.ylabel             = 'NSEM';
     plotparams.title_comparison   = 'Rank 1 WN vs NSEM';
     plotparams.purpose            = 'See how well rank1 works';
-
-case 'WNvsNSEM-rk2'
+end
+if strcmp(comparison_name,'WNvsNSEM-rk2')
     models{1}.settings{1}.type = 'filter_mode';
     models{1}.settings{1}.name = 'rk2';
     models{1}.fit_type    = 'WN';
@@ -976,11 +973,11 @@ case 'WNvsNSEM-rk2'
     plotparams.ylabel             = 'NSEM';
     plotparams.title_comparison   = 'Rank 2 WN vs NSEM';
     plotparams.purpose            = 'See how well rank 2 works';
+end
 
 
 
-
-case 'NSEM-standardGLM-rk1'
+if strcmp(comparison_name,'NSEM-standardGLM-rk1')
     models{1}.settings = {};
     models{1}.fit_type    = 'NSEM';
 
@@ -992,8 +989,8 @@ case 'NSEM-standardGLM-rk1'
     plotparams.ylabel             = 'rank-1';
     plotparams.title_comparison   = 'Rank1 instead of spatial STA';
     plotparams.purpose            = 'See how well rank1 fits cross validate for NSEM';
-
-case 'WN-standardGLM-rk1'
+end
+if strcmp(comparison_name,'WN-standardGLM-rk1')
     models{1}.settings = {};
     models{1}.fit_type    = 'WN';
 
@@ -1005,9 +1002,9 @@ case 'WN-standardGLM-rk1'
     plotparams.ylabel             = 'rank-1';
     plotparams.title_comparison   = 'Rank1 instead of spatial STA';
     plotparams.purpose            = 'See how well rank1 fits cross validate for WN';
+end;
 
-
-case 'NSEM-standardGLM-rk2'
+if strcmp(comparison_name,'NSEM-standardGLM-rk2')
     models{1}.settings = {};
     models{1}.fit_type    = 'NSEM';
 
@@ -1018,10 +1015,10 @@ case 'NSEM-standardGLM-rk2'
     plotparams.ylabel             = 'rank-2';
     plotparams.title_comparison   = 'Rank2 instead of spatial STA';
     plotparams.purpose            = 'See how well rank2 fits cross validate for NSEM';
+end
 
 
-
-case 'WN-standardGLM-rk2'
+if strcmp(comparison_name,'WN-standardGLM-rk2')
     models{1}.settings = {};
     models{1}.fit_type    = 'WN';
 
@@ -1033,10 +1030,10 @@ case 'WN-standardGLM-rk2'
     plotparams.ylabel             = 'rank-2';
     plotparams.title_comparison   = 'Rank2 instead of spatial STA';
     plotparams.purpose            = 'See how well rank2 fits cross validate for WN';
+end
 
 
-
-case 'NSEM-standardGLMwithinputNL-netinhibPSCOB'
+if strcmp(comparison_name,'NSEM-standardGLMwithinputNL-netinhibPSCOB')
     models{1}.settings{1}.type = 'cone_model';
     models{1}.settings{1}.name = 'rieke_linear';
     models{1}.settings{2}.type = 'input_pt_nonlinearity';
@@ -1054,9 +1051,9 @@ case 'NSEM-standardGLMwithinputNL-netinhibPSCOB'
     plotparams.ylabel             = 'inputNL constrained PS';
     plotparams.title_comparison   = 'Proper Constrained PS after inputNL';
     plotparams.purpose            = 'Verify that proper constraining of PS Filter doesnt have huge effect on NSEM';
+end
 
-
-case 'NSEM-standardGLM-netinhibPSCOB'
+if strcmp(comparison_name,'NSEM-standardGLM-netinhibPSCOB')
     models{1}.settings= {};
     models{1}.fit_type    = 'NSEM';
 
@@ -1068,9 +1065,9 @@ case 'NSEM-standardGLM-netinhibPSCOB'
     plotparams.ylabel             = 'standardGLM constrained PS';
     plotparams.title_comparison   = 'Proper Constrained PS after inputNL';
     plotparams.purpose            = 'Verify that proper constraining of PS Filter doesnt have huge effect on NSEM';
-    
+end    
 
-case 'WNvsNSEM-standardGLM-LogisticfixMUnoPS'
+if strcmp(comparison_name, 'WNvsNSEM-standardGLM-LogisticfixMUnoPS')
 
     models{1}.fit_type = 'WN';
     models{1}.special_arg{1} = 'Logistic_fixMU_noPS';
@@ -1081,9 +1078,9 @@ case 'WNvsNSEM-standardGLM-LogisticfixMUnoPS'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Logistic_noPS';
     plotparams.purpose            = 'Check WN vs NSEM for LN optimized after PS filter removal';
+end
 
-
-case 'NSEM-noPSLogisticfixMU_vsLogisticfixMUnoPS'
+if strcmp(comparison_name, 'NSEM-noPSLogisticfixMU_vsLogisticfixMUnoPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'NSEM';
@@ -1095,8 +1092,8 @@ case 'NSEM-noPSLogisticfixMU_vsLogisticfixMUnoPS'
     plotparams.ylabel             = 'GLMwithPS then LogisticfixMUnoPS';
     plotparams.title_comparison   = 'Order of PS removal';
     plotparams.purpose            = 'See if NSEM LN fitting robust to PS removal';
-
-case 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS'
+end
+if strcmp(comparison_name, 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS')
     models{1}.settings{1}.type = 'PostSpikeFilter';
     models{1}.settings{1}.name =  'OFF';
     models{1}.fit_type = 'WN';
@@ -1108,8 +1105,8 @@ case 'WN-noPSLogisticfixMU_vsLogisticfixMUnoPS'
     plotparams.ylabel             = 'GLMwithPS then LogisticfixMUnoPS';
     plotparams.title_comparison   = 'Order of PS removal';
     plotparams.purpose            = 'See if WN LN fitting robust to PS removal';
-    
-case 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB'
+end    
+if strcmp( comparison_name , 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB')
     models{1}.settings{1}.type = 'cone_model';
     models{1}.settings{1}.name = 'rieke_linear';
     models{1}.settings{2}.type = 'input_pt_nonlinearity';
@@ -1132,10 +1129,10 @@ case 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB'
     plotparams.ylabel             = 'Constrained PS';
     plotparams.title_comparison   = 'Proper PS Constrain over Opt GLM';
     plotparams.purpose            = 'Check Proper Constrain PS NSEM performance dip after optimal INOUT NL';
+end
 
 
-
-case 'NSEM-standardGLM-PSConstrain-Sub1'
+if strcmp(comparison_name, 'NSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings = {};
     models{1}.fit_type = 'NSEM';
     models{2}.settings= {};
@@ -1145,10 +1142,10 @@ case 'NSEM-standardGLM-PSConstrain-Sub1'
     plotparams.ylabel             = 'Constrained PS';
     plotparams.title_comparison   = 'Crude Constrain PS Filter';
     plotparams.purpose            = 'Check NSEM magnitude of performance dip from crudely forcing PS filter to have net gain <= 1';
+end
 
 
-
-case 'WN-standardGLM-PSConstrain-Sub1'
+if strcmp(comparison_name, 'WN-standardGLM-PSConstrain-Sub1')
     models{1}.settings = {};
     models{1}.fit_type = 'WN';
     models{2}.settings= {};
@@ -1158,9 +1155,9 @@ case 'WN-standardGLM-PSConstrain-Sub1'
     plotparams.ylabel             = 'Constrained PS';
     plotparams.title_comparison   = 'Crude Constrain PS Filter';
     plotparams.purpose            = 'Check WN magnitude of performance dip from crudely forcing PS filter to have net gain <= 1';
+end
 
-
-case 'WNvsNSEM-standardGLM-PSConstrain-Sub1'
+if strcmp(comparison_name, 'WNvsNSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings={};
     models{1}.fit_type = 'WN';
     models{1}.special_arg{1} = 'PS_Constrain_sub1';
@@ -1171,9 +1168,7 @@ case 'WNvsNSEM-standardGLM-PSConstrain-Sub1'
     plotparams.ylabel             = 'Natural Scenes';
     plotparams.title_comparison   = 'Crude Constrain PS Filter';
     plotparams.purpose            = 'Verify that crude constraining of PS Filter still tells same story of WN vs NSEM';
-
 end
-
 end
   
 
