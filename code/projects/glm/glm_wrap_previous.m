@@ -50,9 +50,8 @@ celltypes = [1]; % only ON Parasol
 cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
-special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
 %%% Should have the following minimization sequence  
 ### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
 
@@ -67,7 +66,7 @@ Local minimum possible.
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -80,30 +79,14 @@ else
     GLMType = GLM_settings('default');
 end
 GLMType.fitname    = GLM_fitname(GLMType); 
-
-
-% AKH 2015-07-13 Add mechanism for handling special arguments
-% Intended for PS filter constraints, Post Filter NL modulation
-if exist('special_arg','var')
-    GLMType.fitname_prespecialarg =  GLM_fitname(GLMType);
-    for i_arg = 1:length(special_arg)
-        GLMType.fitname                = sprintf('%s/%s', GLMType.fitname,special_arg{i_arg});
-        if strcmp(special_arg{i_arg},'PS_netinhibitory_domainconstrain_COB')
-            GLMType.PS_Constrain.type    = 'PS_netinhibitory_domainconstrain_COB';
-            GLMType.PS_Constrain.params  = 0;
-            GLMType.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
-        end
-    end
-end
-
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
+
 % Run options, order cells for fitting
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
         replace_existing  = true;
-        disp('here')
     end
     if isfield(runoptions,'reverseorder')
         reverseorder  = true;
@@ -141,7 +124,10 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-
+        
+        if GLMType.CouplingFilters
+            Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
+        end
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
@@ -155,8 +141,8 @@ for i_exp = exps
                 [~,candidate_cells,~]  = cell_list(i_exp, cell_subset);
                 candidate_cells = cell2mat(candidate_cells) ;
             elseif strcmp(cell_subset,'glmconv_4pct')
-                eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));
-                conv_column = 2;
+                eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));              
+                conv_column = 2; 
                 conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
@@ -167,9 +153,8 @@ for i_exp = exps
                 for i_pair = 1:length(cellgroup)
                     cells_to_pair(2,i_pair) = find(datarun_master.cell_ids == cellgroup(i_pair));
                 end
-            end
-            cellgroup = intersect(candidate_cells, cellgroup);
-            
+            end 
+            cellgroup = intersect(candidate_cells, cellgroup)
             if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end
             
             for i_cell = 1:length(cellgroup)
