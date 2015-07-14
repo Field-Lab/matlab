@@ -7,7 +7,6 @@
 codebase_path = matlab_code_path; 
 cmap = load([codebase_path 'code/projects/electrical_stim/'...
     'resources/redtealcmap.mat']); 
-
 % cells ids from /Volumes/Analysis/2012-09-24-3/data000/data000.ei
 dataPath = '/Volumes/Analysis/2012-09-24-3/data000/data000'; 
 cellIds = [3457 4058 4656 2796 5123 5748 6439];
