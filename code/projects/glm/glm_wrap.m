@@ -50,9 +50,8 @@ celltypes = [1]; % only ON Parasol
 cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
-special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
 %%% Should have the following minimization sequence  
 ### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
 
@@ -64,6 +63,22 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoption
      3           -45320.3        4.13912       5.15e+03           7
 
 Local minimum possible.
+
+
+
+%%% Other code
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+
+
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -84,14 +99,14 @@ GLMType.fitname    = GLM_fitname(GLMType);
 
 % AKH 2015-07-13 Add mechanism for handling special arguments
 % Intended for PS filter constraints, Post Filter NL modulation
-if exist('special_arg','var')
+if exist('special_arg','var') && ~isempty(special_arg)
     GLMType.fitname_prespecialarg =  GLM_fitname(GLMType);
     for i_arg = 1:length(special_arg)
         GLMType.fitname                = sprintf('%s/%s', GLMType.fitname,special_arg{i_arg});
         if strcmp(special_arg{i_arg},'PS_netinhibitory_domainconstrain_COB')
-            GLMType.PS_Constrain.type    = 'PS_netinhibitory_domainconstrain_COB';
-            GLMType.PS_Constrain.params  = 0;
-            GLMType.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
+            GLMType.special_arg.PS_Constrain.type    = 'PS_netinhibitory_domainconstrain_COB';
+            GLMType.special_arg.PS_Constrain.params  = 0;
+            GLMType.special_arg.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
         end
     end
 end
@@ -235,7 +250,10 @@ for i_exp = exps
                     if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
                         [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
                             fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
-                    else
+                    elseif exist('special_arg','var') && ~isempty(special_arg)
+                        [fittedGLM] = glm_execute_prototypespecialarg(GLMType,fitspikes_concat,fitmovie_concat,...
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                    else  
                         [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     end
