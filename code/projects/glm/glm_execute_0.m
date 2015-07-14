@@ -19,6 +19,8 @@
 
 function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
 
+% Version 0 works. Up to and including 2015-07-14
+% Coupling, xval measures, printing, rk2, rk1 all integrated
 
 %% Setup Covariates
 fittedGLM.cell_savename = glm_cellinfo.cell_savename;
