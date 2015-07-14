@@ -42,7 +42,7 @@
 % Sample Call and Output to verify that it works
 %{
 
-%%% TEST CODE DON"T DELETE %%%
+%%% TEST CODE DON"T DELETE  on branch akheitman %%%
 clear
 exps = 3;
 stimtypes = [1]; % white noise only  (2 is natural scens)
@@ -64,7 +64,7 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
 
 Local minimum possible.
 
-%%% TEST CODE FOR NON_CONVEX : DON"T DELETE %%%
+%%% TEST CODE FOR NON_CONVEX : DON"T DELETE on branch akheitman %%%
 clear
 exps = 3;
 stimtypes = [1]; % white noise only  (2 is natural scens)
@@ -90,9 +90,7 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
      4           -37215.6           1.25        5.2e+03           0
 
 
-
-
-%%% TEST PS_CONSTRAIN %%%
+%%% TEST PS_CONSTRAIN on branch akheitman %%%
 clear
 exps = 3;
 stimtypes = [1]; % white noise only  (2 is natural scens)
@@ -103,12 +101,48 @@ glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
 runoptions.replace_existing = true;
 glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+%%% Should have the following minimization sequence 
+### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams/PS_netinhibitory_domainconstrain_COB ###
+Your initial point x0 is not between bounds lb and ub; FMINCON
+shifted x0 to satisfy the bounds.
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0            3133.16                      2.02e+04                
+     1            3133.16             10       2.02e+04           5
+     2           -42096.8            2.5       4.63e+03           0
+     3           -44069.2        5.83931        7.3e+03           7
+     4           -45909.5         1.8113        1.2e+03           4
+
+Local minimum possible.
+fmincon stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+
+
+
+%%% TEST PS_CONSTRAIN on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [2]; % white noise only  (2 is natural scens)
+celltypes = [2]; % only ON Parasol
+cell_subset = 'debug';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk1';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+
 
 
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+% Version 1: started 2015-07-14
+% Enables input of special arguments (special_arg)
+% Got rid of unncessary DoubleOptManual
 % Version 0: up to and including 2015-07-14
 
 % Load core directories and all eligible cells
@@ -274,16 +308,10 @@ for i_exp = exps
                     % Call appropriate glm_execute
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
-                    if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                        [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
-                            fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
-                    elseif exist('special_arg','var') && ~isempty(special_arg)
-                        [fittedGLM] = glm_execute_prototypespecialarg(GLMType,fitspikes_concat,fitmovie_concat,...
+                    
+                    [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
-                    else  
-                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
-                    end
+
                     duration = toc(tStart);
                     display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                 end
