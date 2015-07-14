@@ -1,4 +1,36 @@
+% NEW NAMING OF GLM_WRAP AND GLM_EXECUTE
 
+% 2015-07-14
+% Both moved to main glm folder because they are the sites of major edits.
+% glm_wrap should only call glm/wrap_bookkeep
+% glm_execute should only call glm/glm_core
+
+
+% Version 0: up to and including 2015-07-14
+% glm_execute: Coupling, xval measures, printing, rk2, rk1 all integrated
+% glm_wrap: loads cells, sets directories, loads and process spikes and stim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%% BELOW IS ALL BEFORE 2015-04-01
 %{
 GLM starts off at GLM_AH Version 6_2
 GLM started on 2015-03-30

@@ -67,6 +67,7 @@ Local minimum possible.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
+% Version 0: up to and including 2015-07-14
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
