@@ -64,9 +64,35 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
 
 Local minimum possible.
 
+%%% TEST CODE FOR NON_CONVEX : DON"T DELETE %%%
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+glm_settings{2}.type = 'filter_mode';
+glm_settings{2}.name = 'rk1';
+glm_settings{3}.type = 'PostSpikeFilter';
+glm_settings{3}.name =  'OFF';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
+%%% Should have the following minimization sequence 
+### running: WN expC ONPar_2824: debug_rk1_MU_noPS_noCP_p8IDp8/standardparams ###
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             1478.5                         2e+04                
+     1             1478.5          11.82          2e+04           1
+     2           -33907.5            2.5       1.08e+03           0
+     3           -33907.5              5       1.08e+03           1
+     4           -37215.6           1.25        5.2e+03           0
 
 
-%%% Other code
+
+
+%%% TEST PS_CONSTRAIN %%%
 clear
 exps = 3;
 stimtypes = [1]; % white noise only  (2 is natural scens)
