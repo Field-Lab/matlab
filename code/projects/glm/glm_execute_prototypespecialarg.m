@@ -133,19 +133,19 @@ if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain'
     COB      = [v', orthog_v] ;
     ps_basis = (inv(COB) * ps_basis_0')' ;
     
+    
     %%%    
     basis         = ps_basis';
     PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
     
-    
     lowerbound = -Inf(paramind.paramcount,1);
     upperbound  = Inf(paramind.paramcount,1);
-    
     upperbound(paramind.PS(1)) = GLMType.special_arg.PS_Constrain.params;
     
-    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.note = 'how the parameter search was limited in fmincon';
     fittedGLM.constrained_search.lowerbound = lowerbound;
     fittedGLM.constrained_search.upperbound = upperbound;
+    fittedGLM.constrained_search.COB = COB;
     
     %%%
     fittedGLM.solver = 'fmincon';
@@ -200,7 +200,6 @@ if GLMType.CONVEX
         [pstar fstar eflag output] = fmincon(@(p) ...
             glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
             p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
-        error('need more work to invert COB for finding PS filter')
     end
            
     % OLDER UNUSED CODE.. DONT DELETE YET
@@ -230,9 +229,15 @@ if ~GLMType.CONVEX
         end
     end
     filtertype = GLMType.stimfilter_mode;
-    
-    [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
-            (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
+    if strcmp(fittedGLM.solver,'fminunc')
+        [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
+                (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
+    elseif strcmp(fittedGLM.solver,'fmincon')
+         [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
+                (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),...
+                p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
+    end
+        
 
 end
 fittedGLM.fminunc_output = output;

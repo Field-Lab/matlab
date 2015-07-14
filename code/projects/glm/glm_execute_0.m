@@ -19,6 +19,8 @@
 
 function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
 
+% Version 0 works. Up to and including 2015-07-14
+% Coupling, xval measures, printing, rk2, rk1 all integrated
 
 %% Setup Covariates
 fittedGLM.cell_savename = glm_cellinfo.cell_savename;
@@ -90,8 +92,8 @@ if GLMType.TonicDrive
 end
 
 % PREPARE PARAMETERS
-[paramind] =  prep_paramindGP(GLMType, GLMPars);
-%p_init     =  zeros(paramind.paramcount,1);
+[paramind] =  prep_paramindGP(GLMType, GLMPars); 
+%p_init     =  zeros(paramind.paramcount,1);  
 p_init     = .01* ones(paramind.paramcount,1);
 
 
@@ -163,23 +165,10 @@ if GLMType.CONVEX
         glm_covariate_vec( paramind.PS , : ) = PS_bin;
     end
     % NBCoupling 05-28-14
-    if isfield(paramind, 'CP') 
+    if isfield(paramind, 'CP')
         for j_pair=1:GLMPars.spikefilters.cp.n_couplings
             glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
         end
-    end
-    if isfield(paramind, 'C')
-        stimsize.width  = size(fitmovie,1);
-        stimsize.height = size(fitmovie,2);
-        ROIcoord        = ROI_coord(20, glm_cellinfo.slave_centercoord, stimsize);
-        % C_shift = zeros(bins,1);
-        contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
-%         for i_bin = 1:bins
-%             if i_bin > 99
-%                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
-%             end
-%         end
-        glm_covariate_vec(paramind.C, :) = contrast;
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,19 +199,6 @@ if ~GLMType.CONVEX
         for j_pair=1:GLMPars.spikefilters.cp.n_couplings
             convex_cov( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
         end
-    end
-    if isfield(paramind, 'C')
-        stimsize.width  = size(fitmovie,1);
-        stimsize.height = size(fitmovie,2);
-        ROIcoord        = ROI_coord(20, glm_cellinfo.slave_centercoord, stimsize);
-        % C_shift = zeros(bins,1);
-        contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
-        %         for i_bin = 1:bins
-        %             if i_bin > 99
-        %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
-        %             end
-        %         end
-        convex_cov(paramind.C, :) = contrast;
     end
     filtertype = GLMType.stimfilter_mode;
     
