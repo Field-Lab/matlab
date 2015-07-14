@@ -63,6 +63,8 @@ if GLMType.CONVEX
         paramind.inhibitoryfilter_index = paramind.time2;
         
         paramind.X = union(paramind.time1,paramind.time2);
+    elseif strcmp(GLMType.stimfilter_mode, 'nostim')
+        paramind.Xnote = 'no field devoted to the stimulus';        
     else
         error('you need to properly specifiy the stimfilter in prep_paramind')
     end
@@ -93,6 +95,8 @@ if ~GLMType.CONVEX
         paramind.space2 = [Xstart_2: ((Xstart_2-1) + (GLMPars.stimfilter.ROI_length^2))];
         paramind.time2  = [(Xstart_2 + GLMPars.stimfilter.ROI_length^2) : Xend_2 ];
         numParams = convParams  + 2*( GLMPars.stimfilter.ROI_length^2 + GLMPars.stimfilter.frames);
+        
+        paramind.X      = [Xstart_1:Xend_2];
     end
     if  strcmp(GLMType.stimfilter_mode, 'rk2-ConductanceBased')
         paramind.Xnote1 = 'Two Filters, excitatory (space1,time1) and inhibitory (space2,time2)';
