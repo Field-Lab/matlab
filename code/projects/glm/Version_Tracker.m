@@ -7,7 +7,15 @@
 
 
 
-
+% Version 1: started 2015-07-13
+% glm_wrap: 
+%   -added a special_arg input designed to handle concepts such as
+%   constrained searching, and fitting non-linearities
+%   -took out unused call to doubleopt
+% glm_execite:
+%   -enables for constraining PS filter using change of basis, fmincon
+%   -cleaner calling of fitting algorithm
+%   -PS constrain should work robustly for all cases
 
 % Version 0: up to and including 2015-07-14
 % glm_execute: Coupling, xval measures, printing, rk2, rk1 all integrated

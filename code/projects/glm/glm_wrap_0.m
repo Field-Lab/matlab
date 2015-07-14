@@ -51,7 +51,7 @@ cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
 runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
+glm_wrap_0(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
 %%% Should have the following minimization sequence  
 ### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
 
@@ -66,7 +66,7 @@ Local minimum possible.
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
+function glm_wrap_0(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 % Version 0: up to and including 2015-07-14
 
 % Load core directories and all eligible cells
@@ -222,7 +222,7 @@ for i_exp = exps
                         [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
                             fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
                     else
-                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                        [fittedGLM] = glm_execute_0(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     end
                     duration = toc(tStart);

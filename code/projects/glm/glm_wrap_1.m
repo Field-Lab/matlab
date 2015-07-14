@@ -100,7 +100,7 @@ special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
 runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+glm_wrap_1(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
 %%% Should have the following minimization sequence 
 ### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams/PS_netinhibitory_domainconstrain_COB ###
 Your initial point x0 is not between bounds lb and ub; FMINCON
@@ -139,10 +139,11 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoption
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+function glm_wrap_1(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
 % Version 1: started 2015-07-14
 % Enables input of special arguments (special_arg)
 % Got rid of unncessary DoubleOptManual
+
 % Version 0: up to and including 2015-07-14
 
 % Load core directories and all eligible cells
@@ -310,7 +311,7 @@ for i_exp = exps
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
                     
-                    [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                    [fittedGLM] = glm_execute_1(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
 
                     duration = toc(tStart);
