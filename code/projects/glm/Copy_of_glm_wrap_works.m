@@ -50,9 +50,8 @@ celltypes = [1]; % only ON Parasol
 cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
-special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
 runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
 %%% Should have the following minimization sequence  
 ### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
 
@@ -67,7 +66,7 @@ Local minimum possible.
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -80,25 +79,10 @@ else
     GLMType = GLM_settings('default');
 end
 GLMType.fitname    = GLM_fitname(GLMType); 
-
-
-% AKH 2015-07-13 Add mechanism for handling special arguments
-% Intended for PS filter constraints, Post Filter NL modulation
-if exist('special_arg','var')
-    GLMType.fitname_prespecialarg =  GLM_fitname(GLMType);
-    for i_arg = 1:length(special_arg)
-        GLMType.fitname                = sprintf('%s/%s', GLMType.fitname,special_arg{i_arg});
-        if strcmp(special_arg{i_arg},'PS_netinhibitory_domainconstrain_COB')
-            GLMType.PS_Constrain.type    = 'PS_netinhibitory_domainconstrain_COB';
-            GLMType.PS_Constrain.params  = 0;
-            GLMType.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
-        end
-    end
-end
-
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
+
 % Run options, order cells for fitting
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
