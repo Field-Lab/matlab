@@ -6,26 +6,12 @@
 % glm_execute should only call glm/glm_core
 
 
+
+
+
 % Version 0: up to and including 2015-07-14
 % glm_execute: Coupling, xval measures, printing, rk2, rk1 all integrated
 % glm_wrap: loads cells, sets directories, loads and process spikes and stim
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
