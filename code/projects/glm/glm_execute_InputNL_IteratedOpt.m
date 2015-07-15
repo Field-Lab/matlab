@@ -20,7 +20,7 @@ if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
     
     glm_cellinfo.cell_savename = sprintf('%s_preNL', glm_cellinfo0.cell_savename);
     glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
-    if ~exist(glm_cellinfo.dsave,'dir'), mkdir(glm_cellinfo.d_save); end
+    if ~exist(glm_cellinfo.d_save,'dir'), mkdir(glm_cellinfo.d_save); end
     
     fittedGLM = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,options);
     
@@ -37,8 +37,10 @@ if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
 end
 
 
-loops = 2;
+loops = 3;
 for i_loop = 1:loops
+    display(sprintf('Running Iterated optimization number %d out of %d', i_loop, loops));
+    
     t_bin = fittedGLM.t_bin;
     bins  = fittedGLM.bins_per_frame * size(fitmovie,3);
     pstar = fittedGLM.rawfit.opt_params;
@@ -59,8 +61,8 @@ for i_loop = 1:loops
     % search over smaller subdomains        
     dist_1 = abs(NL_Par_star - search_min);
     dist_2 = abs(NL_Par_star - search_max);
-    search_min = NL_Par_star - .5*min(dist_1,dist_2)
-    search_max = NL_Par_star + .5*min(dist_1,dist_2)
+    search_min = NL_Par_star - min(dist_1,dist_2);
+    search_max = NL_Par_star + min(dist_1,dist_2);
     
             
     GLMPars.others.point_nonlinearity.log_powerraise = NL_Par_star;
@@ -70,7 +72,7 @@ for i_loop = 1:loops
     options{2}.p_init  = pstar;
     glm_cellinfo.cell_savename = sprintf('%s_afterround_%d', glm_cellinfo0.cell_savename,i_loop);
     glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
-    if ~exist(glm_cellinfo.dsave,'dir'), mkdir(glm_cellinfo.d_save); end
+    if ~exist(glm_cellinfo.d_save,'dir'), mkdir(glm_cellinfo.d_save); end
     
     if i_loop == loops
         glm_cellinfo = glm_cellinfo0;
