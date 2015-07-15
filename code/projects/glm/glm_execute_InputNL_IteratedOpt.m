@@ -4,17 +4,24 @@ function [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes,fitmovi
 
 glm_cellinfo0 = glm_cellinfo;
 
+
 GLMPars = GLMParams;
 if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
     % Run with non-linearity parameter set to identity to get first
     % estimate of filter
     NL_Par_0 = 0;
     
+    search_min = -1;
+    search_max = 1;
+    
     GLMPars.others.point_nonlinearity.log_powerraise = NL_Par_0;
     options{1}.name = 'GLMPars';
     options{1}.GLMPars = GLMPars;
     
     glm_cellinfo.cell_savename = sprintf('%s_preNL', glm_cellinfo0.cell_savename);
+    glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
+    if ~exist(glm_cellinfo.dsave,'dir'), mkdir(glm_cellinfo.d_save); end
+    
     fittedGLM = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,options);
     
     
@@ -30,8 +37,8 @@ if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
 end
 
 
-
-for i_loop = 1:2
+loops = 2;
+for i_loop = 1:loops
     t_bin = fittedGLM.t_bin;
     bins  = fittedGLM.bins_per_frame * size(fitmovie,3);
     pstar = fittedGLM.rawfit.opt_params;
@@ -47,14 +54,27 @@ for i_loop = 1:2
                 subR_modinputNL_findobj(NL_Par,lcif_nonstim.total, pstar,...
                 GLMType, GLMPars, fitspikes, fitmovie, inputstats,...
                 glm_cellinfo, t_bin,bins),...
-                (-1),1, optim_struct);
+                search_min,search_max, optim_struct);
+    
+    % search over smaller subdomains        
+    dist_1 = abs(NL_Par_star - search_min);
+    dist_2 = abs(NL_Par_star - search_max);
+    search_min = NL_Par_star - .5*min(dist_1,dist_2)
+    search_max = NL_Par_star + .5*min(dist_1,dist_2)
+    
             
-            
-    NL_Par_star        
     GLMPars.others.point_nonlinearity.log_powerraise = NL_Par_star;
-    options{1}.name = 'GLMPars';
+    options{1}.name    = 'GLMPars';
     options{1}.GLMPars = GLMPars;
+    options{2}.name    = 'p_init';
+    options{2}.p_init  = pstar;
     glm_cellinfo.cell_savename = sprintf('%s_afterround_%d', glm_cellinfo0.cell_savename,i_loop);
+    glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
+    if ~exist(glm_cellinfo.dsave,'dir'), mkdir(glm_cellinfo.d_save); end
+    
+    if i_loop == loops
+        glm_cellinfo = glm_cellinfo0;
+    end
     fittedGLM = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,options);
 end
 

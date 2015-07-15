@@ -426,18 +426,7 @@ fittedGLM.writingcode = mfilename('fullpath');
 %% Evaluate cross-validated fits,  Print and Save
 [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test);
 fittedGLM.xvalperformance  = xvalperformance; 
-
-save_matfile = true;
-if exist('optional_arg', 'var')  
-    for i_arg = 1:length(optional_arg)
-        if strcmp(optional_arg{i_arg}.name, 'no_matfile')
-            save_matfile = false;
-        end
-    end
-end
-if save_matfile
-    eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
-end
+eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
 printglmfit(fittedGLM,printname)
 
