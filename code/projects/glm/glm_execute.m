@@ -1,7 +1,7 @@
 % AKHEITMAN 2015-07-13
 % Integrate develop/fitGLMconstrainPS into glm_execute
 
-function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
+function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg)
 
 % Version 1 works. Switched in 2015-07-14
 % Enables PS Constrain Gain control, utilizes fmincon

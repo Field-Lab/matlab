@@ -138,14 +138,18 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                  GLMType.DoubleOpt = true;
                  GLMType.DoubleOpt_Manual = true;
             end
-            
             if strcmp(change.name, 'piecelinear_fourpiece_eightlevels')
                  GLMType.input_pt_nonlinearity        = true;
                  GLMType.input_pt_nonlinearity_type   = 'piecelinear_fourpiece_eightlevels';
                  GLMType.DoubleOpt = true;
                  GLMType.DoubleOpt_Manual = true;
             end
-            
+            %  AKH 2015-07-14  added power raise option
+            if strcmp(change.name, 'powerraise')
+                 GLMType.input_pt_nonlinearity        = true;
+                 GLMType.input_pt_nonlinearity_type   = 'powerraise';
+                 GLMType.InputNL_IteratedOpt = true;
+            end
         end
         if strcmp(change.type, 'PostSpikeFilter')
             if strcmp(change.name, 'OFF')
