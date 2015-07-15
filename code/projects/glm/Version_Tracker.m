@@ -13,7 +13,7 @@
 %   - got rid of troubleshoot input
 %   - register input nonlinearities directly to fittedGLM
 %   - optional_arg as means of better initialization
-
+%   - enable one line plot note to enter into printglmfit
 
 % Version 1: started 2015-07-13  adopted 2015-07-14
 % glm_wrap: 

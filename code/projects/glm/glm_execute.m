@@ -35,6 +35,7 @@ end
 if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
     fittedGLM.input_pt_nonlinearity_type  = GLMType.input_pt_nonlinearity_type;
     fittedGLM.input_pt_nonlinearity_param = GLMPars.others.point_nonlinearity.log_powerraise;
+    plot_note = sprintf('Input Non-linearity of type %s:   Parameter at %d', GLMType.input_pt_nonlinearity_type,  GLMPars.others.point_nonlinearity.log_powerraise);
 end
 
 
@@ -428,6 +429,12 @@ fittedGLM.writingcode = mfilename('fullpath');
 fittedGLM.xvalperformance  = xvalperformance; 
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
-printglmfit(fittedGLM,printname)
+
+% enable adding extra string to plotting output
+if exist('plot_note', 'var')
+    printglmfit(fittedGLM,printname,plot_note)
+else
+    printglmfit(fittedGLM,printname);
+end
 
 end
