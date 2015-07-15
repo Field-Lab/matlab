@@ -38,7 +38,7 @@ comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 clear ; close all; clc;
 metrics = [1 2 3 4 5 6];
 %cellselection_type = 'glmconv4pct';
-comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
+comparison_name = 'WNvsNSEM-standardGLM-CPconstrainPS'
 cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
@@ -581,6 +581,8 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 % Section 2: NSEM-ModelComparison
+'NSEM-standardGLMnoPS-rk1noPS';
+'NSEM-standardGLMnoPS-rk2noPS';
 'NSEM-stimnoPS-stimPSconstrainCOB'
 'NSEM-nostimnoPS-nostimnoPSwithCP'
 'NSEM-stimnoCPnoPS-stimCPnoPS'
@@ -594,7 +596,10 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'NSEM-InputNLandLogfixMUwithPS-netinhibPSCOB'
 'NSEM-standardGLM-PSConstrain-Sub1'
 
+
 % Section 1: WN-ModelComparison
+'WN-standardGLMnoPS-rk1noPS';
+'WN-standardGLMnoPS-rk2noPS';
 'WN-standardGLM-rk1'
 'WN-standardGLM-rk2'
 'WN-noPSnoCP-noPSnoSTIM'
@@ -606,6 +611,7 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WN-standardGLM-PSConstrain-Sub1'
 
 % Section 0: WNvsNSEM
+'WNvsNSEM-standardGLM-CPconstrainPS'
 'WNvsNSEM-standardGLM'
 'WNvsNSEM_rk1noPS'  
 'WNvsNSEM_rk2noPS'  
@@ -727,7 +733,33 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 2: NSEM-ModelComparison
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-        
+    
+    case 'NSEM-standardGLMnoPS-rk1noPS';
+        models{1}.settings{1}.type = 'PostSpikeFilter';
+        models{1}.settings{1}.name =  'OFF';
+        models{1}.fit_type = 'NSEM';
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk1';
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'NSEM';
+        plotparams.xlabel             = 'GLMnoPS';
+        plotparams.ylabel             = 'GLMnoPS rk1';
+        plotparams.title_comparison   = 'rk1 vs STA';
+        plotparams.purpose            = 'rk1 vs STA for NSEM without PS filter';
+    case 'NSEM-standardGLMnoPS-rk2noPS';
+        models{1}.settings{1}.type = 'PostSpikeFilter';
+        models{1}.settings{1}.name =  'OFF';
+        models{1}.fit_type = 'NSEM';
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk2';
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'NSEM';
+        plotparams.xlabel             = 'GLMnoPS';
+        plotparams.ylabel             = 'GLMnoPS rk2';
+        plotparams.title_comparison   = 'rk2 vs STA';
+        plotparams.purpose            = 'rk2 vs STA for NSEM without PS filter';
     case 'NSEM-stimnoPS-stimPSconstrainCOB'
         models{1}.settings{1}.type = 'PostSpikeFilter';
         models{1}.settings{1}.name =  'OFF';
@@ -887,6 +919,34 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 1: WN-ModelComparison
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'WN-standardGLMnoPS-rk1noPS';
+        models{1}.settings{1}.type = 'PostSpikeFilter';
+        models{1}.settings{1}.name =  'OFF';
+        models{1}.fit_type = 'WN';
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk1';
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'WN';
+        plotparams.xlabel             = 'GLMnoPS';
+        plotparams.ylabel             = 'GLMnoPS rk1';
+        plotparams.title_comparison   = 'rk1 vs STA';
+        plotparams.purpose            = 'rk1 vs STA for WN without PS filter';
+    case 'WN-standardGLMnoPS-rk2noPS'
+        models{1}.settings{1}.type = 'PostSpikeFilter';
+        models{1}.settings{1}.name =  'OFF';
+        models{1}.fit_type = 'WN';
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk2';
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'WN';
+        plotparams.xlabel             = 'GLMnoPS';
+        plotparams.ylabel             = 'GLMnoPS rk2';
+        plotparams.title_comparison   = 'rk2 vs STA';
+        plotparams.purpose            = 'rk2 vs STA for WN without PS filter';
+    
+    
     case 'WN-standardGLM-rk1'
         models{1}.settings = {};
         models{1}.fit_type    = 'WN';
@@ -1006,6 +1066,21 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 0: WNvsNSEM
     %%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'WNvsNSEM-standardGLM-CPconstrainPS'
+        models{1}.settings{1}.type = 'CouplingFilters';
+        models{1}.settings{1}.name =  'ON';
+        models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{1}.fit_type = 'WN';
+        models{2}.settings{1}.type = 'CouplingFilters';
+        models{2}.settings{1}.name =  'ON';
+        models{2}.fit_type = 'NSEM';
+        models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        plotparams.xlabel             = 'White Noise';
+        plotparams.ylabel             = 'Natural Scenes';
+        plotparams.title_comparison   = 'GLMwithCP(constrainedPS)';
+        plotparams.purpose            = 'Check WN vs NSEM with Coupling.constrained PS to prevent runaway spikes';
+        
+        
     case 'WNvsNSEM-standardGLM'
         models{1}.settings = {};
         models{1}.fit_type = 'WN';

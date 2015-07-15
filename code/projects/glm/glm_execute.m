@@ -130,7 +130,9 @@ end
 
 
 
-
+% AKHeitman 2015-07-14
+% Modify the PS_Basis and Change search algorithm for PS_Constrain
+% Introduce upper and lower bounds for fmincon
 if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain') 
     ps_basis_0 = ps_basis; clear ps_basis
     v        = sum(ps_basis_0,1);
@@ -200,6 +202,7 @@ if GLMType.CONVEX
         end
     end
     
+    % AKHeitman  added fmincon for constrained PS filter search 2015-07-14
     if strcmp(fittedGLM.solver,'fminunc')
         [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
     elseif strcmp(fittedGLM.solver,'fmincon')
