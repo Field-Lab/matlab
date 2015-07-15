@@ -145,9 +145,9 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                  GLMType.DoubleOpt_Manual = true;
             end
             %  AKH 2015-07-14  added power raise option
-            if strcmp(change.name, 'powerraise')
+            if strcmp(change.name, 'log_powerraise')
                  GLMType.input_pt_nonlinearity        = true;
-                 GLMType.input_pt_nonlinearity_type   = 'powerraise';
+                 GLMType.input_pt_nonlinearity_type   = 'log_powerraise';
                  GLMType.InputNL_IteratedOpt = true;
             end
         end

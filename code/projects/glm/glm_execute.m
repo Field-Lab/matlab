@@ -21,6 +21,23 @@ GLMPars           = GLMParams;
 if isfield(GLMType, 'specialchange') && GLMType.specialchange
     GLMPars = GLMParams(GLMType.specialchange_name);
 end
+
+% AKHeitman 2015-07-15
+% Enable GLMPars to come from outside
+if exist('optional_arg', 'var')
+    for i_arg = 1:length(optional_arg)
+        if strcmp(optional_arg{i_arg}.name, 'GLMPars')
+            GLMPars = optional_arg{i_arg}.GLMPars;
+        end
+    end
+end
+% AKHeitman 2015-07-15  Register the Fit
+if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
+    fittedGLM.input_pt_nonlinearity_type  = GLMType.input_pt_nonlinearity_type;
+    fittedGLM.input_pt_nonlinearity_param = GLMPars.others.point_nonlinearity.log_powerraise;
+end
+
+
 fittedGLM.GLMPars = GLMPars;
 fittedGLM.GLMType = GLMType;
 if isfield(GLMType, 'debug') && GLMType.debug
@@ -81,9 +98,20 @@ end
 
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
-%p_init     =  zeros(paramind.paramcount,1);  
-p_init     = .01* ones(paramind.paramcount,1);
-
+ p_init     = .01* ones(paramind.paramcount,1);
+ % AKH 2015-07-15  Mechanism for improved initial estimate
+if exist('optional_arg', 'var')  
+    for i_arg = 1:length(optional_arg)
+        if strcmp(optional_arg{i_arg}.name, 'p_init')
+            p_init = optional_arg{i_arg}.p_init;
+            display('taking in initial arg')
+        end
+    end
+end
+ 
+ 
+ 
+ 
 % ORGANIZE STIMULUS COVARIATES
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
@@ -398,7 +426,18 @@ fittedGLM.writingcode = mfilename('fullpath');
 %% Evaluate cross-validated fits,  Print and Save
 [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test);
 fittedGLM.xvalperformance  = xvalperformance; 
-eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
+
+save_matfile = true;
+if exist('optional_arg', 'var')  
+    for i_arg = 1:length(optional_arg)
+        if strcmp(optional_arg{i_arg}.name, 'no_matfile')
+            save_matfile = false;
+        end
+    end
+end
+if save_matfile
+    eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
+end
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
 printglmfit(fittedGLM,printname)
 

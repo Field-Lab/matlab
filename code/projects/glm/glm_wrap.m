@@ -136,6 +136,19 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoption
 
 
 
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+glm_settings{2}.type = 'cone_model';
+glm_settings{2}.name = 'rieke_linear'
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
+
+
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -312,7 +325,7 @@ for i_exp = exps
                     
                     
                     
-                    if GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
+                    if isfield(GLMType,'InputNL_IteratedOpt') && GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
                          [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); 
                     else
