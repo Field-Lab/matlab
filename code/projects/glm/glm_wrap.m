@@ -310,8 +310,15 @@ for i_exp = exps
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
                     
-                    [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                    
+                    
+                    if GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
+                         [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); 
+                    else
+                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                    end
 
                     duration = toc(tStart);
                     display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
