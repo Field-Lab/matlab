@@ -115,9 +115,10 @@ if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
         newstim = newstim - offset2;
         
     % New option added AKHeitman 205-07-14    
-    elseif strcmp(GLMType.input_pt_nonlinearity_type, 'powerraise')
+    elseif strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
         newstim = stim + fitmoviestats.normmean; % 0 1 scale        
-        coeff = GLMPars.others.point_nonlinearity.powerraise;
+        %display('log_powerraise')
+        coeff = 10^(GLMPars.others.point_nonlinearity.log_powerraise);
         newstim = newstim.^coeff;
         newstim = newstim - mean(newstim(:));
     else

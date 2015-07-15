@@ -7,17 +7,25 @@
 
 
 
-% Version 1: started 2015-07-13
+% Version 2: 
+% glm_execute:
+%   - enable optional_arg input,(for GLMPars for now)
+%   - got rid of troubleshoot input
+%   - register input nonlinearities directly to fittedGLM
+%   - optional_arg as means of better initialization
+
+
+% Version 1: started 2015-07-13  adopted 2015-07-14
 % glm_wrap: 
 %   -added a special_arg input designed to handle concepts such as
 %   constrained searching, and fitting non-linearities
 %   -took out unused call to doubleopt
-% glm_execite:
+% glm_execute:
 %   -enables for constraining PS filter using change of basis, fmincon
 %   -cleaner calling of fitting algorithm
 %   -PS constrain should work robustly for all cases
 
-% Version 0: up to and including 2015-07-14
+% Version 0: up to 2015-07-14
 % glm_execute: Coupling, xval measures, printing, rk2, rk1 all integrated
 % glm_wrap: loads cells, sets directories, loads and process spikes and stim
 
