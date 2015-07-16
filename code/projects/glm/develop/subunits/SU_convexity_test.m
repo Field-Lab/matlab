@@ -1,7 +1,7 @@
 
 
-p_SU = zeros(9,1);
-test = 1.9:0.1:2.5;
+p_SU = pstar_SU;
+test = -1:0.1:-0.7;
 val = zeros(length(test),1);
 
 for i = 1:length(test)
