@@ -26,14 +26,14 @@ if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
     
     
     %%% test  this should return same value as fittedGLM.rawfit.objective_val
-    %{
+    
     t_bin = fittedGLM.t_bin;
     bins  = fittedGLM.bins_per_frame * size(fitmovie,3);
     pstar = fittedGLM.rawfit.opt_params;
     [lcif_nonstim] = subR_lcif_nonstim(pstar, GLMType,GLMPars,fitspikes,t_bin,bins);
     objval = subR_modinputNL_findobj(NL_Par_0, lcif_nonstim.total, pstar, ...
         GLMType, GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins);
-    %}
+    
 end
 
 
@@ -73,7 +73,6 @@ for i_loop = 1:loops
     glm_cellinfo.cell_savename = sprintf('%s_afterround_%d', glm_cellinfo0.cell_savename,i_loop);
     glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
     if ~exist(glm_cellinfo.d_save,'dir'), mkdir(glm_cellinfo.d_save); end
-    
     if i_loop == loops
         glm_cellinfo = glm_cellinfo0;
     end
@@ -148,16 +147,16 @@ if GLMType.PostSpikeFilter
     basis_params  = GLMPars.spikefilters.ps;
     ps_basis      = prep_spikefilterbasisGP(basis_params,t_bin);
     
-    if isfield(GLMType, 'PS_constrain')
-        if strcmp(GLMType.PS_constrain.type, 'PS_netinhibitory_domainconstrain_COB')
+
+    if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain')
             ps_basis_0 = ps_basis; clear ps_basis
             v        = sum(ps_basis_0,1);
             v        = v / norm(v) ;
             orthog_v = null(v);
             COB      = [v', orthog_v] ;
             ps_basis = (inv(COB) * ps_basis_0')' ;
-        end
     end
+
             
 end
 

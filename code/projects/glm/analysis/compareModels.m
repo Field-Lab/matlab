@@ -36,14 +36,14 @@ comparison_name = 'WNstandardnoPS_vsNSEMfitcrossval-oddeven3DS';
 comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 clear ; close all; clc;
-metrics = [1 2 3 4 5 6];
+metrics = [3 4];
 %cellselection_type = 'glmconv4pct';
-comparison_name = 'WNvsNSEM-standardGLM-CPconstrainPS'
+comparison_name = 'WN-standardGLMconstrainPS-rk1constrainPS'
 cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
+    if i_metric == 3, metric = 'FracVar10msec_neg1'; end
     if i_metric == 4, metric = 'FracVar10msec'; end
     if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
     if i_metric == 6, metric = 'BPS_divideUOP'; end
@@ -89,6 +89,12 @@ switch metric
     case 'FracVar10msec'
         rawmetric_name = 'crossval_fracvar_10msec';
         normalize.doit = false;
+        plotparams.low_lim = 0;
+        plotparams.high_lim = 1;
+        plotparams.title_metric = 'Fraction of Variance';
+    case 'FracVar10msec_neg1'
+        rawmetric_name = 'crossval_fracvar_10msec';
+        normalize.doit = false;
         plotparams.low_lim = -1;
         plotparams.high_lim = 1;
         plotparams.title_metric = 'Fraction of Variance';
@@ -99,7 +105,7 @@ switch metric
         normalize.name = 'fracvar_10msec_ODDEVEN';
         normalize.extension = '';
         normalize.operation = 'divide';
-        plotparams.low_lim = -1;
+        plotparams.low_lim = 0;
         plotparams.high_lim = 1;
         plotparams.title_metric = 'Normed Fraction of Variance';
         
@@ -581,6 +587,8 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 % Section 2: NSEM-ModelComparison
+'NSEM-rk1noPS-rk2noPS'
+'NSEM-standardGLMconstrainPS-rk1constrainPS';
 'NSEM-standardGLMnoPS-rk1noPS';
 'NSEM-standardGLMnoPS-rk2noPS';
 'NSEM-stimnoPS-stimPSconstrainCOB'
@@ -598,6 +606,7 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 
 
 % Section 1: WN-ModelComparison
+'WN-standardGLMconstrainPS-rk1constrainPS';
 'WN-standardGLMnoPS-rk1noPS';
 'WN-standardGLMnoPS-rk2noPS';
 'WN-standardGLM-rk1'
@@ -611,6 +620,7 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WN-standardGLM-PSConstrain-Sub1'
 
 % Section 0: WNvsNSEM
+'WNvsNSEM-rk1-constrainPS'
 'WNvsNSEM-standardGLM-CPconstrainPS'
 'WNvsNSEM-standardGLM'
 'WNvsNSEM_rk1noPS'  
@@ -733,7 +743,18 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 2: NSEM-ModelComparison
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-    
+    case 'NSEM-standardGLMconstrainPS-rk1constrainPS'
+        models{1}.settings =  {};
+        models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{1}.fit_type = 'NSEM';        
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk1';
+        models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{2}.fit_type = 'NSEM';
+        plotparams.xlabel             = 'GLM constrain PS';
+        plotparams.ylabel             = 'rk1 ';
+        plotparams.title_comparison   = 'rk1 vs STA';
+        plotparams.purpose            = 'rk1 vs STA for NSEM with constrained PS filter';
     case 'NSEM-standardGLMnoPS-rk1noPS';
         models{1}.settings{1}.type = 'PostSpikeFilter';
         models{1}.settings{1}.name =  'OFF';
@@ -919,6 +940,18 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 1: WN-ModelComparison
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'WN-standardGLMconstrainPS-rk1constrainPS'
+        models{1}.settings =  {};
+        models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{1}.fit_type = 'WN';        
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk1';
+        models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{2}.fit_type = 'WN';
+        plotparams.xlabel             = 'GLM constrain PS';
+        plotparams.ylabel             = 'rk1 ';
+        plotparams.title_comparison   = 'rk1 vs STA';
+        plotparams.purpose            = 'rk1 vs STA for WN with constrained PS filter';
     case 'WN-standardGLMnoPS-rk1noPS';
         models{1}.settings{1}.type = 'PostSpikeFilter';
         models{1}.settings{1}.name =  'OFF';
@@ -1066,6 +1099,20 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 0: WNvsNSEM
     %%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'WNvsNSEM-rk1-constrainPS'
+        models{1}.settings{1}.type = 'filter_mode';
+        models{1}.settings{1}.name = 'rk1';
+        models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{1}.fit_type = 'WN';
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk1';
+        models{2}.fit_type = 'NSEM';
+        models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        plotparams.xlabel             = 'White Noise';
+        plotparams.ylabel             = 'Natural Scenes';
+        plotparams.title_comparison   = 'GLM(constrainedPS)';
+        plotparams.purpose            = 'Check WN vs NSEM with constrained PS to prevent runaway spikes';
+        
     case 'WNvsNSEM-standardGLM-CPconstrainPS'
         models{1}.settings{1}.type = 'CouplingFilters';
         models{1}.settings{1}.name =  'ON';
@@ -1079,8 +1126,7 @@ switch comparison_name
         plotparams.ylabel             = 'Natural Scenes';
         plotparams.title_comparison   = 'GLMwithCP(constrainedPS)';
         plotparams.purpose            = 'Check WN vs NSEM with Coupling.constrained PS to prevent runaway spikes';
-        
-        
+                
     case 'WNvsNSEM-standardGLM'
         models{1}.settings = {};
         models{1}.fit_type = 'WN';

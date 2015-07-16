@@ -162,7 +162,7 @@ end
 % AKHeitman 2015-07-14
 % Modify the PS_Basis and Change search algorithm for PS_Constrain
 % Introduce upper and lower bounds for fmincon
-if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain') 
+if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain')
     ps_basis_0 = ps_basis; clear ps_basis
     v        = sum(ps_basis_0,1);
     v        = v / norm(v) ;
@@ -428,13 +428,16 @@ fittedGLM.writingcode = mfilename('fullpath');
 [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test);
 fittedGLM.xvalperformance  = xvalperformance; 
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
-printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
 
+% Hack to prevent long pdf names which may throw errors
+thisdir = pwd;
+cd(glm_cellinfo.d_save);
+printname = sprintf('%DiagPlots_%s',fittedGLM.cellinfo.cell_savename);
 % enable adding extra string to plotting output
 if exist('plot_note', 'var')
     printglmfit(fittedGLM,printname,plot_note)
 else
     printglmfit(fittedGLM,printname);
 end
-
+cd(thisdir);
 end
