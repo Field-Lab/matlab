@@ -432,7 +432,7 @@ eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_sa
 % Hack to prevent long pdf names which may throw errors
 thisdir = pwd;
 cd(glm_cellinfo.d_save);
-printname = sprintf('%DiagPlots_%s',fittedGLM.cellinfo.cell_savename);
+printname = sprintf('DiagPlots_%s',fittedGLM.cellinfo.cell_savename);
 % enable adding extra string to plotting output
 if exist('plot_note', 'var')
     printglmfit(fittedGLM,printname,plot_note)
