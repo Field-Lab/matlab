@@ -1,4 +1,10 @@
-function [SU_cov_vec, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoords)
+function [SU_cov_vec, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoords, inputstats)
+
+% might need to move this to before SU? NB
+fitmoviestats.mean     =  inputstats.mu_avgIperpix;
+fitmoviestats.span     =  inputstats.range;
+fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
+stim   = double(fitmovie) / double(fitmoviestats.span)-double(fitmoviestats.normmean);
 
 stimsize_x = size(fitmovie, 1);
 stimsize_y = size(fitmovie, 2);
@@ -30,7 +36,7 @@ for j_SU = 1:3
                     pooling_weights(loc_idx) = pooling_filter(i_PF, j_PF);
                     
                     % find the value of the stimulus on the subunit pixel
-                    pixel_values = squeeze(fitmovie(stim_idx(1), stim_idx(2), :));
+                    pixel_values = squeeze(stim(stim_idx(1), stim_idx(2), :));
                     
                     % add to cov vec
                     SU_cov_vec(SU_idx, loc_idx, :) = pixel_values;

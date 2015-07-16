@@ -47,7 +47,7 @@ end
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
-[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord) ;
+[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter) ;
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
 

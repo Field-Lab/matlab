@@ -33,28 +33,30 @@ stimsize.height = size(stimulus,2);
 stimsize.frames = size(stimulus,3);
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 
-%first subunits!
-if GLMType.Subunits
-	for frame=1:stimsize.frames
-		tempstim=conv2(double(stimulus(:,:,frame)),SU_filter,'same');
-		stimulus(:,:,frame)=tempstim.^2;
-	end
-end
-
-stim            = stimulus(ROIcoord.xvals, ROIcoord.yvals, :);
-
-% might need to move this to before SU? NB
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
-stim   = double(stim);
-stim   = stim / double(fitmoviestats.span);
 
 
-if strcmp(GLMType.nullpoint, 'mean')
-    stim = stim - double(fitmoviestats.normmean);
-else
-    error('you need to fill in how to account for stimulus with a different nullpoint')
+if ~GLMType.Subunits
+    stim   = double(stimulus(ROIcoord.xvals, ROIcoord.yvals, :));
+    stim   = stim / double(fitmoviestats.span);
+    
+    if strcmp(GLMType.nullpoint, 'mean')
+        stim = stim - double(fitmoviestats.normmean);
+    else
+        error('you need to fill in how to account for stimulus with a different nullpoint')
+    end
+end
+
+
+%first subunits!
+if GLMType.Subunits
+    for frame=1:stimsize.frames
+        tempstim = double(stimulus(:,:,frame))/double(fitmoviestats.span) - double(fitmoviestats.normmean);
+        tempstim=conv2(tempstim,SU_filter,'same');
+        stim(:,:,frame)=exp(tempstim(ROIcoord.xvals, ROIcoord.yvals));
+    end
 end
 
 
