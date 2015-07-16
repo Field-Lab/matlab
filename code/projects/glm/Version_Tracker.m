@@ -8,12 +8,15 @@
 
 
 % Version 2: 
-% glm_execute:
+% glm_execute: started 2015-07-14
 %   - enable optional_arg input,(for GLMPars for now)
 %   - got rid of troubleshoot input
 %   - register input nonlinearities directly to fittedGLM
 %   - optional_arg as means of better initialization
 %   - enable one line plot note to enter into printglmfit
+%   - change direcotories to print
+% glm_wrap:
+%   - added separate call to glm_execute_InputNL_IteratedOpt
 
 % Version 1: started 2015-07-13  adopted 2015-07-14
 % glm_wrap: 
