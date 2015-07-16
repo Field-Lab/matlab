@@ -25,19 +25,28 @@ function iso = isomerizations(power_reading, area, rig, meter, varargin)
 % power should be in milliwatts
 
 % TAKING THE MEASUREMENTS
-% Get a power meter. Put the head of the meter on the microscope stage
-%   where the retina usually sits.
+% Get a microscope slide stage. They look like CDs and should be in the
+%   optical drawer of the toolbox in a plastic bag.
+% Get the microscope slide ruler. It is in a wooden box in the measuring
+%   drawer of the toolbox. Put the slide on the stage on the microscope. 
+% Look at the stimulus from above. Get the stimulus and the slide ruler in
+%   focus in the same plane. Measure stim size. The units on this ruler are
+%   100 um per division
+% Get a power meter. Put the head of the meter on the microscope stage. 
+%   Turn it on, Ch2, Power reading, try 10^-2 to start. Write down which
+%   UDT you are using.
 % Turn on 50% white. 
 % Move the power meter around until you are confident that the whole
 %   stimulus is being captured. When you put the power meter up, 
 %   shift it around to make sure the reading
 %   doesn't change. If the monitor is well centered on the meter, the
-%   reading shouldn't change.
+%   reading shouldn't change. Then tape it down.
 % Record the power for 50% white, and separately for 50% red, blue, and
-% 	green.
-% The power reading should be taken at Ch2 on the meter, which is
-%   calibrated for 500nm. Meter sensitivity spectrum should be 1 at 500nm.
-% Measure the stimulus size using the slide ruler thing.
+% 	green. mW is standard for the UDT, so you can just read the number off the
+%   screen and the setting (eg 10^-2)
+% 
+% Your input to the code should look something like 
+% iso = isomerizations(5 * 10^(-2), 24*25*100*100, 4, '18707');
 
 % Constants
 h = 6.62607*10^-31; % Planck's constant in mW * seconds^2
@@ -106,8 +115,8 @@ end
 % Flux in photons / second is given by
 % Flux = sum over wavelengths of Power(wavelength)*Wavelength / (h*c) for
 % each of the three colors and for rods
-wavelengths_um = spectra.wavelengths*10^-3;
-flux = (power_spectrum .* wavelengths_um) * spectra.PR / (h*c); % units here??
+wavelengths_um = spectra.wavelengths*10^-3; % nanometers to micrometers
+flux = 10^-3*(power_spectrum .* wavelengths_um) * spectra.PR / (h*c); % 10^-3 because thats the wavelength spacing for the integral
 
 %% CALCULATE THE INTENSITY: photons per second per area
 % Intensity in photons/(area*second) is given by
