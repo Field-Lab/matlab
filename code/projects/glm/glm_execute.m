@@ -1,25 +1,11 @@
-%% AKHeitman 2014-04-27
-% This will be admittedly long and ugly.  But more self contained.
-% GLMPars = GLMParams  or GLMPars = GLMParams(GLMType.specialchange_name)
-% Sensitive to naming changes in GLMParams.
-% Only saves stuff (and calls directories) if we are in a troubleshooting mode
-% Heavily GLMType dependent computations will be carried out here
-% Outsourcable computations will be made into their own functions
-% troubleshoot optional
-% need troublshoot.doit (true or false), 
-% troubleshoot.plotdir,
-% troubleshoot.name
-
-
-
-% CALLS which use GLMType:
-%  prep_paramindGP
-%  prep_stimcelldependentGPXV
-
-% Many calls to glm/glm_core directory
-
+% AKHEITMAN 2015-07-13
+% Integrate develop/fitGLMconstrainPS into glm_execute
 
 function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
+
+% Version 1 works. Switched in 2015-07-14
+% Enables PS Constrain Gain control, utilizes fmincon
+% Smarter way of tracking which algorithm to use
 
 % Version 0 works. Up to and including 2015-07-14
 % Coupling, xval measures, printing, rk2, rk1 all integrated
@@ -98,17 +84,15 @@ end
 %p_init     =  zeros(paramind.paramcount,1);
 p_init     = .01* ones(paramind.paramcount,1);
 
-
 % ORGANIZE STIMULUS COVARIATES
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 if isfield(paramind, 'X')
     [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 end
-
 clear WN_STA center_coord
 
-%
+%% Set optimization structure for fminunc or fmincon
 if ~GLMType.CONVEX
     GLMPars.optimization.tolfun = GLMPars.optimization.tolfun - 1;
     fittedGLM.GLMPars = GLMPars;
@@ -116,6 +100,7 @@ end
 %}
 % INITIALIZE OPTIMIZATION STRUCTURE FOR MATLAB FMIN SOLVERS
 if GLMType.CONVEX
+    fittedGLM.solver = 'fminunc';
     optim_struct = optimset(...
    'derivativecheck','off',...
    'diagnostics','off',...  % 
@@ -129,6 +114,7 @@ if GLMType.CONVEX
    'TolX',10^(-(GLMPars.optimization.tolx))   );
 end
 if ~GLMType.CONVEX
+    fittedGLM.solver = 'fminunc';
     optim_struct = optimset(...
     'derivativecheck','off',...
    'diagnostics','off',...  % 
@@ -140,6 +126,47 @@ if ~GLMType.CONVEX
    'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
    'TolX',10^(-(GLMPars.optimization.tolx))   );
+end
+
+
+
+
+if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain') 
+    ps_basis_0 = ps_basis; clear ps_basis
+    v        = sum(ps_basis_0,1);
+    v        = v / norm(v) ;
+    orthog_v = null(v);
+    COB      = [v', orthog_v] ;
+    ps_basis = (inv(COB) * ps_basis_0')' ;
+    
+    
+    %%%    
+    basis         = ps_basis';
+    PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
+    
+    lowerbound = -Inf(paramind.paramcount,1);
+    upperbound  = Inf(paramind.paramcount,1);
+    upperbound(paramind.PS(1)) = GLMType.special_arg.PS_Constrain.params;
+    
+    fittedGLM.constrained_search.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.lowerbound = lowerbound;
+    fittedGLM.constrained_search.upperbound = upperbound;
+    fittedGLM.constrained_search.COB = COB;
+    
+    %%%
+    fittedGLM.solver = 'fmincon';
+    optim_struct = optimset(...
+   'Algorithm','trust-region-reflective',...
+   'derivativecheck','off',...
+   'diagnostics','off',...  % 
+   'display','iter',...  %'iter-detailed',... 
+   'funvalcheck','off',... % don't turn this on for 'raw' condition (edoi).
+   'GradObj','on',...
+   'largescale','on',...
+   'Hessian','on',...
+   'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
+   'TolFun',10^(-(GLMPars.optimization.tolfun)),...
+   'TolX',10^(-(GLMPars.optimization.tolx))   ) ;
 end
 
 
@@ -186,15 +213,20 @@ if GLMType.CONVEX
         glm_covariate_vec(paramind.C, :) = contrast;
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
+    if strcmp(fittedGLM.solver,'fminunc')
         [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
+    elseif strcmp(fittedGLM.solver,'fmincon')
+        [pstar fstar eflag output] = fmincon(@(p) ...
+            glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
+            p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
     end
-    if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
-            (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
-        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);        
-    end
+           
+    % OLDER UNUSED CODE.. DONT DELETE YET
+    %if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
+    %    [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
+    %        (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
+    %    % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);        
+    %end
 end
 
 % NONCONVEX OPTMIZATION
@@ -229,9 +261,15 @@ if ~GLMType.CONVEX
         convex_cov(paramind.C, :) = contrast;
     end
     filtertype = GLMType.stimfilter_mode;
-    
-    [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
-            (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
+    if strcmp(fittedGLM.solver,'fminunc')
+        [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
+                (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
+    elseif strcmp(fittedGLM.solver,'fmincon')
+         [pstar fstar eflag output] = fmincon(@(p) glm_nonconvex_optimizationfunction...
+                (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),...
+                p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
+    end
+        
 
 end
 fittedGLM.fminunc_output = output;
