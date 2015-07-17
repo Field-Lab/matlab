@@ -146,6 +146,8 @@ for i_exp = exps
                 testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
                 % load fittedGLM
                 eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
+                fittedGLM.GLMType.contrast = false;
+                fittedGLM.GLMType.Subunits = false;
                 glm_cellinfo = fittedGLM.cellinfo;
                 [lcif,objval_OLD] = subR_lcifdecomp_fittedGLM(fittedGLM.rawfit.opt_params,...
                     fittedGLM.GLMType,fittedGLM.GLMPars,fitspikes_concat,fitmovie_concat,inputstats,glm_cellinfo);

@@ -27,7 +27,7 @@ if ~exist('condition','var')
         core = sprintf('%s_noCP', core);
     end
     if GLMType.Subunits
-        core = sprintf('%s_SU'  , core);
+        core = sprintf('%s_SU%s'  , core, GLMType.Subunit_NL);
     end
     if GLMType.contrast
         core = sprintf('%s_C'  , core); 

@@ -48,7 +48,7 @@ if strcmp(base_type, 'default')
     GLMType.debug      = false;
     GLMType.contrast   = false;
     GLMType.Subunits   = false;
-    GLMType.STA_init   = true;
+    GLMType.STA_init   = false;
 end
 %%%%% Cone Names %%%%%%%
 
@@ -171,8 +171,12 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             GLMType.specialchange_name = change.name;
         end
         
-        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'ON')
+        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'exp')
             GLMType.Subunits = true;
+            GLMType.Subunit_NL = 'exp';
+        elseif strcmp(change.type, 'Subunits') && strcmp(change.name, 'squared')
+            GLMType.Subunits = true;
+            GLMType.Subunit_NL = 'squared';
         end
         
         if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
