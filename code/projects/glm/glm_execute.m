@@ -118,6 +118,10 @@ center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 if isfield(paramind, 'X')
     [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
+else 
+    % shorten precision if lacking stim filter 
+    GLMPars.optimization.tolfun = 4;
+    display('tolfun 4')
 end
 clear WN_STA center_coord
 
