@@ -36,11 +36,10 @@ comparison_name = 'WNstandardnoPS_vsNSEMfitcrossval-oddeven3DS';
 comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 clear ; close all; clc;
-metrics = [1 2 3 4 5 6 7];
+metrics = [1 2 3 4 5 6];
 %cellselection_type = 'glmconv4pct';
-comparison_name     = 'WNvsNSEM-standardGLM-ConstrainPS';
-cellselection_type  = 'halfratio_50';
-%cellselection_type = 'all';
+comparison_name = 'WN-InputPieceLin-InputSmooth-BothPSConstrain'
+cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -48,7 +47,6 @@ for i_metric = metrics
     if i_metric == 4, metric = 'FracVar10msec'; end
     if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
     if i_metric == 6, metric = 'BPS_divideUOP'; end
-    if i_metric == 7, metric = 'FracVar10msec_normdivide'; end
     [model_comparison, outputnotes] = compareModels(comparison_name,metric,cellselection_type)
 end
 
@@ -145,13 +143,6 @@ eval(sprintf('load %s/allcells.mat', BD.Cell_Selection));
 if strcmp(cellselection_type, 'glmconv4pct')
     eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection)); 
 end
-
-% AKH 2015-07-15  new convergence criterion
-if strcmp(cellselection_type, 'halfratio_50') || strcmp(cellselection_type, 'halfratio_20') ...
-        || strcmp(cellselection_type, 'halfratio_100')
-    eval(sprintf('load %s/fitted_aggscores.mat', BD.Cell_Selection));
-end
-
 currentdir = pwd;
 savedir = sprintf('%s/Plots/ModelComparisons/%s/%s',BD.GLM_output_analysis,comparison_name,metric);
 if ~exist(savedir,'dir'), mkdir(savedir); end
@@ -212,42 +203,10 @@ for i_exp = exps
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
         clear conv_index_ON conv_index_OFF conv_columns
-        % AKH 2015-07-15  new convergence criterion
-    elseif strcmp(cellselection_type, 'halfratio_20')
-        conv_index_ON = intersect(...
-            find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .05),...
-            find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .05)) ;
-        conv_index_OFF = intersect(...
-            find(aggregated_scores{i_exp}.celltype{2}.halfratio_WN < .05),...
-            find(aggregated_scores{i_exp}.celltype{2}.halfratio_NSEM < .05)) ;
-        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
-        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
-        clear conv_index_ON conv_index_OFF conv_columns
-    elseif strcmp(cellselection_type, 'halfratio_50')
-        conv_index_ON = intersect(...
-            find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .02),...
-            find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .02)) ;
-        conv_index_OFF = intersect(...
-            find(aggregated_scores{i_exp}.celltype{2}.halfratio_WN < .02),...
-            find(aggregated_scores{i_exp}.celltype{2}.halfratio_NSEM < .02)) ;
-        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
-        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
-        clear conv_index_ON conv_index_OFF conv_columns
-    elseif strcmp(cellselection_type, 'halfratio_100')
-        conv_index_ON = intersect(...
-            find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .01),...
-            find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .01)) ;
-        conv_index_OFF = intersect(...
-            find(aggregated_scores{i_exp}.celltype{2}.halfratio_WN < .01),...
-            find(aggregated_scores{i_exp}.celltype{2}.halfratio_NSEM < .01)) ;
-        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
-        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
-        clear conv_index_ON conv_index_OFF conv_columns
     elseif strcmp(cellselection_type,'all')
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP;
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP;
     end
-
     
     % Translate into indices
     for i_celltype = 1:2
@@ -604,6 +563,7 @@ eval(sprintf('print -dpdf plot_%s.pdf',printname))
 end
 
 
+
 function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 % 2015-07-13
 % Unpack comparison_name
@@ -662,8 +622,6 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WN-standardGLM-PSConstrain-Sub1'
 
 % Section 0: WNvsNSEM
-'WNvsNSEM-standardGLM-ConstrainPS'
-'WNvsNSEM-standardGLMnoPS'
 'WNvsNSEM-logpowerraise-constrainPS'
 'WNvsNSEM-rk1-constrainPS'
 'WNvsNSEM-standardGLM-CPconstrainPS'
@@ -1186,17 +1144,6 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 0: WNvsNSEM
     %%%%%%%%%%%%%%%%%%%%%%%%%%
-    case 'WNvsNSEM-standardGLM-ConstrainPS'
-        models{1}.settings= {};
-        models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
-        models{1}.fit_type = 'WN';
-        models{2}.settings = {};
-        models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
-        models{2}.fit_type = 'NSEM';
-        plotparams.xlabel             = 'White Noise';
-        plotparams.ylabel             = 'Natural Scenes';
-        plotparams.title_comparison   = 'ConstrainPS';
-        plotparams.purpose            = 'Check WN vs NSEM with constrained PS';
     case 'WNvsNSEM-logpowerraise-constrainPS'
         models{1}.settings{1}.type = 'cone_model';
         models{1}.settings{1}.name = 'rieke_linear'
@@ -1242,17 +1189,7 @@ switch comparison_name
         plotparams.ylabel             = 'Natural Scenes';
         plotparams.title_comparison   = 'GLMwithCP(constrainedPS)';
         plotparams.purpose            = 'Check WN vs NSEM with Coupling.constrained PS to prevent runaway spikes';
-     case 'WNvsNSEM-standardGLMnoPS'
-        models{1}.settings{1}.type = 'PostSpikeFilter';
-        models{1}.settings{1}.name =  'OFF';
-        models{1}.fit_type = 'WN';
-        models{2}.settings{1}.type = 'PostSpikeFilter';
-        models{2}.settings{1}.name =  'OFF';
-        models{2}.fit_type = 'NSEM';
-        plotparams.xlabel             = 'White Noise';
-        plotparams.ylabel             = 'Natural Scenes';
-        plotparams.title_comparison   = 'Standard GLM (noPS)';
-        plotparams.purpose            = 'Check WN vs NSEM for standard GLM (fixed space to WN-STA, fit time, no post-spike, no coupling)';            
+                
     case 'WNvsNSEM-standardGLM'
         models{1}.settings = {};
         models{1}.fit_type = 'WN';
