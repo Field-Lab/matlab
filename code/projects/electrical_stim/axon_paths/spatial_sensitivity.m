@@ -42,7 +42,7 @@ for n = 1:length(cellIds)
     else
         plotCoords = false;
     end; 
-    [ax, ay] = eiContour_wPolyFit(eiAmps,'figureNum',100,'ei_thresh', ei_thresh,'plotCoords',plotCoords);
+    [ax, ay] = eiContour_wPolyFit(eiAmps,'figureNum',100,'ei_thresh', ei_thresh,'plotCoords',plotCoords, 'N', 7);
     
     % Find ei amps greater than a particular threshold
     elecs = find(eiAmps > ei_thresh); 

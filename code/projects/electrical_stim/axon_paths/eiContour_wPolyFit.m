@@ -1,4 +1,4 @@
-function [xf, yf] = eiContour_wLinFit(eiAmps,varargin)
+function [xf, yf] = eiContour_wPolyFit(eiAmps,varargin)
 % EICONTOUR_WLINFIT() plots an EI as a contour plot with a piecewise linear
 % fit of the ei overlayed
 %  inputs:   eiAmps

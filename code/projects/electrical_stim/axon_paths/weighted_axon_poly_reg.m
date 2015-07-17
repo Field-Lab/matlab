@@ -1,4 +1,4 @@
-function [curve_x, curve_y, p] = weighted_axon_poly_reg(eiAmps, varargin)
+function [curve_x, curve_y, p, soma_x, soma_y, valid, res] = weighted_axon_poly_reg(eiAmps, varargin)
 % AXON_POLY_REG() takes in an EI and finds a polynomial
 % line of best fit for the weighted amplitudes.
 %   inputs:        eiAmps
@@ -23,6 +23,7 @@ N = 7;
 point_threshold = max(eiAmps) / 20;
 
 plot_reg = false;
+valid = true;
 
 % Increasing this would seem to give more fine differentiation between
 % ei amps, but increasing it doesn't decrease error overall. 
@@ -31,7 +32,7 @@ amp_scaling = 1;
 % Read if plot is true.
 nbin = length(varargin);
 for j=1:(nbin/2)
-    if ~ischar(varargin{j})
+    if ~ischar(varargin{j*2-1})
         err = MException('MATLAB:InvArgIn',...
             'Unexpected additional property');
         throw(err);
@@ -112,9 +113,10 @@ for n = 1:length(eiAmps)
     end    
 end
 
-if size(above_thresh_x) < 10
-    warning('axon_poly_reg:Unclear',...
-    'There are probably too few points with signal for a good fit');
+if size(above_thresh_x) < 20
+    valid = false;
+    warning('weighted_axon_poly_reg:Unclear',...
+    'Threshold is too high, or there are too few points with signal for a good fit. ');
 end
 
 % If the axon path seems like it might be not a function (if it may be
@@ -124,10 +126,14 @@ if range(above_thresh_y) > range(above_thresh_x)
     swap = above_thresh_points(:,2);
     above_thresh_points(:,2) = above_thresh_points(:,1);
     above_thresh_points(:,1) = swap;
+    original_soma_x = soma_x;
     soma_x = soma_y;
     first_coord = min(above_thresh_y);
     last_coord = max(above_thresh_y);
     search_coords = coords(:,2);
+    swap = arrayY;
+    arrayY = arrayX;
+    arrayX = swap;
 else
     first_coord = min(above_thresh_x);
     last_coord = max(above_thresh_x);
@@ -152,7 +158,7 @@ end
 
 x = above_thresh_points(:,1);
 y = above_thresh_points(:,2);
-p = polyfitweighted(x, y ,N,above_thresh_amps);
+
 
 % Decides which way the axon should go, based on the average value of the
 % electrodes to the right and left of the soma. 
@@ -167,31 +173,80 @@ right_of_soma = setxor(indicies, left_of_soma);
 val_left = sum(eiAmps(left_of_soma));
 val_right = sum(eiAmps(right_of_soma));
 
-x_steps = 0.01;
+x_steps = 1;
 
 % Sets range for axon x
 if val_left > val_right
     curve_x = first_coord:x_steps:soma_x;
+    curve_x = fliplr(curve_x);
+    x_range = soma_x - first_coord;
 else
     curve_x = soma_x:x_steps:last_coord;
+    x_range = last_coord - soma_x;
 end  
 
+soma_range = floor((arrayX*2)/x_range);
 
+%if soma_range > 7
+%    valid = false;
+    %warning('weighted_axon_poly_reg:Short',...
+    %    'Threshold is too high, or axon path is too small for a valid fit');
+%else    
+    while soma_range > 1
+        N = N - 1;
+        soma_range = soma_range - 1;
+    end    
+%end 
+
+if N < 3
+    N = 3;
+end    
+
+p = polyfitweighted(x, y ,N,above_thresh_amps);
 curve_y = polyval(p,curve_x);
 
+if abs(max(curve_y)) > (arrayY + 50)
+    valid = false;
+    warning('weighted_axon_poly_reg:OutOfBounds',...
+    'Axon estimation goes out of array bounds. This is usually the result of an EI with too few electrodes with signal.' );
+end    
 
+k = find(abs(curve_y) > arrayY);
+if ~isempty(k)
+    curve_x = curve_x(1:min(k));
+    curve_y = curve_y(1:min(k));
+end
 % If the x and y were switched before the regression, switch them back.
 if range(above_thresh_y) > range(above_thresh_x)
     swap = curve_x;
     curve_x = curve_y;
     curve_y = swap;
+    soma_x = original_soma_x;
 end    
+
+res = 0;
+for elec = 1:length(eiAmps)
+    min_dist_to_axon = sqrt( min( sum( bsxfun(@minus, vertcat(curve_x, curve_y), [coords(elec,1);coords(elec,2)]).^2,1)));
+    res = res + (min_dist_to_axon * eiAmps(elec));
+end
+res = res/max(eiAmps);
+
+if res > 3000
+    valid = false;
+    warning('weighted_axon_poly_reg:NoDefinedAxon', ...
+        'EI is too scattered for a clear axon path');
+
 
 if plot_reg
     figure
     scatter(coords(:,1),coords(:,2), eiAmps+.1, 'filled');
     hold on;
     plot(curve_x, curve_y, '-');
+end   
+
+if ~valid
+    curve_x = [];
+    curve_y = [];
 end    
 
 end
