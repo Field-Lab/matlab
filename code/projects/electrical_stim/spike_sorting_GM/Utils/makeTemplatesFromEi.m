@@ -15,9 +15,9 @@ function [templates, recElecs] = makeTemplatesFromEi(pathToEi, neuronIds,  varar
 % Lauren Grosberg 7/2015
 
 
-if(nargin>4)
+if(nargin>2)
     recElecs=varargin{1};
-elseif(nargin==4)
+elseif(nargin==2)
     recElecs=[];
 end
 

@@ -42,7 +42,7 @@ for n = 1:length(cellIds)
         plotCoords = false;
     end; 
     eiContour_wLinFit(eiAmps,'linFitThresh',5,'figureNum',100,'plotCoords',plotCoords);
-    
+    eiContour_wLinFit(eiAmps,'linFitThresh',5,'figureNum',300,'plotCoords',plotCoords);
     % Find ei amps greater than a particular threshold
     elecs = find(eiAmps > ei_thresh); 
     figure(200); 
@@ -53,25 +53,25 @@ for n = 1:length(cellIds)
     if ~isempty(find(xc(elecs) < min(xc/2), 1))
         fpath = '/Volumes/Analysis/2012-09-24-3/data003/';
         [~, thresh_quad1] = genActThreshSpatialMaps(fpath, neuronId, ...
-            'dispCheckedElecs',1);
+            'dispCheckedElecs',1,'suppressPlots',1);
     end
 
     if ~isempty(find(xc(elecs) > min(xc/2) & xc(elecs) < 0, 1));
         fpath = '/Volumes/Analysis/2012-09-24-3/data004/';
         [~, thresh_quad2] = genActThreshSpatialMaps(fpath, neuronId, ...
-            'dispCheckedElecs',1);
+            'dispCheckedElecs',1,'suppressPlots',1);
     end
     
     if ~isempty(find(xc(elecs) < max(xc/2) & xc(elecs) > 0, 1))
         fpath = '/Volumes/Analysis/2012-09-24-3/data005/';
         [~, thresh_quad3] = genActThreshSpatialMaps(fpath, neuronId, ...
-            'dispCheckedElecs',1);
+            'dispCheckedElecs',1, 'suppressPlots',1);
 
     end
     if ~isempty(find(xc(elecs) > max(xc/2), 1))
         fpath = '/Volumes/Analysis/2012-09-24-3/data006/';
         [~, thresh_quad4] = genActThreshSpatialMaps(fpath, neuronId, ...
-            'dispCheckedElecs',1);
+            'dispCheckedElecs',1, 'suppressPlots',1);
 
     end
    
@@ -87,6 +87,7 @@ for n = 1:length(cellIds)
 end
 colormap(cmap.m); caxis([0.5 4.5]);
 colorbar;
+title('50% activation thresholds, human sorting'); 
 % 1. Check to make sure that the elecResp files for all the relevant
 % electrodes are made & checked.
 % 2. Make sure that the automated spike sorting has been done for each of
@@ -104,18 +105,19 @@ end
 patternNos = zeros(size(spatialSensitivity)); 
 thresh_hum = zeros(size(spatialSensitivity)); 
 thresh_alg = zeros(size(spatialSensitivity)); 
-
+algThreshElectrodes = zeros(size(spatialSensitivity)); 
 for p=1:size(spatialSensitivity,2)
     
     alg_output = spatialSensitivity(p);
     [thresholdHum, thresholdAlg] = fitToErfOutputAndHuman(alg_output);
     patternNos(p) = alg_output.stimInfo.patternNo;
-    if (thresholdHum > 4) || (thresholdHum < 0)
+    algThreshElectrodes(p)= alg_output.stimInfo.patternNo;
+    if (thresholdHum > 4.5) || (thresholdHum < 0)
          thresh_hum(p) = 0; 
     else
         thresh_hum(p) = thresholdHum;
     end
-    if (thresholdAlg > 4) || (thresholdAlg < 0)
+    if (thresholdAlg > 4.5) || (thresholdAlg < 0)
         thresh_alg(p) = 0;
     else
         thresh_alg(p) = thresholdAlg;
@@ -137,6 +139,15 @@ scatter(thresh_hum, thresh_alg, 50, [1  .271  0],'filled');
 xlabel('thresholds (\muA) using human analysis'); 
 ylabel('thresholds (\muA) using GM algorithm'); 
 title(sprintf('50%% activation thresholds, %0.0f stim patterns',length(thresh_hum))); 
+
+%% Display threshold contour plot based on 
+figure(300); hold on; 
+idx = find(thresh_alg); 
+scatter(xc(algThreshElectrodes(idx)),yc(algThreshElectrodes(idx)),150,...
+    thresh_alg(idx),'filled');
+colormap(cmap.m); caxis([0.5 4.5]);
+colorbar;
+title('50% activation thresholds, algorithm sorting'); 
 %% Unchecked code.
 % subplot(1,3,2); line(0:4,0:4,'Color','k'); hold on; 
 % scatter(thresh_hum, thresh_alg, 50,[0  .231  1], 'filled');
