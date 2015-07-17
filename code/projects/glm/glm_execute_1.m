@@ -1,8 +1,14 @@
 % AKHEITMAN 2015-07-13
 % Integrate develop/fitGLMconstrainPS into glm_execute
 
-function [fittedGLM] = glm_execute_prototypespecialarg(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
+function [fittedGLM] = glm_execute_1(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
 
+% Version 1 works. Switched in 2015-07-14
+% Enables PS Constrain Gain control, utilizes fmincon
+% Smarter way of tracking which algorithm to use
+
+% Version 0 works. Up to and including 2015-07-14
+% Coupling, xval measures, printing, rk2, rk1 all integrated
 
 %% Setup Covariates
 fittedGLM.cell_savename = glm_cellinfo.cell_savename;
@@ -233,7 +239,7 @@ if ~GLMType.CONVEX
         [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
                 (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
     elseif strcmp(fittedGLM.solver,'fmincon')
-         [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
+         [pstar fstar eflag output] = fmincon(@(p) glm_nonconvex_optimizationfunction...
                 (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),...
                 p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
     end
