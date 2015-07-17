@@ -1,4 +1,30 @@
+% NEW NAMING OF GLM_WRAP AND GLM_EXECUTE
 
+% 2015-07-14
+% Both moved to main glm folder because they are the sites of major edits.
+% glm_wrap should only call glm/wrap_bookkeep
+% glm_execute should only call glm/glm_core
+
+
+
+% Version 1: started 2015-07-13
+% glm_wrap: 
+%   -added a special_arg input designed to handle concepts such as
+%   constrained searching, and fitting non-linearities
+%   -took out unused call to doubleopt
+% glm_execite:
+%   -enables for constraining PS filter using change of basis, fmincon
+%   -cleaner calling of fitting algorithm
+%   -PS constrain should work robustly for all cases
+
+% Version 0: up to and including 2015-07-14
+% glm_execute: Coupling, xval measures, printing, rk2, rk1 all integrated
+% glm_wrap: loads cells, sets directories, loads and process spikes and stim
+
+
+
+
+%%% BELOW IS ALL BEFORE 2015-04-01
 %{
 GLM starts off at GLM_AH Version 6_2
 GLM started on 2015-03-30
