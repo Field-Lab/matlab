@@ -3,6 +3,9 @@ codebase_path = matlab_code_path;
 analysisPath = uigetdir('/Volumes/Analysis/', 'Choose the electrical stim data folder (001,002, etc) that contains data organized by pattern');
 [eiFileName, eiPath] = uigetfile('/Volumes/Analysis/*.ei','Choose ei file to use as a template'); 
 pathToEi = [eiPath eiFileName];
+
+patternNos = input('Enter pattern(s) to create sorted output file(s): ');
+neuronIds = input('Enter neuron id to create sorted output file(s): ');
 % analysisPath = '/Volumes/Analysis/2015-05-27-0/data001/'; % Directory with the electrical spikes sorted into -autosort/'; 
 
 % Set optional arguments. 
@@ -24,22 +27,20 @@ end
 % Save output files in the created directory
 for p = 1:length(patternNos)
     patternNo = patternNos(p); 
-    Output = SpikeSortingCompact(analysisPath,patternNo,neuronIds,pathToEi,...
+    elecRespAuto = SpikeSortingCompact(analysisPath,patternNo,neuronIds,pathToEi,...
         'recElecs',recElecs,'findAxon',findAxon,'findAxon',findAxon,...
         'cleanData',cleanData,'Trange',Trange,'degPolRule',degPolRule);
+    fname = fullfile(sortedPath,['elecRespAuto_n' ...
+        num2str(elecRespAuto.neuronInfo.neuronIds) '_p' ...
+        num2str(elecRespAuto.stimInfo.patternNo) '.mat']); 
+    save(fname,'elecRespAuto'); 
+    disp(['done analyzing ' fname]); 
+%     save([elecResp.names.data_path filesep elecRespName], 'elecResp')
+%         disp(['done analyzing movie ' num2str(elecResp.stimInfo.movieNos(j)) ', pattern ' num2str(patternNos(i))])
 end
 
-for p = 1:length(pathnames)
-    
-                                                                                      
-         
-   
-    
-    %translate templates if by some reason there are weird template offsets.   
-    %templates = translateTemplate(templates,Translate(p),1,1); % The minimum of each
-    % template should always align with sample point 10
- 
 
-    
-end
-    
+
+%translate templates if by some reason there are weird template offsets.
+%templates = translateTemplate(templates,Translate(p),1,1); % The minimum of each
+% template should always align with sample point 10
