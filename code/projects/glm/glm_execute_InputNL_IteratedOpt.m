@@ -24,6 +24,7 @@ if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
     
     fittedGLM = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,options);
     
+    %%% frame_shifts = fittedGLM.linear
     
     %%% test  this should return same value as fittedGLM.rawfit.objective_val
     
@@ -110,9 +111,66 @@ center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 clear WN_STA center_coord
-if GLMType.CONVEX
-    glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
+
+
+if ~GLMType.CONVEX
     % Maybe move this inside of the stimulus preparation % 
+    bpf         = GLMPars.bins_per_frame;
+    shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
+    if isfield(GLMPars.stimfilter,'frames_negative')
+        shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
+    end
+    X_bin_shift = prep_timeshift(X_bin,shifts);
+    pstar = pstar';
+    
+    
+    %
+    % PARAMS TO GET INCORPORTED IN COVARIATE VEC 
+    TimeFilter  = pstar(paramind.time1);
+    SpaceFilter = pstar(paramind.space1);
+    
+    frame_shifts = shifts;
+    % FIND SPATIAL FILTER COVARIATE VEC (USING TIMEFILTER)
+    if min(frame_shifts) == 0;
+        convolvingFilter = (TimeFilter);        
+    elseif min(frame_shifts) > 0
+        padzeros         = zeros(min(frame_shifts),1);
+        convolvingFilter = [padzeros ; (TimeFilter)]; 
+    else
+        error('frame_shifts should be >=0')
+    end
+    timeconvStim = zeros( pixels , (frames+length(convolvingFilter)-1) );
+    for i_row = 1:size(X_frame,1)
+        timeconvStim(i_row,:) = conv(X_frame(i_row,:) , convolvingFilter);
+    end
+    timeconvStim = timeconvStim(:,1:frames);
+    bins   = bpf * frames;
+    A      = repmat(timeconvStim, [ bpf,1]); 
+    spatial_covariatevec  = reshape(A, [pixels, bins]);
+    
+    % FIND TEMPORAL FILTER COVARIATE VEC (USING SPATIAL FILTER)
+    spaceconvStim           = SpaceFilter' * X_frame;
+    B                       = repmat(spaceconvStim, [ bpf,1]); 
+    spaceconvStim_bin       = reshape(B, [1, bins]);
+    
+    bin_shifts              = bpf *frame_shifts;
+    temporal_covariatevec   = prep_timeshift(spaceconvStim_bin,bin_shifts);
+    
+    
+    % STIMULUS ADDED TWICE / DIVIDE EACH COVARIATE VEC BY TWO
+    covariate_vec(paramind.time1 ,:) =  .5*temporal_covariatevec;
+    covariate_vec(paramind.space1,:) =  .5*spatial_covariatevec;
+    %}
+    
+    
+    
+    lcif_stim = pstar(paramind.X) *covariate_vec;
+end
+
+
+
+if GLMType.CONVEX
+   
     bpf         = GLMPars.bins_per_frame;
     shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
     if isfield(GLMPars.stimfilter,'frames_negative')

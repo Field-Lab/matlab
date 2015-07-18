@@ -7,6 +7,12 @@
 
 
 
+% Version 3: 
+% glm_wrap:
+%   - add load input argument to the runoptions
+%   - made debug version actually run on shorter input (just 5 blocks)
+
+
 % Version 2: 
 % glm_execute: started 2015-07-14
 %   - enable optional_arg input,(for GLMPars for now)
