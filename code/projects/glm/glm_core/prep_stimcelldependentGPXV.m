@@ -122,6 +122,14 @@ if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
         newstim(quartile_4) = slope4 * (newstim(quartile_4) - .75) + offset4;
         
         newstim = newstim - offset2;
+        
+    % New option added AKHeitman 205-07-14    
+    elseif strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
+        newstim = stim + fitmoviestats.normmean; % 0 1 scale        
+        %display('log_powerraise')
+        coeff = 10^(GLMPars.others.point_nonlinearity.log_powerraise);
+        newstim = newstim.^coeff;
+        newstim = newstim - mean(newstim(:));
     else
         display('error, need to properly specifiy input non-linearity')
     end

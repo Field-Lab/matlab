@@ -46,13 +46,15 @@
 %{
 
 clear; clc
-exps = [1 3 2 4]; stimtypes = [2]; celltypes = [2]; 
-cell_subset = 'glmconv_4pct'; postfilterNL.debug = false;
+exps = [1 3 2 4]; stimtypes = [1 2]; celltypes = [2]; 
+cell_subset = 'shortlist'; 
 baseGLM.settings{1}.type = 'cone_model';
 baseGLM.settings{1}.name = 'rieke_linear'
 baseGLM.settings{2}.type= 'input_pt_nonlinearity';
-baseGLM.settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+baseGLM.settings{2}.name= 'log_powerraise';
+baseGLM.special_arg = 'PS_netinhibitory_domainconstrain_COB';
 postfilterNL.type = 'Logistic_fixMU_includePS';
+postfilterNL.debug = false;
 runoptions.print  = true;
 glm_postfilterNL_fullGLM(exps,stimtypes,celltypes,cell_subset,baseGLM,postfilterNL,runoptions)
 
@@ -537,15 +539,13 @@ if GLMType.PostSpikeFilter
     basis_params  = GLMPars.spikefilters.ps;
     ps_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
     
-    if isfield(GLMType, 'PS_constrain')
-        if strcmp(GLMType.PS_constrain.type, 'PS_netinhibitory_domainconstrain_COB')
+    if isfield(GLMType, 'special_arg') && isfield(GLMType.special_arg,'PS_Constrain')
             ps_basis_0 = ps_basis; clear ps_basis
             v        = sum(ps_basis_0,1);
             v        = v / norm(v) ;
             orthog_v = null(v);
             COB      = [v', orthog_v] ;
             ps_basis = (inv(COB) * ps_basis_0')' ;
-        end
     end
             
 end
