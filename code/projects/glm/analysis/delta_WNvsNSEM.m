@@ -28,14 +28,18 @@ clear
 %comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLnetinhibPSCOB';
 %comparison_name = 'deltaWNvsNSEM-standardGLMnetinhibPSCOB-InputNLLogisticfixMUnetinhibPSCOB';
 comparison_name = 'deltaWNvsNSEM-noPSnoCP-noPSnoSTIM';
+
+
+
+clear
 cellselection_type = 'shortlist';
 rundir = pwd;
-metrics = [1 2 3 4 5];
-metrics = 6;
+metrics = [1 2 3 4 5 6];
+comparison_name = 'deltaWNvsNSEM-linearconescontrainPS-logpowerraiseconstrainPS';
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
-    if i_metric == 3, metric = 'FracVar10msec_normdivide'; end
+    if i_metric == 3, metric = 'FracVar10msec_neg1'; end
     if i_metric == 4, metric = 'FracVar10msec'; end
     if i_metric == 5, metric = 'VSPKD50msec_normsubtract'; end    
     if i_metric == 6, metric = 'BPS_divideUOP'; end
@@ -59,6 +63,32 @@ plotparams.xlabel             = 'White Noise';
 plotparams.ylabel             = 'Natural Scenes';
 
 % Unpack comparison_name
+if strcmp(comparison_name, 'deltaWNvsNSEM-linearconescontrainPS-logpowerraiseconstrainPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type= 'input_pt_nonlinearity';
+    models{2}.settings{2}.name= 'log_powerraise';
+    models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+    plotparams.title_comparison   = 'SmoothInputNL(PSconstrain)';
+    plotparams.purpose            = 'Verify log-powerraise NL worked correctly';
+end
+
+
+if strcmp(comparison_name, 'deltaWNvsNSEM-contrainPS-logpowerraiseconstrainPS')
+    models{1}.settings= {};
+    models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type= 'input_pt_nonlinearity';
+    models{2}.settings{2}.name= 'log_powerraise';
+    models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+    plotparams.title_comparison   = 'SmoothInputNL(PSconstrain)';
+    plotparams.purpose            = 'Verify log-powerraise NL worked correctly';
+end
+       
 if strcmp(comparison_name, 'deltaWNvsNSEM-standardGLM-PSConstrain-Sub1')
     models{1}.settings = {};
     models{2}.settings = {};
@@ -255,6 +285,13 @@ switch metric
         plotparams.low_lim = 0;
         plotparams.high_lim = 1;
         plotparams.title_metric = 'Fraction of Variance';
+        
+    case 'FracVar10msec_neg1'
+        rawmetric_name = 'crossval_fracvar_10msec';
+        normalize.doit = false;
+        plotparams.low_lim = -1;
+        plotparams.high_lim = 1;
+        plotparams.title_metric = 'Fraction of Variance';   
         
     case 'FracVar10msec_normdivide'
         rawmetric_name = 'crossval_fracvar_10msec';
