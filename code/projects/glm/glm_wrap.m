@@ -67,6 +67,30 @@ Local minimum possible.
 
 
 
+clear
+exps        = 3;
+stimtypes   = [1]; % white noise only  (2 is natural scens)
+celltypes   = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+glm_settings{2}.type = 'cone_model';
+glm_settings{2}.name = 'rieke_linear';
+glm_settings{3}.type = 'filter_mode';
+glm_settings{3}.name = 'rk1';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
+%%% Should have the following minimization sequence  
+### running: WN expC ONPar_2824: debug_rk1_MU_PS_noCP_timekernelCONEMODEL/standardparams ###
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0            110.954                      1.93e+03                
+     1            110.954             10       1.93e+03           3
+     2           -3440.38            2.5            177           0
+     3           -3440.38              5            177           2
+     4           -3682.82           1.25            129           0
+
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -123,8 +147,9 @@ end
 % AKH Optional Loading Argument 2015-07-18
 if exist('runoptions','var')
     if isfield(runoptions,'load_previousfit')
-        loadfit.glm_settings = runoptions.load_previousfit.glm_settings;
-        loadfit.GLMType      = GLM_settings('default',loadfit.glm_settings);        
+        loadfit.glm_settings    = runoptions.load_previousfit.glm_settings;
+        loadfit.GLMType         = GLM_settings('default',loadfit.glm_settings);
+        loadfit.GLMType.fitname = GLM_fitname(loadfit.GLMType); 
     end
 end
 
@@ -144,9 +169,8 @@ for i_exp = exps
         [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'fitmovie');
         [testmovie0]          = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'testmovie');
         testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
-        GLMType.fitmoviefile  = origmatfile;
-        
-        % Right now this does nothing
+        GLMType.fitmoviefile  = origmatfile;        
+        % Shorten-FitTimes to make debugging mode worthwhile  AKH 2015-07-18
         if GLMType.debug
             StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:5);
         end
@@ -161,13 +185,25 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        
         if GLMType.CouplingFilters
             Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
         end
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
-                
+        
+        % Optional Load from GLM_Output_Analysis directory
+        % AKH 2015-07-18
+        if exist('loadfit','var')
+            Dirs.load_fittedGLM  = sprintf('%s/%s', BD.GLM_output_analysis, loadfit.GLMType.fitname);
+            if i_stimtype == 1
+                Dirs.load_fittedGLM = sprintf('%s/WN_mapPRJ/%s', Dirs.load_fittedGLM, exp_nm);
+            elseif i_stimtype == 2
+                Dirs.load_fittedGLM = sprintf('%s/NSEM_mapPRJ/%s', Dirs.load_fittedGLM, exp_nm);
+            end
+        end
+        
+        
+        
         for i_celltype = celltypes            
             % Choose which subset of cells to run
             if i_celltype == 1; cellgroup = allcells{i_exp}.ONP;  celltype = 'ONPar'; end
@@ -258,8 +294,20 @@ for i_exp = exps
                     
                     
                     if isfield(GLMType,'InputNL_IteratedOpt') && GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
-                         [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); 
+                        
+                        optional_arg = {};
+                        % load fitted GLM  AKH 2015-07-18
+                        if exist('loadfit','var')
+                            filename = sprintf('%s/%s.mat', Dirs.load_fittedGLM,cell_savename);
+                            if exist(filename)
+                                eval(sprintf('load %s fittedGLM', filename));
+                                optional_arg{1}.type = 'preinputNL_fittedGLM';
+                                optional_arg{1}.preinputNL_fittedGLM = fittedGLM;
+                            end
+                        end
+                        
+                        [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg); 
                     else
                         [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
