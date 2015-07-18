@@ -44,9 +44,9 @@
 
 %%% TEST CODE DON"T DELETE  on branch akheitman %%%
 clear
-exps        = 3;
-stimtypes   = [1]; % white noise only  (2 is natural scens)
-celltypes   = [1]; % only ON Parasol
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
 cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
@@ -57,20 +57,102 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
 
                                 Norm of      First-order 
  Iteration        f(x)          step          optimality   CG-iterations
-     0            105.635                      1.93e+03                
-     1            105.635             10       1.93e+03           4
-     2           -4224.27            2.5            372           0
-     3           -4549.67        4.52753            754           6
-     4           -4676.83       0.326465            115           2
+     0            1297.56                         2e+04                
+     1            1297.56             10          2e+04           4
+     2           -42251.5            2.5       2.56e+03           0
+     3           -45320.3        4.13912       5.15e+03           7
 
 Local minimum possible.
 
+%%% TEST CODE FOR NON_CONVEX : DON"T DELETE on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+glm_settings{2}.type = 'filter_mode';
+glm_settings{2}.name = 'rk1';
+glm_settings{3}.type = 'PostSpikeFilter';
+glm_settings{3}.name =  'OFF';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
+%%% Should have the following minimization sequence 
+### running: WN expC ONPar_2824: debug_rk1_MU_noPS_noCP_p8IDp8/standardparams ###
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             1478.5                         2e+04                
+     1             1478.5          11.82          2e+04           1
+     2           -33907.5            2.5       1.08e+03           0
+     3           -33907.5              5       1.08e+03           1
+     4           -37215.6           1.25        5.2e+03           0
+
+
+%%% TEST PS_CONSTRAIN on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+%%% Should have the following minimization sequence 
+### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams/PS_netinhibitory_domainconstrain_COB ###
+Your initial point x0 is not between bounds lb and ub; FMINCON
+shifted x0 to satisfy the bounds.
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0            3133.16                      2.02e+04                
+     1            3133.16             10       2.02e+04           5
+     2           -42096.8            2.5       4.63e+03           0
+     3           -44069.2        5.83931        7.3e+03           7
+     4           -45909.5         1.8113        1.2e+03           4
+
+Local minimum possible.
+fmincon stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+
+
+
+%%% TEST PS_CONSTRAIN on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [2]; % white noise only  (2 is natural scens)
+celltypes = [2]; % only ON Parasol
+cell_subset = 'debug';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk1';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+
+
+
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+glm_settings{2}.type = 'cone_model';
+glm_settings{2}.name = 'rieke_linear'
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
 
 
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+function glm_wrap_2(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
 % Verion 2: 2015-07-17
 %  integraed glm_execute_InputNL_IteratedOpt
 % Version 1: started 2015-07-14
@@ -119,16 +201,6 @@ if exist('runoptions','var')
 end
 
 
-
-% AKH Optional Loading Argument 2015-07-18
-if exist('runoptions','var')
-    if isfield(runoptions,'load_previousfit')
-        loadfit.glm_settings = runoptions.load_previousfit.glm_settings;
-        loadfit.GLMType      = GLM_settings('default',loadfit.glm_settings);        
-    end
-end
-
-
 for i_exp = exps    
     for i_stimtype = stimtypes
         % Load master datarun, bookkeep
@@ -145,12 +217,9 @@ for i_exp = exps
         [testmovie0]          = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'testmovie');
         testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
         GLMType.fitmoviefile  = origmatfile;
-        
-        % Right now this does nothing
         if GLMType.debug
-            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:5);
+            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:57);
         end
-
         fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
          
         % Directories  
@@ -261,7 +330,7 @@ for i_exp = exps
                          [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); 
                     else
-                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                        [fittedGLM] = glm_execute_2(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     end
 

@@ -1,7 +1,7 @@
 % AKHEITMAN 2015-07-13
 % Integrate develop/fitGLMconstrainPS into glm_execute
 
-function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg)
+function [fittedGLM] = glm_execute_2(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg)
 
 % Version 2: Switched in 2015-07-17
 % Develop optional_arg to allow for wide variety of changes
