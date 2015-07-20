@@ -126,8 +126,13 @@ if exist('special_arg','var') && ~isempty(special_arg)
             GLMType.special_arg.PS_Constrain.params  = 0;
             GLMType.special_arg.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
         end
+        % AKH 2015-07-19
+        if strcmp(special_arg{i_arg},'postfilterNL_Logistic_2Par_fixMU')
+            GLMType.special_arg.postfilterNL.type    = 'Logistic_2Par_fixMU';
+        end        
     end
 end
+
 
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
@@ -143,15 +148,35 @@ if exist('runoptions','var')
 end
 
 
-
 % AKH Optional Loading Argument 2015-07-18
 if exist('runoptions','var')
     if isfield(runoptions,'load_previousfit')
-        loadfit.glm_settings    = runoptions.load_previousfit.glm_settings;
+        PF = runoptions.load_previousfit;
+        
+        loadfit.glm_settings    = PF.glm_settings;
         loadfit.GLMType         = GLM_settings('default',loadfit.glm_settings);
         loadfit.GLMType.fitname = GLM_fitname(loadfit.GLMType); 
+        
+
+        if isfield(PF, 'special_arg')
+            loadfit.GLMType.fitname_prespecialarg =  GLM_fitname(loadfit.GLMType);
+            for i_arg = 1:length(PF.special_arg)
+                loadfit.GLMType.fitname                = sprintf('%s/%s', loadfit.GLMType.fitname,special_arg{i_arg});
+                if strcmp(PF.special_arg{i_arg},'PS_netinhibitory_domainconstrain_COB')
+                    loadfit.GLMType.special_arg.PS_Constrain.type    = 'PS_netinhibitory_domainconstrain_COB';
+                    loadfit.GLMType.special_arg.PS_Constrain.params  = 0;
+                    loadfit.GLMType.special_arg.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
+                end
+                % AKH 2015-07-19
+                if strcmp(special_arg{i_arg},'postfilterNL_Logistic_2Par_fixMU')
+                    loadfit.GLMType.special_arg.postfilterNL.type    = 'Logistic_2Par_fixMU';
+                end     
+            end
+        end
     end
 end
+
+
 
 
 for i_exp = exps    
@@ -292,9 +317,18 @@ for i_exp = exps
                     tStart = tic;
                     
                     
-                    
-                    if isfield(GLMType,'InputNL_IteratedOpt') && GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
-                        
+                    if isfield(GLMType,'special_arg') && isfield(GLMType.special_arg,'postfilterNL') % New option of smooth inputNL search
+                        filename = sprintf('%s/%s.mat', Dirs.load_fittedGLM,cell_savename);
+                        postfilter_NL = GLMType.special_arg.postfilterNL;
+                        if exist(filename)
+                            eval(sprintf('load %s fittedGLM', filename));
+                            preoutputNL_fittedGLM  = fittedGLM; 
+                            clear fittedGLM
+                            [fittedGLM] = glm_execute_OutputNL(postfilter_NL,preoutputNL_fittedGLM,...
+                                GLMType,fitspikes_concat,fitmovie_concat,testspikes_raster,...
+                                testmovie,inputstats,glm_cellinfo,neighborspikes); 
+                        end
+                    elseif isfield(GLMType,'InputNL_IteratedOpt') && GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
                         optional_arg = {};
                         % load fitted GLM  AKH 2015-07-18
                         if exist('loadfit','var')
@@ -304,10 +338,9 @@ for i_exp = exps
                                 optional_arg{1}.type = 'preinputNL_fittedGLM';
                                 optional_arg{1}.preinputNL_fittedGLM = fittedGLM;
                             end
-                        end
-                        
+                        end                        
                         [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg); 
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg);                         
                     else
                         [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
