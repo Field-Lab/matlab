@@ -105,7 +105,7 @@ end
 end
 
 
-function obj_val = subR_modinputNL_findobj(NL_Params, lcif_external, pstar, GLMType, GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins)
+function [obj_val,lcif_stim] = subR_modinputNL_findobj(NL_Params, lcif_external, pstar, GLMType, GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins)
 % AKHEITMAN 2015-07-15
 % subRoutine which will get optimized for inding input NL
 
