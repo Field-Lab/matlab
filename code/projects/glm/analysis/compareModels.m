@@ -38,9 +38,9 @@ comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 clear ; close all; clc;
 metrics = [1 2 3 4 5 6 7];
 %cellselection_type = 'glmconv4pct';
-comparison_name     = 'WNvsNSEM-standardGLM-ConstrainPS';
-cellselection_type  = 'halfratio_50';
-%cellselection_type = 'all';
+comparison_name     = 'WNvsNSEM-logpowerraise_logisticfixMU_rk1_noPS';
+%cellselection_type  = 'halfratio_50';
+cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -662,6 +662,8 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WN-standardGLM-PSConstrain-Sub1'
 
 % Section 0: WNvsNSEM
+'WNvsNSEM-logpowerraise_logisticfixMU_rk1_noPS'
+'WNvsNSEM-logpowerraise_logisticfixMU_noPS'
 'WNvsNSEM-standardGLM-ConstrainPS'
 'WNvsNSEM-standardGLMnoPS'
 'WNvsNSEM-logpowerraise-constrainPS'
@@ -1186,6 +1188,54 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 0: WNvsNSEM
     %%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'WNvsNSEM-logpowerraise_logisticfixMU_rk1_noPS'
+        glm_settings{1}.type = 'cone_model';
+        glm_settings{1}.name = 'rieke_linear';
+        glm_settings{2}.type= 'input_pt_nonlinearity';
+        glm_settings{2}.name= 'log_powerraise';
+        glm_settings{3}.type = 'PostSpikeFilter';
+        glm_settings{3}.name =  'OFF';
+        glm_settings{4}.type = 'filter_mode';
+        glm_settings{4}.name = 'rk1';
+        special_arg{1} = 'postfilterNL_Logistic_2Par_fixMU';
+        
+        models{1}.settings = glm_settings;
+        models{1}.special_arg = special_arg;
+        models{1}.fit_type    = 'WN';
+        
+        models{2}.settings = glm_settings;
+        models{2}.special_arg = special_arg;
+        models{2}.fit_type = 'NSEM';
+        
+        plotparams.xlabel             = 'White Noise';
+        plotparams.ylabel             = 'Natural Scenes';
+        plotparams.title_comparison   = 'Full NLN';
+        plotparams.purpose            = 'WN vs NSEM (rk1 no PS) with power raise in front logistic in back';
+    
+    
+    
+    case 'WNvsNSEM-logpowerraise_logisticfixMU_noPS'
+        glm_settings{1}.type = 'cone_model';
+        glm_settings{1}.name = 'rieke_linear';
+        glm_settings{2}.type= 'input_pt_nonlinearity';
+        glm_settings{2}.name= 'log_powerraise';
+        glm_settings{3}.type = 'PostSpikeFilter';
+        glm_settings{3}.name =  'OFF';
+        special_arg{1} = 'postfilterNL_Logistic_2Par_fixMU';
+        
+        models{1}.settings = glm_settings;
+        models{1}.special_arg = special_arg;
+        models{1}.fit_type    = 'WN';
+        
+        models{2}.settings = glm_settings;
+        models{2}.special_arg = special_arg;
+        models{2}.fit_type = 'NSEM';
+        
+        plotparams.xlabel             = 'White Noise';
+        plotparams.ylabel             = 'Natural Scenes';
+        plotparams.title_comparison   = 'Full NLN';
+        plotparams.purpose            = 'WN vs NSEM (noPS STA) with power raise in front logistic in back';
+    
     case 'WNvsNSEM-standardGLM-ConstrainPS'
         models{1}.settings= {};
         models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
