@@ -58,7 +58,7 @@ if GLMType.PostSpikeFilter
     PS = fittedGLM_preoutputNL.linearfilters.PostSpike.Filter;
     NL_xvalperformance = subR_xvalperformance_givenrate(NL_Output.crossvaltest_finalrate, recorded_raster, t_bin,PS); 
 else
-    NL_xvalperformance = subR_xvalperformance_givenrate(NL_Output.crossvaltest_finalrate, recorded_raster, t_bin,PS); 
+    NL_xvalperformance = subR_xvalperformance_givenrate(NL_Output.crossvaltest_finalrate, recorded_raster, t_bin); 
 end
 
 
