@@ -1,44 +1,64 @@
+% AKHEITMAN 2015-07-15
+% First version up and working
 function [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg)
 % Part 1: Fit GLM pre input NL
 % Part 2: Iterate through NL fits
 
 glm_cellinfo0 = glm_cellinfo;
-
-
 GLMPars = GLMParams;
-if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
-    % Run with non-linearity parameter set to identity to get first
-    % estimate of filter
+
+for i_arg = 1:length(optional_arg)
+    if strcmp(optional_arg{i_arg}.type, 'preinputNL_fittedGLM')
+        fittedGLM = optional_arg{i_arg}.preinputNL_fittedGLM;
+        t_bin = fittedGLM.t_bin;
+        bins  = fittedGLM.bins_per_frame * size(fitmovie,3);
+        pstar = fittedGLM.rawfit.opt_params;
+        [lcif_nonstim] = subR_lcif_nonstim(pstar, fittedGLM.GLMType,fittedGLM.GLMPars,fitspikes,t_bin,bins);
+        objval = subR_modinputNL_findobj([], lcif_nonstim.total, pstar, ...
+            fittedGLM.GLMType, fittedGLM.GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins);        
+        display(sprintf('objective value from preNL fitted GLM::  %d',fittedGLM.rawfit.objective_val))
+        display(sprintf('objective value subR should be ~ equal::  %d',objval))              
+    end
+end
+
+if ~exist('fittedGLM','var')
+    if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
+        % Run with non-linearity parameter set to identity to get first
+        % estimate of filter
+        NL_Par_0 = 0;
+        GLMPars.others.point_nonlinearity.log_powerraise = NL_Par_0;
+        options{1}.name = 'GLMPars';
+        options{1}.GLMPars = GLMPars;
+
+        glm_cellinfo.cell_savename = sprintf('%s_preNL', glm_cellinfo0.cell_savename);
+        glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
+        if ~exist(glm_cellinfo.d_save,'dir'), mkdir(glm_cellinfo.d_save); end
+        fittedGLM = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,options);
+    end
+    
+    %{
     NL_Par_0 = 0;
-    
-    search_min = -1;
-    search_max = 1;
-    
-    GLMPars.others.point_nonlinearity.log_powerraise = NL_Par_0;
-    options{1}.name = 'GLMPars';
-    options{1}.GLMPars = GLMPars;
-    
-    glm_cellinfo.cell_savename = sprintf('%s_preNL', glm_cellinfo0.cell_savename);
-    glm_cellinfo.d_save        = sprintf('%s/earlierfits', glm_cellinfo0.d_save);
-    if ~exist(glm_cellinfo.d_save,'dir'), mkdir(glm_cellinfo.d_save); end
-    
-    fittedGLM = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,options);
-    
-    %%% frame_shifts = fittedGLM.linear
-    
-    %%% test  this should return same value as fittedGLM.rawfit.objective_val
-    
     t_bin = fittedGLM.t_bin;
     bins  = fittedGLM.bins_per_frame * size(fitmovie,3);
     pstar = fittedGLM.rawfit.opt_params;
     [lcif_nonstim] = subR_lcif_nonstim(pstar, GLMType,GLMPars,fitspikes,t_bin,bins);
     objval = subR_modinputNL_findobj(NL_Par_0, lcif_nonstim.total, pstar, ...
         GLMType, GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins);
+    display(sprintf('objective value from preNL fitted GLM::  %d',fittedGLM.rawfit.objective_val))
+    display(sprintf('objective value subR should be ~ equal::  %d',objval))
+    %}
     
 end
 
 
-loops = 3;
+
+if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
+    search_min = -1;
+    search_max = 1;
+end
+
+
+loops = 2;
 for i_loop = 1:loops
     display(sprintf('Running Iterated optimization number %d out of %d', i_loop, loops));
     
@@ -52,7 +72,7 @@ for i_loop = 1:loops
        'diagnostics','off',...  % 
        'display','iter',...  %'iter-detailed',... 
        'MaxFunEvals',50,... % you may want to change this
-       'TolX',.01) ;
+       'TolX',.05) ;
     [NL_Par_star fstar eflag] = fminbnd(@(NL_Par) ...
                 subR_modinputNL_findobj(NL_Par,lcif_nonstim.total, pstar,...
                 GLMType, GLMPars, fitspikes, fitmovie, inputstats,...
@@ -85,7 +105,7 @@ end
 end
 
 
-function obj_val = subR_modinputNL_findobj(NL_Params, lcif_external, pstar, GLMType, GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins)
+function [obj_val,lcif_stim] = subR_modinputNL_findobj(NL_Params, lcif_external, pstar, GLMType, GLMPars, fitspikes, fitmovie, inputstats, glm_cellinfo, t_bin,bins)
 % AKHEITMAN 2015-07-15
 % subRoutine which will get optimized for inding input NL
 
@@ -98,7 +118,8 @@ function obj_val = subR_modinputNL_findobj(NL_Params, lcif_external, pstar, GLMT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part 1: Unpack non-linearity param
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
+
+if isfield(GLMType, 'input_pt_nonlinearity_type') && strcmp(GLMType.input_pt_nonlinearity_type, 'log_powerraise')
     GLMPars.others.point_nonlinearity.log_powerraise = NL_Params;
 end
 
@@ -113,8 +134,9 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 clear WN_STA center_coord
 
 
-if ~GLMType.CONVEX
-    % Maybe move this inside of the stimulus preparation % 
+
+if GLMType.CONVEX
+   
     bpf         = GLMPars.bins_per_frame;
     shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
     if isfield(GLMPars.stimfilter,'frames_negative')
@@ -122,14 +144,28 @@ if ~GLMType.CONVEX
     end
     X_bin_shift = prep_timeshift(X_bin,shifts);
     pstar = pstar';
+    lcif_stim = pstar(paramind.X) *X_bin_shift;
+end
+
+
+if ~GLMType.CONVEX
+    % Maybe move this inside of the stimulus preparation % 
+    bpf         = GLMPars.bins_per_frame;
+    pstar = pstar;
     
     
-    %
+    frame_shifts = 0:1:(GLMPars.stimfilter.frames-1);
+    if isfield(GLMPars.stimfilter,'frames_negative')
+        frame_shifts = -(GLMPars.stimfilter.frames_negative):1:(GLMPars.stimfilter.frames-1)*1;
+    end
+    pixels  = size(X_frame,1);
+    frames  = size(X_frame,2);
+    
+    
     % PARAMS TO GET INCORPORTED IN COVARIATE VEC 
     TimeFilter  = pstar(paramind.time1);
     SpaceFilter = pstar(paramind.space1);
     
-    frame_shifts = shifts;
     % FIND SPATIAL FILTER COVARIATE VEC (USING TIMEFILTER)
     if min(frame_shifts) == 0;
         convolvingFilter = (TimeFilter);        
@@ -158,30 +194,9 @@ if ~GLMType.CONVEX
     
     
     % STIMULUS ADDED TWICE / DIVIDE EACH COVARIATE VEC BY TWO
-    covariate_vec(paramind.time1 ,:) =  .5*temporal_covariatevec;
-    covariate_vec(paramind.space1,:) =  .5*spatial_covariatevec;
-    %}
-    
-    
-    
-    lcif_stim = pstar(paramind.X) *covariate_vec;
+    stim_covariate_vec =  [.5*spatial_covariatevec; .5*temporal_covariatevec];    
+    lcif_stim = (pstar(paramind.X))'  * stim_covariate_vec;
 end
-
-
-
-if GLMType.CONVEX
-   
-    bpf         = GLMPars.bins_per_frame;
-    shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    if isfield(GLMPars.stimfilter,'frames_negative')
-        shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    end
-    X_bin_shift = prep_timeshift(X_bin,shifts);
-    pstar = pstar';
-    lcif_stim = pstar(paramind.X) *X_bin_shift;
-end
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
