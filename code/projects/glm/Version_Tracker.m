@@ -11,6 +11,11 @@
 % glm_wrap:
 %   - add load input argument to the runoptions
 %   - made debug version actually run on shorter input (just 5 blocks)
+%   - fixed corresponding test call
+% 
+%    Need to work in outputNL fitting!
+% glm_exectue:
+%   - 
 
 
 % Version 2: 
