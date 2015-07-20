@@ -57,7 +57,7 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
                                 Norm of      First-order 
  Iteration        f(x)          step          optimality   CG-iterations
      0            1297.56                         2e+04                
-     1            1297.56             10          2e+04           4
+     1            1297.56             10                    4
      2           -42251.5            2.5       2.56e+03           0
      3           -45320.3        4.13912       5.15e+03           7
 
@@ -216,7 +216,7 @@ for i_exp = exps
                     
                     
                     STA = STA_Test(fitspikes_concat.home, fitmovie_concat, false);
-                    glm_cellinfo.WN_STA = STA;
+                    glm_cellinfo.WN_STA = permute(STA, [2 1 3]);
                     glm_cellinfo.slave_centercoord.x_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     glm_cellinfo.slave_centercoord.y_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     clear GLMPars
@@ -390,6 +390,9 @@ function [concat_movie, testmovie] = subR_concat_fitmovie(center, StimPars, ROI_
 %% Load up part of the fitmovie
 stimsize.height = StimPars.height;
 stimsize.width = StimPars.width;
+temp = center;
+center.y_coord = temp.x_coord;
+center.x_coord = temp.y_coord;
 ROI = ROI_coord(ROI_length, center, stimsize);
 frames_per_block = length(StimPars.fitframes);
 blocks = length(StimPars.FitBlocks);

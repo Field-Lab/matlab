@@ -48,7 +48,7 @@ if strcmp(base_type, 'default')
     GLMType.debug      = false;
     GLMType.contrast   = false;
     GLMType.Subunits   = false;
-    GLMType.STA_init   = true;
+    GLMType.STA_init   = false;
 end
 %%%%% Cone Names %%%%%%%
 
