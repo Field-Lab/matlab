@@ -55,7 +55,11 @@ if GLMType.Subunits
     for frame=1:stimsize.frames
         tempstim = double(stimulus(:,:,frame))/double(fitmoviestats.span) - double(fitmoviestats.normmean);
         tempstim=conv2(tempstim,SU_filter,'same');
-        stim(:,:,frame)=exp(tempstim(ROIcoord.xvals, ROIcoord.yvals));
+        if strcmp(GLMType.Subunit_NL, 'exp')
+            stim(:,:,frame)=exp(tempstim(ROIcoord.xvals, ROIcoord.yvals));
+        elseif strcmp(GLMType.Subunit_NL, 'squared')
+            stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals).^2;
+        end
     end
 end
 

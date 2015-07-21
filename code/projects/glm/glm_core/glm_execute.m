@@ -196,7 +196,7 @@ if GLMType.CONVEX
     if isfield(paramind, 'C')
         stimsize.width  = size(fitmovie,1);
         stimsize.height = size(fitmovie,2);
-        ROIcoord        = ROI_coord(20, glm_cellinfo.slave_centercoord, stimsize);
+        ROIcoord        = ROI_coord(20, center_coord, stimsize);
         % C_shift = zeros(bins,1);
         contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
         %         for i_bin = 1:bins
@@ -241,7 +241,7 @@ if ~GLMType.CONVEX
     if isfield(paramind, 'C')
         stimsize.width  = size(fitmovie,1);
         stimsize.height = size(fitmovie,2);
-        ROIcoord        = ROI_coord(20, glm_cellinfo.slave_centercoord, stimsize);
+        ROIcoord        = ROI_coord(20, center_coord, stimsize);
         % C_shift = zeros(bins,1);
         contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
         %         for i_bin = 1:bins
@@ -281,8 +281,12 @@ if ~GLMType.CONVEX
             
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])
-            [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
-            pstar_SU_full = [pstar_SU -sum(pstar_SU)];
+            if strcmp(GLMType.Subunit_NL, 'exp')
+                [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
+            elseif strcmp(GLMType.Subunit_NL, 'squared')
+                [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_squared(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
+            end
+                pstar_SU_full = [pstar_SU -sum(pstar_SU)];
             
             % Unpack the subunit filter
             SU_filter = reshape(pstar_SU_full, [GLMPars.subunit_size, GLMPars.subunit_size]);
