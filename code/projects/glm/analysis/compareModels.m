@@ -37,10 +37,10 @@ comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 clear ; close all; clc;
 metrics = [1 2 3 4 5 6 7];
-cellselection_type = 'glmconv4pct';
-comparison_name     = 'WNvsNSEM-logpowerraise_logisticfixMU_rk1_noPS';
+%cellselection_type = 'glmconv4pct';
+comparison_name     = 'NSEM-rk1noPS-rk2noPS';
 %cellselection_type  = 'halfratio_STA_50';
-%cellselection_type = 'shortlist';
+cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -832,18 +832,38 @@ switch comparison_name
         plotparams.purpose            = 'See how smooth power raise (one par) compares to piece linear input NL';
         
         
-    case 'NSEM-standardGLMconstrainPS-rk1constrainPS'
-        models{1}.settings =  {};
-        models{1}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
-        models{1}.fit_type = 'NSEM';        
+    case 'NSEM-rk1noPS-rk2noPS'
+        models{1}.settings{1}.type = 'filter_mode';
+        models{1}.settings{1}.name = 'rk1';
+        models{1}.settings{2}.type = 'PostSpikeFilter';
+        models{1}.settings{2}.name =  'OFF';
+        models{1}.fit_type = 'NSEM';
+        
+        
+        models{2}.settings{1}.type = 'filter_mode';
+        models{2}.settings{1}.name = 'rk2';
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'NSEM'; 
+        plotparams.xlabel             = 'rk1';
+        plotparams.ylabel             = 'rk2';
+        plotparams.title_comparison   = 'rk1 vs rk2';
+        plotparams.purpose            = 'NSEM does rk2 outperform rk1? No ps filter';
+        
+        
+    case 'NSEM-standardGLMnoPS-rk1noPS';
+        models{1}.settings{1}.type = 'PostSpikeFilter';
+        models{1}.settings{1}.name =  'OFF';
+        models{1}.fit_type = 'NSEM';
         models{2}.settings{1}.type = 'filter_mode';
         models{2}.settings{1}.name = 'rk1';
-        models{2}.special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
         models{2}.fit_type = 'NSEM';
-        plotparams.xlabel             = 'GLM constrain PS';
-        plotparams.ylabel             = 'rk1 ';
+        plotparams.xlabel             = 'GLMnoPS';
+        plotparams.ylabel             = 'GLMnoPS rk1';
         plotparams.title_comparison   = 'rk1 vs STA';
-        plotparams.purpose            = 'rk1 vs STA for NSEM with constrained PS filter';
+        plotparams.purpose            = 'rk1 vs STA for NSEM without PS filter';
     case 'NSEM-standardGLMnoPS-rk1noPS';
         models{1}.settings{1}.type = 'PostSpikeFilter';
         models{1}.settings{1}.name =  'OFF';
