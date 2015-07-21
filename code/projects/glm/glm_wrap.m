@@ -256,7 +256,19 @@ for i_exp = exps
                 conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
+            elseif strcmp(cell_subset, 'halfratio_STA_50')
+                eval(sprintf('load %s/fitted_aggscores_STA.mat', BD.Cell_Selection));
+                display('evaluating halfratio_STA_50')
+                conv_index_ON = intersect(...
+                    find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .02),...
+                    find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .02)) ;
+                conv_index_OFF = intersect(...
+                    find(aggregated_scores{i_exp}.celltype{2}.halfratio_WN < .02),...
+                    find(aggregated_scores{i_exp}.celltype{2}.halfratio_NSEM < .02)) ;
+                candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
             end
+                
+
             % NBCoupling 2015-04-20
             if GLMType.CouplingFilters
                 cells_to_pair = repmat(cellgroup,2,1);
