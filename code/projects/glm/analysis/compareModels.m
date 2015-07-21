@@ -37,10 +37,10 @@ comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 clear ; close all; clc;
 metrics = [1 2 3 4 5 6 7];
-%cellselection_type = 'glmconv4pct';
+cellselection_type = 'glmconv4pct';
 comparison_name     = 'WNvsNSEM-logpowerraise_logisticfixMU_rk1_noPS';
-%cellselection_type  = 'halfratio_50';
-cellselection_type = 'shortlist';
+%cellselection_type  = 'halfratio_STA_50';
+%cellselection_type = 'shortlist';
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -147,9 +147,9 @@ if strcmp(cellselection_type, 'glmconv4pct')
 end
 
 % AKH 2015-07-15  new convergence criterion
-if strcmp(cellselection_type, 'halfratio_50') || strcmp(cellselection_type, 'halfratio_20') ...
-        || strcmp(cellselection_type, 'halfratio_100')
-    eval(sprintf('load %s/fitted_aggscores.mat', BD.Cell_Selection));
+if strcmp(cellselection_type, 'halfratio_STA_50') || strcmp(cellselection_type, 'halfratio_STA_20') ...
+        || strcmp(cellselection_type, 'halfratio_STA_100')
+    eval(sprintf('load %s/fitted_aggscores_STA.mat', BD.Cell_Selection));
 end
 
 currentdir = pwd;
@@ -213,7 +213,7 @@ for i_exp = exps
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
         clear conv_index_ON conv_index_OFF conv_columns
         % AKH 2015-07-15  new convergence criterion
-    elseif strcmp(cellselection_type, 'halfratio_20')
+    elseif strcmp(cellselection_type, 'halfratio_STA_20')
         conv_index_ON = intersect(...
             find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .05),...
             find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .05)) ;
@@ -223,7 +223,7 @@ for i_exp = exps
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
         clear conv_index_ON conv_index_OFF conv_columns
-    elseif strcmp(cellselection_type, 'halfratio_50')
+    elseif strcmp(cellselection_type, 'halfratio_STA_50')
         conv_index_ON = intersect(...
             find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .02),...
             find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .02)) ;
@@ -233,7 +233,7 @@ for i_exp = exps
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
         clear conv_index_ON conv_index_OFF conv_columns
-    elseif strcmp(cellselection_type, 'halfratio_100')
+    elseif strcmp(cellselection_type, 'halfratio_STA_100')
         conv_index_ON = intersect(...
             find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .01),...
             find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .01)) ;
