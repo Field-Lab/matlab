@@ -194,16 +194,16 @@ for i_exp = exps
                     stimsize.width = 4*StimPars.width;
                     ROI = ROI_coord(37, center_coord, stimsize);
 
-%                     STA = zeros(30,320,160);
-%                     for i_block = 1:59
-%                          load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(i_block) '.mat'])
-%                         for i_sp = 1:length(spikes{2*i_block})
-%                             spike_frame = ceil(spikes{2*i_block}(i_sp) * 120);
-%                             if spike_frame > 29
-%                                 STA = STA + double(movie.matrix((spike_frame-29):spike_frame,:,:));
-%                             end
-%                         end
-%                     end
+                    STA = zeros(30,320,160);
+                    for i_block = 1:59
+                         load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(i_block) '.mat'])
+                        for i_sp = 1:length(spikes{2*i_block})
+                            spike_frame = ceil(spikes{2*i_block}(i_sp) * 120);
+                            if spike_frame > 29
+                                STA = STA + double(movie.matrix((spike_frame-29):spike_frame,:,:));
+                            end
+                        end
+                    end
                     for i_STA = 1:30
                         imagesc(squeeze(STA(i_STA,ROI.xvals,ROI.yvals)))
                         colormap gray

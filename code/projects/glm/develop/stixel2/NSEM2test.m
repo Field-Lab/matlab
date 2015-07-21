@@ -216,7 +216,9 @@ for i_exp = exps
                     
                     
                     STA = STA_Test(fitspikes_concat.home, fitmovie_concat, false);
-                    glm_cellinfo.WN_STA = permute(STA, [2 1 3]);
+                    % load('ON841_NSEM_STA.mat')
+                    % ROI = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord , slvdim);
+                    glm_cellinfo.WN_STA = STA;
                     glm_cellinfo.slave_centercoord.x_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     glm_cellinfo.slave_centercoord.y_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     clear GLMPars
@@ -390,9 +392,9 @@ function [concat_movie, testmovie] = subR_concat_fitmovie(center, StimPars, ROI_
 %% Load up part of the fitmovie
 stimsize.height = StimPars.height;
 stimsize.width = StimPars.width;
-temp = center;
-center.y_coord = temp.x_coord;
-center.x_coord = temp.y_coord;
+% temp = center;
+% center.y_coord = temp.x_coord;
+% center.x_coord = temp.y_coord;
 ROI = ROI_coord(ROI_length, center, stimsize);
 frames_per_block = length(StimPars.fitframes);
 blocks = length(StimPars.FitBlocks);
