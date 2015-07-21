@@ -20,7 +20,7 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
-GLMPars.stimfilter.ROI_length = 11;  
+GLMPars.stimfilter.ROI_length = 55;  
 GLMPars.stimfilter.frames = 30;  % orig 30
 GLMPars.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMPars.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';

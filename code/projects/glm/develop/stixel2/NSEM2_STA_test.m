@@ -65,7 +65,7 @@ Local minimum possible.
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function STA = NSEM2test(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
+function STA = NSEM2_STA_test(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -185,27 +185,14 @@ for i_exp = exps
                     
                     % Process spikes for glm_execute with proper subroutines
                     fitspikes_concat.home  = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
-                    spikes = organizedspikes.block.t_sp_withinblock;
                     clear organizedspikes
                     
                     %% Load up part of the fitmovie
-                    StimPars = StimulusPars.slv;
-                    stimsize.height = 4*StimPars.height;
-                    stimsize.width = 4*StimPars.width;
-                    ROI = ROI_coord(37, center_coord, stimsize);
+                    fitmovie_concat = subR_concat_fitmovie(center_coord, StimulusPars.slv, 55);
+                    STA = STA_Test(fitspikes_concat.home, fitmovie_concat, false);
 
-%                     STA = zeros(30,320,160);
-%                     for i_block = 1:59
-%                          load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(i_block) '.mat'])
-%                         for i_sp = 1:length(spikes{2*i_block})
-%                             spike_frame = ceil(spikes{2*i_block}(i_sp) * 120);
-%                             if spike_frame > 29
-%                                 STA = STA + double(movie.matrix((spike_frame-29):spike_frame,:,:));
-%                             end
-%                         end
-%                     end
                     for i_STA = 1:30
-                        imagesc(squeeze(STA(i_STA,ROI.xvals,ROI.yvals)))
+                        imagesc(squeeze(STA(:,:,i_STA)))
                         colormap gray
                         axis image
                         pause(0.1)
@@ -268,40 +255,23 @@ sd.ydir = round( stafit_sd(2)* (slvdim.height  / masterdim.height)  );
 
 end
 
-%NBCoupling 2015-04-20
-function paired_cells=subR_pick_neighbor_cells(mean, cell_ids, sta_fits)
-    
-     GLMPars = GLMParams;
-     NumCells = length(cell_ids);
-     distance=zeros(NumCells,1);
-     
-     % Calculate distance between RFs
-     for i_pair=1:NumCells
-         distance(i_pair)=norm(sta_fits{cell_ids(2,i_pair),1}.mean-mean);
-         if distance(i_pair)==0
-             distance(i_pair)=NaN;
-         end
-     end
-     
-     % Choose the closest cells
-     [~,indices]=sort(distance);
-     paired_cells=cell_ids(1,indices(1:GLMPars.spikefilters.cp.n_couplings));
-
-end
-
 function concat_movie = subR_concat_fitmovie(center, StimPars, ROI_length)
-%% Load up part of the fitmovie
 stimsize.height = 4*StimPars.height;
 stimsize.width = 4*StimPars.width;
+temp = center;
+center.y_coord = temp.y_coord;
+center.x_coord = temp.x_coord;
 ROI = ROI_coord(ROI_length, center, stimsize);
+frames_per_block = length(StimPars.fitframes);
+blocks = length(StimPars.FitBlocks);
 
 % Load the movie
-concat_movie = zeros(ROI_length, ROI_length, 7200*59);
-idx = 1:7200;
-for i=1:59
-    load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(i) '.mat'])
-    concat_movie(:,:,idx) = permute(movie.matrix(:, ROI.xvals, ROI.yvals),[2 3 1]);
-    idx = idx+7200;
+concat_movie = zeros(ROI_length, ROI_length, frames_per_block*blocks);
+idx = 1:frames_per_block;
+for i=1:blocks
+    block = StimPars.FitBlocks(i);
+    load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(block/2) '.mat'])
+    concat_movie(:,:,idx) = permute(movie.matrix(StimPars.fitframes, ROI.xvals, ROI.yvals),[2 3 1]);
+    idx = idx+frames_per_block;
 end
-clear movie
 end
