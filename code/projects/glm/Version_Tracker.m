@@ -12,10 +12,11 @@
 %   - add load input argument to the runoptions
 %   - made debug version actually run on shorter input (just 5 blocks)
 %   - fixed corresponding test call
-% 
+%   - add a 50% fit option
 %    Need to work in outputNL fitting!
 % glm_exectue:
-%   - 
+%   - none
+% glm_execute_OutputNL is now up and running
 
 
 % Version 2: 
