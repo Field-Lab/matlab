@@ -116,6 +116,7 @@ GLMType.fitname    = GLM_fitname(GLMType);
 
 
 % AKH 2015-07-13 Add mechanism for handling special arguments
+% Unpack special arguments into GLMType
 % Intended for PS filter constraints, Post Filter NL modulation
 if exist('special_arg','var') && ~isempty(special_arg)
     GLMType.fitname_prespecialarg =  GLM_fitname(GLMType);
@@ -129,7 +130,13 @@ if exist('special_arg','var') && ~isempty(special_arg)
         % AKH 2015-07-19
         if strcmp(special_arg{i_arg},'postfilterNL_Logistic_2Par_fixMU')
             GLMType.special_arg.postfilterNL.type    = 'Logistic_2Par_fixMU';
-        end        
+        end
+        
+        if strcmp(special_arg{i_arg},'fit_50percent')
+            GLMType.shorter_fit = true;
+            GLMType.shorter_fit_fraction = .5;
+        end
+            
     end
 end
 
@@ -152,7 +159,7 @@ end
 % AKH Optional Loading Argument 2015-07-18
 if exist('runoptions','var')
     if isfield(runoptions,'load_previousfit')
-        PF = runoptions.load_previousfit;
+        PF = runoptions.load_previousfit; % previous fit directory
         
         loadfit.glm_settings    = PF.glm_settings;
         loadfit.GLMType         = GLM_settings('default',loadfit.glm_settings);
@@ -200,9 +207,16 @@ for i_exp = exps
         if GLMType.debug
             StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:5);
         end
-
+        
+        if isfield(GLMType, 'shorter_fit')  && GLMType.shorter_fit
+            blocks           = length(StimulusPars.slv.FitBlocks);
+            shortened_blocks = floor(GLMType.shorter_fit_fraction * blocks);
+            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:shortened_blocks);
+            clear blocks shortened_blocks
+        end
+        
         fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
-         
+  
         % Directories  
         secondDir.exp_nm    = exp_nm; 
         secondDir.map_type  = GLMType.map_type; 
@@ -232,8 +246,6 @@ for i_exp = exps
             end
         end
         
-        
-        
         for i_celltype = celltypes            
             % Choose which subset of cells to run
             if i_celltype == 1; cellgroup = allcells{i_exp}.ONP;  celltype = 'ONPar'; end
@@ -249,7 +261,19 @@ for i_exp = exps
                 conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
+            elseif strcmp(cell_subset, 'halfratio_STA_50')
+                eval(sprintf('load %s/fitted_aggscores_STA.mat', BD.Cell_Selection));
+                display('evaluating halfratio_STA_50')
+                conv_index_ON = intersect(...
+                    find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .02),...
+                    find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .02)) ;
+                conv_index_OFF = intersect(...
+                    find(aggregated_scores{i_exp}.celltype{2}.halfratio_WN < .02),...
+                    find(aggregated_scores{i_exp}.celltype{2}.halfratio_NSEM < .02)) ;
+                candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
             end
+                
+
             % NBCoupling 2015-04-20
             if GLMType.CouplingFilters
                 cells_to_pair = repmat(cellgroup,2,1);

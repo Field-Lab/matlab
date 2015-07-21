@@ -34,8 +34,9 @@ comparison_name = 'deltaWNvsNSEM-noPSnoCP-noPSnoSTIM';
 clear
 cellselection_type = 'shortlist';
 rundir = pwd;
+%metrics = [1 2 3 4 5 6];
 metrics = [1 2 3 4 5 6];
-comparison_name = 'deltaWNvsNSEM-linearconescontrainPS-logpowerraiseconstrainPS';
+comparison_name = 'deltaWNvsNSEM-basetoNLN-rk1noPS';
 for i_metric = metrics
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -61,6 +62,50 @@ plotparams.celltypes = celltypes;
 
 plotparams.xlabel             = 'White Noise';
 plotparams.ylabel             = 'Natural Scenes';
+
+
+if strcmp(comparison_name, 'deltaWNvsNSEM-basetoNLN-rk1noPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+    models{1}.settings{3}.type = 'filter_mode';
+    models{1}.settings{3}.name = 'rk1';
+
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'log_powerraise';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.settings{4}.type = 'filter_mode';
+    models{2}.settings{4}.name = 'rk1';
+    models{2}.special_arg{1}   = 'postfilterNL_Logistic_2Par_fixMU';
+    
+    plotparams.title_comparison   = 'Optimized NLN';
+    plotparams.purpose            = 'Improvement from both non-linearities for rk1 and no PS no CP';
+end
+
+if strcmp(comparison_name, 'deltaWNvsNSEM-basetoNLN-noPS')
+    models{1}.settings{1}.type = 'cone_model';
+    models{1}.settings{1}.name = 'rieke_linear';
+    models{1}.settings{2}.type = 'PostSpikeFilter';
+    models{1}.settings{2}.name =  'OFF';
+
+    models{2}.settings{1}.type = 'cone_model';
+    models{2}.settings{1}.name = 'rieke_linear';
+    models{2}.settings{2}.type = 'input_pt_nonlinearity';
+    models{2}.settings{2}.name = 'log_powerraise';
+    models{2}.settings{3}.type = 'PostSpikeFilter';
+    models{2}.settings{3}.name =  'OFF';
+    models{2}.special_arg{1}   = 'postfilterNL_Logistic_2Par_fixMU';
+    
+    plotparams.title_comparison   = 'Optimized NLN';
+    plotparams.purpose            = 'Improvement from both non-linearities for rk1 and no PS no CP';
+end
+
+
+
 
 % Unpack comparison_name
 if strcmp(comparison_name, 'deltaWNvsNSEM-linearconescontrainPS-logpowerraiseconstrainPS')
