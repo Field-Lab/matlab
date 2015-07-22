@@ -4,10 +4,10 @@ clear
 % compute_only_sta just does the STA independent of matlab
 %% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2015-05-27-5/data003/data00.neurons';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111-32x32_cell393.xml';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-08-27-6/data000/data000.neurons';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 num_frames = 30; % both have to be run with the name number of frames
-target_cell = 33;
+target_cell = 499;
 % target_cell2 = 3169;
 
 
@@ -16,11 +16,16 @@ datarun=load_data(datarun,opt);
 
 triggers=datarun.triggers; %onsets of the stimulus presentation
 % load triggers
-[mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
-    triggers, 1,2);
+% [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
+%     triggers, 1,2);
 
 [mvi] = load_movie(mdf_file, triggers);
-refresh = 120;
+height = double(mvi.getHeight);
+width = double(mvi.getWidth);
+duration = double(mvi.size);
+refresh = double(mvi.getRefreshTime);
+
+% refresh = 120;
 %frames per trigger
 
 bt_triggers = triggers - [0;triggers(1:end-1)];
@@ -46,9 +51,9 @@ spikes=datarun.spikes{cellID};
 % spikes are in s. convert to ms
 spikes=round(spikes*1000);
 
-sta=zeros(height,width,num_frames,3); %height, width, frames back
+sta=zeros(height,width,3, num_frames); %height, width, frames back
 % stv=zeros(height,width,num_frames); %height, width, frames back
-sta_store = zeros(height,width, num_frames, length(spikes), 3);
+sta_store = zeros(height,width, 3, num_frames, length(spikes));
 
 tic
 icnt=0;
@@ -65,15 +70,14 @@ for i=spikes'
         for j=1:num_frames
             F = round(mvi.getFrame(start+j).getBuffer);
 %             sta(:,:,j) = sta(:,:,j) + round(reshape(F(1:3:end),width,height)'-0.5)+round(reshape(F(2:3:end),width,height)'-0.5)+round(reshape(F(3:3:end),width,height)'-0.5);
-            sta(:,:,j,1) = sta(:,:,j,1) + round(reshape(F(1:3:end),width,height)'-0.5);
-            sta(:,:,j,2) = sta(:,:,j,2) + round(reshape(F(2:3:end),width,height)'-0.5);
-            sta(:,:,j,3) = sta(:,:,j,3) + round(reshape(F(3:3:end),width,height)'-0.5);
-
+                        sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
+                        sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
+                        sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
             
             
-            sta_store(:,:,j, icnt,1) = double(round(reshape(F(1:3:end),width,height)'-0.5));
-            sta_store(:,:,j, icnt,2)=double(round(reshape(F(2:3:end),width,height)'-0.5));
-            sta_store(:,:,j, icnt,3) =double(round(reshape(F(3:3:end),width,height)'-0.5));
+            sta_store(:,:,1, j, icnt) = double(round(reshape(F(1:3:end),width,height)'-0.5));
+            sta_store(:,:,2, j, icnt)=double(round(reshape(F(2:3:end),width,height)'-0.5));
+            sta_store(:,:,3, j, icnt) =double(round(reshape(F(3:3:end),width,height)'-0.5));
         end
     end
 end
@@ -85,6 +89,7 @@ sta = norm_image(sta);
 % choose first frame to show
 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
 
+sta_store = sta_store(:,:,:,:,1:icnt);
 
 
 % create slider control
@@ -93,8 +98,8 @@ sta = norm_image(sta);
 % plot once before any clicks
 %slider_plot(ha, [], sta);
 % sta = repmat(sta, 1,1,1,3);
-sta = permute(sta,[1 2 4 3]);
-[sig_stixels] = significant_stixels(sta, 'select', 'thresh', 'thresh', 2);
+% sta = permute(sta,[1 2 4 3]);
+[sig_stixels] = significant_stixels(sta, 'select', 'thresh', 'thresh', 4);
 [row, col] = find(sig_stixels);
 sig_stixels = [row,col];
 % ranges = range(sta,3);
@@ -114,12 +119,12 @@ for iter = 1: size(sig_stixels,1)
     sta_valueB = zeros(num_frames,size(sta_store, 4));
     
     for i = 1:num_frames
-        for icnt = 1:size(sta_store, 4)
-            sta_valueR(i, icnt) = sta_store(x_now,y_now,i,icnt,1);
-            sta_valueG(i, icnt) = sta_store(x_now,y_now,i,icnt,2);
-            sta_valueB(i, icnt) = sta_store(x_now,y_now,i,icnt,3);
+        for icnt = 1:size(sta_store, 5)
+            sta_valueR(i, icnt) = sta_store(x_now,y_now,1, i,icnt);
+            sta_valueG(i, icnt) = sta_store(x_now,y_now,2,i,icnt);
+            sta_valueB(i, icnt) = sta_store(x_now,y_now,3, i,icnt);
         end
-        i
+        
     end
     red_temp = mean(sta_valueR,2)';
     green_temp = mean(sta_valueG,2)';
@@ -127,6 +132,7 @@ for iter = 1: size(sig_stixels,1)
     red = [red; red_temp];
     green = [green; green_temp];
     blue = [blue; blue_temp];
+    iter
 end
 red_avg = mean(red,1);
 green_avg = mean(green,1);
@@ -134,17 +140,17 @@ blue_avg = mean(blue,1);
 colors = [red_avg; green_avg; blue_avg];
 
 time = -(num_frames-1)*refresh:refresh:0
-colors_flipped = fliplr(colors);
+% colors_flipped = fliplr(colors);
 figure
-plot(time,colors_flipped(1,:), 'r')
+plot(time,colors(1,:), 'r')
 hold on
-plot(time,colors_flipped(2,:), 'g')
-plot(time,colors_flipped(3,:), 'b')
+plot(time,colors(2,:), 'g')
+plot(time,colors(3,:), 'b')
 
 %% normal sta
 figure
 % for j=1:num_frames
-j =  26;
+j =  24;
     imagesc(squeeze(sta(:,:,:,j)));
     colormap gray
 %     caxis([min(sta(:)),max(sta(:))]);
