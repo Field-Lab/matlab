@@ -87,9 +87,9 @@ for i=spikes'
                 sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(cell*pixels-pixels+2:3:cell*pixels),width,height)'-0.5);
                 sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(cell*pixels-pixels+3:3:cell*pixels),width,height)'-0.5);
             end
-            %             sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
-            %             sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
-            %             sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
+%                         sta(:,:,1, j) = sta(:,:,1,j) + round(reshape(F(1:3:end),width,height)'-0.5); % store the three color channels
+%                         sta(:,:,2, j) = sta(:,:,2,j) + round(reshape(F(2:3:end),width,height)'-0.5);
+%                         sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
             catch
                 a = 1;
             end
