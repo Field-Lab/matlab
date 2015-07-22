@@ -699,8 +699,8 @@ if fit_list(19)
     fit_info.fit_n_one_filters = true;
     temp_pointer = temp_pointer +1;
 else
-    fit_info.n_filters = initial_n_filters;
-    fit_info.fit_n_filters = false;
+    fit_info.n_one_filters = initial_n_one_filters;
+    fit_info.fit_n_one_filters = false;
 end
 
 % frame number
