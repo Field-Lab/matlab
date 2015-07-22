@@ -168,7 +168,7 @@ for e = find(ei_frame ~= 0)'
     if params.alpha == false
         elec_handle = plot(params.plot_axes, X(1,:) + position(e,1), X(2,:) + position(e,2), 'Color', color);
     else
-        elec_handle = patch(X(1,:) + position(e,1), X(2,:) + position(e,2), color, 'FaceAlpha', params.alpha, 'EdgeColor', color, 'Parent', params.plot_axes);
+        elec_handle = patch(X(1,:) + position(e,1), X(2,:) + position(e,2), color, 'FaceAlpha', double(params.alpha), 'EdgeColor', color, 'Parent', params.plot_axes);
     end
     
     if ~isempty(params.zlevel)
