@@ -148,7 +148,6 @@ display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
         replace_existing  = true;
-        disp('here')
     end
     if isfield(runoptions,'reverseorder')
         reverseorder  = true;
@@ -225,13 +224,9 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-<<<<<<< HEAD
-
-=======
         if GLMType.CouplingFilters
             Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
         end
->>>>>>> akheitman
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
         
@@ -256,8 +251,8 @@ for i_exp = exps
                 [~,candidate_cells,~]  = cell_list(i_exp, cell_subset);
                 candidate_cells = cell2mat(candidate_cells) ;
             elseif strcmp(cell_subset,'glmconv_4pct')
-                eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));
-                conv_column = 2;
+                eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));              
+                conv_column = 2; 
                 conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
@@ -280,9 +275,8 @@ for i_exp = exps
                 for i_pair = 1:length(cellgroup)
                     cells_to_pair(2,i_pair) = find(datarun_master.cell_ids == cellgroup(i_pair));
                 end
-            end
-            cellgroup = intersect(candidate_cells, cellgroup);
-            
+            end 
+            cellgroup = intersect(candidate_cells, cellgroup)
             if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end
             
             for i_cell = 1:length(cellgroup)
@@ -372,7 +366,7 @@ for i_exp = exps
                         [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg);                         
                     else
-                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                        [fittedGLM] = glm_execute_3(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     end
 
