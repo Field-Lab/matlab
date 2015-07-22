@@ -2,7 +2,7 @@
 
 % Enter the raw movie file, the number of frames to load, and the frame to
 % start at here.
-moviefile='NSbrownian_6000_A_mean025.rawMovie';
+moviefile='/Volumes/Data/Stimuli/movies/eye-movement/NSbrownian_code/newrawmovie/NSbrownian_3000_A_025.rawMovie';
 frames=150;
 start_frame=1;
 % Warning: can take awhile to load

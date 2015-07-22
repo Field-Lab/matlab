@@ -1,16 +1,10 @@
 % script used in 2012-09 stim512/519 experiments
+% Changes to this script in April 2015 allow it to be used to generate 2
+% electrode current ratios as done in 2015-04-14-0 LG
 
 % SET TRIGGER INTERVAL TO 0.5 SECONDS
 
-clear all
-
-% cd('/Users/lhruby/MATLAB_code/stimuli/stimulus_files_test')
-
-
-include_single_elecs = true;
-both_polarity_combs = true;
-quadrant = 3;
-elec_spacing = 60;
+clear all;
 
 % as seen in vision-interactive (EI plot):
 % 
@@ -18,14 +12,20 @@ elec_spacing = 60;
 %-----------
 % 3   |   4
 
-pairOrientation = 'horizontal'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
-
+%% Define inputs
+include_single_elecs = true;
+both_polarity_combs = true;
+quadrant = 3.1; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
+elec_spacing = 60;
+same_polarity = false; % Set to true to use only negative pairs. 
+use_ratios = false;
+scale_factor = 2; %Set scale factor to determine 2-elec ratio to use. A positive value gives
+pairOrientation = 'downleft'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 delayInMs = 7.5; %interval between pulses
-
-
+saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
+saveName = 'axon512_quad3'; %Descriptive name for the stimulus files 
 
 %%
-
 if elec_spacing == 60
     elec_coords = electrode_positions(512);
 elseif elec_spacing == 30
@@ -42,6 +42,12 @@ if elec_spacing == 60
         electrodes = find(elec_coords(:,1)<0  & elec_coords(:,2)>=0);
     elseif quadrant == 3;
         electrodes = find(elec_coords(:,1)<0 & elec_coords(:,2)<0);
+    elseif quadrant == 3.1
+        electrodes = find(elec_coords(:,1) <40 & elec_coords(:,1)>-940 ...
+            & elec_coords(:,2)<0); 
+    elseif quadrant == 34; 
+        electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
+            & elec_coords(:,2)<0);
     else
         electrodes = find(elec_coords(:,1)>=0 & elec_coords(:,2)<0);
     end
@@ -59,9 +65,7 @@ end
 
 %%
 
-
 nSamples=10000; %0.5 s
-%Array=eye(64);
 
 timeShift=0;
 delay=delayInMs*20;
@@ -136,7 +140,6 @@ end
 % spacings apart
 
 % break into 8 groups and select randomly from a sequence of groups
-
 if elec_spacing == 60
     x_coords_range = [min(elec_coords(electrodes,1)) max(elec_coords(electrodes,1))];
     boundaries = x_coords_range(1)+(x_coords_range(2)-x_coords_range(1))*[0.125 0.25 0.375 0.5 0.625 0.75 0.875];
@@ -156,8 +159,13 @@ end
 %%
 
 if elec_spacing == 60
-    pattern_order1 = zeros(1,128);
-    pattern_order2 = zeros(1,128);
+%     if quadrant == 34
+%         pattern_order1 = zeros(1,256);
+%         pattern_order2 = zeros(1,256);
+%     else
+        pattern_order1 = zeros(1,128);
+        pattern_order2 = zeros(1,128);
+%     end
 else
     pattern_order1 = zeros(1,120);
     pattern_order2 = zeros(1,120);
@@ -220,6 +228,7 @@ if elec_spacing == 60
     end
     
     if both_polarity_combs
+        keyboard; 
         for ii = 1:32
             pInd = find(elec_1==pattern_order1(ii) & stim_type==2);
             if ~isempty(pInd)
@@ -514,21 +523,33 @@ end
 MovieChunksFile=[length(pattern_order_all) MovieChunks]; %only one movie
 
 
-%%
+if same_polarity
+    figure; subplot(1,2,1); imagesc(array); title('opp polarity pairs')
+    array(find(array == -1)) = 1; 
+    subplot(1,2,2); imagesc(array); title('same polarity pairs');
+end
 
-
-%cd /Applications/MATLAB74/work/Lauren/stimuli/stimulus_files/; 
-if 0
-fid = fopen('axon512_quad3_el','wb','ieee-le.l64')
-fwrite(fid,electrodes,'int32');
-fclose(fid);
-
-fid = fopen('axon512_quad3_pt','wb','ieee-le.l64')
-fwrite(fid,array,'double');
-fclose(fid);
-
-fid = fopen('axon512_quad3_mv','wb','ieee-le.l64')
-fwrite(fid,MovieChunksFile,'int32');
-fclose(fid); 
-
+if use_ratios
+    figure; subplot(1,2,1); imagesc(array); title('opp polarity pairs')
+    if scale_factor<1
+        array(find(array == 1)) = -scale_factor;
+    else
+        array(find(array == -1)) = -scale_factor; 
+    end
+    subplot(1,2,2); imagesc(array); title('ratio');
+end
+%% Save files
+% cd /Users/grosberg/Desktop/; 
+if saveFiles
+    fid = fopen([saveName '_el'],'wb','ieee-le.l64');
+    fwrite(fid,electrodes,'int32');
+    fclose(fid);
+    
+    fid = fopen([saveName '_pt'],'wb','ieee-le.l64');
+    fwrite(fid,array,'double');
+    fclose(fid);
+    
+    fid = fopen([saveName '_mv'],'wb','ieee-le.l64');
+    fwrite(fid,MovieChunksFile,'int32');
+    fclose(fid);
 end
