@@ -1,4 +1,4 @@
-function [fitGLM,f_val] = fitGMLM_MEL_EM_power2(binnedResponses,mov,filteredStimDim2,nFrontEnds2,interval,gamma)
+function [fitGLM,f_val] = fitGMLM_EM_power2(binnedResponses,mov,filteredStimDim2,nFrontEnds2,interval,gamma)
 
 %% Works only for gaussian stimuli and no bias inside exponential 
  

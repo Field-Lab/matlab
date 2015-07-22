@@ -209,6 +209,11 @@ hold on;
   [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponses,maskedMov,7,nSU,interval,2);  
   fitGMLM2=fitGMLM;
   
+  interval=1;
+  nSU=4;
+  [fitGMLM,output] = fitGMLM_EM_power2(binnedResponses,maskedMov,7,nSU,interval,2);  
+  fitGMLM3=fitGMLM;
+  
 %  nSU=1;
 %  [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,7,nSU,interval); 
 %  fitGMLM1=fitGMLM;
@@ -290,7 +295,7 @@ imagesc((u_spatial));
 %caxis([-0.3,0.3]);
 colormap gray
 colorbar
-title(sprintf('GMLM Filter: %d',ifilt));
+title(sprintf('GMLM Filter: MEL EM %d',ifilt));
 end
 
  sta_dim1 = size(mask,1);
@@ -306,7 +311,24 @@ imagesc((u_spatial));
 %caxis([-0.3,0.3]);
 colormap gray
 colorbar
-title(sprintf('Quad-ASM Filter: %d',ifilt));
+title(sprintf('Quad-ASM Filter: MEL EM %d',ifilt));
+end
+
+
+ sta_dim1 = size(mask,1);
+sta_dim2 = size(mask,2);
+indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
+masked_frame = indexedframe(logical(mask));
+
+figure;
+for ifilt=1:4
+subplot(2,2,ifilt)
+u_spatial = reshape_vector(fitGMLM3.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+imagesc((u_spatial));
+%caxis([-0.3,0.3]);
+colormap gray
+colorbar
+title(sprintf('Quad-ASM Filter EM: %d',ifilt));
 end
 %% Generate white noise movie
  movieLen=120*10;
@@ -477,3 +499,52 @@ set(gca,'ytick',[]);
 set(gca,'xtick',[]);
 %legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
 
+%% Can we do fast fitting using null stimulus ? 
+%% Generate Original and null stimulus and responses , 30 min! 
+
+movieLen=120*60*30;
+null_compute_subUnit_test
+ 
+mov_new2 = mov_new2*3; % Have some gain!!
+ 
+nTrials=1;
+analyse_null_subUnit_ts
+
+%% Compare actual and predicted for original movie.
+useMin = 15;
+dataLen = useMin*120*60 + 120;
+
+mov=movOrig(:,:,Filtlen:movie_new_len+Filtlen-1);
+binnedResponses = binnedResponseOrig;
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+
+ 
+ % Fit model
+ 
+  interval=1;
+  nSU=4;
+  [fitGMLM,output] = fitGMLM_EM_power2(binnedResponses(1:dataLen,1),maskedMov(:,1:dataLen),7,nSU,interval,2);  
+  fitGMLMOrig=fitGMLM;
+  showfitGMLM(fitGMLMOrig,sprintf('# spks : %d Quad, WN movie',sum(binnedResponses(1:dataLen,1))),mask)
+   
+   
+ % Compare actual and predicted for Null movie.
+mov=movNull(:,:,Filtlen:movie_new_len+Filtlen-1);
+binnedResponses = binnedResponseNull;
+ maskedMov= filterMov(mov,mask,squeeze(tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+
+ % Fit model 
+ 
+  interval=1;
+  nSU=4;
+  [fitGMLM,output] = fitGMLM_EM_power2(binnedResponses(1:dataLen,1),maskedMov(:,1:dataLen),7,nSU,interval,2);  
+  fitGMLMNull=fitGMLM;
+  showfitGMLM(fitGMLMNull,sprintf('# spks : %d Quad, null movie',sum(binnedResponses(1:dataLen,1))),mask)
+  
+   interval=1;
+  nSU=4;
+  [fitGMLM,output] = fitGMLM_EM_bias(binnedResponses(1:dataLen,1),maskedMov(:,1:dataLen),7,nSU,interval);  
+  fitGMLMNull2=fitGMLM;
+  showfitGMLM(fitGMLMNull2,sprintf('# spks : %d Exp, null movie',sum(binnedResponses(1:dataLen,1))),mask)
