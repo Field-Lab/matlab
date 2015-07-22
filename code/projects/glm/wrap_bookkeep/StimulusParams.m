@@ -65,7 +65,8 @@ if strcmp(string_piece, '2013-10-10-0') && strcmp(slv_type, 'NSEM')
     StimulusPars.slv.FitBlocks       = 4:2:54;
     StimulusPars.slv.TestBlocks      = 3:2:53;
 end
-StimulusPars.slv.computedtstim = .0083275;
+% StimulusPars.slv.computedtstim = .0083275;
+StimulusPars.slv.computedtstim = 1/120;
 
 
 
