@@ -73,6 +73,17 @@ ind1 = find( S1 < 0 );
 % bring exact zeros and "in-between" zeros together 
 ind = sort([ind0 ind1]);
 
+% added by me
+if ind(1) == 1
+    ind = ind(2:end);
+end
+
+if ind(end) == size(S,2)
+    ind = ind(1:end-1);
+end
+
+
+
 % and pick the associated time values
 t0 = t(ind); 
 s0 = S(ind);
