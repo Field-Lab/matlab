@@ -1,6 +1,6 @@
 % produce generator signal using functions written by Peter Li
 
-function [plot_axes]  = computeAndPlot_genSignal(datarun, cell_specification, run_opts )
+function [plot_axes, slope]  = computeAndPlot_genSignal(datarun, cell_specification, run_opts )
 
 % Changed the threshold from 5 to 4 because wasn't finding any stixels
 datarun = get_sta_summaries(datarun, cell_specification, ...
@@ -36,11 +36,12 @@ for j = 1:length(cellID)
     % subplot(2,2,2);
     % scatter(gen,spks);
     % hold on;
-    % x=[-1:0.01:1];
+    x=[-.02 0.02];
     % % Plot the exponential fit
-    % N=@(x) exp(datarun.stas.snls{cellID}.fit_params.a*x +datarun.stas.snls{cellID}.fit_params.b);
-    % plot(x,N(x),'r');
-    
+    N=@(x) exp(datarun.stas.snls{cellID(j)}.fit_params.a*x +datarun.stas.snls{cellID(j)}.fit_params.b);
+    slope_compute = N(x);
+%     plot(x,N(x),'r');
+    slope(j) = (slope_compute(2) - slope_compute(1))/[x(2) - x(1)];
     
     %% Plot the generator signal against the spike count, binning similar generator signals together
     spikes = full(spks);
