@@ -278,6 +278,8 @@ if ~GLMType.CONVEX
             [SU_cov, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord, inputstats); % maybe eventually should add other filters to be fit again here? eg coupling
             non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
             time_filter = pstar(paramind.time1);
+            p_init = [p_init_SU time_filter];
+           
             
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])

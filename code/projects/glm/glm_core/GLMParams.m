@@ -21,7 +21,7 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
 
-GLMPars.stimfilter.ROI_length = 15;  
+GLMPars.stimfilter.ROI_length = 13;  
 
 
 

@@ -26,12 +26,13 @@ function  [f grad Hess log_cif] = glm_SU_time_optimizationfunction(SU_time_param
 dt = bin_duration;
 spt = spikebins;
 n_bins = size(non_stim_lcif);
-n_params = length(SU_params);
+n_params = length(SU_time_params);
 n_SU_params = 8;
 n_time_params = 30;
+n_time = length(SU_covariates);
 
 SU_params = SU_time_params(1:n_SU_params);
-time_params = SU_time_params((n_SU_params+1):end);
+time_filter = SU_time_params((n_SU_params+1):end);
 % penalty_strength = 0;
 
 %% Find Conditional Intensity and its log
@@ -41,10 +42,13 @@ for i = 1:n_SU_params
     SU_covariates(i, :, :) = SU_covariates(i, :, :) * SU_params(i);
 end
 SU_covariates(n_SU_params+1,:,:) = SU_covariates(n_SU_params+1,:,:) * -sum(SU_params); % the last SU value is set so the sum is 0 
-stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
-stim_lcif = conv(stim_lcif, flip(time_filter), 'same');
-lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
+subunit_drive = exp(conv2(squeeze(sum(SU_covariates,1)),flip(time_filter)', 'full')); % sum_tau T_tau * K * S_loc
+subunit_drive = subunit_drive(:,1:n_time);
 
+stim_lcif = pooling_weights'* subunit_drive;
+% stim_lcif = conv(stim_lcif, flip(time_filter), 'same'); % put this back
+% in for second time filter
+lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
 
 % Evaluate the objective function (monotonic in log-likelihood)
 f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
@@ -55,15 +59,29 @@ f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
 %% Evaluate the gradient
 % gradient of the lcif
 g_eval = zeros(n_params, 1);
-subunit_drive = exp(squeeze(sum(SU_covariates,1)));
 del_lcif = zeros(n_params, n_bins(2));
-for i_SU = 1:n_params
-    temp_del_lcif = zeros(1,length(SU_covariates));
-    for i_loc = 1:121
-        temp = pooling_weights(i_loc)*(squeeze(pixels(i_SU,i_loc,:)))'.*squeeze(subunit_drive(i_loc,:));
+for i_SU = 1:n_SU_params
+    temp_del_lcif = zeros(1,length(pixels));
+    for i_loc = 1:length(pooling_weights)
+        temp_conv = conv(squeeze(pixels(i_SU,i_loc,:)), time_filter, 'full');
+        temp = pooling_weights(i_loc)*temp_conv(1:n_time)'.*squeeze(subunit_drive(i_loc,:));
         temp_del_lcif = temp_del_lcif+temp;
     end
-    temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'same');
+    % temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'same');
+    del_lcif(i_SU,:) = imresize(temp_del_lcif, n_bins, 'nearest');
+    g_eval(i_SU) = sum(del_lcif(i_SU,spt))- dt * exp(lcif)*del_lcif(i_SU,:)';
+end
+
+SU_cov_shift = zeros([n_time_params,size(SU_covariates)]);
+for i_time = 1:n_time_params
+    SU_cov_shift(i_time,i_time:end) = SU_covariates(:,:,1:(end-i_time));
+    temp_del_lcif = zeros(1,length(pixels));
+    for i_loc = 1:length(pooling_weights)
+        temp = pooling_weights(i_loc)*SU_cov_shift'.*squeeze(subunit_drive(i_loc,:));
+        temp_del_lcif = temp_del_lcif+temp;
+    end
+    % temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'full');
+    % temp_del_lcif = temp_del_lcif(1:n_time);
     del_lcif(i_SU,:) = imresize(temp_del_lcif, n_bins, 'nearest');
     g_eval(i_SU) = sum(del_lcif(i_SU,spt))- dt * exp(lcif)*del_lcif(i_SU,:)';
 end
@@ -73,16 +91,37 @@ end
 % end
 %g_eval = del_LL;% - del_penalty;
 
+
+
 %% Evaluate the hessian
 H_eval = zeros(n_params);
 for i = 1:n_params
     for j = 1:i
-        di_dj_lcif = zeros(1,length(SU_covariates));
-        for i_loc = 1:121
-            temp = pooling_weights(i_loc)*(squeeze(pixels(j,i_loc,:)).*squeeze(pixels(i,i_loc,:)))'.*squeeze(subunit_drive(i_loc,:));
-            di_dj_lcif = di_dj_lcif+temp;
+        di_dj_lcif = zeros(1,n_time);
+        % both spatial params
+        if i <= n_SU_params && j <= n_SU_params
+            for i_loc = 1:length(pooling_weights)
+                temp_conv = conv(squeeze(pixels(i,i_loc,:)), time_filter, 'full').*conv(squeeze(pixels(j,i_loc,:)), time_filter, 'full');
+                temp = pooling_weights(i_loc)*temp_conv(1:n_time)'.*squeeze(subunit_drive(i_loc,:));
+                di_dj_lcif = di_dj_lcif+temp;
+            end
+            % one spatial and one temporal params
+        elseif i > n_SU_params && j <= n_SU_params
+            for i_loc = 1:length(pooling_weights)
+                temp_conv = conv(squeeze(pixels(j,i_loc,:)), time_filter, 'full');
+                temp = pooling_weights(i_loc)*(SU_cov_shift(i).*temp_conv(1:n_time))'.*squeeze(subunit_drive(i_loc,:));
+                di_dj_lcif = di_dj_lcif+temp;
+            end
+            % both temporal params
+        else
+            for i_loc = 1:length(pooling_weights)
+                temp_conv = SU_cov_shift(i).*SU_cov_shift(j);
+                temp = pooling_weights(i_loc)*temp_conv'.*squeeze(subunit_drive(i_loc,:));
+                di_dj_lcif = di_dj_lcif+temp;
+            end
         end
-        di_dj_lcif = conv(di_dj_lcif, flip(time_filter), 'same');
+        
+        % di_dj_lcif = conv(di_dj_lcif, flip(time_filter), 'same');
         di_dj_lcif = imresize(di_dj_lcif, n_bins, 'nearest');
         H_eval(i,j) = sum(di_dj_lcif(spt)) - dt * exp(lcif) * (di_dj_lcif + del_lcif(i,:).*del_lcif(j,:))';
         H_eval(j,i) = H_eval(i,j);
