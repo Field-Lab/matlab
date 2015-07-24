@@ -74,7 +74,8 @@ end
 
 SU_cov_shift = zeros([n_time_params,size(SU_covariates)]);
 for i_time = 1:n_time_params
-    SU_cov_shift(i_time,i_time:end) = SU_covariates(:,:,1:(end-i_time));
+    % THIS IS TOO SLOW: NEED TO CHANGE
+    SU_cov_shift(i_time,:,:,i_time:end) = SU_covariates(:,:,1:(end-i_time+1));
     temp_del_lcif = zeros(1,length(pixels));
     for i_loc = 1:length(pooling_weights)
         temp = pooling_weights(i_loc)*SU_cov_shift'.*squeeze(subunit_drive(i_loc,:));
