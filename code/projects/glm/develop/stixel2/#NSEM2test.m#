@@ -1,10 +1,70 @@
-function [STA_concatmovie,STA_origmovie, ROI] = NSEM2STAtest_new(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
-if nargout == 1
-    orig_STA = false;
-else
-    orig_STA = true;
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AKHeitman 2015-04-02
+
+% Creates structure which dictates GLMType
+% Loads cells 
+% Loads stimuli / basic stimuli processing
+% Loads spike trains / basic spike train processing
+% Requires the organizedspikes structure with spike times relative
+%    to start of each block of stimulus
+% No direct GLM Paramater usage
+% Feeds into glm_execute which is located in glm_core directory
+% glm_execute along with glm_core 
+%    which has no additional code dependencies, no loading of matfiles
+
+% INPUTS
+% exps: an array of which exps to run (1-4)
+% stimtypes: 1 = WN, 2=NSEM
+% celltypes: 1 = ON, 2 = OFF parasols
+% cell_subset: 'all' 'shortlist' or 'debug'
+% glm_settings: optional
+% runoptions: optional
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Wrap_bookeeping Calls %
+%  NSEM_BaseDirectories
+%  GLM_Settings
+%  GLM_fitname
+%  NSEM_secondaryDirectories
+%  loadmoviematfiles
+%  StimulusParams
+
+% Main Call %
+%   glm_execute  
+
+% Subroutines at bottom of function
+%  subR_concat_fitspikes_fromorganizedspikes
+%  subR_createraster
+%  subR_concat_fitmovie_fromblockedcell
+%  subR_visionSTA_to_xymviCoord
+
+% Sample Call and Output to verify that it works
+%{
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
+
+%%% Should have the following minimization sequence  
+### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0            1297.56                         2e+04                
+     1            1297.56             10                    4
+     2           -42251.5            2.5       2.56e+03           0
+     3           -45320.3        4.13912       5.15e+03           7
+
+Local minimum possible.
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function NSEM2test(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -149,104 +209,51 @@ for i_exp = exps
                     disp('loading the fitmovie')
                     GLMPars = GLMParams;
                     % Load relevant movie section
-                    % tic;
-                    % [fitmovie_concat testmovie] = subR_concat_fitmovie(center_coord, StimulusPars.slv, GLMPars.stimfilter.ROI_length);
-                    % toc
+                    tic;
+                    [fitmovie_concat testmovie] = subR_concat_fitmovie(center_coord, StimulusPars.slv, GLMPars.stimfilter.ROI_length);
+                    toc
                     
+                    STA = STA_Test(fitspikes_concat.home, fitmovie_concat, false);
+<<<<<<< HEAD
+                    % load('ON841_NSEM_STA.mat')
+                    % ROI = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord , slvdim);
+                    glm_cellinfo.WN_STA = STA;
+=======
+                    glm_cellinfo.WN_STA = permute(STA, [2 1 3]);
+>>>>>>> 56fc49b6d2800c71739ac9d3701b647807c5095e
+                    glm_cellinfo.slave_centercoord.x_coord = ceil(GLMPars.stimfilter.ROI_length/2);
+                    glm_cellinfo.slave_centercoord.y_coord = ceil(GLMPars.stimfilter.ROI_length/2);
+                    clear GLMPars
                     
-                    % STA_concatmovie = STA_Test(fitspikes_concat.home, fitmovie_concat, false);
-                    
-                    %% Load up part of the fitmovie
-                    % if orig_STA
-                        ROI = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, StimulusPars.slv);
-                        STA_origmovie = zeros(30,320,160);
-                        
-                        if orig_STA
-                            spikes = organizedspikes.block.t_sp_withinblock;
-                            for i_block = 1:59
-                                load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(i_block) '.mat'])
-                                for i_sp = 1:length(spikes{2*i_block})
-                                    spike_frame = ceil(spikes{2*i_block}(i_sp) * 120);
-                                    if spike_frame > 29
-                                        STA_origmovie = STA_origmovie + double(movie.matrix((spike_frame-29):spike_frame,:,:));
-                                    end
-                                end
-                            end
+                    % NBCoupling 2014-04-20
+                    if GLMType.CouplingFilters
+                        n_couplings=length(glm_cellinfo.pairs); % number of cells to couple to
+                        % loading the neighboring spikes to neighborspikes.home
+                        for i_pair=1:n_couplings
+                            glm_cellinfo.pair_savename{i_pair}  = sprintf('%s_%d', celltype,glm_cellinfo.pairs(i_pair));
+                            eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir,  glm_cellinfo.pair_savename{i_pair}));
+                            neighborspikes.home{i_pair} = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
+                            neighborspikes.test{i_pair} = subR_createraster(organizedspikes.block, StimulusPars.slv);
+                            % neighbor_organizedspikes{j}=organizedspikes;
                         end
-                        
-%                         spikes = organizedspikes.block.t_sp_withinblock;
-%                         for i_block = 3:59
-%                             load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(i_block) '.mat'])
-%                             for i_sp = 1:length(spikes{2*i_block})
-%                                 spike_frame = ceil(spikes{2*i_block}(i_sp) * 120);
-%                                 if spike_frame > (29+120)
-%                                     STA_origmovie = STA_origmovie + double(movie.matrix((spike_frame-29):spike_frame,:,:));
-%                                 end
-%                             end
-%                         end
-                        
-                        frames_per_block = length(StimulusPars.slv.fitframes);
-                        blocks = length(StimulusPars.slv.FitBlocks);
-                        % Load the movie
-                        concat_movie = zeros(GLMPars.stimfilter.ROI_length,GLMPars.stimfilter.ROI_length, frames_per_block*blocks);
-                        idx = 1:frames_per_block;
-                     
-                        for i=1:blocks
-                            disp(i)
-                            block = StimulusPars.slv.FitBlocks(i);
-                            load(['/Volumes/Lab/Users/Nora/NSEM_Movies/eye-120-3_0-3600/movieblock' num2str(block/2) '.mat'])
-                            concat_movie(:,:,idx) = permute(movie.matrix(StimulusPars.slv.fitframes, ROI.xvals, ROI.yvals),[2 3 1]);
-                            idx = idx+frames_per_block;
-                        end
-                        disp('movie loaded calc STA')
-                        STA_concatmovie = STA_Test(fitspikes_concat.home, concat_movie, false);
-                        
-                        % end
-                        %{
-                 
-                        
+                    else
+                        neighborspikes.home = 0;
+                        neighborspikes.test = 0;
+                    end
+                    % end NBCoupling
                     
-                    
-                    if 0
-                        % load('ON841_NSEM_STA.mat')
-                        % ROI = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord , slvdim);
-                        glm_cellinfo.WN_STA = STA;
-                        glm_cellinfo.slave_centercoord.x_coord = ceil(GLMPars.stimfilter.ROI_length/2);
-                        glm_cellinfo.slave_centercoord.y_coord = ceil(GLMPars.stimfilter.ROI_length/2);
-                        clear GLMParsed
-                        
-                        % NBCoupling 2014-04-20
-                        
-                        if GLMType.CouplingFilters
-                            n_couplings=length(glm_cellinfo.pairs); % number of cells to couple to
-                            % loading the neighboring spikes to neighborspikes.home
-                            for i_pair=1:n_couplings
-                                glm_cellinfo.pair_savename{i_pair}  = sprintf('%s_%d', celltype,glm_cellinfo.pairs(i_pair));
-                                eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir,  glm_cellinfo.pair_savename{i_pair}));
-                                neighborspikes.home{i_pair} = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
-                                neighborspikes.test{i_pair} = subR_createraster(organizedspikes.block, StimulusPars.slv);
-                                % neighbor_organizedspikes{j}=organizedspikes;
-                            end
-                        else
-                            neighborspikes.home = 0;
-                            neighborspikes.test = 0;
-                        end
-                        % end NBCoupling
-                        
                     % Call appropriate glm_execute
-                        display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
-                        tStart = tic;
-                        if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                            [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
-                                fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
-                        else
-                            [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
-                                testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
-                        end
-                        duration = toc(tStart);
-                        display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
-                end
-                    %}
+                    display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
+                    tStart = tic;
+                    if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
+                        [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
+                            fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
+                    else
+                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                    end
+                    duration = toc(tStart);
+                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                 end
             end
         end
@@ -385,8 +392,19 @@ end
 
 function [concat_movie, testmovie] = subR_concat_fitmovie(center, StimPars, ROI_length)
 %% Load up part of the fitmovie
+<<<<<<< HEAD
 stimsize.height = StimPars.height;
 stimsize.width = StimPars.width;
+% temp = center;
+% center.y_coord = temp.x_coord;
+% center.x_coord = temp.y_coord;
+=======
+stimsize.height = 4*StimPars.height;
+stimsize.width = 4*StimPars.width;
+% temp = center;
+% center.y_coord = temp.y_coord;
+% center.x_coord = temp.x_coord;
+>>>>>>> 56fc49b6d2800c71739ac9d3701b647807c5095e
 ROI = ROI_coord(ROI_length, center, stimsize);
 frames_per_block = length(StimPars.fitframes);
 blocks = length(StimPars.FitBlocks);

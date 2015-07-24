@@ -77,7 +77,7 @@ else
     GLMType = GLM_settings('default');
 end
 GLMType.fitname    = GLM_fitname(GLMType); 
-GLMType.fitname = [GLMType.fitname '_newtstim'];
+% GLMType.fitname = [GLMType.fitname '_newtstim'];
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));

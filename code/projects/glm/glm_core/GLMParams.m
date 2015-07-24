@@ -21,7 +21,7 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
 
-GLMPars.stimfilter.ROI_length = 15;  
+GLMPars.stimfilter.ROI_length = 13;  
 
 
 
@@ -30,7 +30,7 @@ GLMPars.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for
 GLMPars.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMPars.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
 GLMPars.stimfilter.note4 = 'Frames: Time duration of the fitted stim filter in frames';
-GLMPars.stimfilter.frames_negative = 2;
+% GLMPars.stimfilter.frames_negative = 2;
 
 % NBsubunits eventually these will be parameters in a dual fitting type thing
 GLMPars.others.point_nonlinearity.increment_to_decrement=3;

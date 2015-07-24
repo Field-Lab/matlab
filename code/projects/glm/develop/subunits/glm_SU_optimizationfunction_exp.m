@@ -31,12 +31,11 @@ n_time = length(SU_covariates);
 % penalty_strength = 0;
 
 %% Find Conditional Intensity and its log
-pixels = SU_covariates(1:n_params,:,:)-repmat(SU_covariates(n_params+1,:,:),[n_params 1 1]); % for 0 constraint
+pixels = SU_covariates;
 
 for i = 1:n_params
     SU_covariates(i, :, :) = SU_covariates(i, :, :) * SU_params(i);
 end
-SU_covariates(n_params+1,:,:) = SU_covariates(n_params+1,:,:) * -sum(SU_params); % the last SU value is set so the sum is 0 
 stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
 stim_lcif = conv(stim_lcif, flip(time_filter), 'full');
 stim_lcif = stim_lcif(1:n_time);

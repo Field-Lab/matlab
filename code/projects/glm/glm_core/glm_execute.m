@@ -274,7 +274,7 @@ if ~GLMType.CONVEX
             pooling_filter = reshape(pstar(paramind.space1), [ROI_length, ROI_length]);
             
             % Set up the covariate vector
-            p_init_SU = SU_filter(1:(end-1));
+            p_init_SU = SU_filter(:);
             [SU_cov, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord, inputstats); % maybe eventually should add other filters to be fit again here? eg coupling
             non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
             time_filter = pstar(paramind.time1);
@@ -282,20 +282,20 @@ if ~GLMType.CONVEX
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])
             if strcmp(GLMType.Subunit_NL, 'exp')
+                disp('here')
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'squared')
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_squared(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             end
-                pstar_SU_full = [pstar_SU -sum(pstar_SU)];
             
             % Unpack the subunit filter
-            SU_filter = reshape(pstar_SU_full, [GLMPars.subunit_size, GLMPars.subunit_size]);
+            SU_filter = reshape(pstar_SU, [GLMPars.subunit_size, GLMPars.subunit_size]);
             
             % Remake the stimulus with the new subunit filter
             [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
             
             % Save initial iterations
-            rawfit.iter{iterate}.SU = pstar_SU_full;
+            rawfit.iter{iterate}.SU = pstar_SU;
             rawfit.iter{iterate}.nonSU = pstar;
             p_init = pstar;
             

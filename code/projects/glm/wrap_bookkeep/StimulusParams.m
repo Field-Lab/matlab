@@ -65,8 +65,8 @@ if strcmp(string_piece, '2013-10-10-0') && strcmp(slv_type, 'NSEM')
     StimulusPars.slv.FitBlocks       = 4:2:54;
     StimulusPars.slv.TestBlocks      = 3:2:53;
 end
-% StimulusPars.slv.computedtstim = .0083275;
-StimulusPars.slv.computedtstim = 1/120;
+StimulusPars.slv.computedtstim = .0083275;
+%StimulusPars.slv.computedtstim = 1/120;
 
 
 
@@ -81,6 +81,7 @@ if strcmp(string_moviename, 'BW-8-1-0.48-11111_RNG_16807') || strcmp(string_movi
     params.width =  80;
     params.frames_pertrigger = 100;
     params.tstim = .00832750;
+    % params.tstim = 1/120;
     params.pixelsize = 8; 
     params.refreshrate = 1;
     params.fr_sec = 120 ;
@@ -133,6 +134,7 @@ if strcmp(string_moviename, 'NSEM_eye-120-3_0-3600') || strcmp(string_moviename,
     params.frames_perstaticblock = 3600;
 	params.frames_pernovelblock  = 7200;
     params.tstim = .00832750;
+    % params.tstim = 1/120;
     params.n_rep = 60; 
     params.n_blk = params.n_rep*2; 
     
