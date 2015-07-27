@@ -65,7 +65,7 @@ for m = 1:length(movieNos)
         data{m,e}=squeeze(dataTraces(:,recElecs(e),Trange(1):Trange(2)));
         
     end
-    [amps channelsWithStim stimAmpVectors channelsConnected elecCurrentStep currentRangesUsed] = ...
+    [amps, channelsWithStim, ~, ~, ~, currentRangesUsed] = ...
         getStimAmps(pathToAnalysisData, patternNo, movieNos(m));
     
     listAmps(m,:)              = amps';

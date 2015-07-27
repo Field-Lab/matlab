@@ -1,7 +1,3 @@
-
-
-
-% NEW LOOK on 2015-01-
 function [f grad Hess log_cif]= glm_nonconvex_optimizationfunction(params,stimfilter_mode,paramind,convex_covariates,X_frame,frame_shifts, bpf, spikebins,bin_duration,lcif_nonlinearity)
  %%% PURPOSE %%%
 % HANDLE NON_CONVEX PARAMETER USAGE

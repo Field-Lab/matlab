@@ -44,9 +44,9 @@
 
 %%% TEST CODE DON"T DELETE  on branch akheitman %%%
 clear
-exps        = 3;
-stimtypes   = [1]; % white noise only  (2 is natural scens)
-celltypes   = [1]; % only ON Parasol
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
 cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
@@ -57,44 +57,102 @@ glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
 
                                 Norm of      First-order 
  Iteration        f(x)          step          optimality   CG-iterations
-     0            105.635                      1.93e+03                
-     1            105.635             10       1.93e+03           4
-     2           -4224.27            2.5            372           0
-     3           -4549.67        4.52753            754           6
-     4           -4676.83       0.326465            115           2
+     0            1297.56                         2e+04                
+     1            1297.56             10          2e+04           4
+     2           -42251.5            2.5       2.56e+03           0
+     3           -45320.3        4.13912       5.15e+03           7
 
 Local minimum possible.
+
+%%% TEST CODE FOR NON_CONVEX : DON"T DELETE on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+glm_settings{2}.type = 'filter_mode';
+glm_settings{2}.name = 'rk1';
+glm_settings{3}.type = 'PostSpikeFilter';
+glm_settings{3}.name =  'OFF';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
+%%% Should have the following minimization sequence 
+### running: WN expC ONPar_2824: debug_rk1_MU_noPS_noCP_p8IDp8/standardparams ###
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0             1478.5                         2e+04                
+     1             1478.5          11.82          2e+04           1
+     2           -33907.5            2.5       1.08e+03           0
+     3           -33907.5              5       1.08e+03           1
+     4           -37215.6           1.25        5.2e+03           0
+
+
+%%% TEST PS_CONSTRAIN on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
+cell_subset = 'debug';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+glm_settings{1}.type = 'debug';
+glm_settings{1}.name = 'true';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+%%% Should have the following minimization sequence 
+### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams/PS_netinhibitory_domainconstrain_COB ###
+Your initial point x0 is not between bounds lb and ub; FMINCON
+shifted x0 to satisfy the bounds.
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0            3133.16                      2.02e+04                
+     1            3133.16             10       2.02e+04           5
+     2           -42096.8            2.5       4.63e+03           0
+     3           -44069.2        5.83931        7.3e+03           7
+     4           -45909.5         1.8113        1.2e+03           4
+
+Local minimum possible.
+fmincon stopped because the final change in function value relative to 
+its initial value is less than the selected value of the function tolerance.
+
+
+
+
+
+
+%%% TEST PS_CONSTRAIN on branch akheitman %%%
+clear
+exps = 3;
+stimtypes = [2]; % white noise only  (2 is natural scens)
+celltypes = [2]; % only ON Parasol
+cell_subset = 'debug';
+special_arg{1} = 'PS_netinhibitory_domainconstrain_COB';
+glm_settings{1}.type = 'filter_mode';
+glm_settings{1}.name = 'rk1';
+runoptions.replace_existing = true;
+glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
 
 
 
 clear
-exps        = 3;
-stimtypes   = [1]; % white noise only  (2 is natural scens)
-celltypes   = [1]; % only ON Parasol
+exps = 3;
+stimtypes = [1]; % white noise only  (2 is natural scens)
+celltypes = [1]; % only ON Parasol
 cell_subset = 'debug';
 glm_settings{1}.type = 'debug';
 glm_settings{1}.name = 'true';
 glm_settings{2}.type = 'cone_model';
-glm_settings{2}.name = 'rieke_linear';
-glm_settings{3}.type = 'filter_mode';
-glm_settings{3}.name = 'rk1';
+glm_settings{2}.name = 'rieke_linear'
 runoptions.replace_existing = true;
 glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,{},runoptions)
-%%% Should have the following minimization sequence  
-### running: WN expC ONPar_2824: debug_rk1_MU_PS_noCP_timekernelCONEMODEL/standardparams ###
 
-                                Norm of      First-order 
- Iteration        f(x)          step          optimality   CG-iterations
-     0            110.954                      1.93e+03                
-     1            110.954             10       1.93e+03           3
-     2           -3440.38            2.5            177           0
-     3           -3440.38              5            177           2
-     4           -3682.82           1.25            129           0
 
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
+function glm_wrap_2(exps,stimtypes,celltypes,cell_subset,glm_settings,special_arg,runoptions)
 % Verion 2: 2015-07-17
 %  integraed glm_execute_InputNL_IteratedOpt
 % Version 1: started 2015-07-14
@@ -116,7 +174,6 @@ GLMType.fitname    = GLM_fitname(GLMType);
 
 
 % AKH 2015-07-13 Add mechanism for handling special arguments
-% Unpack special arguments into GLMType
 % Intended for PS filter constraints, Post Filter NL modulation
 if exist('special_arg','var') && ~isempty(special_arg)
     GLMType.fitname_prespecialarg =  GLM_fitname(GLMType);
@@ -127,19 +184,8 @@ if exist('special_arg','var') && ~isempty(special_arg)
             GLMType.special_arg.PS_Constrain.params  = 0;
             GLMType.special_arg.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
         end
-        % AKH 2015-07-19
-        if strcmp(special_arg{i_arg},'postfilterNL_Logistic_2Par_fixMU')
-            GLMType.special_arg.postfilterNL.type    = 'Logistic_2Par_fixMU';
-        end
-        
-        if strcmp(special_arg{i_arg},'fit_50percent')
-            GLMType.shorter_fit = true;
-            GLMType.shorter_fit_fraction = .5;
-        end
-            
     end
 end
-
 
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
@@ -148,43 +194,11 @@ display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
         replace_existing  = true;
-        disp('here')
     end
     if isfield(runoptions,'reverseorder')
         reverseorder  = true;
     end
 end
-
-
-% AKH Optional Loading Argument 2015-07-18
-if exist('runoptions','var')
-    if isfield(runoptions,'load_previousfit')
-        PF = runoptions.load_previousfit; % previous fit directory
-        
-        loadfit.glm_settings    = PF.glm_settings;
-        loadfit.GLMType         = GLM_settings('default',loadfit.glm_settings);
-        loadfit.GLMType.fitname = GLM_fitname(loadfit.GLMType); 
-        
-
-        if isfield(PF, 'special_arg')
-            loadfit.GLMType.fitname_prespecialarg =  GLM_fitname(loadfit.GLMType);
-            for i_arg = 1:length(PF.special_arg)
-                loadfit.GLMType.fitname                = sprintf('%s/%s', loadfit.GLMType.fitname,special_arg{i_arg});
-                if strcmp(PF.special_arg{i_arg},'PS_netinhibitory_domainconstrain_COB')
-                    loadfit.GLMType.special_arg.PS_Constrain.type    = 'PS_netinhibitory_domainconstrain_COB';
-                    loadfit.GLMType.special_arg.PS_Constrain.params  = 0;
-                    loadfit.GLMType.special_arg.PS_Constrain.param_note  = 'Upper bound on sum of fitted PS-filter before exponential';
-                end
-                % AKH 2015-07-19
-                if strcmp(special_arg{i_arg},'postfilterNL_Logistic_2Par_fixMU')
-                    loadfit.GLMType.special_arg.postfilterNL.type    = 'Logistic_2Par_fixMU';
-                end     
-            end
-        end
-    end
-end
-
-
 
 
 for i_exp = exps    
@@ -202,21 +216,12 @@ for i_exp = exps
         [blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'fitmovie');
         [testmovie0]          = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'testmovie');
         testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
-        GLMType.fitmoviefile  = origmatfile;        
-        % Shorten-FitTimes to make debugging mode worthwhile  AKH 2015-07-18
+        GLMType.fitmoviefile  = origmatfile;
         if GLMType.debug
-            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:5);
+            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:57);
         end
-        
-        if isfield(GLMType, 'shorter_fit')  && GLMType.shorter_fit
-            blocks           = length(StimulusPars.slv.FitBlocks);
-            shortened_blocks = floor(GLMType.shorter_fit_fraction * blocks);
-            StimulusPars.slv.FitBlocks = StimulusPars.slv.FitBlocks(1:shortened_blocks);
-            clear blocks shortened_blocks
-        end
-        
         fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
-  
+         
         % Directories  
         secondDir.exp_nm    = exp_nm; 
         secondDir.map_type  = GLMType.map_type; 
@@ -225,27 +230,13 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-<<<<<<< HEAD
-
-=======
+        
         if GLMType.CouplingFilters
             Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
         end
->>>>>>> akheitman
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
-        
-        % Optional Load from GLM_Output_Analysis directory
-        % AKH 2015-07-18
-        if exist('loadfit','var')
-            Dirs.load_fittedGLM  = sprintf('%s/%s', BD.GLM_output_analysis, loadfit.GLMType.fitname);
-            if i_stimtype == 1
-                Dirs.load_fittedGLM = sprintf('%s/WN_mapPRJ/%s', Dirs.load_fittedGLM, exp_nm);
-            elseif i_stimtype == 2
-                Dirs.load_fittedGLM = sprintf('%s/NSEM_mapPRJ/%s', Dirs.load_fittedGLM, exp_nm);
-            end
-        end
-        
+                
         for i_celltype = celltypes            
             % Choose which subset of cells to run
             if i_celltype == 1; cellgroup = allcells{i_exp}.ONP;  celltype = 'ONPar'; end
@@ -256,33 +247,20 @@ for i_exp = exps
                 [~,candidate_cells,~]  = cell_list(i_exp, cell_subset);
                 candidate_cells = cell2mat(candidate_cells) ;
             elseif strcmp(cell_subset,'glmconv_4pct')
-                eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));
-                conv_column = 2;
+                eval(sprintf('load %s/allcells_glmconv.mat', BD.Cell_Selection));              
+                conv_column = 2; 
                 conv_index_ON = find(allcells_glmconv{i_exp}.ONP_CONV(:,conv_column));
                 conv_index_OFF = find(allcells_glmconv{i_exp}.OFFP_CONV(:,conv_column));
                 candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
-            elseif strcmp(cell_subset, 'halfratio_STA_50')
-                eval(sprintf('load %s/fitted_aggscores_STA.mat', BD.Cell_Selection));
-                display('evaluating halfratio_STA_50')
-                conv_index_ON = intersect(...
-                    find(aggregated_scores{i_exp}.celltype{1}.halfratio_WN < .02),...
-                    find(aggregated_scores{i_exp}.celltype{1}.halfratio_NSEM < .02)) ;
-                conv_index_OFF = intersect(...
-                    find(aggregated_scores{i_exp}.celltype{2}.halfratio_WN < .02),...
-                    find(aggregated_scores{i_exp}.celltype{2}.halfratio_NSEM < .02)) ;
-                candidate_cells = [allcells{i_exp}.ONP(conv_index_ON) allcells{i_exp}.OFFP(conv_index_OFF)];
             end
-                
-
             % NBCoupling 2015-04-20
             if GLMType.CouplingFilters
                 cells_to_pair = repmat(cellgroup,2,1);
                 for i_pair = 1:length(cellgroup)
                     cells_to_pair(2,i_pair) = find(datarun_master.cell_ids == cellgroup(i_pair));
                 end
-            end
-            cellgroup = intersect(candidate_cells, cellgroup);
-            
+            end 
+            cellgroup = intersect(candidate_cells, cellgroup)
             if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end
             
             for i_cell = 1:length(cellgroup)
@@ -347,32 +325,12 @@ for i_exp = exps
                     tStart = tic;
                     
                     
-                    if isfield(GLMType,'special_arg') && isfield(GLMType.special_arg,'postfilterNL') % New option of smooth inputNL search
-                        filename = sprintf('%s/%s.mat', Dirs.load_fittedGLM,cell_savename);
-                        postfilter_NL = GLMType.special_arg.postfilterNL;
-                        if exist(filename)
-                            eval(sprintf('load %s fittedGLM', filename));
-                            preoutputNL_fittedGLM  = fittedGLM; 
-                            clear fittedGLM
-                            [fittedGLM] = glm_execute_OutputNL(postfilter_NL,preoutputNL_fittedGLM,...
-                                GLMType,fitspikes_concat,fitmovie_concat,testspikes_raster,...
-                                testmovie,inputstats,glm_cellinfo,neighborspikes); 
-                        end
-                    elseif isfield(GLMType,'InputNL_IteratedOpt') && GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
-                        optional_arg = {};
-                        % load fitted GLM  AKH 2015-07-18
-                        if exist('loadfit','var')
-                            filename = sprintf('%s/%s.mat', Dirs.load_fittedGLM,cell_savename);
-                            if exist(filename)
-                                eval(sprintf('load %s fittedGLM', filename));
-                                optional_arg{1}.type = 'preinputNL_fittedGLM';
-                                optional_arg{1}.preinputNL_fittedGLM = fittedGLM;
-                            end
-                        end                        
-                        [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,optional_arg);                         
+                    
+                    if isfield(GLMType,'InputNL_IteratedOpt') && GLMType.InputNL_IteratedOpt % New option of smooth inputNL search
+                         [fittedGLM] = glm_execute_InputNL_IteratedOpt(GLMType,fitspikes_concat,fitmovie_concat,...
+                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); 
                     else
-                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                        [fittedGLM] = glm_execute_2(GLMType,fitspikes_concat,fitmovie_concat,...
                             testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
                     end
 
