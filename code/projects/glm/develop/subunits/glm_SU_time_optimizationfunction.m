@@ -75,10 +75,10 @@ end
 SU_cov_shift = zeros([n_time_params,size(SU_covariates)]);
 for i_time = 1:n_time_params
     % THIS IS TOO SLOW: NEED TO CHANGE
-    SU_cov_shift(i_time,:,:,i_time:end) = SU_covariates(:,:,1:(end-i_time+1));
+    time_shift = cat(2, zeros(length(pooling_weights), i_time), squeeze(sum(SU_covariates(:,:,1:(end-i_time)))));
     temp_del_lcif = zeros(1,length(pixels));
     for i_loc = 1:length(pooling_weights)
-        temp = pooling_weights(i_loc)*SU_cov_shift'.*squeeze(subunit_drive(i_loc,:));
+        temp = pooling_weights(i_loc)*time_shift(i_loc,:).*squeeze(subunit_drive(i_loc,:));
         temp_del_lcif = temp_del_lcif+temp;
     end
     % temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'full');
@@ -97,7 +97,15 @@ end
 %% Evaluate the hessian
 H_eval = zeros(n_params);
 for i = 1:n_params
+    if i > n_SU_params
+        tau = i-n_SU_params;
+        time_shift_i = cat(2, zeros(length(pooling_weights), tau), squeeze(sum(SU_covariates(:,:,1:(end-tau)))));
+    end
     for j = 1:i
+        if j > n_SU_params
+            tau = j-n_SU_params;
+            time_shift_j = cat(2, zeros(length(pooling_weights), tau), squeeze(sum(SU_covariates(:,:,1:(end-tau)))));
+        end
         di_dj_lcif = zeros(1,n_time);
         % both spatial params
         if i <= n_SU_params && j <= n_SU_params
@@ -106,18 +114,19 @@ for i = 1:n_params
                 temp = pooling_weights(i_loc)*temp_conv(1:n_time)'.*squeeze(subunit_drive(i_loc,:));
                 di_dj_lcif = di_dj_lcif+temp;
             end
-            % one spatial and one temporal params
+            % one spatial j and one temporal i params
         elseif i > n_SU_params && j <= n_SU_params
             for i_loc = 1:length(pooling_weights)
                 temp_conv = conv(squeeze(pixels(j,i_loc,:)), time_filter, 'full');
-                temp = pooling_weights(i_loc)*(SU_cov_shift(i).*temp_conv(1:n_time))'.*squeeze(subunit_drive(i_loc,:));
-                di_dj_lcif = di_dj_lcif+temp;
+                temp1 = pooling_weights(i_loc)*(time_shift_i(i_loc,:).*temp_conv(1:n_time)').*squeeze(subunit_drive(i_loc,:));
+                temp2 = pooling_weights(i_loc)*squeeze(pixels(j,i_loc,:))'.*squeeze(subunit_drive(i_loc,:));
+                di_dj_lcif = di_dj_lcif+temp1+temp2;
             end
             % both temporal params
         else
             for i_loc = 1:length(pooling_weights)
-                temp_conv = SU_cov_shift(i).*SU_cov_shift(j);
-                temp = pooling_weights(i_loc)*temp_conv'.*squeeze(subunit_drive(i_loc,:));
+                temp_conv = time_shift_i(i_loc,:).*time_shift_j(i_loc,:);
+                temp = pooling_weights(i_loc)*temp_conv.*squeeze(subunit_drive(i_loc,:));
                 di_dj_lcif = di_dj_lcif+temp;
             end
         end
