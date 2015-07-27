@@ -1,4 +1,4 @@
-%load('axontrace_matches.mat')
+load('axontrace_matches.mat')
 
 codebase_path = matlab_code_path; 
 
@@ -42,6 +42,7 @@ figure
 
 [match_n, ~] = size(match_list);
 
+estimates = {};
  stats = [];
 for n = 1: match_n
     
@@ -51,8 +52,15 @@ for n = 1: match_n
 
     eiAmps = max(ei,[],2) - min(ei,[],2);
 
-    [axon_x, axon_y] = weighted_axon_poly_reg(eiAmps);
+    [axon_x, axon_y, ~, ~, ~, ~, res] = weighted_axon_poly_reg(eiAmps);
  
+    res
+    axon_x = axon_x';
+    axon_y = axon_y';
+    
+    axon_xy = [axon_x axon_y];
+    
+    estimates{n} = axon_xy;
     
     traced = axons{match_list(n, 1)};
 
