@@ -59,6 +59,11 @@ if ~exist('condition','var')
     if isfield(GLMType,'DoubleOpt_Manual') && GLMType.DoubleOpt_Manual
         GLM_fitname = sprintf('%s/Man_DoubleOpt_standardparams',GLM_fitname_core)
     end
+    
+    %
+    if isfield(GLMType, 'name_change')
+        GLM_fitname = [GLM_fitname GLMType.name_change];
+    end
 end
 
 

@@ -127,7 +127,7 @@ for i_exp = exps
         secondDir.stim_type = stimtype;
         secondDir.fitname   = GLMType.fitname;
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
-        Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '_stixel2'];
+        %Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '_stixel2'];
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
 
@@ -187,10 +187,7 @@ for i_exp = exps
                     slvdim.width       = StimulusPars.slv.width;
                     [center_coord,sd]  = subR_visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, StimulusPars.master, slvdim);
                     glm_cellinfo.WN_STA = STAandROI.STA;
-                    glm_cellinfo.slave_centercoord = center_coord;
-                    
-                    
-                    
+
                     % NBCoupling 06-10-2014
                     if GLMType.CouplingFilters==true
                         % eval(sprintf('load %s/neighbor_cells.mat', BD.Cell_Selection));
@@ -209,19 +206,13 @@ for i_exp = exps
                     
                     disp('loading the fitmovie')
                     GLMPars = GLMParams;
+                    % Load new STAs
+                    load('/Volumes/Lab/Users/Nora/ON6858_120t.mat');
+                    glm_cellinfo.WN_STA = STA_concat;
                     % Load relevant movie section
                     tic;
                     [fitmovie_concat testmovie] = subR_concat_fitmovie(center_coord, StimulusPars.slv, GLMPars.stimfilter.ROI_length);
                     toc
-                    
-                    STA = STA_Test(fitspikes_concat.home, fitmovie_concat, false);
-<<<<<<< HEAD
-                    % load('ON841_NSEM_STA.mat')
-                    % ROI = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord , slvdim);
-                    glm_cellinfo.WN_STA = STA;
-=======
-                    glm_cellinfo.WN_STA = permute(STA, [2 1 3]);
->>>>>>> 56fc49b6d2800c71739ac9d3701b647807c5095e
                     glm_cellinfo.slave_centercoord.x_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     glm_cellinfo.slave_centercoord.y_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     clear GLMPars
@@ -393,19 +384,11 @@ end
 
 function [concat_movie, testmovie] = subR_concat_fitmovie(center, StimPars, ROI_length)
 %% Load up part of the fitmovie
-<<<<<<< HEAD
 stimsize.height = StimPars.height;
 stimsize.width = StimPars.width;
 % temp = center;
 % center.y_coord = temp.x_coord;
 % center.x_coord = temp.y_coord;
-=======
-stimsize.height = 4*StimPars.height;
-stimsize.width = 4*StimPars.width;
-% temp = center;
-% center.y_coord = temp.y_coord;
-% center.x_coord = temp.x_coord;
->>>>>>> 56fc49b6d2800c71739ac9d3701b647807c5095e
 ROI = ROI_coord(ROI_length, center, stimsize);
 frames_per_block = length(StimPars.fitframes);
 blocks = length(StimPars.FitBlocks);

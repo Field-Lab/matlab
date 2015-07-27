@@ -182,6 +182,11 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
             GLMType.contrast = true;
         end
+        
+        if strcmp(change.type, 'Name')
+            GLMType.name_change = change.name;
+        end
+           
 
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
