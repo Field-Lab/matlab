@@ -1,4 +1,4 @@
-function printglmfit(fittedGLM,printname)
+function printglmfit(fittedGLM,printname,optional_note)
 
 info    = fittedGLM.cellinfo;
 GLMType = fittedGLM.GLMType;
@@ -29,7 +29,13 @@ c = 0;
 text(-.1, 1-0.1*c,sprintf('%s: %s %d: %s-Fit',info.exp_nm, info.celltype,info.cid, GLMType.fit_type))
 c = c + 1.5;
 text(-.1, 1-0.1*c,sprintf('Cross Validated Performance, in Bits Per spike %1.3e',performance.logprob_glm_bpspike))
- c = c + 2;
+% AKH 2015-07-15 added room for an extra note
+if exist('optional_note','var')
+    c = c + 1.5;
+    text(-.1, 1-0.1*c,sprintf('%s',optional_note),'interpreter','none');
+end
+
+ c = c + 1.5;
 text(-.1, 1-0.1*c,sprintf('Fit Type: %s',GLMType.fitname), 'interpreter','none')
 c = c + 1.5;
 if GLMType.TonicDrive

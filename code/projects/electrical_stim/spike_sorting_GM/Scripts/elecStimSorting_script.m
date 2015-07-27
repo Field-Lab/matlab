@@ -1,109 +1,46 @@
 % Script to analyze data using Gonzalo's spike sorting algorithm. 
 codebase_path = matlab_code_path; 
 analysisPath = uigetdir('/Volumes/Analysis/', 'Choose the electrical stim data folder (001,002, etc) that contains data organized by pattern');
-analysisPath = '/Volumes/Analysis/2015-05-27-0/data001/'; % Directory with the electrical spikes sorted into -autosort/'; 
-% Set optional arguments. 
-Output = SpikeSortingCompact(pathToAnalysisData,patternNo,neuronIds,varargin)
-% Create directory for automatic spike sorting
-sortedPath = 
-for p = 1:length(pathnames)
-    clear input
-    clear initial
-    clear Gibbs
-    clear GibbsNoDelete
-    clear Log
-    p
-    pathToAnalysisData = pathnames;
-    temp = load(pathnames{p});
-    patternNo = temp.elecResp.stimInfo.patternNo;
-    pathToAnalysisData = temp.elecResp.names.data_path;
-    neuronIds = temp.elecResp.cells.main;
-    
-    
-    % analyze. *An elecResp file with each
-    % neuron number must exist*
-    % any recElecs, then the script gets the recording
-    % electrodes from the elecResp file. If you
-    % list electrodes here, the script does not
-    % use the electrodes from elecResp. Instead,
-    % a function (prefElectrodes) is used to
-    % assign a main recording electrode to each
-    % of the neuronIds (chosen from this list of
-    % recElecs). The main recording electrode
-    % for each neuron is the electrode with the
-    % largest signal from the visual stim
-    % template. Other electrodes are used in the
-    % heuristics to improve the sigmoidal fit.
-    % Listing more recElecs is going to increase
-    % the algorithm runtime.
-    
-     %Default minimum and maximum recording times. If the first part of the
-     %traces are not relevant, it could be worth trying make Tmin>1
-     Tmin     = 1;
-     Tmax     = 40;
-     input.tracesInfo.Trange        =    [Tmin Tmax];                                                                                       
-         
-    
-    % Load Templates from ElecResp. If recElecs are not supplied, then will be
-    % found from the 'goodElecs' field.
-    [templates, recElecs] = makeTemplatesFromElecResp(pathToAnalysisData,...
-        patternNo,neuronIds,1); %This function will output one electrode per neuron
-    if(size(templates{1},2)==81) %Usually, when templates have length 81, they are aligned
-        %To spike onset at time ~20. The following
-        %line re-aligns them to onset at time 10
-        [templates, recElecs] = makeTemplatesFromElecResp(pathToAnalysisData,...
-            patternNo,neuronIds,11);
-    end
-    
-    %translate templates if by some reason there are weird template offsets.   
-    %templates = translateTemplate(templates,Translate(p),1,1); % The minimum of each
-    % template should always align with sample point 10
-    
-    %for each neuron, find the 'preFerred' electrode
-    prefElectrodes = PreferredElectrodes(templates); % Looks for the template with the maximum signal for each neuron
-    input.neuronInfo.prefElectrodes =   prefElectrodes; %Define preferred electrodes
-    input.tracesInfo.recElecs      =    recElecs; %define recording electrodes
-    input.neuronInfo.neuronIds     =    neuronIds; %define neuron Ids
-    input.neuronInfo.templates     =    templates; %define templates
-    
-    %Parameters to find a Axonal activation authomatically.
-    %if includeAxonBreakpoint=0 no axonal breakpoint will be included
-    input.params.load.findAxon.includeAxonBreakpoint  =   0; % For now, set to zero because the axonal breakpoint solution is not working
-    input.params.load.findAxon.numberOmit             =   4;
-    input.params.load.findAxon.lMovingAverage         =   1;
-    input.params.load.findAxon.TrangeAxon             =  [11 40];
-    %If one, look for decreases in the minimum of the eigenvalues of the
-    %variance (space) of the energy plot. If equal 2 looks for increases
-    input.params.load.findAxon.typeEigenvalue         =   2;
-    % cleanData = 1 erases the first trial of each movie (for cases where some
-    % of the trials did not result in electrical stimulation as intended)
-    input.params.load.cleanData                       =   1;
-    % if collapseTrialsSameCondition = 1 Collapse movies 2*j and 2*j-1
-    input.params.load.collapseTrialsSameCondition     =   1;
-    
-    
-    %loads data from movie files
-    input = loadData(input,pathToAnalysisData,patternNo);
-    
-    %Fill default values for input
-    input = fillDefaultValues(input);
-    
-    %any change in the default values should be done at this point;
-    %input.params.initial.degPolRule{e}=[1 2 3 50]; example of a redefinition of a default value
+[eiFileName, eiPath] = uigetfile('/Volumes/Analysis/*.ei','Choose ei file to use as a template'); 
+pathToEi = [eiPath eiFileName];
 
-    
-    
-    %finds initial values for the artifact and rest of variables (via convex
-    %relaxation with cvx-Mosek)
-    initial = Initialize(input);
-    
-    
-    %The Core of the algorithm: spike sorting via gibbs sampler + heuristics.
-    %solutions are stored in Gibbs Structure
-    [Gibbs GibbsNoDelete initial input Log] = doSpikeSortingElectricalArtifact(input,initial);
-    
-    Output(p) = OutputResults(input,Gibbs,Log);
-    
-    
+patternNos = input('Enter pattern(s) to create sorted output file(s): ');
+neuronIds = input('Enter neuron id to create sorted output file(s): ');
+% analysisPath = '/Volumes/Analysis/2015-05-27-0/data001/'; % Directory with the electrical spikes sorted into -autosort/'; 
+
+% Set optional arguments. 
+recElecs=[];                % Electrodes that will be used for spike sorting. If no value is specified
+                            % then electrodes from the electrode with the largest
+                            % EI signal will be used for each neuron
+findAxon = 0;               % logical, if zero no axon breakpoints will be included (default =0)
+cleanData = 1;              % if 1, the first trial of each movie will not be included. (default =1)
+collapseTrials = 1;         % if 1, movies corresponding to same stimulus will be collapsed into one (default =1)
+Trange = [1 40];            % sample range over which to do spike sorting, specified as a two dimensional vector (default = [1 40])
+degPolRule = [1 4 15 50]; 
+
+% Create directory for automatic spike sorting
+sortedPath = [analysisPath '-autosort'];
+if ~isdir(sortedPath)
+    mkdir(sortedPath);
 end
-    
+
+% Save output files in the created directory
+for p = 1:length(patternNos)
+    patternNo = patternNos(p); 
+    elecRespAuto = SpikeSortingCompact(analysisPath,patternNo,neuronIds,pathToEi,...
+        'recElecs',recElecs,'findAxon',findAxon,'findAxon',findAxon,...
+        'cleanData',cleanData,'Trange',Trange,'degPolRule',degPolRule);
+    fname = fullfile(sortedPath,['elecRespAuto_n' ...
+        num2str(elecRespAuto.neuronInfo.neuronIds) '_p' ...
+        num2str(elecRespAuto.stimInfo.patternNo) '.mat']); 
+    save(fname,'elecRespAuto'); 
+    disp(['done analyzing ' fname]); 
+%     save([elecResp.names.data_path filesep elecRespName], 'elecResp')
+%         disp(['done analyzing movie ' num2str(elecResp.stimInfo.movieNos(j)) ', pattern ' num2str(patternNos(i))])
+end
+
+
+
+%translate templates if by some reason there are weird template offsets.
+%templates = translateTemplate(templates,Translate(p),1,1); % The minimum of each
+% template should always align with sample point 10

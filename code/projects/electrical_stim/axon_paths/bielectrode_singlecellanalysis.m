@@ -39,7 +39,11 @@ for n = 1:length(neuronIds)
     % pattern
     
     % Plot the EI contour with a linear fit + electrodes
+<<<<<<< HEAD
+    [XI,YI] =  eiContour_wPolyFit(eiAmps,'ei_thresh',5);
+=======
     [XI,YI] =  eiContour_wLinFit(eiAmps,'linFitThresh',5);
+>>>>>>> 27c70cf6782cea7d0d081d43dbf8d51f5d51532e
     title(sprintf('neuron %d',neuronId));
     
     % Show stimulating electrodes
@@ -127,7 +131,11 @@ end
 colors = lines(1); 
 figure; plot(ratio,pairs(:,1) - pairs(:,2),'o','MarkerSize',12,'MarkerFaceColor',colors(1,:)); 
 % hold on; line([1 1],[0 1],'LineStyle','--'); 
+<<<<<<< HEAD
+%xlim([0 0.5]); 
+=======
 xlim([0 0.5]); 
+>>>>>>> 27c70cf6782cea7d0d081d43dbf8d51f5d51532e
 xlabel('distance of the primary electrode to the axon / electrode spacing'); 
 ylabel('change in activation probability with second electrode'); 
 
@@ -135,3 +143,7 @@ figure; plot([0 -1],pairs','x-','LineWidth',2);
 xlabel('relative current through electrode 2'); 
 ylabel('activation probability');
 title(sprintf('Axonal activation at varied locations\n1- and 2-electrode stimulation at fixed amplitudes'));
+<<<<<<< HEAD
+
+=======
+>>>>>>> 27c70cf6782cea7d0d081d43dbf8d51f5d51532e

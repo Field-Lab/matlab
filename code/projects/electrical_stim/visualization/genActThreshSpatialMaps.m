@@ -15,6 +15,8 @@ function [allEiAmps, allVals, actProb, actAmp] = genActThreshSpatialMaps(fPath,n
 %              primary electrode (here defined by the pattern number) than
 %              to all the electrodes used in the stimulation pattern.
 %              Default 0, set to 1
+%             suppress plots: disables plotting; function returns outputs
+%              only. Default 0.
 %
 % outputs:  allEiAmps   matrix with ei info for all cells
 %           allVals     matrix with activation info for all cells
