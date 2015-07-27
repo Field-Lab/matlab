@@ -1,12 +1,13 @@
-%load('axontrace_matches.mat')
+
 
 codebase_path = matlab_code_path; 
 
-dataPath = '/Volumes/Analysis/2015-05-27-0/data000/data000'; 
+dataPath = '/Volumes/Analysis/2015-04-09-2/data001/data001'; 
+%invalidEIs = [616 694 1084 1234 1877 2046 2163 2191 2508 3076 3091 3276 3443 3647 3783 3827 3846 4025 4353 4861 4984 5091 5371 5401 5404 5416 5462 5553 5808 5887 6137 6411 6413 6738 7491];
 
 %65 5134;
 
-cellIds = [2630 2223 2717];
+cellIds = [1231];
  
 % Load EI. 
 
@@ -38,12 +39,12 @@ end
 
 figure
 
-[~, cell_n] = size(cellIds)
+[~, cell_n] = size(cellIds);
 
  stats = [];
 for n = 1: cell_n
     
-    subplot(ceil(cell_n), 2, n)
+    subplot(ceil(cell_n / 2), (cell_n > 1) + 1, n)
     
     ei = datarun.ei.eis{get_cell_indices(datarun,cellIds(n))}; 
 
