@@ -21,7 +21,7 @@ function  [f grad Hess log_cif] = glm_SU_time_optimizationfunction(SU_time_param
 
 
 % NB 2015-07-06
-
+tic 
 %% Initialize
 dt = bin_duration;
 spt = spikebins;
@@ -52,7 +52,7 @@ lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
 
 % Evaluate the objective function (monotonic in log-likelihood)
 f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
-
+toc
 % Add penalty
 % f_penalty = penalty_strength*SU_params'*SU_params;
 
@@ -92,7 +92,7 @@ end
 % end
 %g_eval = del_LL;% - del_penalty;
 
-
+toc
 
 %% Evaluate the hessian
 H_eval = zeros(n_params);
@@ -137,7 +137,7 @@ for i = 1:n_params
         H_eval(j,i) = H_eval(i,j);
     end
 end
-
+toc
 
 %%
 

@@ -21,11 +21,11 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
 
-GLMPars.stimfilter.ROI_length = 45;  
+GLMPars.stimfilter.ROI_length = 13;  
 
 
 
-GLMPars.stimfilter.frames = 30;  % orig 30
+GLMPars.stimfilter.frames = 1;  % orig 30
 GLMPars.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMPars.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMPars.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
@@ -60,7 +60,7 @@ GLMPars.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in milli
 %GLMPars.spikefilters.spcng_psf = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 %GLMPars.spikefilters.spcng_cp  = pi/2;  %% it could be set as pi, but pi/2 is better for "uniform" sampling.
 GLMPars.spikefilters.BiDirect_CP     = false;
-GLMPars.spikefilters.ps.filternumber = 20; %orig 20 %10 with bstretch 0.95 works pretty well
+GLMPars.spikefilters.ps.filternumber = 10; %orig 20 %10 with bstretch 0.95 works pretty well
 % GLMPars.spikefilters.ps.filternumber = 1;
 % GLMPars.spikefilters.cp.filternumber = 4;
 GLMPars.spikefilters.cp.filternumber = 8;

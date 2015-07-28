@@ -121,7 +121,13 @@ if GLMType.STA_init
     duration = size(STA, 3);
     STA = reshape(STA, [klen^2,duration])  - mean(STA(:));
     [U,S,V]  = svd (STA);
-    % p_init(paramind.time1) = V(:,1)*S(1,1);
+    imagesc(reshape(U(:,1), [klen, klen]))
+    title('Initial Space Filter')
+    axis image
+    time_filter = V(:,1)*S(1,1);
+    X_frame_temp = conv2(X_frame, time_filter', 'full');
+    X_frame = X_frame_temp(:,1:length(X_frame));
+    clear X_frame_temp
     p_init(paramind.space1) = U(:,1);
     if strcmp(GLMType.stimfilter_mode, 'rk2')
         p_init(paramind.space2) = U(:,2);

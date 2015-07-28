@@ -78,8 +78,8 @@ if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.
         end
         linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
         linearfilters.Stimulus.y_coord            = ROIcoord.yvals;
-        linearfilters.Stimulus.frame_shifts       = [0:1:(GLMPars.stimfilter.frames-1)];
-        linearfilters.Stimulus.bin_shifts         = [0:bpf:(GLMPars.stimfilter.frames-1)*bpf];
+        linearfilters.Stimulus.frame_shifts       = 0:1:(GLMPars.stimfilter.frames-1);
+        linearfilters.Stimulus.bin_shifts         = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
         linearfilters.Stimulus.note1              = 'Filter is in [x,y,"frames before current bin"]';
         linearfilters.Stimulus.note2              = 'Recall each bin is housed in a frame (multiple bins per frame';
         linearfilters.Stimulus.note3              = 'frame_shifts describes the transfrom from time index to frames ahead of current bin';
@@ -88,7 +88,7 @@ if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.
     end  
 end
 
-[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
+xvalperformance = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,0);
 
 
 
