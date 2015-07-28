@@ -27,8 +27,8 @@ glm_settings{1}.type = 'filter_mode';
 glm_settings{1}.name = 'rk1';
 special_arg{1} = 'PS_netinhibitory_domainconstrain_COB'
 if i_loop == 0
-    metric_type.name  = 'objval';
-    metric_type.note = 'Computed Objective Value from parameter fitting routine'
+    metric_type.name  = 'crossval_BPS';
+    metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
 elseif i_loop == 1
     metric_type.name  = 'crossval_BPS';
     metric_type.note = 'Bits Per Spike over crossvalidated dataset: (logprob(rast|model)-logprob(rast|flatrate))/spikes'
@@ -41,8 +41,6 @@ elseif i_loop == 3
 end
 score_aggregator(glm_settings,metric_type,exps,special_arg)
 end
-
-
 display('done rk1 with PS inhib')
 
 for i_loop = 1:3
@@ -353,12 +351,6 @@ for i_exp = exps
                     display(sprintf('LOADING %s %s', expname,cell_savename));
                     eval(sprintf('load %s', matfilename));
 
-                    
-                    if strcmp(metric_type.name,'objval')
-                        rawscores(i_index) = fittedGLM.rawfit.objective_val;
-                    end
-                    
-                    
                     if strcmp(metric_type.name,'crossval_BPS')
                         rawscores(i_index) = fittedGLM.xvalperformance.logprob_glm_bpspike;
                         if exist('special_arg','var')  

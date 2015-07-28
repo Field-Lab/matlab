@@ -35,12 +35,17 @@ comparison_name = 'WN-nostimnoPS-nostimnoPSwithCP';
 comparison_name = 'WNstandardnoPS_vsNSEMfitcrossval-oddeven3DS';
 comparison_name = 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
+comparison_name = 'NSEM_CPnostimnoPS_CPstimnoPS';
+
+
+
 clear ; close all; clc;
 metrics = [1 2 3 4 5 6 7];
 %cellselection_type = 'glmconv4pct';
-comparison_name     = 'NSEM-rk1noPS-rk2noPS';
-%cellselection_type  = 'halfratio_STA_50';
-cellselection_type = 'shortlist';
+comparison_name     = 'WNvsNSEM-rk1';
+cellselection_type  = 'halfratio_STA_50';
+%cellselection_type = 'shortlist';
+cellselection_type = 'halfratio_standardrk1_20'
 for i_metric = metrics 
     if i_metric == 1, metric = 'BPS_divideCRM'; end
     if i_metric == 2, metric = 'VSPKD50msec_normdivide'; end
@@ -152,6 +157,11 @@ if strcmp(cellselection_type, 'halfratio_STA_50') || strcmp(cellselection_type, 
     eval(sprintf('load %s/fitted_aggscores_STA.mat', BD.Cell_Selection));
 end
 
+if strcmp(cellselection_type, 'halfratio_standardrk1_20') || strcmp(cellselection_type, 'halfratio_standardrk1_10')
+    eval(sprintf('load %s/halfratio_standardrk1.mat', BD.Cell_Selection));
+end
+
+
 currentdir = pwd;
 savedir = sprintf('%s/Plots/ModelComparisons/%s/%s',BD.GLM_output_analysis,comparison_name,metric);
 if ~exist(savedir,'dir'), mkdir(savedir); end
@@ -243,6 +253,29 @@ for i_exp = exps
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
         clear conv_index_ON conv_index_OFF conv_columns
+        
+    elseif strcmp(cellselection_type, 'halfratio_standardrk1_20')
+        conv_index_ON = intersect(...
+            find(aggregated_scores{i_exp}.celltype{1}.finalscore_WN < .05),...
+            find(aggregated_scores{i_exp}.celltype{1}.finalscore_NSEM < .05)) ;
+        conv_index_OFF = intersect(...
+            find(aggregated_scores{i_exp}.celltype{2}.finalscore_WN < .05),...
+            find(aggregated_scores{i_exp}.celltype{2}.finalscore_NSEM < .05)) ;
+        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
+        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
+        clear conv_index_ON conv_index_OFF conv_columns
+        
+    elseif strcmp(cellselection_type, 'halfratio_standardrk1_10')
+        conv_index_ON = intersect(...
+            find(aggregated_scores{i_exp}.celltype{1}.finalscore_WN < .1),...
+            find(aggregated_scores{i_exp}.celltype{1}.finalscore_NSEM < .1)) ;
+        conv_index_OFF = intersect(...
+            find(aggregated_scores{i_exp}.celltype{2}.finalscore_WN < .1),...
+            find(aggregated_scores{i_exp}.celltype{2}.finalscore_NSEM < .1)) ;
+        cell_subset{1}.subset_cids = allcells{i_exp}.ONP(conv_index_ON);
+        cell_subset{2}.subset_cids = allcells{i_exp}.OFFP(conv_index_OFF);
+        clear conv_index_ON conv_index_OFF conv_columns
+        
     elseif strcmp(cellselection_type,'all')
         cell_subset{1}.subset_cids = allcells{i_exp}.ONP;
         cell_subset{2}.subset_cids = allcells{i_exp}.OFFP;
@@ -628,6 +661,7 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 'WNstandardnoPS_vsWNfitcrossval-oddeven3DS'
 
 % Section 2: NSEM-ModelComparison
+'NSEM_CPnostimnoPS_CPstimnoPS'
 'NSEM-InputPieceLin-InputSmooth-BothPSConstrain'
 'NSEM-rk1noPS-rk2noPS'
 'NSEM-standardGLMconstrainPS-rk1constrainPS';
@@ -648,6 +682,7 @@ function [models,plotparams] = subR_comparisoncomponents(comparison_name)
 
 
 % Section 1: WN-ModelComparison
+'WN_CPnostimnoPS_CPstimnoPS'
 'WN-standardGLMconstrainPS-rk1constrainPS';
 'WN-standardGLMnoPS-rk1noPS';
 'WN-standardGLMnoPS-rk2noPS';
@@ -689,6 +724,28 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 3: Other
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'WN_CPnostimnoPS_CPstimnoPS'
+        models{1}.settings{1}.type = 'CouplingFilters';
+        models{1}.settings{1}.name =  'ON';        
+        models{1}.settings{2}.type = 'PostSpikeFilter';
+        models{1}.settings{2}.name =  'OFF';
+        models{1}.settings{3}.type = 'filter_mode';
+        models{1}.settings{3}.name = 'nostim';
+        models{1}.fit_type = 'WN';
+        
+        models{2}.settings{1}.type = 'CouplingFilters';
+        models{2}.settings{1}.name =  'ON';        
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'WN';
+        
+        
+        plotparams.xlabel             = 'MU and CP';
+        plotparams.ylabel             = 'MU,CP and Stim';
+        plotparams.title_comparison   = 'WN Effect of GLM (modulo coupling)';
+        plotparams.purpose            = 'How does Stim filter improve WN scores when Coupling Filter already on (noPS)';
+    
+    
     case 'WN-InputPieceLin-InputSmooth-BothPSConstrain'
         models{1}.settings{1}.type = 'cone_model';
         models{1}.settings{1}.name = 'rieke_linear';
@@ -811,6 +868,28 @@ switch comparison_name
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % Section 2: NSEM-ModelComparison
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    case 'NSEM_CPnostimnoPS_CPstimnoPS'
+        models{1}.settings{1}.type = 'CouplingFilters';
+        models{1}.settings{1}.name =  'ON';        
+        models{1}.settings{2}.type = 'PostSpikeFilter';
+        models{1}.settings{2}.name =  'OFF';
+        models{1}.settings{3}.type = 'filter_mode';
+        models{1}.settings{3}.name = 'nostim';
+        models{1}.fit_type = 'NSEM';
+        
+        models{2}.settings{1}.type = 'CouplingFilters';
+        models{2}.settings{1}.name =  'ON';        
+        models{2}.settings{2}.type = 'PostSpikeFilter';
+        models{2}.settings{2}.name =  'OFF';
+        models{2}.fit_type = 'NSEM';
+        
+        
+        plotparams.xlabel             = 'MU and CP';
+        plotparams.ylabel             = 'MU,CP and Stim';
+        plotparams.title_comparison   = 'NSEM Effect of GLM (modulo coupling)';
+        plotparams.purpose            = 'How does Stim filter improve NSEM scores when Coupling Filter already on (no PS)';
+        
+        
     case 'NSEM-InputPieceLin-InputSmooth-BothPSConstrain'
         models{1}.settings{1}.type = 'cone_model';
         models{1}.settings{1}.name = 'rieke_linear';
