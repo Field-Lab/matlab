@@ -34,7 +34,7 @@ end
 fittedGLM.GLMPars = GLMPars;
 fittedGLM.GLMType = GLMType;
 if isfield(GLMType, 'debug') && GLMType.debug
-    GLMPars.optimization.tolfun = 1; 
+    GLMPars.optimization.tolfun = 1;
 end
 
 
@@ -100,7 +100,7 @@ p_init     = .01* ones(paramind.paramcount,1);
 % NB SU
 % Initialize the subunits
 if GLMType.Subunits
-   SU_filter = -0.1*ones(GLMPars.subunit_size);
+   SU_filter = -0.1*ones(GLMPars.subunit.size);
    SU_filter(5) = 0.8;
 else
    SU_filter = 0;
@@ -111,7 +111,7 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, 0);
 % clear WN_STA
 
-if GLMType.STA_init
+if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     stimsize.width  = size(fitmovie,1);
     stimsize.height = size(fitmovie,2);
     ROIcoord        = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, stimsize);
@@ -124,9 +124,9 @@ if GLMType.STA_init
     imagesc(reshape(U(:,1), [klen, klen]))
     title('Initial Space Filter')
     axis image
-    time_filter = V(:,1)*S(1,1);
-    X_frame_temp = conv2(X_frame, time_filter', 'full');
-    X_frame = X_frame_temp(:,1:length(X_frame));
+    % time_filter = V(:,1)*S(1,1);
+    % X_frame_temp = conv2(X_frame, time_filter', 'full');
+    % X_frame = X_frame_temp(:,1:length(X_frame));
     clear X_frame_temp
     p_init(paramind.space1) = U(:,1);
     if strcmp(GLMType.stimfilter_mode, 'rk2')
@@ -297,7 +297,7 @@ if ~GLMType.CONVEX
             end
             
             % Unpack the subunit filter
-            SU_filter = reshape(pstar_SU, [GLMPars.subunit_size, GLMPars.subunit_size]);
+            SU_filter = reshape(pstar_SU, [GLMPars.subunit.size, GLMPars.subunit.size]);
             
             % Remake the stimulus with the new subunit filter
             [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);

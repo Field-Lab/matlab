@@ -108,9 +108,9 @@ for i_exp = exps
         [StimulusPars, exp_info] = StimulusParams(exp_nm, stimtype, GLMType.map_type);
         inputstats.stimulus = 'eye-120-3_0-3600';
         inputstats.cmodel = '8pix_Identity_8pix';
-        inputstats.dim = [29,29];
+        % inputstats.dim = [29,29]; % doesn't matter
         inputstats.mu_avgIperpix = 58.7236;
-        inputstats.std_avgIperpix = 0.5229;
+        % inputstats.std_avgIperpix = 0.5229; % also appears to not matter
         inputstats.range = 255;
         %[blockedmoviecell, inputstats, origmatfile] = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'fitmovie');
         %[testmovie0]          = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'testmovie');
@@ -127,7 +127,6 @@ for i_exp = exps
         secondDir.stim_type = stimtype;
         secondDir.fitname   = GLMType.fitname;
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
-        %Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '_stixel2'];
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
 
@@ -206,9 +205,6 @@ for i_exp = exps
                     
                     disp('loading the fitmovie')
                     GLMPars = GLMParams;
-                    % Load new STAs
-                    load('/Volumes/Lab/Users/Nora/ON6858_120t.mat');
-                    glm_cellinfo.WN_STA = STA_concat;
                     % Load relevant movie section
                     tic;
                     [fitmovie_concat testmovie] = subR_concat_fitmovie(center_coord, StimulusPars.slv, GLMPars.stimfilter.ROI_length);
@@ -216,6 +212,12 @@ for i_exp = exps
                     glm_cellinfo.slave_centercoord.x_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     glm_cellinfo.slave_centercoord.y_coord = ceil(GLMPars.stimfilter.ROI_length/2);
                     clear GLMPars
+                    
+                    %
+                    if GLMType.STA_init || strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
+                        disp('Calculating NSEM STA')
+                        glm_cellinfo.WN_STA = STA_Test(fitspikes_concat.home, fitmovie_concat, false, StimulusPars.slv.computedtstim);
+                    end
                     
                     % NBCoupling 2014-04-20
                     if GLMType.CouplingFilters
@@ -233,6 +235,8 @@ for i_exp = exps
                         neighborspikes.test = 0;
                     end
                     % end NBCoupling
+                    
+                    
                     
                     % Call appropriate glm_execute
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
