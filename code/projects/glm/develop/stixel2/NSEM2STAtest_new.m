@@ -199,7 +199,7 @@ for i_exp = exps
                             idx = idx+frames_per_block;
                         end
                         disp('movie loaded calc STA')
-                        STA_concatmovie = STA_Test(fitspikes_concat.home, concat_movie, false);
+                        STA_concatmovie = STA_Test(fitspikes_concat.home, concat_movie, false, StimulusPars.slv.computedtstim);
                         
                         % end
                         %{
