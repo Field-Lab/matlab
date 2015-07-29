@@ -94,9 +94,9 @@ for i = 1:nframes
         frames = cell(framesperchunk, 1);
     else
         if greyscale
-            frames{framesperchunk} = squeeze(tt(:,:,1));
+            frames{mod(i, framesperchunk)} = squeeze(tt(:,:,1));
         else
-            frames{framesperchunk} = tt;
+            frames{mod(i, framesperchunk)} = tt;
         end
     end
 end
