@@ -18,7 +18,7 @@ if length(fo) ~= length(trefresh)
 end
 
 % Figure out the file name
-if strcmp(outputpath(end-3:end), '.str')
+if strcmp(outputpath(end-3:end), '.stf')
     filename = outputpath;
 else
     if exist(outputpath) %#ok<EXIST>
