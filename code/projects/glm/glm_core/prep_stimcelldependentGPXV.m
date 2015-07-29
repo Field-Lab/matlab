@@ -55,17 +55,18 @@ if GLMType.Subunits
     for frame=1:stimsize.frames
         tempstim = double(stimulus(:,:,frame))/double(fitmoviestats.span) - double(fitmoviestats.normmean);
         tempstim=conv2(tempstim,SU_filter,'same');
-        if strcmp(GLMType.Subunit_NL, 'exp')
-            stim(:,:,frame)=exp(tempstim(ROIcoord.xvals, ROIcoord.yvals));
-        elseif strcmp(GLMType.Subunit_NL, 'squared')
-            stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals).^2;
-        end
+        stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals);
     end
     if strcmp(GLMPars.subunit.time_before, 'conv')
         [~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
         timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
         stim_temp = convn(stim, timefilter, 'full');
         stim = stim_temp(:,:,1:stimsize.frames);
+    end
+    if strcmp(GLMType.Subunit_NL, 'exp')
+        stim=exp(stim);
+    elseif strcmp(GLMType.Subunit_NL, 'squared')
+        stim=stim.^2;
     end
 end
 

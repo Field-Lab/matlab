@@ -108,7 +108,7 @@ end
 
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, 0);
+[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
 % clear WN_STA
 
 if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
@@ -277,7 +277,13 @@ if ~GLMType.CONVEX
             pooling_filter = reshape(pstar(paramind.space1), [ROI_length, ROI_length]);
             
             % Set up the covariate vector
-            [SU_cov, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord, inputstats); % maybe eventually should add other filters to be fit again here? eg coupling
+            if strcmp(GLMPars.subunit.time_before, 'conv')
+                [~,timefilter] = spatialfilterfromSTA(glm_cellinfo.WN_STA,ROIcoord.xvals,ROIcoord.yvals);
+                timefilter = flip(timefilter);
+            else
+                timefilter = 0;
+            end
+            [SU_cov, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord, inputstats, timefilter); % maybe eventually should add other filters to be fit again here? eg coupling
             non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
             time_filter = pstar(paramind.time1);
             
@@ -287,7 +293,8 @@ if ~GLMType.CONVEX
                 p_init_SU = [SU_filter(:); time_filter];
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'exp')
-                p_init_SU = SU_filter(:);
+                disp('here')
+                p_init_SU = SU_filter(:)
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'squared')
                 p_init_SU = SU_filter(:);

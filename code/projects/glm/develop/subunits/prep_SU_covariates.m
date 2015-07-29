@@ -1,4 +1,4 @@
-function [SU_cov_vec, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoords, inputstats)
+function [SU_cov_vec, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoords, inputstats, timefilter)
 
 % might need to move this to before SU? NB
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
@@ -12,6 +12,8 @@ bins = size(fitmovie, 3);
 n_locations = size(pooling_filter, 1)*size(pooling_filter, 2);
 SU_cov_vec = zeros(9,n_locations,bins);
 pooling_weights = zeros(n_locations,1);
+
+GLMPars = GLMParams;
 
 % loop through 9 SU pixels
 SU_idx = 0;
@@ -37,6 +39,10 @@ for j_SU = 1:3
                     
                     % find the value of the stimulus on the subunit pixel
                     pixel_values = squeeze(stim(stim_idx(1), stim_idx(2), :));
+                    if strcmp(GLMPars.subunit.time_before, 'conv')
+                        stim_temp = conv(pixel_values, timefilter, 'full');
+                        pixel_values = stim_temp(1:bins);
+                    end
                     
                     % add to cov vec
                     SU_cov_vec(SU_idx, loc_idx, :) = pixel_values;
@@ -44,6 +50,6 @@ for j_SU = 1:3
             end
         end
     end
-   
+    
 end
 end
