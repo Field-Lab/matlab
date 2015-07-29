@@ -16,13 +16,15 @@ N_SPIKES_STA = 10000;
 
 % Dataset parameters
 datarunpath = '2007-03-16-1/data003';
-samples_to_frames = [datarun.names.rrs_prefix '.stf'];
-stafilepath = [datarun.names.rrs_prefix '.sta'];
 interval = 4;
 
 % Load datarun
 datarun = load_data(datarunpath);
 datarun = load_neurons(datarun);
+
+% Set paths
+samples_to_frames = [datarun.names.rrs_prefix '.stf'];
+stafilepath = [datarun.names.rrs_prefix '.sta'];
 
 % RRS works in samples, but it is more natural to work in samples for us.
 % Let's convert the datarun to samples.
