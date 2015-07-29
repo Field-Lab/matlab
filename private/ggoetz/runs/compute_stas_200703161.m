@@ -7,15 +7,17 @@ N_SPIKES_STA = 10000;
 
 %% data003
 
-% Optional: do it once to convert a raw movie to mat chunks.
-% Once you've done for a movie, no need to convert to chunks ever again.
-moviepath = '/Volumes/Data/Stimuli/movies/np/npg-128-64-64-16-[-0_5]-[-1_0]';
-moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-64-16-[-0_5]-[-1_0]';
-greyscale = true;
-unpack_rawmovie(moviepath, moviechunksfolder, greyscale);
+% % Optional: do it once to convert a raw movie to mat chunks.
+% % Once you've done for a movie, no need to convert to chunks ever again.
+% moviepath = '/Volumes/Data/Stimuli/movies/np/npg-128-64-64-16-[-0_5]-[-1_0]';
+% moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-64-16-[-0_5]-[-1_0]';
+% greyscale = true;
+% unpack_rawmovie(moviepath, moviechunksfolder, greyscale);
 
 % Dataset parameters
 datarunpath = '2007-03-16-1/data003';
+samples_to_frames = [datarun.names.rrs_prefix '.stf'];
+stafilepath = [datarun.names.rrs_prefix '.sta'];
 interval = 4;
 
 % Load datarun
@@ -29,12 +31,11 @@ datarun = convert_datarun_times_to_samples(datarun);
 % Get the time of the image refreshes from the ttls
 t_frames = time_imrefresh_from_ttls(datarun.triggers);
 
-% Use that to cache a map of samples to frame indices. 
-% This only needs to be calculated once per dataset and it's slow, so 
-% comment out the following two lines if you need to run the sta 
-% calculation more than once.
-samples_to_frames = [datarun.names.rrs_prefix '.stf'];
-map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
+% % Use that to cache a map of samples to frame indices. 
+% % This only needs to be calculated once per dataset and it's slow, so 
+% % comment out the following two lines if you need to run the sta 
+% % calculation more than once.
+% map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
 
 % Vision STA parameters
 headerCapacity = int32(10000);
@@ -52,7 +53,6 @@ refreshtime = 3;
 staDepth = int32(76);
 
 % Instantiate Vision STA file
-stafilepath = [datarun.names.rrs_prefix '.sta'];
 staFile = edu.ucsc.neurobiology.vision.io.STAFile(stafilepath, headerCapacity, width, height, staDepth, staOffset, stixelwidth, stixelwidth, refreshtime);
 
 % STA temp folder - needed to work around clunkiness of Matlab parallel
