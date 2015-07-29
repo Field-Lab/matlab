@@ -72,7 +72,7 @@ ndots = 0;
 ncells = length(datarun.cell_ids);
 parfor k = 1:ncells
     % Update progress bar
-    if mod(k, round(ncells/80)) == 0
+    if mod(length(dir(stastempfolder)) - 2, round(ncells/80)) == 0
         fprintf('.');
     end
     
