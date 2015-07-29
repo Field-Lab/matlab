@@ -11,7 +11,7 @@ N_SPIKES_STA = 10000;
 % Once you've done for a movie, no need to convert to chunks ever again.
 moviepath = '/Volumes/Data/Stimuli/movies/np/npg-128-64-64-16-[-0_5]-[-1_0]';
 moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-64-16-[-0_5]-[-1_0]';
-greyscale = false;
+greyscale = true;
 unpack_rawmovie(moviepath, moviechunksfolder, greyscale);
 
 % Dataset parameters
