@@ -21,7 +21,7 @@ end
 if strcmp(outputpath(end-3:end), '.stf')
     outputpath = split(outputpath, filesep);
     filename = outputpath{end};
-    outputpath = join(outputpath(2:(end-1)), filesep);
+    outputpath = join(outputpath(1:(end-1)), filesep);
 else
     if exist(outputpath) %#ok<EXIST>
         assert(isdir(outputpath))
