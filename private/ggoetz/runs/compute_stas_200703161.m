@@ -1,16 +1,18 @@
 clear;
 
-parpool([1 32])
+% parpool([1 32])
 addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/private/ggoetz'));
 addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/utilities'));
 N_SPIKES_STA = 10000;
 
 %% data003
 
+
+moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-64-16-[-0_5]-[-1_0]';
 % % Optional: do it once to convert a raw movie to mat chunks.
-% % Once you've done for a movie, no need to convert to chunks ever again.
+% % Once you've done for a movie, no need to convert to chunks ever again,
+% % so uncomment the following three lines.
 % moviepath = '/Volumes/Data/Stimuli/movies/np/npg-128-64-64-16-[-0_5]-[-1_0]';
-% moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-64-16-[-0_5]-[-1_0]';
 % greyscale = true;
 % unpack_rawmovie(moviepath, moviechunksfolder, greyscale);
 
@@ -37,7 +39,7 @@ t_frames = time_imrefresh_from_ttls(datarun.triggers);
 % % This only needs to be calculated once per dataset and it's slow, so 
 % % comment out the following two lines if you need to run the sta 
 % % calculation more than once.
-% map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
+map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
 
 % Vision STA parameters
 headerCapacity = int32(10000);
@@ -72,7 +74,7 @@ ndots = 0;
 
 % Get the STAs
 ncells = length(datarun.cell_ids);
-parfor k = 1:ncells
+for k = 1:ncells
     % Update progress bar
     if mod(length(dir(stastempfolder)) - 2, round(ncells/80)) == 0
         fprintf('.');
