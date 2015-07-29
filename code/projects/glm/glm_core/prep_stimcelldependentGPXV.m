@@ -61,8 +61,11 @@ end
 
 % convolve the time filter if that's whats happening
 if strcmp(GLMType.timefilter, 'prefilter')
-    [~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
-    timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
+    %[~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
+    %timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
+    load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
+    timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
+    clear fittedGLM
     stim_temp = convn(stim, timefilter, 'full');
     stim = stim_temp(:,:,1:stimsize.frames);
 end

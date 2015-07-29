@@ -172,18 +172,20 @@ end
 
 %% Run through optimization .. get out pstart, fstar, eflag, output
 % CONVEXT OPTIMIZATION
-if GLMType.CONVEX && ~GLMType.Subunits
+if GLMType.CONVEX 
     glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
     % Maybe move this inside of the stimulus preparation %
     bpf         = GLMPars.bins_per_frame;
     
-    
-    shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-    if isfield(GLMPars.stimfilter,'frames_negative')
-        shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
+    if strcmp(GLMType.timefilter,'fit')
+        shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
+        if isfield(GLMPars.stimfilter,'frames_negative')
+            shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
+        end
+        X_bin_shift = prep_timeshift(X_bin,shifts);
+    else
+        X_bin_shift = X_bin;
     end
-    X_bin_shift = prep_timeshift(X_bin,shifts);
-    
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if isfield(paramind, 'MU')
@@ -214,22 +216,23 @@ if GLMType.CONVEX && ~GLMType.Subunits
         %         end
         glm_covariate_vec(paramind.C, :) = contrast;
     end
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
-    end
-    if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
-            (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
-        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
+    if ~GLMType.Subunits
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
+            [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
+        end
+        if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
+            [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
+                (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
+            % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
+        end
     end
 end
 
 
 
 % NONCONVEX OPTMIZATION
-if ~GLMType.CONVEX || GLMType.Subunits
+if ~GLMType.CONVEX
     bpf               = GLMPars.bins_per_frame;
     frame_shifts      = 0:1:(GLMPars.stimfilter.frames-1);
     % dnote part that is convex
@@ -260,7 +263,8 @@ if ~GLMType.CONVEX || GLMType.Subunits
         convex_cov(paramind.C, :) = contrast;
     end
     filtertype = GLMType.stimfilter_mode;
-    
+end
+if ~GLMType.CONVEX || GLMType.Subunits
     iterate = 1;
     while iterate < 5
         
@@ -291,9 +295,9 @@ if ~GLMType.CONVEX || GLMType.Subunits
                 [~,timefilter] = spatialfilterfromSTA(glm_cellinfo.WN_STA,ROIcoord.xvals,ROIcoord.yvals);
                 pre_timefilter = flip(timefilter);
                 post_timefilter = 0;
-                non_stim_idx = 1:paramind.paramcount;
-                non_stim_idx = non_stim_idx(non_stim_idx ~= paramind.X);
-                non_stim_lcif = pstar(non_stim_idx)'*glm_covariate_vec(non_stim_idx);
+                non_stim_idx = ones(paramind.paramcount, 1);
+                non_stim_idx(paramind.X) = 0;
+                non_stim_lcif = pstar(logical(non_stim_idx))'*glm_covariate_vec(logical(non_stim_idx), :);
             else
                 pre_timefilter = 0;
                 post_timefilter = pstar(paramind.time1);
@@ -304,7 +308,7 @@ if ~GLMType.CONVEX || GLMType.Subunits
    
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])
-            if strcmp(GLMPars.subunit.time_before, 'fit')
+            if strcmp(GLMType.timefilter, 'fit')
                 p_init_SU = [SU_filter(:); timefilter];
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'exp')
