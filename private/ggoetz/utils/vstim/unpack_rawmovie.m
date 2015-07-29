@@ -1,4 +1,4 @@
-function unpack_rawmovie(moviepath, outputpath, framesperchunk)
+function unpack_rawmovie(moviepath, outputpath, greyscale, framesperchunk)
 %UNPACK_RAWMOVIE Unpacks raw movie files
 %
 %  UNPACK_RAWMOVIE(MOVIEPATH, OUTPUTPATH) unpacks a raw movie 
@@ -16,7 +16,7 @@ function unpack_rawmovie(moviepath, outputpath, framesperchunk)
 %  Author: Georges Goetz - ggoetz@stanford.edu
 
 if nargin == 2
-    grayscale = true;
+    greyscale = true;
     framesperchunk = 120;
 end
 if nargin == 3
