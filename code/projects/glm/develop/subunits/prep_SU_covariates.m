@@ -13,8 +13,6 @@ n_locations = size(pooling_filter, 1)*size(pooling_filter, 2);
 SU_cov_vec = zeros(9,n_locations,bins);
 pooling_weights = zeros(n_locations,1);
 
-GLMPars = GLMParams;
-
 % loop through 9 SU pixels
 SU_idx = 0;
 for j_SU = 1:3
@@ -39,7 +37,7 @@ for j_SU = 1:3
                     
                     % find the value of the stimulus on the subunit pixel
                     pixel_values = squeeze(stim(stim_idx(1), stim_idx(2), :));
-                    if strcmp(GLMPars.subunit.time_before, 'conv')
+                    if ~(timefilter==0)
                         stim_temp = conv(pixel_values, timefilter, 'full');
                         pixel_values = stim_temp(1:bins);
                     end

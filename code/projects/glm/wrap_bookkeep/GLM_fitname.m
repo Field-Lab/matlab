@@ -50,7 +50,12 @@ if ~exist('condition','var')
         GLM_fitname_core = sprintf('%s_postfilterNL_%s',GLM_fitname_core, GLMType.postfilter_nonlinearity_type)
     end
     
-    % See if there are special changes to the core parameters 
+    % NB time filter
+    if isfield(GLMType,'timefilter')
+        GLM_fitname_core = [GLM_fitname_core, GLMType.timefilter];
+    end
+    
+    % See if there are special changes to the core parameters
     if ~isfield(GLMType, 'specialchange') || ~GLMType.specialchange
         GLM_fitname = sprintf('%s/standardparams',GLM_fitname_core)
     else
@@ -64,6 +69,9 @@ if ~exist('condition','var')
     if isfield(GLMType, 'name_change')
         GLM_fitname = [GLM_fitname GLMType.name_change];
     end
+    
+
+   
 end
 
 

@@ -68,6 +68,12 @@ if GLMType.CONVEX
         paramind.inhibitoryfilter_index = paramind.time2;
         
         paramind.X = union(paramind.time1,paramind.time2);
+    elseif isfield(GLMType,'timefilter') && strcmp(GLMType.timefilter, 'prefilter')
+        Xstart = numParams + 1;  
+        Xend   = numParams + (GLMPars.stimfilter.ROI_length^2);        
+        paramind.X      = [Xstart:Xend];
+        paramind.space1 = [Xstart: ((Xstart-1) + (GLMPars.stimfilter.ROI_length^2))];
+        numParams       = numParams  +  GLMPars.stimfilter.ROI_length^2; 
     else
         error('you need to properly specifiy the stimfilter in prep_paramind')
     end

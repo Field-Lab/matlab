@@ -57,12 +57,18 @@ if GLMType.Subunits
         tempstim=conv2(tempstim,SU_filter,'same');
         stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals);
     end
-    if strcmp(GLMPars.subunit.time_before, 'conv')
-        [~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
-        timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
-        stim_temp = convn(stim, timefilter, 'full');
-        stim = stim_temp(:,:,1:stimsize.frames);
-    end
+end
+
+% convolve the time filter if that's whats happening
+if strcmp(GLMType.timefilter, 'prefilter')
+    [~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
+    timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
+    stim_temp = convn(stim, timefilter, 'full');
+    stim = stim_temp(:,:,1:stimsize.frames);
+end
+
+% THEN the SU nonlinearity
+if GLMType.Subunits 
     if strcmp(GLMType.Subunit_NL, 'exp')
         stim=exp(stim);
     elseif strcmp(GLMType.Subunit_NL, 'squared')
@@ -70,9 +76,7 @@ if GLMType.Subunits
     end
 end
 
-
-
-
+% Actually should just use this for SU... -NB 
 if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
    % display('implementing nonlinearity')
     newstim = stim;

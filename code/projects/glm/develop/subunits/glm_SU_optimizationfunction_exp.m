@@ -1,4 +1,4 @@
-function  [f grad Hess log_cif] = glm_SU_optimizationfunction_exp(SU_params, SU_covariates, pooling_weights, time_filter, spikebins, bin_duration, non_stim_lcif)
+function  [f, grad, Hess, log_cif] = glm_SU_optimizationfunction_exp(SU_params, SU_covariates, pooling_weights, time_filter, spikebins, bin_duration, non_stim_lcif)
  %%% PURPOSE %%%
 % Compute the Objective Function being optimized (f)
 % Compute the grad/hess as well for the optimizer
@@ -37,8 +37,10 @@ for i = 1:n_params
     SU_covariates(i, :, :) = SU_covariates(i, :, :) * SU_params(i);
 end
 stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
-stim_lcif = conv(stim_lcif, flip(time_filter), 'full');
-stim_lcif = stim_lcif(1:n_time);
+if ~(time_filter == 0)
+    stim_lcif = conv(stim_lcif, flip(time_filter), 'full');
+    stim_lcif = stim_lcif(1:n_time);
+end
 lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
 
 
@@ -59,8 +61,10 @@ for i_SU = 1:n_params
         temp = pooling_weights(i_loc)*(squeeze(pixels(i_SU,i_loc,:)))'.*squeeze(subunit_drive(i_loc,:));
         temp_del_lcif = temp_del_lcif+temp;
     end
-    temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'full');
-    temp_del_lcif = temp_del_lcif(1:n_time);
+    if ~(time_filter == 0)
+        temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'full');
+        temp_del_lcif = temp_del_lcif(1:n_time);
+    end
     del_lcif(i_SU,:) = imresize(temp_del_lcif, n_bins, 'nearest');
     g_eval(i_SU) = sum(del_lcif(i_SU,spt))- dt * exp(lcif)*del_lcif(i_SU,:)';
 end
@@ -79,8 +83,10 @@ for i = 1:n_params
             temp = pooling_weights(i_loc)*(squeeze(pixels(j,i_loc,:)).*squeeze(pixels(i,i_loc,:)))'.*squeeze(subunit_drive(i_loc,:));
             di_dj_lcif = di_dj_lcif+temp;
         end
-        di_dj_lcif = conv(di_dj_lcif, flip(time_filter), 'full');
-        di_dj_lcif = di_dj_lcif(1:n_time);
+        if ~(time_filter == 0)
+            di_dj_lcif = conv(di_dj_lcif, flip(time_filter), 'full');
+            di_dj_lcif = di_dj_lcif(1:n_time);
+        end
         di_dj_lcif = imresize(di_dj_lcif, n_bins, 'nearest');
         H_eval(i,j) = sum(di_dj_lcif(spt)) - dt * exp(lcif) * (di_dj_lcif + del_lcif(i,:).*del_lcif(j,:))';
         H_eval(j,i) = H_eval(i,j);
