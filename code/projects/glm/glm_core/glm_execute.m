@@ -124,9 +124,6 @@ if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     imagesc(reshape(U(:,1), [klen, klen]))
     title('Initial Space Filter')
     axis image
-    % time_filter = V(:,1)*S(1,1);
-    % X_frame_temp = conv2(X_frame, time_filter', 'full');
-    % X_frame = X_frame_temp(:,1:length(X_frame));
     clear X_frame_temp
     p_init(paramind.space1) = U(:,1);
     if strcmp(GLMType.stimfilter_mode, 'rk2')
@@ -280,19 +277,20 @@ if ~GLMType.CONVEX
             pooling_filter = reshape(pstar(paramind.space1), [ROI_length, ROI_length]);
             
             % Set up the covariate vector
-            p_init_SU = SU_filter(:);
             [SU_cov, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord, inputstats); % maybe eventually should add other filters to be fit again here? eg coupling
             non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
             time_filter = pstar(paramind.time1);
-            p_init = [p_init_SU; time_filter];
-           
             
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])
-            if strcmp(GLMType.Subunit_NL, 'exp')
-                disp('here')
+            if strcmp(GLMPars.subunit.time_before, 'fit')
+                p_init_SU = [SU_filter(:); time_filter];
+                [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
+            elseif strcmp(GLMType.Subunit_NL, 'exp')
+                p_init_SU = SU_filter(:);
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'squared')
+                p_init_SU = SU_filter(:);
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_squared(p_SU,SU_cov,pooling_weights,time_filter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             end
             

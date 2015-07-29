@@ -61,6 +61,12 @@ if GLMType.Subunits
             stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals).^2;
         end
     end
+    if strcmp(GLMPars.subunit.time_before, 'conv')
+        [~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
+        timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
+        stim_temp = convn(stim, timefilter, 'full');
+        stim = stim_temp(:,:,1:stimsize.frames);
+    end
 end
 
 
