@@ -7,7 +7,8 @@ function map_samples_to_frames(fo, trefresh, nsamples, outputpath)
 %  times defined in T_REFRESH (in sample units). 
 %  For example, image k will have index FO(k) and will have appeared at
 %  time T_REFRESH(k) in the recording. 
-%  The resulting map is stored in binary format in the folder OUTPUTPATH.
+%  The resulting map is stored in binary format in the folder OUTPUTPATH if
+%  OUTPUTPATH is a folder, otherwise it stored in the file specified.
 %
 %  Note: frame 0 is the special empty frame. All samples happening before
 %  the first refresh time will be associated with frame 0.
@@ -16,15 +17,19 @@ if length(fo) ~= length(trefresh)
     error('Number of frames shown does not match refresh times.')
 end
 
-% Figure out the file name 
-if exist(outputpath) %#ok<EXIST>
-    assert(isdir(outputpath))
+% Figure out the file name
+if strcmp(outputpath(end-3:end), '.str')
+    filename = outputpath;
 else
-    mkdir(outputpath)
+    if exist(outputpath) %#ok<EXIST>
+        assert(isdir(outputpath))
+    else
+        mkdir(outputpath)
+    end
+    filename = split(outputpath, filesep);
+    filename = filename{end};
+    filename = sprintf('%s.stf', filename);
 end
-filename = split(outputpath, filesep);
-filename = filename{end};
-filename = sprintf('%s.stf', filename);
 
 % Create progress bar
 fprintf('Mapping samples to frames\n');
