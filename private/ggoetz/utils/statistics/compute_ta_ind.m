@@ -1,6 +1,6 @@
-function tai = compute_ta_ind(st, ter, tparams)
+function tai = compute_ta_ind_tstep_samples(st, ter, tparams)
 %COMPUTE_TA_IND Computes the indices of the triggered average of some 
-%quantity.
+%quantity using the electrical recording as the time reference.
 % 
 %  TAI = COMPUTE_TA_IND(ST, TIME_EVENTS_REFRESH) assumes that a series of
 %  events happened such that the k-th event took place between the
