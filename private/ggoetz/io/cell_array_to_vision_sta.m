@@ -34,18 +34,12 @@ vsta = STA(length(ta), size(ta{1},1), size(ta{1}, 2), r, stixelsz, stixelsz);
 for k = 1:length(ta)
     % Set STA
     cframe = permute(ta{k}, [3, 2, 1]);
-    if rescale_sta
-        cframe = (cframe - 127);
-    end
     vstaframe = STAFrame(size(ta{1}, 2), size(ta{1}, 1), stixelsz, stixelsz);
     vstaframe.setBuffer(cframe(:));
     
     % Set error
     if specifyerror
         cerror = permute(e_ta{k}, [3, 2, 1]);
-%         if rescale_sta
-%             cerror = cerror; 
-%         end
         vstaframe.setErrorBuffer(cerror(:));
     end
     vsta.setFrame(k-1, vstaframe);
