@@ -414,6 +414,16 @@ if GLMType.CONVEX
         linearfilters.Stimulus.note2              = 'Recall each bin is housed in a frame (multiple bins per frame';
         linearfilters.Stimulus.note3              = 'frame_shifts describes the transfrom from time index to frames ahead of current bin';
     end
+    if strcmp(GLMType.timefilter, 'prefilter')
+        spacefilter           = pstar(paramind.X);
+        timefilter            = pre_timefilter;
+        linearfilters.Stimulus.Filter             = stimfilter;
+        linearfilters.Stimulus.Filter_rank        = 1;
+        linearfilters.Stimulus.space_rk1          = reshape(spacefilter, [ROI_length,ROI_length]);
+        linearfilters.Stimulus.time_rk1           = timefilter;
+        linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
+        linearfilters.Stimulus.y_coord            = ROIcoord.yvals;   
+    end
 end 
 if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2')) 
     if strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2') 
