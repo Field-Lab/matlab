@@ -50,7 +50,7 @@ event_counter = zeros(tadepth, 1);
 
 for kk = 1:nevents
     cevent = tai(kk);
-    cframe = mod(kk, tadepth) + 1;
+    cframe = mod(kk-1, tadepth) + 1;
     
     % Find which chunk corresponds to the event and what its index in the
     % chunk is

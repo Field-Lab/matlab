@@ -21,13 +21,6 @@ else
     specifyerror = true;
 end
 
-% Check if the matlab STA was between 0 and 255. 
-if max(ta{1}(:)) > 10;
-    rescale_sta = true;
-else
-    rescale_sta = false;
-end
-
 % Check if the matlab STA was RGB or grayscale
 if size(ta{1}, 3) == 1
     for k = 1:length(ta)
