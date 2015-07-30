@@ -49,11 +49,12 @@ stixelwidth = 5;
 stixelheight = 5;
 
 % Matlab STA time granularity (used by Vision to scale time axis of the STA).
-% Corresponds to default STA step size in compute_ta_ind, 60 samples.
-refreshtime = 3; 
-% Matlab STA depth. Default value is 76 (corresponds to 4500 samples, see
+% Corresponds to default STA step size in compute_ta_ind, 120 samples.
+% This time granularity should be specified in milliseconds.
+refreshtime = 6; 
+% Matlab STA depth. Default value is 50 (corresponds to 6000 samples, see
 % documentation of compute_ta_ind
-staDepth = int32(76);
+staDepth = int32(50);
 
 % Instantiate Vision STA file
 staFile = edu.ucsc.neurobiology.vision.io.STAFile(stafilepath, headerCapacity, width, height, staDepth, staOffset, stixelwidth, stixelwidth, refreshtime);
@@ -74,7 +75,7 @@ ndots = 0;
 % Get the STAs
 ncells = length(datarun.cell_ids);
 parfor k = 1:ncells
-    % Update progress bar
+    % Update progress bar - doesn't work with parfor...
     if mod(length(dir(stastempfolder)) - 2, round(ncells/80)) == 0
         fprintf('.');
     end
@@ -106,12 +107,12 @@ parfor k = 1:ncells
 end
 fprintf('\nSTA calculation done. Saving...\n');
 
-for k = 1:ncells
+for k = 1:20
     cellid = datarun.cell_ids(k);
     load(fullfile(stastempfolder, sprintf('sta_%s.mat', num2str(cellid))))
     
     % Convert the cell array STA to a Vision STA
-    vsta = cell_array_to_vision_sta(sta, e_sta, refreshtime);
+    vsta = cell_array_to_vision_sta(sta, e_sta, refreshtime, stixelwidth);
     
     % Add the STA to the STA file
     staFile.addSTA(cellid, vsta)
