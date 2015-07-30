@@ -20,15 +20,17 @@ function tai = compute_ta_ind_tstep_samples(st, ter, tparams)
 %  the future/past and with what time granularity the triggered average
 %  should be computed. TSTEPS should be a 3x1 vector such that 
 %  TPARAMS = [T_PRE, T_POST, STEP_SZ] with T_PRE the number of samples
-%  preceeding each spike used for the computation (defaults to 4500), 
+%  preceeding each spike used for the computation (defaults to 6000), 
 %  T_POST the number of samples following each spike (defaults to 0) and
-%  STEP_SZ the STA step (defaults to 60 samples). Default params result in
-%  a STA depth of 76.
+%  STEP_SZ the STA step (defaults to 120 samples). Default params result in
+%  a STA depth of 50.
+%  
+%  Because the first frame has weird edge effects, we'll simply discard it.
 
 if nargin == 2
-    t_pre = 4500;
+    t_pre = 6000;
     t_post = 0;
-    step_sz = 60;
+    step_sz = 120;
 else
     assert(numel(tparams) == 3);
     t_pre = tparams(1);
@@ -72,5 +74,8 @@ if use_cached_indices
 else
     tai = arrayfun(@(x)(sum(ter<x)), tai);
 end
+
+% Drop problematic first frame
+tai(1) = [];
 
 end % compute_ta_indices
