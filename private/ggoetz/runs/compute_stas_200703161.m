@@ -61,7 +61,7 @@ staFile = edu.ucsc.neurobiology.vision.io.STAFile(stafilepath, headerCapacity, w
 % STA temp folder - needed to work around clunkiness of Matlab parallel
 % computations.
 stastempfolder = split(datarun.names.rrs_prefix, filesep);
-stastempfolder = join(stastempfolder(1:(end-1)), filesep);
+stastempfolder = fullfile(join(stastempfolder(1:(end-1)), filesep), 'stastemp');
 if exist(stastempfolder, 'dir') == 0
     mkdir(stastempfolder);
 end
