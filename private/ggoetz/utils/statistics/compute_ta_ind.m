@@ -76,6 +76,6 @@ else
 end
 
 % Drop problematic first frame
-tai(1) = [];
+tai(:,1) = [];
 
 end % compute_ta_indices
