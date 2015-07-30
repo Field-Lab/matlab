@@ -82,7 +82,7 @@ for i = 1:nframes
      % Load
     t = fread(fid,width*height*3,'ubit8');  % 3 RGB guns
     tt = reshape(t,3,width,height);
-    tt = permute(tt, [2, 3, 1]);
+    tt = permute(tt, [3, 2, 1]);
     
     if mod(i, framesperchunk) == 0
         if greyscale
