@@ -3,7 +3,8 @@ clear;
 parpool([1 32])
 addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/private/ggoetz'));
 addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/utilities'));
-N_SPIKES_STA = 10000;
+N_SPIKES_STA = 5000;
+zeroval = 128; % For WN movies, this should be 0.5 and for raw movies, 128
 
 %% data003
 
@@ -99,7 +100,7 @@ parfor k = 1:ncells
     staindremapped = ceil(staind/interval);
     
     % Calculate STA from movie indices
-    [sta, e_sta] = compute_ta_from_ind(staindremapped, moviechunksfolder);
+    [sta, e_sta] = compute_ta_from_ind(staindremapped, moviechunksfolder, zeroval);
     
     % Save the result
     save_parfor_stas(fullfile(stastempfolder, sprintf('sta_%s.mat', num2str(cellid))), ...
