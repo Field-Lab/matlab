@@ -38,7 +38,7 @@ for j_SU = 1:3
                     % find the value of the stimulus on the subunit pixel
                     pixel_values = squeeze(stim(stim_idx(1), stim_idx(2), :));
                     if ~(timefilter==0)
-                        stim_temp = conv(pixel_values, timefilter, 'full');
+                        stim_temp = conv(pixel_values, squeeze(timefilter), 'full');
                         pixel_values = stim_temp(1:bins);
                     end
                     

@@ -115,9 +115,19 @@ else
    SU_filter = 0;
 end
 
+% Initialize or set the pre time filter
+if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit')
+    %[~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
+    %timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
+    load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
+    pre_timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
+else
+    timefilter = 0;
+end
+
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
+[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter, pre_timefilter);
 % clear WN_STA
 
 
@@ -307,8 +317,6 @@ if ~GLMType.CONVEX || GLMType.Subunits
             
             % Set up the covariate vector
             if strcmp(GLMType.timefilter, 'prefilter')
-                [~,timefilter] = spatialfilterfromSTA(glm_cellinfo.WN_STA,ROIcoord.xvals,ROIcoord.yvals);
-                pre_timefilter = flip(timefilter);
                 post_timefilter = 0;
                 non_stim_idx = ones(paramind.paramcount, 1);
                 non_stim_idx(paramind.X) = 0;
@@ -340,7 +348,7 @@ if ~GLMType.CONVEX || GLMType.Subunits
             SU_filter = reshape(pstar_SU, [GLMPars.subunit.size, GLMPars.subunit.size]);
             
             % Remake the stimulus with the new subunit filter
-            [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
+            [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter, pre_timefilter);
             
             % Save initial iterations
             rawfit.iter{iterate}.SU = pstar_SU;
@@ -434,14 +442,15 @@ if GLMType.CONVEX
         linearfilters.Stimulus.note3              = 'frame_shifts describes the transfrom from time index to frames ahead of current bin';
     end
     if strcmp(GLMType.timefilter, 'prefilter')
-        spacefilter           = pstar(paramind.X);
+        stimfilter           = pstar(paramind.X);
         timefilter            = pre_timefilter;
         linearfilters.Stimulus.Filter             = stimfilter;
         linearfilters.Stimulus.Filter_rank        = 1;
-        linearfilters.Stimulus.space_rk1          = reshape(spacefilter, [ROI_length,ROI_length]);
-        linearfilters.Stimulus.time_rk1           = timefilter;
+        linearfilters.Stimulus.space_rk1          = reshape(stimfilter, [ROI_length,ROI_length]);
+        linearfilters.Stimulus.pretime            = timefilter;
         linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
-        linearfilters.Stimulus.y_coord            = ROIcoord.yvals;   
+        linearfilters.Stimulus.y_coord            = ROIcoord.yvals;  
+        linearfilters.Stimulus.frame_shifts       = 0;
     end
 end 
 if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2')) 

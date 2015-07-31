@@ -54,7 +54,7 @@ end
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
 if GLMType_fortest.Subunits
-    [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter) ;
+    [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter, fittedGLM.linearfilters.Stimulus.pretime) ;
 else
     [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA) ;
 end
@@ -91,10 +91,14 @@ K  = reshape(K, [ROI_pixels, length(frame_shifts)]);
 
 
 KX = zeros(ROI_pixels, params.frames);
-for i_pixel = 1:ROI_pixels
-    X_frame_shift = prep_timeshift(X_frame(i_pixel,:),frame_shifts);
-    tfilt = K(i_pixel,:);
-    KX(i_pixel,:) = tfilt * X_frame_shift;
+if GLMType.Subunits
+    KX = K'*X_frame;
+else
+    for i_pixel = 1:ROI_pixels
+        X_frame_shift = prep_timeshift(X_frame(i_pixel,:),frame_shifts);
+        tfilt = K(i_pixel,:);
+        KX(i_pixel,:) = tfilt * X_frame_shift;
+    end
 end
 lcif_kx_frame = sum(KX,1);
 
