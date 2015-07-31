@@ -8,21 +8,22 @@ system = 'stim512';  %stim512 or stim64
 %system = 'stim64';
 
 % rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
-rawDataDir = '/Volumes/Data/2014-11-20-0';
+datNam = '2015-04-09-3';
+rawDataDir = ['/Volumes/Data/' datNam];
 if ~strcmp(rawDataDir(end),filesep)
     rawDataDir = [rawDataDir filesep];
 end
 
 % Points to the directory of the output.
 %WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
-WritePathBase = '/Volumes/Analysis/2014-11-20-0/';
+WritePathBase = ['/Volumes/Analysis/' datNam];
 if ~strcmp(WritePathBase(end),filesep)
     WritePathBase = [WritePathBase filesep];
 end
 
 % Appends this number to 'data ---'
-%fileNos = 2:29;
-fileNos = 1;
+fileNos = 5:26;
+%fileNos = 1;
 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds
