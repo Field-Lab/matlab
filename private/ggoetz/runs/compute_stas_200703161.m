@@ -3,23 +3,22 @@ clear;
 parpool([1 32])
 addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/private/ggoetz'));
 addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/utilities'));
-N_SPIKES_STA = 5000;
-zeroval = 128; % For WN movies, this should be 0.5 and for raw movies, 128
+N_SPIKES_STA = 20000;
 
 %% data000
 % Start with WN to check that everything looks reasonable.
 
-moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/white-noise/BW-16-0.48-11111';
-nframes = 3600; % Convert 3600 WN frames
-% Optional: do it once to convert a WN to mat chunks.
-% Once you've done for a movie, no need to convert to chunks ever again,
-% so uncomment the following three lines.
-wnmoviepath = '/Volumes/Analysis/2007-03-16-1/data000-testSTAs/data000/data000.movie';
-globalspath = '/Volumes/Analysis/2007-03-16-1/data000-testSTAs/data000/data000.globals';
-unpack_wnmovie(wnmoviepath, globalspath, moviechunksfolder, nframes)
+moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/white-noise/BW_16_0.48_11111';
+% nframes = 1350*120; % Convert 1350 seconds worth of WN frames. Duration for WN movie is some Vision magic.
+% % Optional: do it once to convert a WN to mat chunks.
+% % Once you've done for a movie, no need to convert to chunks ever again,
+% % so uncomment the following three lines.
+% wnmoviepath = '/Volumes/Analysis/2007-03-16-1/data000-testSTAs/data000/data000.movie';
+% globalspath = '/Volumes/Analysis/2007-03-16-1/data000-testSTAs/data000/data000.globals';
+% unpack_wnmovie(wnmoviepath, globalspath, moviechunksfolder, nframes)
 
 % Dataset parameters
-datarunpath = '2007-03-16-1/data000-testSTAs/data000';
+datarunpath = '2007-03-16-1/data000-testSTAs/data000/data000';
 interval = 4;
 
 % Load datarun
@@ -105,7 +104,7 @@ parfor k = 1:ncells
     staindremapped = ceil(staind/interval);
     
     % Calculate STA from movie indices
-    [sta, e_sta] = compute_ta_from_ind(staindremapped, moviechunksfolder, zeroval);
+    [sta, e_sta] = compute_ta_from_ind(staindremapped, moviechunksfolder);
     
     % Save the result
     save_parfor_stas(fullfile(stastempfolder, sprintf('sta_%s.mat', num2str(cellid))), ...
@@ -127,6 +126,8 @@ end
 staFile.close()
 
 %% data003
+
+zeroval = 128; % For WN movies, this should be 0.5 and for raw movies, 128
 
 moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-64-16-[-0_5]-[-1_0]';
 % % Optional: do it once to convert a raw movie to mat chunks.
