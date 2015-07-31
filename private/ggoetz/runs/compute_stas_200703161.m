@@ -43,8 +43,9 @@ t_frames = time_imrefresh_from_ttls(datarun.triggers);
 
 % Vision STA parameters
 headerCapacity = int32(10000);
-width = int32(128);
-height = int32(64);
+% Note reversed width/height compared to what you'd expect.
+width = int32(64);
+height = int32(128);
 staOffset = int32(0);
 stixelwidth = 5;
 stixelheight = 5;
