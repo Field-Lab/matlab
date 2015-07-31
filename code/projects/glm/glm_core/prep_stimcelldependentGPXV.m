@@ -13,7 +13,7 @@
 % need troublshoot.doit (true or false), 
 %troubleshoot.plotdir,
 % troubleshoot.name
-function [X_frame,X_bin] = prep_stimcelldependentGPXV(GLMType, GLMPars, stimulus, inputstats, center_coord,STA, SU_filter, troubleshoot)
+function [X_frame,X_bin] = prep_stimcelldependentGPXV(GLMType, GLMPars, stimulus, inputstats, center_coord,STA, SU_filter, timefilter, troubleshoot)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load up GLMParams
@@ -60,14 +60,10 @@ if GLMType.Subunits
 end
 
 % convolve the time filter if that's whats happening
-if strcmp(GLMType.timefilter, 'prefilter')
-    %[~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
-    %timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
-    load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
-    timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
-    clear fittedGLM
+if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit')
+    timefilter = reshape(timefilter, [1 1 30]);
     stim_temp = convn(stim, timefilter, 'full');
-    stim = stim_temp(:,:,1:stimsize.frames);
+    stim = stim_temp(:,:,1:stimsize.frames);    
 end
 
 % THEN the SU nonlinearity
@@ -79,7 +75,7 @@ if GLMType.Subunits
     end
 end
 
-% Actually should just use this for SU... -NB 
+% Actually should just use this for SU in the future... -NB 
 if isfield(GLMType, 'input_pt_nonlinearity') && GLMType.input_pt_nonlinearity
    % display('implementing nonlinearity')
     newstim = stim;
