@@ -58,7 +58,7 @@ fitparam.num_frames = 30; % both have to be run with the name number of frames
 fitparam.false_stixels =0.5;
 
 
-dataparam.cell_type = {'ON large 1'};
+dataparam.cell_type = {'All'};
 
 
 
@@ -92,7 +92,7 @@ datarun2.names.rrs_sta_path = ['/Volumes/Analysis/', dataparam.file_name_right, 
 %% Load Data1
 opt=struct('verbose',1,'load_params',0,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',0);
 opt.load_sta_params.save_rf = 1; % has to be set to one to load the data you need from vision
-opt.load_sta_params.frames =1:6;% have to input as a vector list of frames, not the number of frames total, counting backwards
+opt.load_sta_params.frames =1:50;% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
 %% Load Data2
@@ -133,26 +133,26 @@ end
 
 
 %% Movie for right STAs
-triggers=datarun2.triggers; %onsets of the stimulus presentation
+% triggers=datarun2.triggers; %onsets of the stimulus presentation
+% 
+% [mov,height,width,duration,refresh] = get_movie_ath(dataparam.mdf_file_right,...
+%     triggers, 1,2);
+% 
+% [mvi] = load_movie(dataparam.mdf_file_right, triggers);
 
-[mov,height,width,duration,refresh] = get_movie_ath(dataparam.mdf_file_right,...
-    triggers, 1,2);
 
-[mvi] = load_movie(dataparam.mdf_file_right, triggers);
-
-
-% check that stas have been loaded into datarun
-if ~isfield(datarun.stas, 'stas')
-    error('STAs are not contained in datarun, see LOAD_STA.M')
-end
-
-% initialize_output
-if ~isfield(datarun, 'matlab')
-    datarun = setfield(datarun, 'matlab', []);
-elseif ~isfield(datarun.matlab, 'sta_fits')
-    temp_cell = cell(length(datarun.cell_ids), 1);
-    datarun2.matlab.sta_fits = temp_cell;
-end
+% % check that stas have been loaded into datarun
+% if ~isfield(datarun.stas, 'stas')
+%     error('STAs are not contained in datarun, see LOAD_STA.M')
+% end
+% 
+% % initialize_output
+% if ~isfield(datarun, 'matlab')
+%     datarun = setfield(datarun, 'matlab', []);
+% elseif ~isfield(datarun.matlab, 'sta_fits')
+%     temp_cell = cell(length(datarun.cell_ids), 1);
+%     datarun2.matlab.sta_fits = temp_cell;
+% end
 
 
 cell_indices = get_cell_indices(datarun2, dataparam.cell_specification);
