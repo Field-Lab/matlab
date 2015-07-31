@@ -27,6 +27,12 @@ if GLMType.CouplingFilters
     end
     
 end
+
+if isfield(GLMType, 'Saccades')
+    SAstart = numParams + 1;  SAend = numParams + GLMPars.saccadefilter.filternumber;
+    paramind.SA = [SAstart  : SAend]; %paramind.CP has numbers for each coupled cell
+    numParams = numParams + GLMPars.saccadefilter.filternumber;
+end
 % end NBCoupling
 
 

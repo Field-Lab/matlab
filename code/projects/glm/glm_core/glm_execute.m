@@ -59,6 +59,10 @@ if GLMType.CouplingFilters
     % load('CP_basis.mat');
     % cp_basis = waveform; 
 end
+if isfield(GLMType, 'Saccades')
+   basis_params = GLMPars.saccadefilter;
+   sa_basis = prep_spikefilterbasisGP(basis_params, bin_size);
+end
 clear bin_size basis_params
 
 % Convolve Spike Times with appropriate basis
@@ -83,7 +87,12 @@ if GLMType.CouplingFilters;
         CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
     end
 end
-% end NBCoupling
+if isfield(GLMType, 'Saccades')
+   basis = sa_basis';
+   spbins = 1:120:bins;
+   SA_bin = prep_convolvespikes_basis(spbins, basis, bins);
+end
+    % end NBCoupling
 
 if GLMType.TonicDrive
     MU_bin = ones(1,bins);
@@ -203,6 +212,9 @@ if GLMType.CONVEX
             glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
         end
     end
+    if isfield(paramind, 'SA')
+        glm_covariate_vec(paramind.SA, :) = SA_bin;
+    end
     if isfield(paramind, 'C')
         stimsize.width  = size(fitmovie,1);
         stimsize.height = size(fitmovie,2);
@@ -248,6 +260,9 @@ if ~GLMType.CONVEX
         for j_pair=1:GLMPars.spikefilters.cp.n_couplings
             convex_cov( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
         end
+    end
+    if isfield(paramind, 'SA')
+        convex_cov(paramind.SA, :) = SA_bin;
     end
     if isfield(paramind, 'C')
         stimsize.width  = size(fitmovie,1);
@@ -373,6 +388,10 @@ if isfield(paramind, 'CP')
     end
     linearfilters.Coupling.startbin   = 1;
     linearfilters.Coupling.note = 'Filter starts at "startbin" bins after the spikebin';
+end
+if isfield(paramind, 'SA')
+    rawfit.sa_basis = sa_basis;
+    linearfilters.Saccades.Filter = sa_basis * pstar(paramind.SA);
 end
 % end NBCoupling
 

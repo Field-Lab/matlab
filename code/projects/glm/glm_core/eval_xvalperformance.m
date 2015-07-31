@@ -43,6 +43,12 @@ if fittedGLM.GLMType.CouplingFilters
     end
 end
 
+if isfield(fittedGLM.GLMType, 'Saccades')
+    saccades = zeros(1,params.bins);
+    saccades(1,1:120:params.bins) = 1;
+    saccades = repmat(saccades, [params.trials 1]);
+end
+
 
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
@@ -68,6 +74,9 @@ if GLMType.CouplingFilters
     CP = fittedGLM.linearfilters.Coupling.Filter;
 end
 % NBcoupling
+if isfield(GLMType,'Saccades')
+    SA = fittedGLM.linearfilters.Saccades.Filter;
+end
 K  = fittedGLM.linearfilters.Stimulus.Filter;
 
 % HUGE HACK AKHeitman 2014-10-21
@@ -147,6 +156,10 @@ if GLMType.CouplingFilters
         lcif_cp = fastconv(pairspike{pair} , [0; CP{pair}]', size(pairspike{pair},1), size(pairspike{pair},2) );
         lcif = lcif + lcif_cp;
     end
+end
+if isfield(GLMType, 'Saccades')
+    lcif_sa = fastconv(saccades, [0; SA]', size(saccades,1), size(saccades,2));
+    lcif = lcif+lcif_sa;
 end
 % end NBCoupling
 glm_ratepersec  = exp(lcif);

@@ -198,6 +198,10 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                 GLMType.CONVEX = true;
             end
         end
+        
+        if strcmp(change.type, 'Saccades')
+            GLMType.Saccades = true;
+        end
 
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';

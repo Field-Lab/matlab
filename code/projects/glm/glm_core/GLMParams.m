@@ -76,6 +76,13 @@ GLMPars.spikefilters.ps.fratio = .5  ;  % legacy afraid to take out
 GLMPars.spikefilters.cp.fratio = .4  ;  % legacy afraid to take out
 GLMPars.spikefilters.cp.n_couplings = 6  ;
 
+GLMPars.saccadefilter.ms = 100;
+GLMPars.saccadefilter.filternumber = 10;
+GLMPars.saccadefilter.spacing = pi/4;
+GLMPars.saccadefilter.bstretch = 0.95;
+GLMPars.saccadefilter.alpha = 0;
+GLMPars.saccadefilter.fratio = 0.5;
+
 
 
 GLMPars.others.fitblockchange = false;

@@ -27,6 +27,11 @@ if GLMType.CouplingFilters
     end
 end
 % end NBCoupling
+if isfield(GLMType, 'Saccades')
+	SAstart = numParams + 1;  SAend = numParams + GLMPars.saccadefilter.filternumber;
+	paramind.SA = [SAstart  : SAend];
+	numParams = numParams + GLMPars.saccadefilter.filternumber;
+end
 
 if GLMType.contrast
     paramind.C = (numParams + 1);%:(numParams+100);

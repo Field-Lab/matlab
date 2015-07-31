@@ -32,6 +32,9 @@ if ~exist('condition','var')
     if GLMType.contrast
         core = sprintf('%s_C'  , core); 
     end
+    if isfield(GLMType, 'Saccades')
+        core = sprintf('%s_SA'  , core); 
+    end
     if GLMType.STA_init 
         core = sprintf('%s_init', core);
     end
