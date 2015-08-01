@@ -1,6 +1,6 @@
 %test parameters
-currVec = [3 .1 4];
-iter = 27;
+currVec = [1 1 2];
+iter = 1;
 ratios = [2 -3 1];
 time = [50 50 50];
 randflg = 1;
