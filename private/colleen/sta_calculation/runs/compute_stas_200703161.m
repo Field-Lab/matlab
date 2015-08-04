@@ -1,8 +1,8 @@
 clear;
 
-parpool([1 32])
-addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/private/ggoetz'));
-addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/utilities'));
+% parpool([1 32])
+addpath(genpath('/Users/colleen/matlab/private/colleen'));
+% addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/utilities'));
 N_SPIKES_STA = 20000;
 
 %% data000
@@ -77,7 +77,8 @@ ndots = 0;
 
 % Get the STAs
 ncells = length(datarun.cell_ids);
-parfor k = 1:ncells
+ncells = 1;
+for k = 1:ncells
     % Update progress bar - doesn't work with parfor...
     if mod(length(dir(stastempfolder)) - 2, round(ncells/80)) == 0
         fprintf('.');
