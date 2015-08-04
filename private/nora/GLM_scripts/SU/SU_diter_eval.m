@@ -1,10 +1,8 @@
-iter = 2;
-
 load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_SUexp_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
 fittedGLM_orig = fittedGLM;
-fittedGLM.SU_filter = reshape(fittedGLM_orig.rawfit.iter{2}.SU, [3,3]);
+fittedGLM.SU_filter = reshape(fittedGLM_orig.rawfit.iter{4}.SU, [3,3]);
 paramind = fittedGLM_orig.rawfit.paramind;
-pstar = fittedGLM_orig.rawfit.iter{2}.nonSU;
+pstar = fittedGLM_orig.rawfit.iter{4}.nonSU;
 
 
 %%
@@ -88,7 +86,7 @@ if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.
     end  
 end
 
-xvalperformance = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,0);
+xvalperformance = eval_xvalperformance_SU(fittedGLM,testspikes_raster,testmovie,inputstats,0);
 
 
 
