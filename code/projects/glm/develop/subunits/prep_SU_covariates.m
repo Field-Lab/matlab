@@ -6,19 +6,22 @@ fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
 stim   = double(fitmovie) / double(fitmoviestats.span)-double(fitmoviestats.normmean);
 
+GLMPars = GLMParams;
+center = ceil(GLMPars.subunit.size/2);
+
 stimsize_x = size(fitmovie, 1);
 stimsize_y = size(fitmovie, 2);
 bins = size(fitmovie, 3);
 n_locations = size(pooling_filter, 1)*size(pooling_filter, 2);
-SU_cov_vec = zeros(9,n_locations,bins);
+SU_cov_vec = zeros(GLMPars.subunit.size^2,n_locations,bins);
 pooling_weights = zeros(n_locations,1);
 
-% loop through 9 SU pixels
+% loop through the SU pixels
 SU_idx = 0;
-for j_SU = 1:3
-    for i_SU = 1:3
+for j_SU = 1:GLMPars.subunit.size
+    for i_SU = 1:GLMPars.subunit.size
         SU_idx = SU_idx + 1;
-        dist_from_SU_center = [i_SU j_SU]-[2 2]; % find the offset from the pooling filter weight on that subunit to the location of the SU pixel
+        dist_from_SU_center = [i_SU j_SU]-[center center]; % find the offset from the pooling filter weight on that subunit to the location of the SU pixel
         
         % loop through all possible SU locations
         loc_idx = 0;

@@ -109,8 +109,8 @@ p_init     = .01* ones(paramind.paramcount,1);
 % NB SU
 % Initialize the subunits
 if GLMType.Subunits
-   SU_filter = -0.1*ones(GLMPars.subunit.size);
-   SU_filter(5) = 0.8;
+   SU_filter = 0.1*ones(GLMPars.subunit.size);
+   %SU_filter(round(GLMPars.subunit.size^2/2)) = 0.8;
 else
    SU_filter = 0;
 end
@@ -122,7 +122,7 @@ if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit
     load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
     pre_timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
 else
-    timefilter = 0;
+    pre_timefilter = 0;
 end
 
 center_coord       = glm_cellinfo.slave_centercoord;
@@ -331,7 +331,7 @@ if ~GLMType.CONVEX || GLMType.Subunits
    
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])
-            if strcmp(GLMType.timefilter, 'fit')
+            if strcmp(GLMType.timefilter, 'prefit')
                 p_init_SU = [SU_filter(:); timefilter];
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'exp')

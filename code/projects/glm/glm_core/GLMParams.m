@@ -36,7 +36,7 @@ GLMPars.stimfilter.note4 = 'Frames: Time duration of the fitted stim filter in f
 GLMPars.others.point_nonlinearity.increment_to_decrement=3;
 GLMPars.others.point_nonlinearity.scalar_raisedpower=2;
 GLMPars.subunit.size = 3;
-GLMPars.time = 'pre_conv';
+%GLMPars.time = 'pre_conv';
 % GLMPars.subunit.time_after = 'fit';
   
 

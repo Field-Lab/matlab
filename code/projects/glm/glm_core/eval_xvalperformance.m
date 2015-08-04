@@ -53,8 +53,10 @@ end
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
-if GLMType_fortest.Subunits
+if isfield(GLMType_fortest, 'timefilter') && strcmp(GLMType_fortest.timefilter, 'prefilter')
     [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter, fittedGLM.linearfilters.Stimulus.pretime) ;
+elseif isfield(GLMType_fortest,'Subunits') && GLMType_fortest.Subunits
+    [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter) ;
 else
     [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA) ;
 end
