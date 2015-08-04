@@ -8,7 +8,7 @@ N_SPIKES_STA = 20000;
 %% data000
 % Start with WN to check that everything looks reasonable.
 
-moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/white-noise/BW_16_0.48_11111';
+moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/white-noise/RGB_8_1_0.48_11111';
 % nframes = 1350*120; % Convert 1350 seconds worth of WN frames. Duration for WN movie is some Vision magic.
 % % Optional: do it once to convert a WN to mat chunks.
 % % Once you've done for a movie, no need to convert to chunks ever again,
@@ -18,8 +18,8 @@ moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/white-noise/BW_
 % unpack_wnmovie(wnmoviepath, globalspath, moviechunksfolder, nframes)
 
 % Dataset parameters
-datarunpath = '2007-03-16-1/data000-testSTAs/data000/data000';
-interval = 4;
+datarunpath = '2007-03-16-1/data006-testSTAs/data006/data006';
+interval = 1;
 
 % Load datarun
 datarun = load_data(datarunpath);
@@ -40,16 +40,16 @@ t_frames = time_imrefresh_from_ttls(datarun.triggers);
 % % This only needs to be calculated once per dataset and it's slow, so 
 % % comment out the following two lines if you need to run the sta 
 % % calculation more than once.
-% map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
+map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
 
 % Vision STA parameters
 headerCapacity = int32(10000);
 % Note reversed width/height compared to what you'd expect.
-width = int32(20);
-height = int32(40);
+width = int32(40);
+height = int32(80);
 staOffset = int32(0);
-stixelwidth = 16;
-stixelheight = 16;
+stixelwidth = 8;
+stixelheight = 8;
 
 % Matlab STA time granularity (used by Vision to scale time axis of the STA).
 % Corresponds to default STA step size in compute_ta_ind, 120 samples.
