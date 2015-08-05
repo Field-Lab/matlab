@@ -1,18 +1,23 @@
 function [SU_cov_vec, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoords, inputstats, timefilter)
-
-% might need to move this to before SU? NB
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cut the Movie down to ROI
+% Normalize Movie and set nullpoint
+% output of this section is stim
+% stim in [xy, time] coordinates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+GLMPars = GLMParams;
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
-stim   = double(fitmovie) / double(fitmoviestats.span)-double(fitmoviestats.normmean);
-
-GLMPars = GLMParams;
+stim = double(fitmovie)/double(fitmoviestats.span) - double(fitmoviestats.normmean);
 center = ceil(GLMPars.subunit.size/2);
 
+%%
 stimsize_x = size(fitmovie, 1);
 stimsize_y = size(fitmovie, 2);
 bins = size(fitmovie, 3);
-n_locations = size(pooling_filter, 1)*size(pooling_filter, 2);
+n_locations = numel(pooling_filter);
 SU_cov_vec = zeros(GLMPars.subunit.size^2,n_locations,bins);
 pooling_weights = zeros(n_locations,1);
 
@@ -25,8 +30,8 @@ for j_SU = 1:GLMPars.subunit.size
         
         % loop through all possible SU locations
         loc_idx = 0;
-        for i_PF = 1:size(pooling_filter, 1)
-            for j_PF = 1:size(pooling_filter, 2)
+        for j_PF = 1:size(pooling_filter, 1)
+            for i_PF = 1:size(pooling_filter, 2)
                 loc_idx = loc_idx+1;
                 % find the location of that subunit pixel in the stimulus,
                 % for the pixel in the pooling filter

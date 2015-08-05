@@ -110,7 +110,8 @@ p_init     = .01* ones(paramind.paramcount,1);
 % Initialize the subunits
 if GLMType.Subunits
    SU_filter = 0.1*ones(GLMPars.subunit.size);
-   %SU_filter(round(GLMPars.subunit.size^2/2)) = 0.8;
+   SU_filter(round(GLMPars.subunit.size^2/2)) = 0.4;
+   glm_cellinfo.SU_init = SU_filter;
 else
    SU_filter = 0;
 end
@@ -335,8 +336,7 @@ if ~GLMType.CONVEX || GLMType.Subunits
                 p_init_SU = [SU_filter(:); timefilter];
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'exp')
-                disp('here')
-                p_init_SU = SU_filter(:)
+                p_init_SU = SU_filter(:);
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'squared')
                 % currently doesn't work

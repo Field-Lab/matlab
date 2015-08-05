@@ -38,7 +38,7 @@ for i = 1:n_params
 end
 stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
 if ~(time_filter == 0)
-    stim_lcif = conv(stim_lcif, flip(time_filter), 'full');
+    stim_lcif = conv(stim_lcif, time_filter, 'full');
     stim_lcif = stim_lcif(1:n_time);
 end
 lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
@@ -62,7 +62,7 @@ for i_SU = 1:n_params
         temp_del_lcif = temp_del_lcif+temp;
     end
     if ~(time_filter == 0)
-        temp_del_lcif = conv(temp_del_lcif, flip(time_filter), 'full');
+        temp_del_lcif = conv(temp_del_lcif, time_filter, 'full');
         temp_del_lcif = temp_del_lcif(1:n_time);
     end
     del_lcif(i_SU,:) = imresize(temp_del_lcif, n_bins, 'nearest');
@@ -84,7 +84,7 @@ for i = 1:n_params
             di_dj_lcif = di_dj_lcif+temp;
         end
         if ~(time_filter == 0)
-            di_dj_lcif = conv(di_dj_lcif, flip(time_filter), 'full');
+            di_dj_lcif = conv(di_dj_lcif, time_filter, 'full');
             di_dj_lcif = di_dj_lcif(1:n_time);
         end
         di_dj_lcif = imresize(di_dj_lcif, n_bins, 'nearest');
