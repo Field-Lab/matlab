@@ -1,29 +1,37 @@
 function [SU_cov_vec, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoords, inputstats, timefilter)
-
-% might need to move this to before SU? NB
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cut the Movie down to ROI
+% Normalize Movie and set nullpoint
+% output of this section is stim
+% stim in [xy, time] coordinates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+GLMPars = GLMParams;
 fitmoviestats.mean     =  inputstats.mu_avgIperpix;
 fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
-stim   = double(fitmovie) / double(fitmoviestats.span)-double(fitmoviestats.normmean);
+stim = double(fitmovie)/double(fitmoviestats.span) - double(fitmoviestats.normmean);
+center = ceil(GLMPars.subunit.size/2);
 
+%%
 stimsize_x = size(fitmovie, 1);
 stimsize_y = size(fitmovie, 2);
 bins = size(fitmovie, 3);
-n_locations = size(pooling_filter, 1)*size(pooling_filter, 2);
-SU_cov_vec = zeros(9,n_locations,bins);
+n_locations = numel(pooling_filter);
+SU_cov_vec = zeros(GLMPars.subunit.size^2,n_locations,bins);
 pooling_weights = zeros(n_locations,1);
 
-% loop through 9 SU pixels
+% loop through the SU pixels
 SU_idx = 0;
-for j_SU = 1:3
-    for i_SU = 1:3
+for j_SU = 1:GLMPars.subunit.size
+    for i_SU = 1:GLMPars.subunit.size
         SU_idx = SU_idx + 1;
-        dist_from_SU_center = [i_SU j_SU]-[2 2]; % find the offset from the pooling filter weight on that subunit to the location of the SU pixel
+        dist_from_SU_center = [i_SU j_SU]-[center center]; % find the offset from the pooling filter weight on that subunit to the location of the SU pixel
         
         % loop through all possible SU locations
         loc_idx = 0;
-        for i_PF = 1:size(pooling_filter, 1)
-            for j_PF = 1:size(pooling_filter, 2)
+        for j_PF = 1:size(pooling_filter, 1)
+            for i_PF = 1:size(pooling_filter, 2)
                 loc_idx = loc_idx+1;
                 % find the location of that subunit pixel in the stimulus,
                 % for the pixel in the pooling filter

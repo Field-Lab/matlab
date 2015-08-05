@@ -54,7 +54,7 @@ end
 if GLMType.Subunits
     for frame=1:stimsize.frames
         tempstim = double(stimulus(:,:,frame))/double(fitmoviestats.span) - double(fitmoviestats.normmean);
-        tempstim=conv2(tempstim,SU_filter,'same');
+        tempstim=filter2(SU_filter,tempstim);
         stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals);
     end
 end
