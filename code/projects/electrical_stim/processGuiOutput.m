@@ -48,19 +48,21 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, gapParam, saveFile,
 		end
 	end	
 
-	function [esfmat,finalTimInc] = make_esfmat_random(numChannel, ampVec, iter, extraCommandNum, ranges, gapParam, pulseLen, simulCmd)
+	function [esfmat,finalTimInc, esfmat_type] = make_esfmat_random(numChannel, ampVec, iter, extraCommandNum, ranges, gapParam, pulseLen, simulCmd)
 		chanVec = 1:numChannel;
 		esfmat = zeros(iter*numel(ampVec)*numChannel + extraCommandNum*numChannel, 3);
+		esfmat_type = zeros(iter*numel(ampVec)*numChannel + extraCommandNum*numChannel, 1);
 		esfmatInd = 1;
 		timInc = 0;
 		for y=1:length(ampVec) 
 			%set range in all channels
 			rangeNum = ranges(y,1);
-			[esfmat, timInc, esfmatInd] = set_range_all_channels(rangeNum, esfmat, esfmatInd, timInc, numChannel, simulCmd);
+			[esfmat, timInc, esfmatInd, esfmat_type] = set_range_all_channels(rangeNum, esfmat, esfmatInd, esfmat_type, timInc, numChannel, simulCmd);
 			for x=1:iter
 				nchanVec = chanVec(randperm(length(chanVec)));
 				for k=1:numChannel
 					esfmat(esfmatInd,:) = [timInc nchanVec(k) y];
+					esfmat_type(esfmatInd) = 2;
 					esfmatInd = esfmatInd + 1;
 					timInc = timInc + pulseLen + gapParam;
 				end
@@ -68,12 +70,13 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, gapParam, saveFile,
 		end
 		finalTimInc = timInc;
 
-		function [esfmat, timInc, esfmatInd] = set_range_all_channels(rangeNum, esfmat, esfmatInd, timInc, numChannel, simulCmd)
+		function [esfmat, timInc, esfmatInd, esfmat_type] = set_range_all_channels(rangeNum, esfmat, esfmatInd, esfmat_type, timInc, numChannel, simulCmd)
 			chanVec = 1:numChannel;
 			chanInd = 1;
 			for i=1:(numChannel/simulCmd)
 				for j=1:simulCmd		
 					esfmat(esfmatInd,:) = [timInc chanVec(chanInd) rangeNum];
+					esfmat_type(esfmatInd) = 1;
 					chanInd = chanInd + 1;
 					esfmatInd = esfmatInd + 1;
 				end
@@ -82,32 +85,61 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, gapParam, saveFile,
 		end
 	end
 
-	function adjust_esfmat_times(esfmat, timeBreak, finalTimInc)
-		esfTimes = esfmat(:,1);
+	function esfmat_out = adjust_esfmat_times(esfmat, timeBreak, finalTimInc)
+		%This function assumes that recording times cannot overlap with .5 sec.
+		%See the 2nd version of this to get just stimulation times
+		esfTimes = [esfmat(:,1); finalTimInc];
+		%make sure that timeBreak is not exceed by stimulus length
+		if ~isempty(diff(esfTimes) > timeBreak) 
+			errordlg(['Stimulus length exceeds boundary of ' num2str(timeBreak) ' microseconds.']);
+			return
+		end
 		lEsfT = length(esfTimes);
 		maxTime = esfTimes(end);
 		lastTimeMult = ceil(maxTime/timeBreak);
-		breakVec = linspace(timeBreak, timeBreak*lastTimeMult, lastTimeMult);
-		for i=breakVec(1:(end-1))
-			tind = find((esfTimes - i) < 0, 1, 'last');
+		breakVal = timeBreak; %first time break
+		while esfTimes(end) > breakVal
+			tind = find((esfTimes - breakVal) <= 0, 1, 'last');
 			if esfTimes(tind) ~= i %if time doesn't magically correspond to a break, then shift everything downwards
-				tgap = i - esfTimes(tind);
-				for identical_inds = find(esfTimes==esfTimes(tind)) %first deal with all time stamps identical to the current one
-					esfTimes(identical_inds) = esfTimes(identical_inds)+tgap;
-				end
-				for inds = (tind+1):lEsfT %deal with all inds after this one
-					esfTimes(inds) = esfTimes(inds)+tgap;
-				end
-				if esfTimes(end) > timeBreak*lastTimeMult
+				tgap = breakVal - esfTimes(tind);
+				%first deal with all time stamps identical to the current one
+				identical_inds = find(esfTimes==esfTimes(tind)); 
+				esfTimes(identical_inds) = esfTimes(identical_inds)+tgap;
+				 %deal with all inds after this one
+				remaining_inds = (tind+1):lEsfT;
+				esfTimes(remaining_inds) = esfTimes(remaining_inds)+tgap;
 			end
+			breakVal = breakVal + timeBreak; 
 		end
-		%deal with last value separately
-		if finalTimInc
+		esfmat(:,1) = esfTimes(1:end-1);
+		esfmat_out = esfmat;
+	end
+
+	function esfmat = adjust_esfmat_times2(esfmat, esfmat_type, timeBreak, pulseLen, timeRes)
+		lEsfT = length(esfmat);
+		esfTimes = [esfmat(:,1) esfmat(:,1)];
+		for i = 1:lEsfT
+			if esfmat_type(i) == 1; esfTimes(i,2) = esfTimes(i,2) + timeRes;
+			else esfTimes(i,2) = esfTimes(i,2) + pulseLen; end;
+		end
+		breakVal = timeBreak;
+		while esfTimes(end) > breakVal
+			for i = 1:length(esfTimes)
+				if (esfTimes(i,1) < breakVal) && (esfTimes(i,2) > breakVal)
+					tgap = breakVal - esfTimes(i,1);
+					esfTimes(i:end,:) = esfTimes(i:end,:) + tgap;
+				end
+			end
+			breakVal = breakVal + timeBreak; 
+		end
+	end
+		
+
 
 
 
 	%Parameters--------------------------------------------------
-	timeRes = 50; %microseconds
+	timeRes = 50; %microseconds. Also taken to be command time
 	timeBreak = 500000; %microseconds that should not be crossed (no event should be occuring through increments of this time)
 	simulCmd = 8;
 	numChannel = 512;
@@ -139,9 +171,9 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, gapParam, saveFile,
 
 	%Make ESF--------------------------------------------------
 	if randflg
-        esfmat = make_esfmat_random(numChannel, ampVec, iter, extraCommandNum, ranges, gapParam, pulseLen, simulCmd); 
-		esfmat = adjust_esfmat_times(esfmat, timeBreak, finalTimInc);
-        disp(esfmat)
+        [esfmat, finalTimInc, esfmat_type] = make_esfmat_random(numChannel, ampVec, iter, extraCommandNum, ranges, gapParam, pulseLen, simulCmd); 
+		%esfmat = adjust_esfmat_times(esfmat, timeBreak, finalTimInc);
+		esfmat = adjust_esfmat_times2(esfmat, esfmat_type,timeBreak, pulseLen, timeRes);
     end
 	
 	%Save everything--------------------------------------------------

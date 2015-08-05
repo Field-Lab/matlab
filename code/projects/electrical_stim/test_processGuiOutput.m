@@ -1,5 +1,5 @@
 %test parameters
-currVec = [1 1 2];
+currVec = [.5 .1 1.5];
 iter = 1;
 ratios = [2 -3 1];
 time = [50 50 50];
@@ -23,3 +23,6 @@ fid = fopen([saveLocation filesep saveFile '.sef'],'r','l');
 grot3 = fread(fid,'int32');
 fclose(fid);
 grot3 = reshape(grot3,length(grot3)/3,3);
+%check grot3 length
+disp(length(grot3))
+disp(512*(11*2)*1)
