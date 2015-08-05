@@ -54,14 +54,20 @@ end
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
 if isfield(GLMType_fortest, 'Subunits') && GLMType_fortest.Subunits
-    [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter, fittedGLM.linearfilters.Stimulus.pretime) ;
+    if isfield(GLMType_fortest, 'timefilter') && strcmp(GLMType_fortest.timefilter, 'prefilter')
+        [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter, fittedGLM.linearfilters.Stimulus.pretime) ;
+    else
+        [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter) ;
+    end
 else
+    GLMType_fortest.Subunits = 0;
+    GLMType_fortest.timefilter = 'fit';
     [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA) ;
 end
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
 
-  
+
     %% Set up CIF Components
     
 
@@ -91,7 +97,7 @@ K  = reshape(K, [ROI_pixels, length(frame_shifts)]);
 
 
 KX = zeros(ROI_pixels, params.frames);
-if GLMType.Subunits
+if isfield(GLMType,'timefilter') && strcmp(GLMType.timefilter, 'prefilter')
     KX = K'*X_frame;
 else
     for i_pixel = 1:ROI_pixels

@@ -70,9 +70,9 @@ GLMType = fittedGLM.GLMType;
     %% Set up CIF Components
     
 
-MU = fittedGLM.linearfilters.TonicDrive.Filter;
-if GLMType.PostSpikeFilter
-    PS = fittedGLM.linearfilters.PostSpike.Filter;
+% MU = fittedGLM.linearfilters.TonicDrive.Filter;
+% if GLMType.PostSpikeFilter
+%     PS = fittedGLM.linearfilters.PostSpike.Filter;
 % end
 % % NBCoupling 06-23-2014
 % if GLMType.CouplingFilters
