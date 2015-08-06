@@ -1,4 +1,4 @@
-function  [f grad Hess log_cif] = glm_SU_optimizationfunction(SU_params, SU_covariates, pooling_weights, time_filter, spikebins, bin_duration, non_stim_lcif)
+function  [f grad Hess log_cif] = glm_SU_time_optimizationfunction(SU_params, SU_covariates, pooling_weights, time_filter, spikebins, bin_duration, non_stim_lcif)
  %%% PURPOSE %%%
 % Compute the Objective Function being optimized (f)
 % Compute the grad/hess as well for the optimizer
