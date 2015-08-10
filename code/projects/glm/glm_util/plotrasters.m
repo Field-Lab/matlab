@@ -1,4 +1,4 @@
-function plotraster(xval, fittedGLM, varargin)
+function [PSTH_sim, PSTH_rec] = plotrasters(xval, fittedGLM, varargin)
 % NB 2015-06-18
 % DESCRIPTION
 % This function takes in xval from glm_predict, fittedGLM from glm_fit, and
