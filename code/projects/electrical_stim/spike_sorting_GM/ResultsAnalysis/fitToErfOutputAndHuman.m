@@ -1,15 +1,18 @@
-function [thresholdHum thresholdAlg] = fitToErfOutputAndHuman(Output) 
+function [thresholdHum, thresholdAlg, curveHum, curveAlg] = fitToErfOutputAndHuman(Output) 
 %The same as fitToErf but now we make a comparison with the spike sorting
 %algorithm using information provided by the Output structure (no need to
 %specify elecResp)
 %Gonzalo Mena 06/15
+% LG modified to include the entire curves for the erf fit 8/2015
+
 pathToAnalysisData = Output.path;
 patternNo = Output.stimInfo.patternNo;
 neuronIds = Output.neuronInfo.neuronIds;
 J = Output.tracesInfo.J;
 I = Output.tracesInfo.I;
 for n=1:length(neuronIds)
-    tempPath = [pathToAnalysisData 'elecResp_n' num2str(neuronIds(n)) '_p' num2str(patternNo) '.mat']; 
+    tempPath = fullfile(pathToAnalysisData,...
+        ['elecResp_n' num2str(neuronIds(n)) '_p' num2str(patternNo) '.mat']); 
     load(tempPath)
     
 
@@ -33,8 +36,9 @@ end
 
 % linear-based
 data(1,:) = abs(data(1,:));
-[erfParams, completeFit, erfErr] = erfFitter(data, 2, -1, 'makePlot', 0, 'lockedAmps', lockedAmps);
+[erfParams, completeFit, ~] = erfFitter(data, 2, -1, 'makePlot', 0, 'lockedAmps', lockedAmps);
 thresholdHum(n) = -erfParams(2)/erfParams(1);
+curveHum = completeFit; 
 
 data2(1,:)=abs(Output.stimInfo.listAmps(:,1))';
 
@@ -45,14 +49,9 @@ end
 data2(3,:)=I;
 
 
-
-[erfParams, completeFit, erfErr] = erfFitter(data2, 2, -1, 'makePlot', 0, 'lockedAmps', lockedAmps);
-thresholdAlg = -erfParams(2)/erfParams(1);
-
-%standard deviations: don't redo if analysis hasn't changed
-
-% threshStd = bootstrapThresh(elecResp, main.bootstrapReps);
-% bootstrapReps = main.bootstrapReps;
+[erfParams, completeFit, ~] = erfFitter(data2, 2, -1, 'makePlot', 0, 'lockedAmps', lockedAmps);
+thresholdAlg(n) = -erfParams(2)/erfParams(1);
+curveAlg = completeFit; 
 
 end
 
