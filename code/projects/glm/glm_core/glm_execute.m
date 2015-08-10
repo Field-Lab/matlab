@@ -110,7 +110,7 @@ WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter);
 % clear WN_STA
 
-if GLMType.STA_init
+if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     stimsize.width  = size(fitmovie,1);
     stimsize.height = size(fitmovie,2);
     ROIcoord        = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, stimsize);
@@ -211,8 +211,8 @@ if GLMType.CONVEX
         [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
     end
     if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
-            (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
+        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_squared...
+            (p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
         % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
     end
 end
@@ -416,13 +416,17 @@ end
 
 fittedGLM.rawfit               = rawfit;
 fittedGLM.linearfilters = linearfilters;
-fittedGLM.note = 'in theory, linearfilters and t_bin/ binsperframe is sufficient for xval and simulation'; 
+fittedGLM.note = 'in theory, linearfilters and t_bin/ binsperframe is sufficient for xval and simulation';
 fittedGLM.fit_time = datestr(clock);
 fittedGLM.writingcode = mfilename('fullpath');
 
 %% Evaluate cross-validated fits,  Print and Save
-[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
-fittedGLM.xvalperformance  = xvalperformance; 
+if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
+    [xvalperformance] = eval_xvalperformance_squared(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
+else
+    [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
+end
+fittedGLM.xvalperformance  = xvalperformance;
 eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
 printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
 printglmfit(fittedGLM,printname)
