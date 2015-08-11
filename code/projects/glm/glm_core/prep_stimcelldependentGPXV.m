@@ -39,23 +39,24 @@ fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
 
 
 if ~GLMType.Subunits
-    stim   = double(stimulus(ROIcoord.xvals, ROIcoord.yvals, :));
-    stim   = stim / double(fitmoviestats.span);
-    
-    if strcmp(GLMType.nullpoint, 'mean')
-        stim = stim - double(fitmoviestats.normmean);
-    else
-        error('you need to fill in how to account for stimulus with a different nullpoint')
-    end
+
 end
 
 
 %first subunits!
-if GLMType.Subunits
+if exist('SU_filter', 'var') && SU_filter(1)~=0
     for frame=1:stimsize.frames
         tempstim = double(stimulus(:,:,frame))/double(fitmoviestats.span) - double(fitmoviestats.normmean);
         tempstim=filter2(SU_filter,tempstim);
         stim(:,:,frame)=tempstim(ROIcoord.xvals, ROIcoord.yvals);
+    end
+else
+    stim   = double(stimulus(ROIcoord.xvals, ROIcoord.yvals, :));
+    stim   = stim / double(fitmoviestats.span);
+    if strcmp(GLMType.nullpoint, 'mean')
+        stim = stim - double(fitmoviestats.normmean);
+    else
+        error('you need to fill in how to account for stimulus with a different nullpoint')
     end
 end
 
@@ -67,7 +68,7 @@ if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit
 end
 
 % THEN the SU nonlinearity
-if GLMType.Subunits 
+if exist('SU_filter', 'var') && SU_filter(1)~=0
     if strcmp(GLMType.Subunit_NL, 'exp')
         stim=exp(stim);
     elseif strcmp(GLMType.Subunit_NL, 'squared')

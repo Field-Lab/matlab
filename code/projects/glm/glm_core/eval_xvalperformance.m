@@ -146,6 +146,7 @@ if GLMType.PostSpikeFilter
     lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
     lcif = lcif + lcif_ps;
 end
+
 if isfield(GLMType,'contrast') && GLMType.contrast
     C = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.C);
     stimsize.width  = size(testmovie,1);

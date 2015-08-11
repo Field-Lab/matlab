@@ -109,8 +109,8 @@ p_init     = .01* ones(paramind.paramcount,1);
 % NB SU
 % Initialize the subunits
 if GLMType.Subunits
-   SU_filter = 0.1*ones(GLMPars.subunit.size);
-   SU_filter(round(GLMPars.subunit.size^2/2)) = 0.4;
+   SU_filter = rand(GLMPars.subunit.size)-0.5;
+   % SU_filter(round(GLMPars.subunit.size^2/2)) = 0.4;
    glm_cellinfo.SU_init = SU_filter;
 else
    SU_filter = 0;
@@ -125,10 +125,10 @@ if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit
 else
     pre_timefilter = 0;
 end
-
+% start by fitting regular GLM
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter, pre_timefilter);
+[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 % clear WN_STA
 
 
@@ -292,7 +292,8 @@ if ~GLMType.CONVEX
 end
 if ~GLMType.CONVEX || GLMType.Subunits
     iterate = 1;
-    while iterate < 2
+
+    while iterate < 3
         
         % Fit the "normal" parts of GLM: linear stim filter, PS filter,
         % CP filter, etc
