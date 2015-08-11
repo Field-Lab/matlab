@@ -193,13 +193,13 @@ if GLMType.PostSpikeFilter && ~GLMType.CouplingFilters
         binary_simulation = zeros(1,params.bins);
         for i = 1 : params.bins- ps_bins;
             roll = rand(1);
-            if lcif_ps > 0
-                cutoff = lcif_ps^2;
+            if lcif_ps(i) > 0
+                cutoff = lcif_ps(i)^2;
             else
                 cutoff = 10^-5;
             end
             if roll >  exp(-params.bindur*cutoff);
-                lcif_ps(i+1: i + ps_bins) =  lcif_ps(i+1: i + ps_bins) + PS;
+                lcif_ps(i+1: i + ps_bins) =  lcif_ps(i+1: i + ps_bins) + PS';
                 binary_simulation(i)= 1;
             end
         end
@@ -215,8 +215,8 @@ elseif GLMType.CouplingFilters && ~GLMType.PostSpikeFilter
         binary_simulation = zeros(1,params.bins);
         for i = 1 : params.bins- cp_bins;
             roll = rand(1);
-            if lcif_ps > 0
-                cutoff = lcif_ps^2;
+            if lcif_cp(i) > 0
+                cutoff = lcif_cp(i)^2;
             else
                 cutoff = 10^-5;
             end
@@ -240,8 +240,8 @@ elseif GLMType.CouplingFilters && GLMType.PostSpikeFilter
         binary_simulation = zeros(1,params.bins);
         for i = 1 : params.bins- max(cp_bins, ps_bins);
             roll = rand(1);
-            if lcif_ps > 0
-                cutoff = lcif_ps^2;
+            if lcif_ps_cp(i) > 0
+                cutoff = lcif_ps_cp(i)^2;
             else
                 cutoff = 10^-5;
             end
