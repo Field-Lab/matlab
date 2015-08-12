@@ -139,8 +139,8 @@ moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-6
 % unpack_rawmovie(moviepath, moviechunksfolder, greyscale);
 
 % Dataset parameters
-datarunpath = '2007-03-16-1/data003';
-interval = 4;
+datarunpath = '2007-03-27-1/data003';
+interval = 1;
 
 % Load datarun
 datarun = load_data(datarunpath);
@@ -161,7 +161,7 @@ t_frames = time_imrefresh_from_ttls(datarun.triggers);
 % % This only needs to be calculated once per dataset and it's slow, so 
 % % comment out the following two lines if you need to run the sta 
 % % calculation more than once.
-% map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
+map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
 
 % Vision STA parameters
 headerCapacity = int32(10000);
@@ -238,9 +238,17 @@ for k = 1:ncells
     cellid = datarun.cell_ids(k);
     load(fullfile(stastempfolder, sprintf('sta_%s.mat', num2str(cellid))))
     
+%     sta_reduced = cell(size(sta,1),1);
+%         e_reduced = cell(size(sta,1),1);
+% 
+%      for i = 1:size(sta,1)
+%             sta_reduced{i} = sta{i}(1:16,1:32);
+%             e_reduced{i} = e_sta{i}(1:16,1:32);
+% 
+%      end
     % Convert the cell array STA to a Vision STA
-    vsta = cell_array_to_vision_sta(sta, e_sta, refreshtime, stixelwidth);
-    
+    vsta = cell_array_to_vision_sta(sta_reduced, e_reduced, refreshtime, stixelwidth);
+   
     % Add the STA to the STA file
     staFile.addSTA(cellid, vsta)
 end

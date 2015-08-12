@@ -139,8 +139,8 @@ moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/np/npg-128-64-6
 % unpack_rawmovie(moviepath, moviechunksfolder, greyscale);
 
 % Dataset parameters
-datarunpath = '2007-03-16-1/data003';
-interval = 4;
+datarunpath = '2007-03-02-3/data007';
+interval = 2;
 
 % Load datarun
 datarun = load_data(datarunpath);
@@ -166,11 +166,11 @@ t_frames = time_imrefresh_from_ttls(datarun.triggers);
 % Vision STA parameters
 headerCapacity = int32(10000);
 % Note reversed width/height compared to what you'd expect.
-width = int32(64);
-height = int32(128);
+width = int32(16);
+height = int32(32);
 staOffset = int32(0);
-stixelwidth = 5;
-stixelheight = 5;
+stixelwidth = 1;
+stixelheight = 1;
 
 % Matlab STA time granularity (used by Vision to scale time axis of the STA).
 % Corresponds to default STA step size in compute_ta_ind, 120 samples.
@@ -238,9 +238,17 @@ for k = 1:ncells
     cellid = datarun.cell_ids(k);
     load(fullfile(stastempfolder, sprintf('sta_%s.mat', num2str(cellid))))
     
+    sta_reduced = cell(size(sta,1),1);
+        e_reduced = cell(size(sta,1),1);
+
+     for i = 1:size(sta,1)
+            sta_reduced{i} = sta{i}(1:16,1:32);
+            e_reduced{i} = e_sta{i}(1:16,1:32);
+
+     end
     % Convert the cell array STA to a Vision STA
-    vsta = cell_array_to_vision_sta(sta, e_sta, refreshtime, stixelwidth);
-    
+    vsta = cell_array_to_vision_sta(sta_reduced, e_reduced, refreshtime, stixelwidth);
+   
     % Add the STA to the STA file
     staFile.addSTA(cellid, vsta)
 end
