@@ -1,11 +1,12 @@
 clear;
+tic
+parpool([1 32])
 
-% parpool([1 32])
-addpath(genpath('/Users/colleen/matlab/private/colleen'));
+%addpath(genpath('/Users/colleen/matlab/private/colleen'));
 % addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/utilities'));
 N_SPIKES_STA = 20000;
 
-%% data000
+%% data006
 % Start with WN to check that everything looks reasonable.
 
 moviechunksfolder = '/Volumes/Lab/Projects/vstim-unpack/unpacked/white-noise/RGB_8_1_0.48_11111';
@@ -40,7 +41,7 @@ t_frames = time_imrefresh_from_ttls(datarun.triggers);
 % % This only needs to be calculated once per dataset and it's slow, so 
 % % comment out the following two lines if you need to run the sta 
 % % calculation more than once.
-map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
+%map_samples_to_frames(1:length(t_frames), t_frames, datarun.duration, samples_to_frames);
 
 % Vision STA parameters
 headerCapacity = int32(10000);
@@ -77,8 +78,9 @@ ndots = 0;
 
 % Get the STAs
 ncells = length(datarun.cell_ids);
-ncells = 1;
-for k = 1:ncells
+
+parfor k = 1:ncells
+    k
     % Update progress bar - doesn't work with parfor...
     if mod(length(dir(stastempfolder)) - 2, round(ncells/80)) == 0
         fprintf('.');
@@ -94,7 +96,7 @@ for k = 1:ncells
     cellid = datarun.cell_ids(k);
     
     % Calculate STA frame indices
-    staind = compute_ta_ind(st, samples_to_frames);
+    staind = compute_ta_ind(st, samples_to_frames, [6000 0 120]);
     
     % Remap frame indices to movie indices
     % This is where the interval matters.
@@ -178,7 +180,7 @@ stixelheight = 5;
 refreshtime = 6; 
 % Matlab STA depth. Default value is 50 (corresponds to 6000 samples, see
 % documentation of compute_ta_ind
-staDepth = int32(50);
+staDepth = int32(30);
 
 % Instantiate Vision STA file
 staFile = edu.ucsc.neurobiology.vision.io.STAFile(stafilepath, headerCapacity, width, height, staDepth, staOffset, stixelwidth, stixelwidth, refreshtime);
@@ -214,7 +216,7 @@ parfor k = 1:ncells
     cellid = datarun.cell_ids(k);
     
     % Calculate STA frame indices
-    staind = compute_ta_ind(st, samples_to_frames);
+    staind = compute_ta_ind(st, samples_to_frames, [3600 0 120]);
     
     % Remap frame indices to movie indices
     % This is where the interval matters.
@@ -245,7 +247,7 @@ for k = 1:ncells
 end
     
 staFile.close()
-
+toc
 %% Close workers pool
 
 delete(gcp);
