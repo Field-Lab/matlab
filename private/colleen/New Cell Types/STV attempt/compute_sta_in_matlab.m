@@ -4,10 +4,10 @@ clear
 % compute_only_sta just does the STA independent of matlab
 %% Get timecourse of related cell
 
-datarun.names.rrs_neurons_path='/Volumes/Analysis/2008-08-27-6/data000/data000.neurons';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
+datarun.names.rrs_neurons_path='/Volumes/Analysis/2007-03-16-1/data006/data006.neurons';
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-1-0.48-11111.xml';
 num_frames = 30; % both have to be run with the name number of frames
-target_cell = 499;
+target_cell = 32;
 % target_cell2 = 3169;
 
 
@@ -53,7 +53,7 @@ spikes=round(spikes*1000);
 
 sta=zeros(height,width,3, num_frames); %height, width, frames back
 % stv=zeros(height,width,num_frames); %height, width, frames back
-sta_store = zeros(height,width, 3, num_frames, length(spikes));
+% sta_store = zeros(height,width, 3, num_frames, length(spikes));
 
 tic
 icnt=0;
@@ -75,9 +75,9 @@ for i=spikes'
                         sta(:,:,3, j) = sta(:,:,3,j) + round(reshape(F(3:3:end),width,height)'-0.5);
             
             
-            sta_store(:,:,1, j, icnt) = double(round(reshape(F(1:3:end),width,height)'-0.5));
-            sta_store(:,:,2, j, icnt)=double(round(reshape(F(2:3:end),width,height)'-0.5));
-            sta_store(:,:,3, j, icnt) =double(round(reshape(F(3:3:end),width,height)'-0.5));
+%             sta_store(:,:,1, j, icnt) = double(round(reshape(F(1:3:end),width,height)'-0.5));
+%             sta_store(:,:,2, j, icnt)=double(round(reshape(F(2:3:end),width,height)'-0.5));
+%             sta_store(:,:,3, j, icnt) =double(round(reshape(F(3:3:end),width,height)'-0.5));
         end
     end
 end
