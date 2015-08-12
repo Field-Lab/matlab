@@ -6,7 +6,7 @@ function unpack_wnmovie(moviepath, globalspath, outputpath, nframes, framesperch
 %  specified output path. 
 %  By default, this function will store 120 frames per movie chunk. This
 %  value can be optionally changed as follows.
-%  MOVIEPATH should be the path to a Vision .movie file and GLOBALSPATH
+%  MOVIEPATH should be the path to a Vision cd.movie file and GLOBALSPATH
 %  the path to a vision globals file. This function generates NFRAMES 
 %  frames of the movie
 %
