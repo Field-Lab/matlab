@@ -8,7 +8,7 @@ gapParam = 7500; %in microseconds
 saveFile = 'test';
 saveLocation = '/Users/sasidharmadugula/Desktop';
 
-processGuiOutput(currVec,iter,ratios,time, randflg, gapParam, saveFile, saveLocation)
+processGuiOutput(currVec,iter,ratios,time, randflg, 0, gapParam, saveFile, saveLocation)
 
 %load files again
 fid = fopen([saveLocation filesep saveFile '.slf'],'r','l'); 
@@ -25,4 +25,4 @@ fclose(fid);
 grot3 = reshape(grot3,length(grot3)/3,3);
 %check grot3 length
 disp(length(grot3))
-disp(512*(11*2)*1)
+disp(512*11*1)

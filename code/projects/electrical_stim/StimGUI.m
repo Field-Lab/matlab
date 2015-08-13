@@ -27,8 +27,9 @@ function StimGUI
 	h.fig = figure('position', [.3*sw, .15*sh, .5*sw, .65*sh]); %screen size on right-sided display is 1600 by 1200
 
 	%Panel One--------------------
-	h.panelOne = uipanel('Title','Electrode Order','FontSize',header_font,'Position',[.05,.7,.3,.3]); 
+	h.panelOne = uipanel('Title','Electrode Order','FontSize',header_font,'Position',[.05,.7,.45,.3]); 
 	h.p1radioOne = uicontrol('Parent',h.panelOne,'style','radiobutton','FontSize',reg_font,'Units','normalized','Position',[.1,.6,.6,.1],'String','Random Order'); 
+	h.p1checkOne = uicontrol('Parent',h.panelOne,'style','checkbox','FontSize',reg_font,'Units','normalized','Position',[.6,.6,.4,.1],'String','Random Amplitude Order');
 
 	%Panel Two--------------------
 	h.panelTwo = uipanel('Title','Waveform Parameters','FontSize',header_font,'Position',[.5,.1,.45,.9]); 
@@ -63,7 +64,7 @@ function StimGUI
 	h.p2g3editTwo = uicontrol('Parent',h.panelTwo,'style','edit','FontSize',reg_font,'Units','normalized','Position',[.75,h.p2g3voffset,h.p2g3editwidth,h.p2g3editheight]); 
 
 	%Panel Three--------------------
-	h.panelThree = uipanel('Title','Output','FontSize',header_font,'Position',[.05,.3,.3,.4]); 
+	h.panelThree = uipanel('Title','Output','FontSize',header_font,'Position',[.05,.3,.45,.4]); 
 	h.p3buttonOne = uicontrol('Parent',h.panelThree,'style','pushbutton','FontSize',reg_font,'String','Choose Save Location','Units','normalized','Position',[.01,.8,.6,.15],'callback',@chooseSave); 
 	h.p3editOne = uicontrol('Parent',h.panelThree,'style','edit','FontSize',reg_font,'String','None Selected','Units','normalized','Position',[.01,.675,.6,.1]); 
 	h.p3buttonTwo = uicontrol('Parent',h.panelThree,'style','pushbutton','FontSize',reg_font+2,'String','Go!','Units','normalized','Position',[.7,.675,.2,.2],'BackgroundColor',[.2344,.6992,.4414],'callback',@goButton); 
@@ -105,9 +106,10 @@ function StimGUI
 	end
 	function goButton(hObject,eventdata)
 		%Checks and Warnings by order of uipanel--------------------
-		%Electrode Order
+		%Electrode and Amplitude Order
 		randflg = get(h.p1radioOne,'Value');
 		if randflg ~= 1; errordlg('Please Specify Electrode Order'); return; end
+		randampflg = 0; if (get(h.p1checkOne,'Value') == get(h.p1checkOne,'Max')); randampflg = 1; end %get checkbox value
 		%Current Value Range and Step
 		currBegin = str2num(get(h.p2g1editOne,'String'));
 		currStep = str2num(get(h.p2g1editTwo,'String'));
@@ -138,7 +140,7 @@ function StimGUI
 		fn = get(h.p3editTwo,'String'); %get file base name
 		%Call Processing Function (should be in same directory as GUI)
 		gapp = 7500;
-		processGuiOutput([currBegin currStep currEnd], iter, r, t, randflg,gapp,fn,dn);
+		processGuiOutput([currBegin currStep currEnd], iter, r, t, randflg,randampflg,gapp,fn,dn);
 		msgbox('Done!');
 	end
 end

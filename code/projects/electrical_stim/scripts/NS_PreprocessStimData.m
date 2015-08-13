@@ -22,7 +22,7 @@ if ~strcmp(WritePathBase(end),filesep)
 end
 
 % Appends this number to 'data ---'
-fileNos = 5:26;
+fileNos = 24;
 %fileNos = 1;
 
 % length of trace to save after each pulse (in samples)

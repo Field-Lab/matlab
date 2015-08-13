@@ -1,5 +1,6 @@
 function [PDChunkNumber, MovieBegin, nRepeats, repeatPeriod]=NS_SaveRespForMovieAllPatternsAllChannelsNew(FileName, WritePath,...
     NS_GlobalConstants, traceLength)
+	disp(FileName)
 
 % preprocesses raw electrical stimulation (STIM64) data
 % 
