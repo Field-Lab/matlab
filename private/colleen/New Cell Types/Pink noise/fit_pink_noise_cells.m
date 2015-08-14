@@ -1,8 +1,8 @@
 clear
 close all
 
-dataparam.date='2005-09-27-1';
-dataparam.concatname='data007';
+dataparam.date='2011-10-25-8';
+dataparam.concatname='data006';
 
 % Wrong Movie Information
 % dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/data000', '/wrongMovie/wrongMovie'];
@@ -51,7 +51,10 @@ fitparam.num_frames = 30;
 
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 0;
-% cell_specification = [218];%,861,1113,187,1307,1367,1669,1700,1787,1999,2133,2254,2315,2342,2417,2462]; %ON parasol
+if select_cells == 1
+    dataparam.cell_specification = [245] %ON parasol
+end
+
 % dataparam.cell_specification = [17]; %OFF parasol
 
 % cell_specification = [481];
@@ -111,7 +114,9 @@ for num_cell_types = 1:size(dataparam.cell_type,2)
 end
 
 % Set the cell_specification to all the cell of the inputted type
-if select_cells == 0
+if select_cells == 1
+%     dataparam.cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
+else
     dataparam.cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
 end
 
@@ -171,7 +176,7 @@ for rgc = 1:num_rgcs
     % Get the STA from the right movie
     temp_sta = datarun2.stas.stas{cell_indices(rgc)};
         num_gauss = 1.2;
-[final_fit_params, x,y] = fit_just_spatial(temp_sta, num_gauss);
+[final_fit_params, x,y] = fit_just_spatial(temp_sta, num_gauss, mark_params);
 h = final_fit_params(1);
 k = final_fit_params(2);
 a = num_gauss*final_fit_params(3);
@@ -197,6 +202,7 @@ else
 end
 % 
 % figure; imagesc(sta_one)
+% hold on
 %  f = drawEllipse(h, k, a, b, -angle);
 %  set(f, 'LineWidth', 1.5, 'Color', [0 0 0 ])
 %  axis equal
@@ -208,14 +214,14 @@ sta = temp_sta;
     % unscaled
       paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'SigmaY', b);
     paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'SigmaX', a);
-    paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'x0', (h-1));
-    paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'y0', size(sta,1) - (k-1));
+    paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'x0', (h));
+    paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'y0', size(sta,1) - (k));
     
 %     angle =tan(atan(-angle)*size(sta,1)/size(sta,2)); % transformation
 %         angle =tan(atan(-angle)*size(sta,1)/size(sta,2)); % transformation
 
     paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'Theta',  angle); % set all of them to 0 because of plotting problems
-    sig_stixels = significant_stixels(sta);
+    sig_stixels = significant_stixels(double(sta), 'select', 'thresh', 'thresh',mark_params.thresh);
 if sum(full(sig_stixels)) == 0
      paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'RedTimeCourse', nan(fitparam.num_frames,1));
         paramFile.setCell(datarun2.cell_ids(cell_indices(rgc)), 'GreenTimeCourse', nan(fitparam.num_frames,1));

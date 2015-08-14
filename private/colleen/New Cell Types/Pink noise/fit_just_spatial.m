@@ -1,5 +1,5 @@
 
-function [final_fit_params,x ,y] = fit_just_spatial(sta, num_gauss)
+function [final_fit_params,x ,y] = fit_just_spatial(sta, num_gauss, mark_params)
 % 
 % sta = datarun.stas.stas{1};
 % 
@@ -10,7 +10,11 @@ function [final_fit_params,x ,y] = fit_just_spatial(sta, num_gauss)
 x=x(:);
 y=y(:);
 
-rf = rf_from_sta(sta);
+sig_stixels = significant_stixels(sta, 'select','thresh', 'thresh', mark_params.thresh);
+
+
+params.sig_stixels = sig_stixels;
+rf = rf_from_sta(sta, params);
 if isempty(rf)
     final_fit_params = nan(6,1);
     return
@@ -22,7 +26,6 @@ else
     sta_one = rf;
 end
 
-sig_stixels = significant_stixels(rf);
 if sum(full(sig_stixels(:))) == 0
     final_fit_params = nan(6,1);
     return
