@@ -7,11 +7,11 @@ clear
 close all
 clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-run_opts.date='2007-01-23-0'; % one slash at the end
-run_opts.concatname='data001-da'; % Name (or modified name) of run, no slashes
+run_opts.date='2006-06-06-2'; % one slash at the end
+run_opts.concatname='data003-nwpca'; % Name (or modified name) of run, no slashes
 
 % Sometimes the data has two versions of the concate name
-run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data001'];
+run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data003'];
 % run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  run_opts.concatname];
 %
 % Full path to movie xml

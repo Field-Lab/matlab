@@ -1,20 +1,20 @@
 clear
 close all
 
-dataparam.date='2007-03-16-1';
-dataparam.concatname='data003';
+dataparam.date='2006-06-06-2';
+dataparam.concatname='data003-nwpca';
 
 % Wrong Movie Information
-% dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/data000', '/wrongMovie/wrongMovie'];
-dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/', 'wrongMovie/wrongMovie'];
+dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/wrongMovie/wrongMovie'];
+% dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/', 'wrongMovie/wrongMovie'];
 
 dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-22222.xml';
 
 % Right Movie Information
-dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
-% dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname, '/','data000'];
+% dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
+dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname, '/','data003'];
 % 
-dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-11111.xml';
+dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
 
 
 % % Wrong Movie Information

@@ -5,15 +5,15 @@ close all
 clc
 tic
 
-dataparam.date='2013-05-28-9';
-dataparam.concatname='data000';
+dataparam.date='2006-06-06-2';
+dataparam.concatname='data003-nwpca';
 
 % dataparam.file_name = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
-dataparam.file_name = [dataparam.date, '/',dataparam.concatname, '/data000'];
+dataparam.file_name = [dataparam.date, '/',dataparam.concatname, '/data003'];
 
 % dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-20-1-0.48-22222.xml';
 
-dataparam.cell_type = { 'ON parasol', 'ON large 1', 'ON large 2', 'ON large 3', 'ON large 4', 'ON large 5'};
+dataparam.cell_type = { 'ON parasol', 'ON large 1', 'ON large 2', 'ON large 3', 'ON large 4'};
 fitparam.num_frames = 30;
 
 %% END OF INPUT
