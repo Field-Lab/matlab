@@ -1,113 +1,70 @@
-% Version 1 will allow for  loading the variable vector
-% PS_0 searched for solution from sratch
+% STARTED 2015-06-29
+% Will try to hold down the fitted PS filter
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% AKHeitman 2015-04-02
-
-% Creates structure which dictates GLMType
-% Loads cells 
-% Loads stimuli / basic stimuli processing
-% Loads spike trains / basic spike train processing
-% Requires the organizedspikes structure with spike times relative
-%    to start of each block of stimulus
-% No direct GLM Paramater usage
-% Feeds into glm_execute which is located in glm_core directory
-% glm_execute along with glm_core 
-%    which has no additional code dependencies, no loading of matfiles
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Wrap_bookeeping Calls %
-%  NSEM_BaseDirectories
-%  GLM_Settings
-%  GLM_fitname
-%  NSEM_secondaryDirectories
-%  loadmoviematfiles
-%  StimulusParams
-
-% Main Call %
-%   glm_execute  
-
-% Subroutines at bottom of function
-%  subR_concat_fitspikes_fromorganizedspikes
-%  subR_createraster
-%  subR_concat_fitmovie_fromblockedcell
-%  subR_visionSTA_to_xymviCoord
+% Output: standardparams/ps_constrain.type
 
 %{
+
 clear
 exps = [3];
-stimtypes = [2 1];
+stimtypes = [1];
+celltypes = [1];
+cell_subset = 'glmconv_4pct';
+glm_settings{1}.type = 'cone_model';
+glm_settings{1}.name = 'rieke_linear'
+glm_settings{2}.type= 'input_pt_nonlinearity';
+glm_settings{2}.name= 'piecelinear_fourpiece_eightlevels';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
+clear
+exps = [1 3 2 4];
+stimtypes = [2];
 celltypes = [2 1];
 cell_subset = 'glmconv_4pct';
-base_glm_settings = {};
-glm_settings{1}.type = 'PostSpikeFilter';
-glm_settings{1}.name = 'Constrain';
-glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings,base_glm_settings)
+glm_settings = {};
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+clear
+exps = [1 3 2 4];
+stimtypes = [1];
+celltypes = [2 1];
+cell_subset = 'all';
+glm_settings = {};
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
 
 
 clear
-exps = [3];
+exps = [1 3 2 4];
+stimtypes = [1];
+celltypes = [2 1];
+cell_subset = 'all';
+glm_settings = {};
+ps_constrain.type = 'PS_netinhibitory_domainconstrain_COB';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
+
+
+
+clear
+exps = [1 2];
 stimtypes = [2 1];
-celltypes = [2];
-cell_subset = 'shortlist';
-glm_settings{1}.type = 'PostSpikeFilter';
-glm_settings{1}.name = 'Constrain';
-glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings)
-
-
-
-
-exps = [1 2 3 4];
-stimtypes = [2];
-celltypes = [1 2];
-cell_subset = 'debug';
-glm_settings{1}.type = 'cone_model';
-glm_settings{1}.name = 'rieke_linear';
-glm_settings{2}.type = 'input_pt_nonlinearity';
-glm_settings{2}.name = 'piecelinear_fourpiece_eightlevels'
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings)
-
-exps = [1 2 3 4];
-stimtypes = [1 2];
 celltypes = [1 2];
 cell_subset = 'all';
-glm_settings{1}.type = 'cone_model';
-glm_settings{1}.name = 'rieke_fullcone';
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings)
+glm_settings = {};
+%ps_constrain.type = 'PS_inhibitorydomainconstrain_post10msec';
+ps_constrain.type = 'PS_netinhibitory_domainconstrain';
+glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings, ps_constrain)
 
-exps = [1];
-stimtypes = [1];
-celltypes = [2];
-cell_subset = 'debug';
-glm_settings{1}.type = 'debug';
-glm_settings{1}.name = 'true';
-runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
-### running: WN expA OFFPar_1471: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
-
-                                Norm of      First-order 
- Iteration        f(x)          step          optimality
- CG-iterationsquit
-     0            49.1197                           560                
-     1            49.1197             10            560           4
-     2           -987.807            2.5             68           0
-     3           -1054.74         2.3853           51.9           3
-xvalperformance = 
-
-       logprob_null_raw: -628.9502
-        logprob_uop_raw: -492.4086
-        logprob_glm_raw: -597.0520
-    logprob_uop_bpspike: 1.2210
-    logprob_glm_bpspike: 0.2853
-      logprob_uop_bpsec: 14.3829
-      logprob_glm_bpsec: 3.3601
-         glm_normedbits: 0.2336
-                rasters: [1x1 struct]
+save('dbug_glmexecute_constrainPS', 'GLMType','fitspikes_concat','fitmovie_concat','testspikes_raster','testmovie','inputstats','glm_cellinfo')
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings,base_glm_settings,runoptions)
+function glm_wrap_constrainPS(exps,stimtypes,celltypes,cell_subset,glm_settings,ps_constrain,runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -119,18 +76,16 @@ if exist('glm_settings', 'var')
 else
     GLMType = GLM_settings('default');
 end
-GLMType.fitname    = GLM_fitname(GLMType); 
-GLMType.func_sname = 'glmwrap';
-GLMType.fullmfilename =mfilename('fullpath'); 
+baseGLMType = GLMType;
+baseGLMType.fitname = GLM_fitname(GLMType); 
+
+GLMType.fitname_preconstrainPS = GLM_fitname(GLMType); 
+GLMType.fitname                = sprintf('%s/%s', GLMType.fitname_preconstrainPS,ps_constrain.type);
+GLMType.PS_constrain   = ps_constrain; 
+
+GLMType.func_sname    = 'glm_wrap_constrainPS';
+GLMType.fullmfilename = mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
-
-
-if exist('glm_settings', 'var')
-    base_GLMType = GLM_settings('default',base_glm_settings);
-else
-    base_GLMType = GLM_settings('default');
-end
-base_GLMType.fitname    = GLM_fitname(base_GLMType); 
 
 
 % Run options, order cells for fitting
@@ -164,27 +119,26 @@ for i_exp = exps
         end
         fitmovie_concat       = subR_concat_fitmovie_fromblockedcell(blockedmoviecell , StimulusPars.slv); 
          
-        % Directories  
-        secondDir.exp_nm    = exp_nm; 
-        secondDir.map_type  = GLMType.map_type; 
-        secondDir.stim_type = stimtype;
-        secondDir.fitname   = GLMType.fitname;
-        Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
+        
+        % Loading and Managing Directories
+        secondDir.exp_nm        = exp_nm; 
+        secondDir.map_type      = 'mapPRJ'; 
+        secondDir.stim_type     = stimtype;
+        secondDir.fitname       = baseGLMType.fitname;
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        
-        clear secondDir
-        secondDir.exp_nm    = exp_nm; 
-        secondDir.map_type  = GLMType.map_type; 
-        secondDir.stim_type = stimtype;
-        secondDir.fitname   = base_GLMType.fitname;
         Dirs.baseglm            = NSEM_secondaryDirectories('loaddir_GLMfit', secondDir);
-     
         
+        % Hack to get the correct save directory  
+        BD_hack = BD;
+        BD_hack.GLM_output_raw = BD.GLM_develop_output_raw;
+        secondDir.fitname = GLMType.fitname;
+        Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir,'',BD_hack)
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
-        for i_celltype = celltypes            
+        for i_celltype = celltypes    
+            
             % Choose which subset of cells to run
             if i_celltype == 1; cellgroup = allcells{i_exp}.ONP;  celltype = 'ONPar'; end
             if i_celltype == 2; cellgroup = allcells{i_exp}.OFFP; celltype = 'OFFPar'; end
@@ -203,12 +157,12 @@ for i_exp = exps
             cellgroup = intersect(candidate_cells, cellgroup)
             if exist('reverseorder','var') && reverseorder, cellgroup = fliplr(cellgroup); end           
             
-
             for i_cell = 1:length(cellgroup)
                 cid = cellgroup(i_cell); 
                 cell_savename = sprintf('%s_%d', celltype,cid);             
                 if ~exist(sprintf('%s/%s.mat', Dirs.fittedGLM_savedir,cell_savename)) || (exist('replace_existing','var') && replace_existing)
                     % Create cell information structure
+                    cell_savename
                     glm_cellinfo.cid            = cid;
                     glm_cellinfo.exp_nm         = exp_nm;
                     glm_cellinfo.celltype       = celltype;
@@ -234,24 +188,27 @@ for i_exp = exps
                     % Process spikes for glm_execute with proper subroutines
                     fitspikes_concat.home  = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
                     testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
-                    
-                    
-                    eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
-                    glm_cellinfo.p_init = fittedGLM.rawfit.opt_params;
-                    fittedGLM_old = fittedGLM; clear fittedGLM;
-                    
-                    % Call appropriate glm_execute                   
-                    display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
-                    if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                        [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
-                            fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
-                    else
-                        [fittedGLM] = glm_execute_constrainPS(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo);            
+                    % Load a previous initializer
+                    
+                    loadmatfile = sprintf('%s/%s.mat', Dirs.baseglm, cell_savename)
+                    if exist(loadmatfile)
+                        display('loading p_init')
+                        eval(sprintf('load %s/%s.mat fittedGLM', Dirs.baseglm, cell_savename));
+                        glm_cellinfo.p_init = fittedGLM.rawfit.opt_params;
+                        if strcmp(baseGLMType.fitname,...
+                                'fixedSP_rk1_linear_MU_PS_noCP_timekernelCONEMODEL_stimnonlin_piecelinear_fourpiece_eightlevels/Man_DoubleOpt_standardparams')
+                            glm_cellinfo.GLMPars = fittedGLM.GLMPars;
+                        end
+                        fittedGLM_old = fittedGLM; clear fittedGLM;
                     end
+                   
+                    tStart = tic;
+                    [fittedGLM] = glm_execute_domainconstrainPS(ps_constrain.type,GLMType,...
+                        fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);            
                     duration = toc(tStart);
-                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic                                      
+                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
+                               
                 end
             end
         end

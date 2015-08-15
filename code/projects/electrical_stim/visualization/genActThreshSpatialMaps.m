@@ -15,6 +15,8 @@ function [allEiAmps, allVals, actProb, actAmp] = genActThreshSpatialMaps(fPath,n
 %              primary electrode (here defined by the pattern number) than
 %              to all the electrodes used in the stimulation pattern.
 %              Default 0, set to 1
+%             suppress plots: disables plotting; function returns outputs
+%              only. Default 0.
 %
 % outputs:  allEiAmps   matrix with ei info for all cells
 %           allVals     matrix with activation info for all cells
@@ -81,10 +83,15 @@ for nn = 1:length(neuronId);
             i = find(fname=='_',2,'first');
             if strcmp(['n' num2str(neuron)],fname(i(1)+1:i(2)-1))
                 temp = load([fPath fname]);
+%                 disp([fPath fname]);
                 elecResp = temp.elecResp; clear temp;
+                try
                 responseProb = elecResp.analysis.successRates;
                 stimAmps     = abs(elecResp.stimInfo.stimAmps);
-                
+                catch err
+                    disp([fPath fname ' is empty']); 
+                    throw(err)
+                end
                 % LG temp(?) add 5/19/15 Find the real response probability >50%
                 idx = find(responseProb>0.5,1,'first');
                 if idx < size(stimAmps,1)
@@ -161,7 +168,12 @@ for nn = 1:length(neuronId);
     try
         elVals(1:size(actThresholds,2)) = actThresholds;
     catch
-        keyboard; 
+        fprintf('no elecResp files for neuron %0.0f in %s\n',neuronId,fPath);
+        allEiAmps = []; 
+        allVals =zeros(1,512);  
+        actProb = []; 
+        actAmp = []; 
+        return; 
     end
     clear actThresholds;
     [~,aL_view] = ei2matrix(elVals);
