@@ -115,17 +115,17 @@ end
         % Find the mask using freshly calculated STA
         stas{1} = STA_recalc(:,:,:,end:-1:1);
          cell_params.STAlen=14;
-       %[stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
-        [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs_largestblob(stas,cell_params);
+       [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
+        %[stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs_largestblob(stas,cell_params);
         figure; 
         subplot(1,2,1);
         imagesc(mean(stas{1}(:,:,:,6),3));
         colormap gray
-        axis square
+        axis image
         subplot(1,2,2);
         imagesc(totalMaskAccept2);
         colormap gray
-        axis square
+        axis image
         %tf ? 
         
         xx = abs(mean(STA_recalc(:,:,:,24),3));

@@ -165,8 +165,8 @@ fitGLM.Linear.filter=filters;
 fitGLM.mu=mu;
 fitGLM.data_act.kx=kx;
 fitGLM.data_act.lam=lam;
-% 
-%  figure;
-%  plot(f_val_log);
-%  title('Objective v/s iterations');
+
+ figure;
+ plot(f_val_log);
+ title('Objective v/s iterations');
 end

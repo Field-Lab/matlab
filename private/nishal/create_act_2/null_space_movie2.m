@@ -562,5 +562,5 @@ see_movie2
 
 
 %% Save movies and mask
-save('/Volumes/Analysis/nishal/test-null.mat','mov_orig','mov_modify_new','mov_orig','CellMasks','totalMaskAccept');
+save('/Volumes/Lab/Users/bhaishahster/test-null.mat','mov_orig','mov_modify_new','mov_orig','CellMasks','totalMaskAccept');
 end

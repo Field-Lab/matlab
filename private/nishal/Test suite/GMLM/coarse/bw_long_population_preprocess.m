@@ -1,3 +1,5 @@
+% Use this code to save things to .mat file to use it in python later.
+
 %load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-09-27-3/NSEM_mapPRJ/organizedspikes_Unknown_6902.mat');
 
 % load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-09-27-3/NSEM_mapPRJ/organizedspikes_OFFPar_901.mat');

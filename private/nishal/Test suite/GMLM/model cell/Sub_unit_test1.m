@@ -498,14 +498,22 @@ title('Original & Null movie');
 set(gca,'ytick',[]);
 set(gca,'xtick',[]);
 %legend('Recorded Original ','Predicted Original','Recorded Null','Predicted Null');
+%% 
 
+  % true SU mask
+  filter_true = zeros(sum(mask(:)),length(subunits));
+  for ifilter=1:length(subunits)
+    xx = subunits{ifilter}(:,:,1,5);
+    filter_true(:,ifilter)= xx(logical(mask));
+  end
+  
 %% Can we do fast fitting using null stimulus ? 
 %% Generate Original and null stimulus and responses , 30 min! 
 
 movieLen=120*60*30;
 null_compute_subUnit_test
  
-mov_new2 = mov_new2*3; % Have some gain!!
+mov_new2 = mov_new2*1.2; % Have some gain!!
  
 nTrials=1;
 analyse_null_subUnit_ts
@@ -526,7 +534,7 @@ binnedResponses = binnedResponseOrig;
   nSU=4;
   [fitGMLM,output] = fitGMLM_EM_power2(binnedResponses(1:dataLen,1),maskedMov(:,1:dataLen),7,nSU,interval,2);  
   fitGMLMOrig=fitGMLM;
-  showfitGMLM(fitGMLMOrig,sprintf('# spks : %d Quad, WN movie',sum(binnedResponses(1:dataLen,1))),mask)
+  filterOrig = showfitGMLM(fitGMLMOrig,sprintf('# spks : %d Quad, WN movie',sum(binnedResponses(1:dataLen,1))),mask);
    
    
  % Compare actual and predicted for Null movie.
@@ -541,10 +549,67 @@ binnedResponses = binnedResponseNull;
   nSU=4;
   [fitGMLM,output] = fitGMLM_EM_power2(binnedResponses(1:dataLen,1),maskedMov(:,1:dataLen),7,nSU,interval,2);  
   fitGMLMNull=fitGMLM;
-  showfitGMLM(fitGMLMNull,sprintf('# spks : %d Quad, null movie',sum(binnedResponses(1:dataLen,1))),mask)
+  filterNull = showfitGMLM(fitGMLMNull,sprintf('# spks : %d Quad, null movie',sum(binnedResponses(1:dataLen,1))),mask)
   
    interval=1;
   nSU=4;
   [fitGMLM,output] = fitGMLM_EM_bias(binnedResponses(1:dataLen,1),maskedMov(:,1:dataLen),7,nSU,interval);  
   fitGMLMNull2=fitGMLM;
-  showfitGMLM(fitGMLMNull2,sprintf('# spks : %d Exp, null movie',sum(binnedResponses(1:dataLen,1))),mask)
+  filterNull2 = showfitGMLM(fitGMLMNull2,sprintf('# spks : %d Exp, null movie',sum(binnedResponses(1:dataLen,1))),mask)
+  
+% combined
+
+fracNull_list = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
+mov_len_list = [0.5,1,2,3,5,7,10,20,30];
+filt_dist = zeros(length(mov_len_list),length(fracNull_list),20);
+fitLog = cell(length(mov_len_list),length(fracNull_list),20);
+for ifracNull = 9:length(fracNull_list)
+for imov_len = 1:length(mov_len_list)
+
+   mov_len =  mov_len_list(imov_len)*60*120+1;
+fracNull =fracNull_list(ifracNull);  
+fracOrig = 1-fracNull;
+[fracNull,imov_len]
+mov1=movOrig(:,:,Filtlen:mov_len*fracOrig+Filtlen-1);
+mov2=movNull(:,:,Filtlen:mov_len*fracNull+Filtlen-1); 
+mov = cat(3,mov1,mov2);
+binnedResponses = [binnedResponseOrig(1:mov_len*fracOrig);binnedResponseNull(1:mov_len*fracNull)];
+maskedMov= filterMov(mov,mask,squeeze(tf));
+  
+  interval=1;
+ 
+  nSU=4;
+  for niter = 1:20
+  [fitGMLM,output] = fitGMLM_EM_accelerate_power2(binnedResponses,maskedMov,7,nSU,interval,2);  
+  fitGMLM.fval = output;
+  fitGMLMcombined=fitGMLM;
+  filterCombined = showfitGMLM(fitGMLMcombined,sprintf('# spks : %d Quad, null movie',sum(binnedResponses)),mask);
+fitLog{imov_len,ifracNull,niter} = fitGMLMcombined;
+ filt_dist(imov_len,ifracNull,niter)= find_dist_filters(filter_true,filterCombined)
+ close all
+  end
+end
+end
+  
+   filterCombined = showfitGMLM(fitLog{end,end},sprintf('# spks : %d Quad, null movie',sum(binnedResponses)),mask);
+  find_dist_filters(filter_true,filterOrig)
+  
+  figure;
+  surf(fracNull_list',mov_len_list',log(mean(filt_dist,3)));
+  %contour(fracNull_list',mov_len_list',log(filt_dist),20);
+  xlabel('fraction of Null');
+  ylabel('Minutes of recording ');
+  
+  
+  % prediction quality
+  
+movieLen=120*5*60;
+null_compute_subUnit_test
+ 
+mov_new2 = mov_new2*3; % Have some gain!!
+ 
+nTrials=1;
+analyse_null_subUnit_ts
+
+  
+  

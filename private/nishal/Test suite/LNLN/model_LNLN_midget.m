@@ -1,4 +1,4 @@
-function model=model_LNLN()
+function model=model_LNLN_midget()
 %% Model cell
 
 %% Model parameters
@@ -17,7 +17,7 @@ stix = 8 * 3;
 
 % Cone parameters
 
-nCones = 64;
+nCones = 9;
 coneSpacing = 30; % in grid units
 coneLocSd = 1.5; 
 coneLatticeOrientation = pi/3; % in radians
@@ -27,8 +27,8 @@ coneGaussSd = 1; % the cone gaussian input profile
 
 
 % Sub-unit parameters
-nSU = 12; % ~10 in center and 50 in surround
-avgConeperSU = 5; % should be 5-10 
+nSU = 6; % ~10 in center and 50 in surround
+avgConeperSU = 2; % should be 5-10 
 
 % Cone to SU weights 
 cone_to_SU_Wt = 6*ones(nSU,nCones)/(35);

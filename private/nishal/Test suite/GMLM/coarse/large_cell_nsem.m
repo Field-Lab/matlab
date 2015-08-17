@@ -8,7 +8,7 @@
 % wrong_xml = 'RGB-10-2-0.48-22222';
 % stim_length=1799;% 
 
-cellID=1471;
+cellID=5432;
 WN_datafile = '2012-08-09-3/data002/data002';
 movie_xml = 'RGB-8-1-0.48-11111';
 wrong_xml = 'RGB-8-1-0.48-22222';
@@ -40,11 +40,11 @@ toc;
       
 %load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-09-27-3/NSEM_mapPRJ/organizedspikes_Unknown_6902.mat');
 
-% load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-09-27-3/NSEM_mapPRJ/organizedspikes_OFFPar_901.mat');
-% load('/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat');
-
-load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/NSEM_mapPRJ/organizedspikes_OFFPar_1471.mat');
+load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-09-27-3/NSEM_mapPRJ/organizedspikes_OFFPar_901.mat');
 load('/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat');
+
+% load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/NSEM_mapPRJ/organizedspikes_OFFPar_5432.mat');
+% load('/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/NSEM_eye-120-3_0-3600/fitmovie_schemeA_8pix_Identity_8pix.mat');
 
 movie_frames = NSEMmovie.fitmovie.movie_byblock;
 

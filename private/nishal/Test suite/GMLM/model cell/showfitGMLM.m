@@ -1,4 +1,4 @@
-function showfitGMLM(fitGMLM2,text,mask)
+function filter_matrix = showfitGMLM(fitGMLM2,text,mask)
 
 nFilters = length(fitGMLM2.Linear.filter);
 
@@ -6,6 +6,8 @@ sta_dim1 = size(mask,1);
 sta_dim2 = size(mask,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
 masked_frame = indexedframe(logical(mask));
+
+filter_matrix = zeros(length(masked_frame),nFilters);
 
 figure;
 for ifilt=1:nFilters
@@ -16,4 +18,8 @@ imagesc((u_spatial));
 colormap gray
 colorbar
 title(sprintf('%s : %d',text,ifilt));
+
+filter_matrix (:,ifilt) = fitGMLM2.Linear.filter{ifilt}(1:length(masked_frame));
+end
+
 end

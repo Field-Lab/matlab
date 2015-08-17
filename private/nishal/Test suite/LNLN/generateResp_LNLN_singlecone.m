@@ -1,4 +1,4 @@
-function [spks,SU_inp]=generateResp_LNLN(model,movie,dt,nTrials)
+function [spks,SU_inp,movie_c_tf]=generateResp_LNLN_singlecone(model,movie,dt,nTrials)
 
 % Get movie at higher resolution
 scale = model.gridSzX/size(movie,1);
@@ -17,6 +17,11 @@ cone_Map{icone} = model.cone_data{icone}.coneMap(max(coneCenterX-coneWindowSz,1)
 end
 
 mov_small = cell(model.nCones,1);
+
+for icone=1:model.nCones
+mov_small{icone} = gpuArray(zeros(size(cone_Map{1},1),size(cone_Map{1},2),size(movie,3)));
+end
+
 
 step=60;
 for iframe=1:step:size(movie,3)
@@ -46,7 +51,8 @@ for icone=1:model.nCones
     cip = coneInp(:,icone);
     ci = zeros(length(cip+newLen-1),1);
     ci(newLen:length(cip)+newLen-1)=cip;
-    ttf=downsample(model.ttf,downsamplert);
+    %ttf=downsample(model.ttf,downsamplert);
+    ttf = [0,2,0]';
     movie_c_tf(:,icone)=convn(ci,ttf,'valid');
 end
 movie_c_tf = movie_c_tf';
@@ -61,5 +67,5 @@ firing_rate = gang_inp * dt;
 
 % generate spikes
 spks = poissrnd(repmat(firing_rate,[nTrials,1]));
-spks= double(spks~=0); % make 0 or 1 spike
+%spks= double(spks~=0); % make 0 or 1 spike
 end

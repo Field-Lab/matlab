@@ -2,13 +2,13 @@
 %  load('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/conepreprocess.mat');
 % close all
 
-% load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
-%  thr=0.3;
+ load('/Volumes/Analysis/2011-12-13-2/subunits/data008_2/conepreprocess.mat');
+  thr=0.3;
 % Good cell - WN , cell ID: 166 thr=0.3
 
-load('/Volumes/Analysis/2011-12-13-2/subunits/data009/conepreprocess.mat');
+%load('/Volumes/Analysis/2011-12-13-2/subunits/data009/conepreprocess.mat');
 %            Good cell - Voronoi, cell ID : 168 ,thr =0.5
-thr=0.5
+%thr=0.5
 
 % load('/Volumes/Analysis/2011-12-13-2/subunits/data008/conepreprocess.mat');
 % thr = 0.33
@@ -55,10 +55,10 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
     %             hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/STA_%d.eps',cellID));
     %% for WN movie
     % 2nd from lat
-    %     binnedResponsesbigd = double(spks(1,2:end)');
-    %     maskedMov = X(1:end-1,:)';
+        binnedResponsesbigd = double(spks(1,2:end)');
+        maskedMov = X(1:end-1,:)';
     
-    %     % 3rd from last
+        % 3rd from last
     %        binnedResponsesbigd = double(spks(1,3:end)');
     %     maskedMov = X(1:end-3,:)';
     %% for voronoi, filter the movie with STA , for NNMF
@@ -68,10 +68,10 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
     %             % maskedMov = maskedMov(:,2:end); spks = spks(1:end-1);
     
     %% for voronoi, filter the movie with STA , for GMLM-Quad
-    binnedResponsesbigd = double(spks(1,1:end)');
-    tf=-mean(sta(:,end:-1:1),1);
-    maskedMov= 40*filterMov_cone(X',logical(ones(nc,1)),squeeze(tf));
-    % maskedMov = maskedMov(:,2:end); spks = spks(1:end-1);
+% %     binnedResponsesbigd = double(spks(1,1:end)');
+% %     tf=-mean(sta(:,end:-1:1),1);
+% %     maskedMov= 40*filterMov_cone(X',logical(ones(nc,1)),squeeze(tf));
+% %     % maskedMov = maskedMov(:,2:end); spks = spks(1:end-1);
     %%
     sd = sqrt(diag(maskedMov*maskedMov'/size(maskedMov,2)));
     maskedMov = maskedMov.*repmat(1./sd,[1,size(maskedMov,2)]);
@@ -81,7 +81,7 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
     
     % Partition the data
     
-    for  trainFrac = [0.2:-0.05:0.05,0.04:-0.002:0.01,0.008:-0.0002:0.002]%0.8:-0.2:0.2; % default by Jeremy
+    trainFrac = 0.8 %[0.2:-0.05:0.05,0.04:-0.002:0.01,0.008:-0.0002:0.002]%0.8:-0.2:0.2; % default by Jeremy
         subDivide = 10; % default by Jeremy
         
         
@@ -99,8 +99,11 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
         interval=10;
         mov_use=train; %resptrain = binnedResponsesbigdtrain;
         filteredStimDim=size(mov_use,1);
+        fitGMLM_su_log = cell(nc,1); 
+        fval_su_log = cell(nc,1);
+        su_log_su = cell(nc,1);
         
-        for nFilters = nc-1%[nc-1:-1:nc-4,nc] %[nc-4: nc-0] % on average, 2 sub-units!
+        for nFilters = [1:nc-5];%[nc-2:-1:nc-4,nc] %[nc-4: nc-0] % on average, 2 sub-units!
             nSU = nFilters;
             
             k_est_log=cell(50,1);
@@ -112,8 +115,8 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
             for ifit=1:50
                 ifit
                 % [fitGMLM,output] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);
-                % [fitGMLM,output] = fitGMLM_MEL_EM_power2(resptrain,mov_use,filteredStimDim,nSU,interval,2);
-                [fitGMLM,output] = fitGMLM_EM_power2(resptrain,mov_use,filteredStimDim,nSU,interval,2);
+                 [fitGMLM,output] = fitGMLM_MEL_EM_power2(resptrain,mov_use,filteredStimDim,nSU,interval,2);
+                %[fitGMLM,output] = fitGMLM_EM_power2(resptrain,mov_use,filteredStimDim,nSU,interval,2);
                 %
                 %
                 % spike.home
@@ -138,6 +141,9 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
             end
             %su_log=su_log/50;
             %save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/Cell%d.mat',cellID) , 'fitGMLM_log');
+            fitGMLM_su_log{nSU} = fitGMLM_log; 
+            fval_su_log{nSU} = f_val_log;
+            su_log_su{nSU} = su_log; 
             
             icnt=0;
             for isubunits=1:size(su,1)
@@ -162,7 +168,7 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
                 hold on;
             end
             
-            
+            close all;
             
             h=figure;
             for icone = 1:nc
@@ -196,12 +202,16 @@ for cellID=3736%[6332,4681,2851,5851,4460,3346,1157,2341,4306,4081]%[827,1157,23
             ylim([min(-datarun.cones.centers(cones,2))-2,max(-datarun.cones.centers(cones,2))+2])
             title(sprintf('Cell ID: %d',cellID));
             
-            
-            save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data009_gmlm_diff_amt_data/quad_gmlm_%d_su_%d_data_%0.05f.mat',cellID,nFilters,trainFrac),'su_log','fitGMLM_log','f_val_log','trainFrac');
-            %hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2010-09-24-1/data036/quad_gmlm/quad_gmlm_%d_su_%d.eps',cellID,nFilters));
+            set(gca,'xTick',[]);
+            set(gca,'yTick',[]);
+            save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm_fig/quad_gmlm_%d_su_%d_data.mat',cellID,nFilters),'fitGMLM_log','f_val_log','su_log');
+            hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm_fig/quad_gmlm_%d_su_%d.eps',cellID,nFilters));
         end
-    end
+ 
+%save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm_fig/quad_gmlm_%d_data.mat',cellID),'fitGMLM_su_log','f_val_su_log','su_log_su');
+                
 end
+
 
 %% Cone interaction 
 paircones=[4,5]
@@ -213,24 +223,79 @@ save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_interac
        su_activation_plot_gamma(fitGMLM,mov_use,2,su);
        iso_response_gamma(resptrain ,mov_use,fitGMLM,2,su)
        %% Predict
+       ll_su = zeros(nc,50);
+       ll_su_tr = zeros(nc,50);
+       
+       for nSU = 1:nc
+       loadedData =load(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm_fig/quad_gmlm_3736_su_%d_data.mat',nSU));
+       fitGMLM_log = loadedData.fitGMLM_log;
+       f_val_log = loadedData.f_val_log;
+       
+       
        R2_log=zeros(50,1);
+       ll=[];
+       r2=[];
        for ifit=1:50
            ifit
        fitGMLM=fitGMLM_log{ifit};
-       gamma=2;nTrials=1; 
+       gamma=2;nTrials=1; interval=10;
        rec=resptest; mov_pred=test;
-       [pred_trials,lam] = predictGMLM_gamma2(fitGMLM,mov_pred,nTrials,gamma,interval); % interva1=10;
+       [pred_trials,lam] = predictGMLM_gamma2_lr(fitGMLM,mov_pred,nTrials,gamma,interval); % interva1=10;
+       if(nSU==1)
+       lam1=lam;
+       end
       %[pred,lam] = predictGMLM_bias(fitGMLM,mov_pred,nTrials,interval);
-    
-        pred=lam; 
-     
-      pred_ss = zeros(length(pred)/10,1);
+       ll(ifit) = (-sum(lam)*interval/120 + rec'*log(lam))/length(lam); 
+       r2(ifit) = R_2_value(lam,rec);
+       end
+       ll_su(nSU,:) = -ll';
+       r2_su(nSU,:) = r2';
+       
+       ll=[];
+       r2=[];
+       for ifit=1:50
+           ifit
+       fitGMLM=fitGMLM_log{ifit};
+       gamma=2;nTrials=1; interval=10;
+      rec=resptrain; mov_pred=train;
+       [pred_trials,lam] = predictGMLM_gamma2_lr(fitGMLM,mov_pred,nTrials,gamma,interval); % interva1=10;
+      %[pred,lam] = predictGMLM_bias(fitGMLM,mov_pred,nTrials,interval);
+       ll(ifit) = (-sum(lam)*interval/120 + rec'*log(lam))/length(lam); 
+       r2(ifit) = R_2_value(lam,rec);
+       end
+      
+       ll_su_tr(nSU,:) = f_val_log';
+       r2_su_tr(nSU,:) = r2';
+       end
+       
+       
+       h=figure;
+       %plot(1:nc,mean(r2_su_tr,2),'-*');
+       hold on;
+       errorbar(1:nc,mean(r2_su,2),sqrt(var(r2_su')),'-*');
+       hold on;
+       %plot(1:nc,max(r2_su_tr'),'-*');
+       hold on;
+       plot(1:nc,max(r2_su'),'-*');
+       hold on;
+      % plot(1:nc,min(r2_su_tr'),'-*');
+      % hold on;
+      % plot(1:nc,min(r2_su'),'-*');
+       
+       legend('mean across 50 fits','max across 50 fits','location','best');
+       title('R^2 value v/s max. number of sub-units');
+       xlabel('Number of sub-units');
+       ylabel('R^2');
+ hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/2011-12-13-2/data008_gmlm_fig/quad_gmlm_R2_3736_su_%d.eps',nSU));
+
+      %%
+         pred_ss = zeros(length(pred)/10,1);
        for itime=1:length(pred_ss)
        pred_ss(itime) = sum(pred((itime-1)*10+1:(itime)*10));
        end
        
-       xxx=[pred_ss,rec];
-       norm(double(rec) -double(pred_ss))/norm(double(pred_ss));
+       %xxx=[pred_ss,rec];
+       %norm(double(rec) -double(pred_ss))/norm(double(pred_ss))
       
 %        % R2 value - 
 %        y=rec;
@@ -246,7 +311,7 @@ save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_interac
        x1 = pred_ss; y1 = rec; n=length(y1);
        r = (n*x1'*y1 - sum(x1)*sum(y1))/(sqrt(n*sum(x1.^2) - sum(x1)^2) * sqrt(n*sum(y1.^2) - sum(y1)^2));
        R2_log(ifit) = r^2;
-       end
+%       end
        
        %% Moment based
        su_log2 = 1000*(train*train')/size(train,2)
@@ -296,4 +361,27 @@ save(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/quadGMLM_%d_interac
      
      ylim([min(-datarun.cones.centers(cones,2))-2,max(-datarun.cones.centers(cones,2))+2])
        title(sprintf('Cell ID: %d',cellID));
+       
+       set(gca,'xTick',[]);
+       set(gca,'yTick',[]);
+       
+
+
+%%
+nc = model.nCones;
+x=repmat(1:nc,[nc,1]);
+y=repmat([1:nc]',[1,nc]);
+  
+ mask = logical(x>y)
+for nSU=1:nc
+load(sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/model_cell/midget_su_%d.mat',nSU));
+    close all
+ss_l = su_log(mask);
+h=figure;
+hist(ss_l,25);
+xlim([0,55]) 
+set(gca,'yTick',[]);
+hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/Cone_data_alex/model_cell/midgethist_su_%d.eps',nSU));
+pause
+end
        
