@@ -16,10 +16,11 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, randampflg, gapPara
 		none_pre = [0 0 0 0 0 0 0 0]; 
 		prev_ind = 0;
 		for i=1:lvec
-			ampVals = linspace(0,ranges(plVecInd(i)),numVals); %assuming littlest bit corresponds to highest value
+			ampVals = linspace(0,ranges(plVecInd(i),2),numVals); %assuming littlest bit corresponds to highest value
 			s = sign(vec(i));
 			if s == -1; s = 0; else s = 1; end %get polarity bit 
-			idx = closest(abs(vec(i)), ampVals);
+			[idx, val] = closest(abs(vec(i)), ampVals);
+			%disp([num2str(vec(i)) ' gets ' num2str(val) ' and ' num2str(idx) ' for ' num2str(ampVals)])
 			grot = fliplr(de2bi(idx-1));
 			%decide whether to connect or not
 			if (plVecInd(i) ~= prev_ind) || (plVecInd(i) ~= plVecInd(i+1))
@@ -30,9 +31,8 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, randampflg, gapPara
 			prev_ind = plVecInd(i);
 		end
 
-		function c = closest(val,vec)
-			[~,idx] = min(abs(vec - val));
-			c = idx; 
+		function [idx,val] = closest(val,vec)
+			[val,idx] = min(abs(vec - val));
 		end
 	end
 
@@ -58,8 +58,8 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, randampflg, gapPara
 		end
 	end	
 
-	function [esfmat,finalTimInc, esfmat_type] = make_esfmat_random(numChannel, ampVec, iter, ranges, gapParam, pulseLen, frames_for_all_channels)
-		extraCommandNum = numel(unique(ranges));
+	function [esfmat,finalTimInc, esfmat_type] = make_esfmat_random(numChannel, ampVec, iter, ranges, gapParam, pulseLen, frames_for_all_channels, randampflg)
+		extraCommandNum = numel(unique(ranges(:,2)));
 		chanVec = 1:numChannel;
 		esfmat = zeros(iter*numel(ampVec)*numChannel + extraCommandNum, 3);
 		esfmat_type = zeros(iter*numel(ampVec)*numChannel + extraCommandNum, 1);
@@ -67,6 +67,10 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, randampflg, gapPara
 		timInc = 1;
 
 		prev_rangeNum = 0;
+		%Eventually have to make this have random amplitude, in which case
+		%we would change the range of the channels individually, not all at once
+		%this is inefficient by least a factor of 8 times the proportion of time
+		%spent on changing ranges, so will implement this later.
 		for y=1:length(ampVec) 
 			%set range in all channels
 			rangeNum = ranges(y,1);
@@ -141,7 +145,6 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, randampflg, gapPara
 	ranges = make_ranges(ampVec,rangeVec);
 	%Make PL
 	plVec = daqify(plVecInt, ranges, numBits, plVecInd, ist_len);
-	disp(plVec)
 	plVec = [repmat(preDaqVec, size(plVec,1), 1) plVec];
 	pl = typecast(uint16(bi2de(plVec)),'int16');
 
@@ -151,7 +154,7 @@ function processGuiOutput(currVec,iter,ratios,time, randflg, randampflg, gapPara
 
 	%Make ESF--------------------------------------------------
 	if randflg
-        [esfmat, finalTimInc, esfmat_type] = make_esfmat_random(numChannel, ampVec, iter, ranges, gapParam, pulseLen,frames_for_all_channels); 
+        [esfmat, finalTimInc, esfmat_type] = make_esfmat_random(numChannel, ampVec, iter, ranges, gapParam, pulseLen,frames_for_all_channels, randampflg); 
 		esfmat = adjust_esfmat_times(esfmat, esfmat_type,timeBreak, pulseLen, frames_for_all_channels);
     end
 	
