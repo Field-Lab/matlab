@@ -46,6 +46,8 @@ if strcmp(base_type, 'default')
     GLMType.nullpoint  = 'mean'; 
     GLMType.map_type   = 'mapPRJ'; 
     GLMType.debug      = false;
+    GLMType.contrast   = false;
+    GLMType.Subunits   = false;
 end
 %%%%% Cone Names %%%%%%%
 
@@ -76,6 +78,9 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         end
         
         if strcmp(change.type, 'filter_mode')
+            if strcmp(change.name, 'nostim')
+                GLMType.stimfilter_mode = 'nostim'; 
+            end
             
             if strcmp(change.name, 'rk2')
                 GLMType.stimfilter_mode = 'rk2'; 
@@ -135,14 +140,18 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                  GLMType.DoubleOpt = true;
                  GLMType.DoubleOpt_Manual = true;
             end
-            
             if strcmp(change.name, 'piecelinear_fourpiece_eightlevels')
                  GLMType.input_pt_nonlinearity        = true;
                  GLMType.input_pt_nonlinearity_type   = 'piecelinear_fourpiece_eightlevels';
                  GLMType.DoubleOpt = true;
                  GLMType.DoubleOpt_Manual = true;
             end
-            
+            %  AKH 2015-07-14  added power raise option
+            if strcmp(change.name, 'log_powerraise')
+                 GLMType.input_pt_nonlinearity        = true;
+                 GLMType.input_pt_nonlinearity_type   = 'log_powerraise';
+                 GLMType.InputNL_IteratedOpt = true;
+            end
         end
         if strcmp(change.type, 'PostSpikeFilter')
             if strcmp(change.name, 'OFF')
@@ -161,8 +170,14 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             GLMType.specialchange_name = change.name;
         end
         
-
+        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'ON')
+            GLMType.Subunits = true;
+        end
         
+        if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
+            GLMType.contrast = true;
+        end
+
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_shiftmean';

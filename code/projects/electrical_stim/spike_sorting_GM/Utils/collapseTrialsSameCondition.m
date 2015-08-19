@@ -1,12 +1,12 @@
-function [data listAmps listStimElec  listCurrentRangesUsed] = collapseTrialsSameCondition(data,listAmps,listStimElec,listCurrentRangesUsed)
+function [Output] = collapseTrialsSameCondition(data,listAmps,listStimElec,listCurrentRangesUsed)
 
 
-index=[1:size(data,1)];
+index1=[1:size(data,1)];
 cont=1;
 
-while(~isempty(index))
+while(~isempty(index1))
     
-    amps = listAmps(index(1),:);
+    amps = listAmps(index1(1),:);
     
  
     indequal = strmatch(amps,listAmps)';
@@ -24,18 +24,18 @@ while(~isempty(index))
             
         end
    
-    listAmpsAux(cont,:)                =  listAmps(index(1),:);
-    listStimElecAux(cont,:)            =  listStimElec(index(1),:);
-    listCurrentRangesUsedAux(cont,:)   =  listCurrentRangesUsed(index(1),:);
+    listAmpsAux(cont,:)                =  listAmps(index1(1),:);
+    listStimElecAux(cont,:)            =  listStimElec(index1(1),:);
+    listCurrentRangesUsedAux(cont,:)   =  listCurrentRangesUsed(index1(1),:);
     
-    index=setdiff(index,indequal);
+    index1=setdiff(index1,indequal);
     cont=cont+1;
    
 end  
-data                  = dataaux;
-listCurrentRangesUsed = listCurrentRangesUsedAux;
-listStimElec          = listStimElecAux;
-listAmps              = listAmpsAux;
+Output.data                  = dataaux;
+Output.listCurrentRangesUsed = listCurrentRangesUsedAux;
+Output.listStimElec          = listStimElecAux;
+Output.listAmps              = listAmpsAux;
 
 
          

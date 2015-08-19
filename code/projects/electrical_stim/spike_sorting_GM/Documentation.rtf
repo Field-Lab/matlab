@@ -1,0 +1,386 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 LucidaGrande;}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{square\}}{\leveltext\leveltemplateid101\'01\uc0\u9642 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid102\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{square\}}{\leveltext\leveltemplateid201\'01\uc0\u9642 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{square\}}{\leveltext\leveltemplateid301\'01\uc0\u9642 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid4}
+{\list\listtemplateid5\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid401\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid402\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid403\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li2160\lin2160 }{\listname ;}\listid5}
+{\list\listtemplateid6\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid501\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid502\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid503\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li2160\lin2160 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid504\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li2880\lin2880 }{\listname ;}\listid6}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}{\listoverride\listid5\listoverridecount0\ls5}{\listoverride\listid6\listoverridecount0\ls6}}
+\margl1440\margr1440\vieww19220\viewh12280\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\f0\b\fs24 \cf0 Algorithm for spike sorting with electrical Artifact (Gonzalo Mena, June 12th 2015)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 \
+
+\b Overall: 
+\b0 The algorithm is intended for doing spike sorting of a pattern for a number of neurons (it could be one or many) recorded in different electrodes (again, one or many).  Neuron template is currently loaded using elecResp files\
+\
+
+\b Relevant Variables:\
+nNeurons = 
+\b0 number of neurons for which spike sorting is done\
+
+\b E               = 
+\b0 number of electrodes whose template information is used for spike sorting
+\b \
+J               = 
+\b0 number of different amplitudes of stimulations, or conditions, or movies, in the patterns\
+
+\b I                =  
+\b0 J-dimensional vector of number number of traces available for different amplitudes.
+\b \
+T               = l
+\b0 ength of the time window used for spike sorting (the time window may or not begin at time t=1, see below for details)\
+In the following, even if neuronIds and recElecs can be large numbers, the numbers n and e will refer to neuron with index n and electrode with index e respectively,  with the order defined by the ordering of neurons and recording electrodes. (for example, if the recording electrodes are [164 160 165] then e=2 means electrode 160.  In general, all the indexes j,e,i,t will respect this representation.\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 Loading data, the input structure:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+ 
+\b0 A path to pattern files has to be specified. Same with elecResp files. The algorithm takes the Id of the neuron, 
+\b neuronId,
+\b0  as an input, but it could be easily extended for context in which we want to do spike sorting for neurons that satisfy some criteria (neurons whose action potentials exceed a threshold at some electrode, for example). Also, the recording electrodes, 
+\b recElecs 
+\b0 may or may not be specified (if they are not specified, the function 
+\b makeTemplatesFromElecResp 
+\b0 will choose for each neuron the one in the field 
+\b elecResp.cells.goodElecs). 
+\b0 At the end of this part we will have a 
+\b input 
+\b0 structure with the fields \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls1\ilvl0\cf0 {\listtext	\'95	}input.tracesInfo : contains information about traces, recording electrodes, recording times, breakPoints, etc.\
+{\listtext	\'95	}input.stimInfo  : stimulation information, patterns, etc. \
+{\listtext	\'95	}input.neuronInfo : templates, neuronIds, etc\
+{\listtext	\'95	}input.params : parameters of the model, initialization, Gibbs sampler, Heuristics, etc.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+
+\b Loading templates
+\b0 \
+The first step is load the templates (shown in the Examples). This can be done with the the function 
+\b makeTemplatesFromElecResp
+\b0  which outputs n dimentional cell arrays, templates such that templates\{n\} are E x T_template matrices that indicates the Action potential of neuron n at recording electrode e (with the order induced by the order they are listed) during a T_template time window. The MOST important thing to avoid undesired time offsets is that somatic spikes (minimum of Action Potential) should appear in the template at time t=10 or 11, and any other activity recorded in the rest of electrodes has to be consistent with that offset. Sometimes elecResp files have spikes at times t=20, that can be alleviated using the same 
+\b makeTemplatesFromElecResp 
+\b0 function
+\b . If another way to obtain templates from experimental data is available (for example, from .ei files), the makeTemplatesFromElecResp function may be replaced by another but the important is to maintain the output templates\{n\}(e,t)
+\b0  format.
+\b  
+\b0 Another function
+\b , translateTemplate 
+\b0 can be helpful to produce local shifts in the templates, in case some local incongruences has been found. Finally, regarding templates, and once recording electrodes have been specified, preferred electrodes has to be chosen for each neuron. Preferred electrodes are a key part of the algorithm: for the Heuristics, whenever there are problems in the obtained activation curves, changes are induced in the artifact. For this, a clear correspondence between neurons and recordings electrodes has to be specified, this is done with 
+\b prefElectrodes,
+\b0  a nNeuron dimensional cell array such that 
+\b prefElectrodes\{n\}
+\b0  is a vector with at least one element, indicating the index of the preferred electrodes. There can be overlap or not, that is, more than one neuron can have the same(s) preferred electrode(s). For now, the heuristics only make use of the first prefElectrodes, but it is an open question how to obtain a richer set of heuristics that choose more than one preferred electrodes in order to re-sample the Artifact. prefElectrodes can be created using the 
+\b PreferredElectrodes
+\b0  function, that takes for each neuron the electrode(s) with the strongest signal in the 
+\b recElecs
+\b0 . Template information and preferred electrodes has to be set to the input structure afterwards, see Examples. \
+\
+
+\b Load data traces\
+
+\b0 The next step is to load the data from the movie files. At this point the time window for which we will analyse recordings have to be specified, this is done in
+\b  input.tracesInfo.Trange
+\b0    =   [Tmin Tmax] (in time samples), The same with the recording electrodes,
+\b  input.tracesInfo.recElecs
+\b0  . Also, we need to specify if we want to try axonal Bundle activation finding, but as it doesn\'92t work currently, just set 
+\b input.params.load.findAxon.includeAxonBreakpoint = 0
+\b0  and that step will be avoided.  Also, it is needed to specify 
+\b input.params.load.cleanData
+\b0   and 
+\b input.params.load.collapseTrialsSameCondition
+\b0   to tell the model if we want to clean the data (eliminate the first trial for each condition j) or collapse trials, which makes sense if by some reason the movies are organized in such a way that there is more than one movie corresponding to the same amplitude of stimulation (1 means yes and 0 no). After all these values have been specified the function 
+\b loadData
+\b0  will take care of loading all the traces from the movie files and filling the relevant information about traces and stimulus in the 
+\b input
+\b0  structure. voltage traces will be afterwards be available as a two dimensional cell array of matrices of traces: 
+\b input.tracesInfo.date\{j,e\}(i,t)
+\b0 . If Axonal bundle activation detection has to be specified manually, use the function 
+\b addAxonBreakPoint.
+\b0  The only remaining steps are done via the 
+\b filldefaultValues
+\b0  function, which sets the default values required at the different stages of the algorithm. Any value that has to be changed from this default can be re-set after the execution of this function (see Examples) In any case, the sintaxis for the breakpoint, either hardware or axon breakpoints is: an E dimensional cell array containing the breakpoints for each electrode.\
+\
+
+\b Summary of functions\
+Main functions: \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls2\ilvl0\cf0 {\listtext	
+\f1 \uc0\u9642 
+\f0 	}loadData, which calls\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls2\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 NS_ReadPreprocessedData\
+{\listtext	\uc0\u8259 	}ei2matrix\
+{\listtext	\uc0\u8259 	}getStimAmps\
+{\listtext	\uc0\u8259 	}cleanTrials\
+{\listtext	\uc0\u8259 	}findBreakStimElecs\
+{\listtext	\uc0\u8259 	}findBreakRecElecs\
+{\listtext	\uc0\u8259 	}findAxonalBreakpoint\
+{\listtext	\uc0\u8259 	}collapseDataE\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls3\ilvl0
+\b \cf0 {\listtext	
+\f1 \uc0\u9642 
+\f0 	}makeTemplatesFromElecResp\
+{\listtext	
+\f1 \uc0\u9642 
+\f0 	}filldefaultValues \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls4\ilvl0\cf0 Other functions\
+{\listtext	
+\f1 \uc0\u9642 
+\f0 	}translateTemplate (not very useful)\
+{\listtext	
+\f1 \uc0\u9642 
+\f0 	}PreferredElectrodes \
+{\listtext	
+\f1 \uc0\u9642 
+\f0 	}addAxonBreakPoint \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+\cf0 Initialization: the initial structure (under construction)
+\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+Once the input structure has all the required values the 
+\b initialize
+\b0  function will find the convex relaxation solution (via Mosek), and with that, the artifact regularization hyperparameters lambda. All the relevant information here will be stored in the 
+\b initial 
+\b0 structure, which essentially contains all initial parameters and covariate matrices that are needed to perform computations for the spike sorting. For the convex relaxation, the original data is transformed into a huge vector, and the covariate matrices are created in such a way to explain how the different artifact variables and spikes will explain account for that vector. hyperparameters are found solving a Max-LOGDET program, which is done using a gradient descent method (implemented in the function 
+\b NewtonMaxLogDet). \
+Summary of functions used in this stage
+\b0 \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls5\ilvl0
+\b \cf0 {\listtext	\'95	}
+\b0 Main function:
+\b  initialize 
+\b0 which calls
+\b \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls5\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 NewtonMaxLogDet. which calls \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls5\ilvl2\cf0 {\listtext	\uc0\u8259 	}logDetExp
+\b \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls5\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 makeToeplitz which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls5\ilvl2\cf0 {\listtext	\uc0\u8259 	}makeActionPotential\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls5\ilvl1\cf0 {\listtext	\uc0\u8259 	}makeRegularizationMatrices\
+{\listtext	\uc0\u8259 	}makeArtifactCovariates\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 Spike sorting: The Gibbs and Log structures. Gibbs sampler and Heuristics (under construction)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 After initialization is finished, this structure is passed to the function 
+\b doSpikeSortingElectricalArtifact 
+\b0 that will output a structure Gibbs, containing all relevant variables in the spike sorting algorithm. This function carries out a lot of operations, the first of them is to create the Gibbs structure, which contains the spike sorting variables in Gibbs.variables: spikes, latencies, action potentials (defined as the waves generated across the electrodes for each neuron given the latencies information), artifact, residuals, residual variances, spike subtracted traces, spike probabilities, and logistic regression fit parameters. Also, in Gibbs.params are stored the regularization hyperparameters and other params that were passed from the input structure. Form example, Gibbs.params.maxIter is the maximum number of consecutive Gibbs sampler iterations (if that wants to be changed, do it in input.params.Gibbs). The variables in Gibbs.diagnostic can for now be avoided. \
+After creating the Gibbs structure, doSpikeSortingElectricalArtifact will do swipes across the variables until no further changes in the spikes are observed, or until a maximum number of iterations is achieved. This is done via the 
+\b GibbsSamplerSpikesArtifact 
+\b0 function. After executing the Gibbs sampler and getting to a local solution, the next step is to execute the heuristics. Heuristics are functions that begin with a capital H, 
+\b HResampleBadLogRegression, HResampleIfLackOfSpiking, HResampleAboveActivation, , HaddSpikesResample, HDeleteSpikesAndResample,HdeleteSpikesBeginning
+\b0 , 
+\b  
+\b0 and they have in common that they \'93diagnose\'94 possible problems in the current activation curve(s) and from that diagnose execute a repertoire of actions that hopefully will get rid of that problems. They are implemented sequentially, but changes can be made in the code such that they are executed in a smarter way, looking always for features in the activation curves that need to be changed. Important: 
+\b HDeleteSpikesAndResample 
+\b0 can produce harmful changes to spikes, and for that reason its use is not \
+
+\b Summary of functions
+\b0 \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\pardirnatural
+\ls6\ilvl0\cf0 {\listtext	\'95	}Main function: 
+\b DoSpikeSortingElectricalArtifact 
+\b0 which calls\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b GibbsSamplerSpikesArtifact
+\b0 : which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}sampleSpikes which calls\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}substractActionPotentials\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}sampleArtifact \
+{\listtext	\uc0\u8259 	}samplesigma\
+{\listtext	\uc0\u8259 	}LogisticRegression which calls\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}diagnoseLogistic
+\fs22 \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1
+\fs24 \cf0 {\listtext	\uc0\u8259 	}
+\b HdeleteSpikesBeginning
+\b0 , which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}deleteSpikesAndResample, which calls\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}substractActionPotentials\
+{\listtext	\uc0\u8259 	}samplesigma\
+{\listtext	\uc0\u8259 	}LogisticRegression\
+{\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b HResampleBadLogRegression
+\b0 , which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}CondsNeuron2Electrode
+\b \
+{\listtext	\uc0\u8259 
+\b0 	}SampleConditionalArtifact which calls\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}SampleConditionalNormal\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}SampleConditionalArtifactT (will be deprecated)\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}SampleConditionalNormal\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact
+\b \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1\cf0 {\listtext	\uc0\u8259 	}HResampleIfLackOfSpiking which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}
+\b0 CondsNeuron2Electrode\
+{\listtext	\uc0\u8259 	}SampleConditionalArtifact\
+{\listtext	\uc0\u8259 	}SampleConditionalArtifactT (will be deprecated)\
+{\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact
+\b \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1\cf0 {\listtext	\uc0\u8259 	}HResampleAboveActivation 
+\b0 which calls\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}detectActivation\
+{\listtext	\uc0\u8259 	}CondsNeuron2Electrode\
+{\listtext	\uc0\u8259 	}SampleConditionalArtifact\
+{\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b HDeleteSpikesAndResample 
+\b0 which calls
+\b \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2
+\b0 \cf0 {\listtext	\uc0\u8259 	}detectHighSpiking which calls\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}detectActivation\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}deleteSpikesAndResample\
+{\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact\
+{\listtext	\uc0\u8259 	}extrapolateFromCondition\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 {\listtext	\uc0\u8259 	}SampleConditionalArtifact\
+{\listtext	\uc0\u8259 	}CondsNeuron2Electrode\
+{\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}HResampleIfLackOfSpiking\
+\pard\tx2380\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2880\fi-2880\pardirnatural
+\ls6\ilvl3\cf0 	detectActivation
+\b \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\pardirnatural
+\ls6\ilvl1\cf0 {\listtext	\uc0\u8259 	}HaddSpikesResample\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\pardirnatural
+\ls6\ilvl2\cf0 {\listtext	\uc0\u8259 	}
+\b0 UpdateVariablesChangeSpikes\
+{\listtext	\uc0\u8259 	}GibbsSamplerSpikesArtifact\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 \
+The results: Output Structure\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+
+\b0  In an experimental context in may not be feasible at this point to look the results in detail, and try, in case of overt meaninglessness of solution, to for example, manually re-sample artifact at bad fit conditions, in order to \'93manually\'94 implement the heuristics. For that reason, it is important to keep track of a  simpler solution that only will contain relevant information about the results, but will forget details about covariate matrices, initialization, etc, which are responsible for the big sizes of the structures initial and Gibbs. The function 
+\b OutputResults
+\b0  will create an 
+\b Output
+\b0  structure containing only relevant variables. In detail:\
+	
+\b -Spikes:         
+\b0                                		Output.spikes\{n\}(j,i)\
+         
+\b   -Latencies:   
+\b0                                  		Output.latencies\{n\}(j,i)\
+          
+\b -Artifact estimates  
+\b0                          		Output.Artifact\{e\}(j,t)\
+           
+\b -Residuals: (data minus artifact and spikes)
+\b0  Output.Residual\{j,e\}(i,t) \
+          
+\b  -Standard deviations of residuals  
+\b0            	Output.sigma(e,j),\
+         
+\b   -Artifact substracted data traces 
+\b0                    Output.ResidualArtifact\{j,e\}(i,t))\
+           
+\b -Spike substracted data traces 
+\b0                	Output.ResidualSpikes\{j,e\}(i,t)\
+           -
+\b Logistic regression fits for each neuron
+\b0      	Output.LogisticReg(n,j)\
+      
+\b      -Neuron Information        
+\b0                    		Output.neuronInfo  (templates, neuron Ids, etc)\
+         
+\b   -Stimulus information     
+\b0                     		Output.stimInfo  (pattern, amplitudes of stimulation, stimulating electrodes,etc)\
+         
+\b   -Traces information    
+\b0                        		Output.tracesInfo(including data itselt, in Output.tracesInfo.data\{j,e\}(i,t), \
+                                                         			recording\
+                                                         			electrodes, breakpoints in data traces, both axonal and coming from stimulating electrode.\
+           -
+\b Log Information         
+\b0                      		Output.Log(n)  Log of the Heuristics for each  neuron\
+       
+\b     -Algorithm Parameter information  
+\b0             	Output.params all parameters that were set (by default or not) in the input structure\
+   
+\b         -Path            
+\b0                              			Output.path the pattern directory where movies where taken\
+\
+The function 
+\b OutputResults
+\b0  has to be executed after Gibbs structure is available, notice one can also make outputs with GibbsNoDelete, in case that information may be useful too\
+               \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+
+\b \cf0 June 15th 2015. New important function\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 New function SpikeSortingCompact was created, see the help for usage. The aim is to don't have to run examples, but do Spike Sorting with just having to fill the more esential variables, the path and neurons, and in such a way that all values are specified as defaults (as stated in the examples and fillDefaultValues function) unless otherwise stated. Also, no need to translate templates to have them aligned to onset of spike at time 11. (using the also new AlignTemplates function)\
+This function should be easily modified in order to give more flexibility to define default values. 
+\b \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\qc
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\b0 \cf0 \
+}

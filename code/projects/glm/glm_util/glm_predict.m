@@ -1,29 +1,29 @@
 %% NB 2015-05-04
-% This function takes in a GLM fit and a movie and makes predictions. It
-% also calculated the bits per spike for recorded spikes, if you input
-% testspikes
 
 function [xvalperformance] = glm_predict(fittedGLM,testmovie,varargin)
 %%
 % INPUTS
 % 
 % fittedGLM structure
-% testmovie should be in stim size x time (NO RGB!)
-%
+% testmovie should be in stim size x time (NO RGB!) and SAME STIXEL size as
+%   the original fitmovie. It also gets rescaled, so don't worry about
+%   scaling.
 % OPTIONAL
 % testspikes, which should be in cells, with each cell a repeat
 %   if no testspikes, no bits per spike will be calculated
-% neighborspikes, if using coupling
-% predict, set to 'false' if you dont want to make rasters
-% trials, set the number of trials to predict. if none is given, will
-% default to the number in testspikes, if no testspikes, then 20.
+%   in SECONDS FROM BEGINNING OF REPEAT. This means you have to deal with
+%   triggers, etc, BEFORE using in this function
+% neighborspikes, if using coupling, same format as testspikes
+% predict, set to 'false' if you dont want to make rasters, you just want
+%   to calculate BPS for testspikes
+% 
 
 % Parse optional input 
 p = inputParser;
 p.addParamValue('testspikes', 0)
 p.addParamValue('neighborspikes', 0)
 p.addParamValue('predict', true)
-p.addParamValue('trials', 0)
+p.addParamValue('trials', 20)
 p.parse(varargin{:});
 testspikes = p.Results.testspikes;
 neighborspikes = p.Results.neighborspikes;
@@ -31,18 +31,14 @@ predict = p.Results.predict;
 params.trials = p.Results.trials;
 clear p
 
+
 bpf               = fittedGLM.bins_per_frame;
-if params.trials == 0
-    try
-        params.trials = length(testspikes);
-    catch
-        params.trials = 20;
-    end
-end
+
+if iscell(testspikes); params.trials     = length(testspikes); end % If there are testspikes, it will use that number of trials
 params.bindur     = fittedGLM.t_bin;
 params.bins       = fittedGLM.bins_per_frame *size(testmovie,3);
 params.frames     = size(testmovie,3);
-params.testdur_seconds = params.bindur * params.bins ;
+params.testdur_seconds = params.bindur * params.bins ;   
 center_coord = fittedGLM.center_coord;
 frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord); 
@@ -78,12 +74,15 @@ end
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
-[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, testmovie,fittedGLM.inputstats,center_coord) ;
+inputstats.mu_avgIperpix = mean(testmovie(:));
+inputstats.range = max(testmovie(:))-min(testmovie(:));
+[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, testmovie,inputstats,center_coord) ;
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
 
   
     %% Set up CIF Components
+    
 
 MU = fittedGLM.linearfilters.TonicDrive.Filter;
 if GLMType.PostSpikeFilter
@@ -142,7 +141,7 @@ if iscell(testspikes)
     lcif_mu = repmat(lcif_mu0 , params.trials, 1);
     lcif_kx = repmat(lcif_kx0 , params.trials, 1);
     clear sbpf;
-    lcif = lcif_mu + lcif_kx;
+   lcif = lcif_mu + lcif_kx;
     
     if GLMType.PostSpikeFilter
         lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );
