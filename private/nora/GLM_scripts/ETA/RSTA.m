@@ -27,7 +27,44 @@ for i_block = 1:n_blocks
 %     end
 %     
 end
+
+
+%%
+if 0
+for i = 1:30
+    subplot(1,2,1)
+    imagesc(-ETA(:,:,i))
+    axis image
+    colormap gray
+    caxis([5.6 7.7])
+    title('Error Triggered Average, across Cells and Time')
+    subplot(1,2,2)
+    imagesc(avg_image(:,:,i))
+    axis image
+    colormap gray
+    caxis([1.85 2.65])
+    title('Average Image')
+    pause(0.1)
+end
+end
+
 disp(n_spikes)
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
 ETA = ETA/n_spikes;
 % 
 % min1 = min(ETA(:));
@@ -46,9 +83,7 @@ ETA = ETA/n_spikes;
 % % %     pause(0.1)
 % % % 
 % % % end
-
-
-%%
-
+>>>>>>> 6daf92d2f0b7134b21a9d2e54a9f1d77f811b7a3:private/nora/GLM_scripts/ETA/RSTA.m
 
 end
+

@@ -1,37 +1,29 @@
 %% NB 2015-05-01
+function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
+% DESCRIPTION
 % This takes in the stimulus, the spikes, and the location of the cell to
 % fit a GLM. The GLM architecture and settings can be changed in
 % glm_parameters.m
 %
-% PATHS NEEDED
-% Vision.jar, such as javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar')
-% The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
-% The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
-
-% TROUBLESHOOTING
-% If it isn't working, use STA_Test(fitspikes, fitmovie, center_coord) to
-% make sure your timing and indexing is right.
-% This also only works for greyscale movies! It is not set up for color!
-
-
-function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
-
 % INPUTS
 %
-
-% REQUIRED
-
-%   fitspikes: the spike times of the neuron
+%   REQUIRED
+%
+%   fitspikes: the spike times of the neuron (in seconds)
+%       These must be preperly aligned with the triggers.
+%       Use STA_Test to make sure you can get an STA. Then you will know
+%       that they are properly aligned.
 
 %   fitmovie: the movie frame by frame. You should
-%   have a frame for every 1/120 seconds, so if the interval was two, your
-%   fitmovie should have 2 of each frame
-%   OR the xml specification, like RGB-8-1-0.48-11111-32x32
+%       have a frame for every 1/120 seconds, so if the interval was two, your
+%       fitmovie should have 2 of each frame
+%       OR the xml specification, like RGB-8-1-0.48-11111-32x32
 
-%   center_coord: the center of the RF (eg from the vision sta fit)
-
-% OPTIONAL
-
+%   center_coord: the center of the RF. This can be the output from
+%       STA_Test
+%
+%   OPTIONAL
+%
 %   WN_STA: optional, To do fixedSP_rk1, you need to input the STA in the same
 %   dimensions as the fitting stimulus
 
@@ -40,8 +32,24 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 %
 %   monitor_refresh: usually should be 120Hz. This is NOT the interval!
 %   Just the monitor speed!
+%
+%
+% PATHS NEEDED
+% Vision.jar, such as javaaddpath('/Applications/Vision.app/Contents/Resources/Java/Vision.jar')
+% The lab codebase, addpath(genpath('Repo location /matlab/code/lab'))
+% The glm code folder, addpath(genpath('Repo location /matlab/code/projects/glm))
 
-% Parse optional input 
+% TROUBLESHOOTING
+%
+% If it isn't working, use STA_Test(fitspikes, fitmovie) to
+% make sure your timing and indexing is right.
+%
+% This also only works for greyscale movies! It is not set up for color!
+%
+% Check the model architecture in glm_parameters.m
+
+
+%% Parse optional input 
 p = inputParser;
 p.addParamValue('WN_STA', 0)
 p.addParamValue('neighborspikes', 0)
@@ -65,8 +73,8 @@ GLMPars = GLMP;
 GLMType = GLMT;
 clear GLMP GLMT
 
-center_coord.x_coord = center(2);
-center_coord.y_coord = center(1);
+center_coord.x_coord = center(1);
+center_coord.y_coord = center(2);
 fittedGLM.center_coord = center_coord;
 
 if isfield(fittedGLM.GLMType, 'specialchange') && fittedGLM.GLMType.specialchange
@@ -121,11 +129,22 @@ end
 
 % PREPARE PARAMETERS
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
-p_init     =  0.1*ones(paramind.paramcount,1);  
+p_init     =  -0.1*ones(paramind.paramcount,1); 
+
+if GLMType.init
+    ROI_length      = GLMPars.stimfilter.ROI_length;
+    stimsize.width  = size(fitmovie,1);
+    stimsize.height = size(fitmovie,2);
+    ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
+    [spfilter, timefilter] = spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
+    p_init(paramind.space1) = -spfilter;
+    p_init(paramind.time1) = flip(timefilter);
+    disp('init')
+end
 
 % ORGANIZE STIMULUS COVARIATES
-inputstats.mu_avgIperpix = mean(fitmovie(:));
-inputstats.range = range(fitmovie(:));
+inputstats.mu_avgIperpix = double(mean(fitmovie(:)));
+inputstats.range = double(range(fitmovie(:)));
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 fittedGLM.inputstats = inputstats;
 %

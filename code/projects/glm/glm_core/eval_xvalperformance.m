@@ -121,7 +121,21 @@ clear sbpf;
 lcif = lcif_mu + lcif_kx;
 if GLMType.PostSpikeFilter
     lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
-    lcif = lcif + lcif_ps; 
+    lcif = lcif + lcif_ps;
+end
+if GLMType.contrast
+    C = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.C);
+    stimsize.width  = size(testmovie,1);
+    stimsize.height = size(testmovie,2);
+    ROIcoord        = ROI_coord(20, fittedGLM.cellinfo.slave_centercoord, stimsize);
+    % C_shift = zeros(bins,1);
+    lcif_C = repmat(C*imresize(squeeze(mean(mean(double(testmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [1 params.bins],'nearest'), [57 1]);
+    %         for i_bin = 1:bins
+    %             if i_bin > 99
+    %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
+    %             end
+    %         end
+    lcif = lcif + lcif_C;
 end
 % NBCoupling 06-23-2014
 if GLMType.CouplingFilters
