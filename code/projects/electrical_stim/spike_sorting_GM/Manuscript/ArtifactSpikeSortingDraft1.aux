@@ -1,0 +1,63 @@
+\relax 
+\citation{paninski2004}
+\citation{LewickiSS}
+\citation{PillowShlens}
+\citation{Ekanadham201447}
+\citation{Rey2015}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
+\citation{PillowShlens}
+\citation{EkanadhamTS11}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Electrical artifact}{2}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Methods}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Data description}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Assumptions}{3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Examples of action potential templates (four neurons), as recorded in four electrodes.\relax }}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}The generative model}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Relation to other methods}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}The Algorithm}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Initialization}{6}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Convex relaxation via SOCP}{6}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Initialilzation of $A,\Sigma , \alpha $ and $\lambda $}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Gibbs sampling}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Sampling from spikes}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Sampling from the artifact}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Sampling from $\Sigma $}{8}}
+\citation{Hosmer1997}
+\citation{Gelman96posteriorpredictive}
+\citation{Box1980}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.4}MAP for $\alpha $}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Post processing}{9}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:gull}{{2a}{11}}
+\newlabel{sub@fig:gull}{{a}{11}}
+\newlabel{fig:tiger}{{2b}{11}}
+\newlabel{sub@fig:tiger}{{b}{11}}
+\newlabel{fig:mouse}{{2d}{11}}
+\newlabel{sub@fig:mouse}{{d}{11}}
+\newlabel{fig:mouse}{{2f}{11}}
+\newlabel{sub@fig:mouse}{{f}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Illustration of the different stages of the algorithm. Initial values provided by the convex relaxation (a) are used as input for the Gibbs sampler (b). If the fit of the activation curve to a logistic model is poor, the artifact is resampled in the conditions that are most responsible of that lack of fit (c,d,e), until no changes are further needed (f)\relax }}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{11}}
+\citation{Lauren2014}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Overall results for all the analyzed neurons (only 10 datasets with 20 trials per condition)\relax }}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Activation curves, ground truth (left) and model results (right). Each trace corresponds to a dataset. In the plots to the right are also shown (dashed lines) the logistic regression fits\relax }}{12}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Overall results for all the analyzed neurons (all the 56 datasets)\relax }}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Misspecification due to axonal activation}{13}}
+\bibstyle{unsrt}
+\bibdata{references}
+\bibcite{paninski2004}{1}
+\bibcite{LewickiSS}{2}
+\bibcite{PillowShlens}{3}
+\bibcite{Ekanadham201447}{4}
+\bibcite{Rey2015}{5}
+\bibcite{EkanadhamTS11}{6}
+\bibcite{Hosmer1997}{7}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces An example of successful detection with axonal activation. Cyan trace: spike template, blue traces: trials with no spike, red traces: trials with spikes, black: artifact estimate\relax }}{15}}
+\bibcite{Gelman96posteriorpredictive}{8}
+\bibcite{Box1980}{9}
+\bibcite{Lauren2014}{10}
+\newlabel{fig:gull}{{5a}{17}}
+\newlabel{sub@fig:gull}{{a}{17}}
+\newlabel{fig:tiger}{{\caption@xref {fig:tiger}{ on input line 261}}{17}}
+\newlabel{sub@fig:tiger}{{a}{17}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces An example of failure in detection with axonal activation. Cyan trace: spike template, blue traces: trials with no spike, red traces: trials with spikes, black: artifact estimate\relax }}{17}}

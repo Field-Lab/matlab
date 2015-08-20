@@ -12,7 +12,8 @@
 % electrodeGroups  = [164 155 156 148; 78 70 75 67; 466 467 474 475]; % size(electrodeGroups,2) must be 4
 % electrodeGroups  = [213 214 205 206; 264 272 260 268; 77 69 82 74]; % size(electrodeGroups,2) must be 4
 % electrodeGroups  = [300 308 81 73; 45 37 42 34; 338 346 343 351]; % size(electrodeGroups,2) must be 4
-electrodeGroups  = [342 350 338 346; 465 466 473 474; 490 491 497 498]; % size(electrodeGroups,2) must be 4
+% electrodeGroups  = [342 350 338 346; 465 466 473 474; 490 491 497 498]; % size(electrodeGroups,2) must be 4
+electrodeGroups  = [3 6 11 473; 170 171 162 163; 461 462 468 461]; % size(electrodeGroups,2) must be 4
 
 numClusters      = size(electrodeGroups,1); 
 timeShiftInMs    = 0;        % offset the first stimulus from the beginning movie chunk

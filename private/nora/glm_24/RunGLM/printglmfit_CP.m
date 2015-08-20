@@ -115,9 +115,7 @@ ylim([1 , 2*trials]); hold on
 for i_trial = 1:trials
     sim1 = time(find(sim_rast(i_trial,:)));
     rec1 = time(find(rec_rast(i_trial,:)));
-    
-    
-    
+   
     plot(rec1, i_trial, 'k.')
     
     if length(sim1) < 4*length(rec1) 
@@ -143,7 +141,7 @@ if GLMType.CouplingFilters
         subplot(6,6,2*pair-1+6)
         set(gca, 'fontsize', 10);
         axis off;
-        plot_rf_fit(datarun_slv, info.pairs(1:12),'edge',true)
+        plot_rf_fit(datarun_slv, info.pairs(1:6),'edge',true)
         plot_rf_fit(datarun_slv, info.pairs(pair), 'fill_color',[1 0 0],'fill',true,'edge',false)
         plot_rf_fit(datarun_slv, info.cid,'fill',true)
         
@@ -165,7 +163,7 @@ if GLMType.CouplingFilters
         subplot(6,6,2*pair-1+12)
         set(gca, 'fontsize', 10);
         axis off;
-        plot_rf_fit(datarun_slv, info.pairs(1:12),'edge',true)
+        plot_rf_fit(datarun_slv, info.pairs(7:12),'edge',true)
         plot_rf_fit(datarun_slv, info.pairs(pair), 'fill_color',[1 0 0],'fill',true,'edge',false)
         plot_rf_fit(datarun_slv, info.cid,'fill',true)
         

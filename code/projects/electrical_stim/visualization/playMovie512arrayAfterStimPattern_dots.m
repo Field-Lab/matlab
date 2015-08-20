@@ -16,11 +16,11 @@ p = inputParser;
 p.addRequired('pathToAnalysisData', @ischar)
 p.addRequired('patternNo', @isnumeric)
 
-p.addParamValue('movieNo', 0, @isnumeric) 
-p.addParamValue('movieIndex', 0, @isnumeric)
-p.addParamValue('saveMovie', false, @islogical) %default: don't save movie
-p.addParamValue('colorScale',[-20 10], @isnumeric); 
-p.addParamValue('circleSize', 350, @isnumeric);
+p.addParameter('movieNo', 0, @isnumeric) 
+p.addParameter('movieIndex', 0, @isnumeric)
+p.addParameter('saveMovie', false, @islogical) %default: don't save movie
+p.addParameter('colorScale',[-20 10], @isnumeric); 
+p.addParameter('circleSize', 350, @isnumeric);
 
 p.parse(pathToAnalysisData, patternNo, varargin{:})
 saveMovie = p.Results.saveMovie; 
@@ -30,8 +30,7 @@ colorScale = p.Results.colorScale;
 circleSize = p.Results.circleSize; 
 
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-temp = load('../resources/arrayPositions512.mat'); % 
-positions = temp.positions;
+positions = loadElecPositions512();
 
 if ~strcmp(pathToAnalysisData(end),filesep)
     pathToAnalysisData = [pathToAnalysisData filesep];
