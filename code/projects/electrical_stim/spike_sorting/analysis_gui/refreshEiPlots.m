@@ -121,6 +121,7 @@ if analysisMode
         ei = cell(nTemplates, 1);
         targetEi = cell(nTemplates, 1);
         targetEiMinPos = zeros(nTemplates, 1);
+        misalignment = zeros(nTemplates, 1);
         nSpikes = zeros(nTemplates, 1);
         for i = 1:nTemplates
             ei{i} = zeros(nPulses, nChannels, 26);
@@ -128,8 +129,10 @@ if analysisMode
             targetEi{i} = eiData{i}(channelsToUse, :);
             targetEiMinPos(i) = find(squeeze(targetEi{i}(channelsToUse==centerChannel,:))...
                 ==min(squeeze(targetEi{i}(channelsToUse==centerChannel,:)))); %position of minimum on primary electrode
+            misalignment(i) = 0; 
             if  targetEiMinPos(i)<=10 % LG 3/7/14 to prevent breaking at line 159
-                fprintf('Expect a %d sample point misalignment in the success traces with the EI templates (line 132 refreshEiPlots.m)',11-targetEiMinPos(i));
+                misalignment(i) = targetEiMinPos(i) + 1; 
+                fprintf('Expect a %d sample point misalignment in the success traces with the EI templates (line 132 refreshEiPlots.m)',11-misalignment(i));
                 targetEiMinPos(i) = 11; 
             end
             nSpikes(i) = sum(latencies(:,i)~=0);
@@ -157,8 +160,16 @@ if analysisMode
                     for i = 1:nTemplates
                         if get(eval(['main.legendCheckBox' num2str(i)]), 'Value')
                             if showTemplates
-                                plot(squeeze(targetEi{i}(j, targetEiMinPos(i)-10:targetEiMinPos(i)+15)), 'LineWidth', 2,...
-                                    'color', 0.5*templateColors(i,:))
+                                xVals = (targetEiMinPos(i)-10:targetEiMinPos(i) + 15) +  misalignment(i);
+                                if misalignment(i)
+%                                     plot(xVals, squeeze(targetEi{i}(j, targetEiMinPos(i)-10:targetEiMinPos(i)+15)), 'LineWidth', 2,...
+%                                         'color', 0.5*templateColors(i,:))
+                                    plot(squeeze(targetEi{i}(j, targetEiMinPos(i)-10:targetEiMinPos(i)+15)), 'LineWidth', 2,...
+                                        'color', 0.5*templateColors(i,:))
+                                else
+                                    plot(squeeze(targetEi{i}(j, targetEiMinPos(i)-10:targetEiMinPos(i)+15)), 'LineWidth', 2,...
+                                        'color', 0.5*templateColors(i,:))
+                                end
                             end
                             if nSpikes(i)
                                 for k = 1:nPulses

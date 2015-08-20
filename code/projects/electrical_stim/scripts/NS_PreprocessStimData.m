@@ -4,24 +4,23 @@
 % for each movie chunk / amplitude
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-system = 'stim512';  %stim512 or stim64
+system = questdlg('Stim system?','stim system','stim512','stim64','stim512');  %stim512 or stim64
 %system = 'stim64';
 
 rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
-% rawDataDir = '/Volumes/Data/2014-09-10-0';
 if ~strcmp(rawDataDir(end),filesep)
     rawDataDir = [rawDataDir filesep];
 end
 
 % Points to the directory of the output.
 WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
-% WritePathBase = '/Volumes/Analysis/2014-09-10-0-temp/';
 if ~strcmp(WritePathBase(end),filesep)
     WritePathBase = [WritePathBase filesep];
 end
 
 % Appends this number to 'data ---'
-fileNos = [3];
+fileNos = inputdlg('enter the number corresponding to datarun (1,2,...)'); %[10];
+fileNos = str2double(fileNos); 
 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds
