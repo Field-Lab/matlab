@@ -37,9 +37,12 @@ date = '2015-08-17-1';
 analysis_path = '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/';
 calc_ei('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
 
+calc_sta('/Volumes/Data/2015-08-17-1/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
 
-filepath = '/Volumes/Data/2015-03-09-2/Visual/stimuli.lisp';
+filepath = '/Volumes/Data/2015-08-17-1/Visual/stimuli.lisp';
 [wn_movie_name, stix_size] = get_wn_movie_names(filepath);
+
+addpath(genpath('/home/vision/alex/matlab/private/alex'))
 
 
 for i=37
