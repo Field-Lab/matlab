@@ -37,13 +37,13 @@ date = '2015-08-17-1';
 analysis_path = '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/';
 calc_ei('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
 
-calc_sta('/Volumes/Data/2015-08-17-1/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
+calc_sta_grind('/Volumes/Data/2015-08-17-1/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
 
 filepath = '/Volumes/Data/2015-08-17-1/Visual/stimuli.lisp';
 [wn_movie_name, stix_size] = get_wn_movie_names(filepath);
 
 addpath(genpath('/home/vision/alex/matlab/private/alex'))
-
+addpath(genpath('/Users/alexth/test4/matlab/private/alex'))
 
 for i=37
     datapath = ['/Volumes/Analysis/2015-03-09-2/d37-40-norefit-test/data0', int2str(i)];

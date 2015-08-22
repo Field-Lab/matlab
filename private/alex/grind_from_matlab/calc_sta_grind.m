@@ -6,7 +6,7 @@ tmp = dir([path2analysis, 'data*']);
 for i=1:length(tmp)
 
     datapath = fullfile(path2analysis,  tmp(i).name);
-    movie_id = str2num(tmp(i).name(end-2:end));
+    movie_id = str2num(tmp(i).name(end-2:end))+1;
     
     if ~isempty(wn_movie_name{movie_id}) % calculate sta
         if stix_size(i)<3
