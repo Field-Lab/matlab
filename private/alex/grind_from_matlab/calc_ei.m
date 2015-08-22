@@ -1,4 +1,4 @@
-function calc_ei(date, path2analysis)
+function calc_ei_grind(date, path2analysis)
 
 tmp = dir([path2analysis, 'data*']);
 

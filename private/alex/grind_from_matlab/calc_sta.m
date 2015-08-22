@@ -1,4 +1,4 @@
-function calc_sta(path2stimfile, path2analysis)
+function calc_sta_grind(path2stimfile, path2analysis)
 
 [wn_movie_name, stix_size] = get_wn_movie_names(path2stimfile);
 tmp = dir([path2analysis, 'data*']);
