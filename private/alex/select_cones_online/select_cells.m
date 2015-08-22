@@ -13,14 +13,14 @@ while 1
     
     if dd || x<1 || x>datarun.stimulus.field_width || y<1 || y>datarun.stimulus.field_height
         return;
-    end
+    else
         
     tmp=pdist2([x,y],ctr);
     [~,ind]=min(tmp(cell_indices));    
     [X, Y] = drawEllipse([ctr(cell_indices(ind),:) rad(cell_indices(ind),:) fit_angle(cell_indices(ind))]);
     [X, Y] = tformfwd(coord_tform, X, Y);
-    IN = inpolygon(x,y,X,Y);
-    if IN % clicked inside
+%     IN = inpolygon(x,y,X,Y);
+%     if IN % clicked inside
         
         datInd=datarun.cell_ids(cell_indices(ind));
         

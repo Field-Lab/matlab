@@ -13,7 +13,7 @@ my_movie=my_movie/255-0.5;
 clear mvpath movie
 
 %% load dataruns
-% 04,08 - NDF3 (09)
+% 04,08 - NDF4 (09)
 % 11,14 - NDF3 (12)
 % 15,18 - NDF2 (16)
 % 19,22 - NDF1 (20)
@@ -493,10 +493,10 @@ end
 mean_rgb = false;
 even_bin = true;
 
-data='011';
+data='008';
 data1 = fit_LN_ndf(data, mean_rgb, even_bin);
 
-data='015';
+data='0111';
 data2 = fit_LN_ndf(data, mean_rgb, even_bin);
 
 scales = zeros(length(data1.sta),2);
@@ -614,7 +614,7 @@ axis([0 450 0 1.5])
 legend('data','model')
 title('repeats')
 
-save('/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/data_011_015_chopped.mat','data1','data2')
+save('/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/data_008_011_chopped.mat','data1','data2')
 
 %%
 clear
@@ -627,11 +627,14 @@ load('/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefi
 
 load('/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/data_011_015_chopped.mat','data1','data2')
 
-data='015';
+
+load('/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/data_008_011_chopped.mat','data1','data2')
+
+data='011';
 starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
 starun = load_params(starun,'verbose',1);
-filepath = '/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/nd3_2_chopped/';
-nds={'NDF3', 'NDF2'};
+filepath = '/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/nd4_3_chopped/';
+nds={'NDF4', 'NDF3'};
 
 
 sr=120;

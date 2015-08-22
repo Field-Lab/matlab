@@ -6,6 +6,7 @@ global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle
 global stim STAplotPosition RFfitsPlotPosition deleted_cells_list
 cones={}; myCells=[]; deleted_cells_list=[];
 
+%%
 %*********** 2008 *********
 
 date = '2008-08-27-5';
@@ -100,11 +101,12 @@ path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
 frame=6;
 
+%%
 
 %% main body
 
 mapName = ['map_', run];
-cellType=5;
+cellType=2;
 nnd_scale=3;
 
 

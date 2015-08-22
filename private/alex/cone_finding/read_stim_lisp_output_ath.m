@@ -100,8 +100,8 @@ end
 
 
 % Attempt to load stimulus map if any
-if ~isempty(mappath), parsed.spec.index_map = mappath; end
-parsed = load_stimulus_maps(parsed, piece, 'parsepoly', parsepoly);
+% if ~isempty(mappath), parsed.spec.index_map = mappath; end
+% parsed = load_stimulus_maps(parsed, piece, 'parsepoly', parsepoly);
 
 
 function strct = parse_stim_lisp_output_kv(ca)

@@ -142,6 +142,15 @@ if p.Results.PSTH
     % fill([time flip(time)],[mean(PSTH_sim)+std(PSTH_sim)/sqrt(N) flip(mean(PSTH_sim)-std(PSTH_sim)/sqrt(N))],'r','FaceAlpha',0.3,'EdgeColor','none');
     if ~predict_only; plot(time,mean(PSTH_rec),'k'); end
     plot(time,mean(PSTH_sim),'r');
+    
+    if ~predict_only
+        rec = mean(PSTH_rec);
+        sim = mean(PSTH_sim);
+        sse = sum((sim-rec).^2);
+        sst = sum((rec-mean(rec)).^2);
+        r2 = 1 - sse/sst;
+        title(num2str(r2));
+    end
     xlim([time(1) time(end)])
 end
 

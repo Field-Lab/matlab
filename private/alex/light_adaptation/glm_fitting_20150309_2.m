@@ -11,8 +11,7 @@ end
 my_movie=my_movie/255-0.5;
 clear mvpath movie
 
-
-
+%%
 
 data='008';
 
@@ -136,7 +135,125 @@ glm_prediction = glm_predict(glm, stim1);
 nnz(glm_prediction.rasters.glm_sim)
 
 
-xval = struct;
-xval.rasters = '';
-plotraster(xval, glm)
+plotraster(glm_prediction, glm,'raster_length',28)
 
+%% NDF 3, coarse WN
+
+data='011';
+starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
+starun = load_params(starun,'verbose',1);
+starun = set_polarities(starun);
+starun = load_neurons(starun);
+starun = load_sta(starun,'load_sta','all','keep_java_sta',true);
+wn_movie_name = 'BW-16-8-0.48-11111-20x20';
+cells = 800;
+glm = glm_fit_from_WN(cells, starun, wn_movie_name);
+plotfilters(glm)
+
+
+stix_size=16;
+stim1 = imresize(my_movie,1/stix_size, 'method','box');
+stim1 = permute(stim1,[2,1,3]);
+
+glm_prediction = glm_predict(glm, stim1);
+
+plotraster(glm_prediction, glm,'raster_length',30)
+
+
+%% NDF 4, fine WN
+
+data='008';
+starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
+starun = load_params(starun,'verbose',1);
+starun = set_polarities(starun);
+starun = load_neurons(starun);
+starun = load_sta(starun,'load_sta','all','keep_java_sta',true);
+wn_movie_name = 'BW-10-8-0.48-11111-32x32';
+cells = 800;
+datarunID = find(starun.cell_ids ==cells);
+glm = glm_fit_from_WN(cells, starun, wn_movie_name);
+plotfilters(glm)
+
+
+stix_size=10;
+stim1 = imresize(my_movie,1/stix_size, 'method','box');
+stim1 = permute(stim1,[2,1,3]);
+
+glm_prediction = glm_predict(glm, stim1);
+
+plotraster(glm_prediction, glm,'raster_length',30)
+
+% load real NSEM data
+
+data='009';
+nmrun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
+nmrun = load_params(nmrun,'verbose',1);
+nmrun = load_neurons(nmrun);
+
+nmrasters = [];
+dots = [];
+testspikes = cell(1,20);
+spikes = nmrun.spikes{datarunID};
+trigs = nmrun.triggers;
+beg_points = [0; find(diff(trigs)>0.9); length(trigs)];
+for j=1:20
+    tmp=spikes(spikes>trigs(beg_points(j)+1) & spikes<trigs(beg_points(j+1)))...
+        - trigs(beg_points(j)+1);
+    nmrasters=[nmrasters tmp'*1000];
+    testspikes{j} = tmp';
+    dots = [dots; ones(size(tmp))*j];
+end
+figure
+plot(nmrasters, dots,'*', 'markersize',1.5)
+
+glm_prediction = glm_predict(glm, stim1, 'testspikes', testspikes);
+
+figure
+plotraster(glm_prediction, glm,'raster_length',30)
+
+
+
+%% NDF 3, coarse WN
+
+data='004';
+starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
+starun = load_params(starun,'verbose',1);
+starun = set_polarities(starun);
+starun = load_neurons(starun);
+starun = load_sta(starun,'load_sta','all','keep_java_sta',true);
+wn_movie_name = 'BW-16-8-0.48-11111-20x20';
+cells = 800;
+glm = glm_fit_from_WN(cells, starun, wn_movie_name);
+plotfilters(glm)
+
+
+stix_size=10;
+stim1 = imresize(my_movie,1/stix_size, 'method','box');
+stim1 = permute(stim1,[2,1,3]);
+
+glm_prediction = glm_predict(glm, stim1);
+
+plotraster(glm_prediction, glm,'raster_length',30)
+
+%% NDF2, coarse WN
+
+
+data='015';
+starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
+starun = load_params(starun,'verbose',1);
+starun = set_polarities(starun);
+starun = load_neurons(starun);
+starun = load_sta(starun,'load_sta','all','keep_java_sta',true);
+wn_movie_name = 'BW-16-6-0.48-11111-20x20';
+cells = 800;
+glm = glm_fit_from_WN(cells, starun, wn_movie_name);
+plotfilters(glm)
+
+
+stix_size=16;
+stim1 = imresize(my_movie,1/stix_size, 'method','box');
+stim1 = permute(stim1,[2,1,3]);
+
+glm_prediction = glm_predict(glm, stim1);
+
+plotraster(glm_prediction, glm,'raster_length',30)

@@ -86,7 +86,7 @@ frac = 20; % in %
 prc = 100/frac;
 fit_acc = cell(length(cones_to_plot),10, 6);
 fit_params = fit_acc;
-for cone1 = 11:17%cones_to_plot
+for cone1 = cones_to_plot
     
     figure(cone1)
     set(gcf, 'Name',['Cone1 - ', int2str(all_cones(cone1))])
@@ -169,31 +169,31 @@ for cone1 = 11:17%cones_to_plot
     xlims = get(gca,'XLim');
     line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
     
-    subplot(2,3,4)
-    hold on
-    tmp = squeeze(mean(cone2_effect_neg(:,:,put_c),2));
-    fit_acc{cone1,1} = zeros(size(tmp));
-    x = 1:bin_ng;
-    for mc=1:length(put_c)
-        y = tmp(:,mc);
-        fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
-        fit_params{cone1,mc,1} =fit_res;
-        fit_acc{cone1,1}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
-    end
-    plot(fit_acc{cone1,1})
-    tmp = squeeze(mean(cone2_effect_neg(:,:,real_cones),2));
-    fit_acc{cone1,2} = zeros(size(tmp));
-    x = 1:bin_ng;
-    for mc=1:length(real_cones)
-        y = tmp(:,mc);
-        fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
-        fit_params{cone1,mc,2} =fit_res;
-        fit_acc{cone1,2}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
-    end
-    plot(fit_acc{cone1,2},'linewidth',2)
-    title('cone2 max negative, fit')
-    axis tight
-    line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
+%     subplot(2,3,4)
+%     hold on
+%     tmp = squeeze(mean(cone2_effect_neg(:,:,put_c),2));
+%     fit_acc{cone1,1} = zeros(size(tmp));
+%     x = 1:bin_ng;
+%     for mc=1:length(put_c)
+%         y = tmp(:,mc);
+%         fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
+%         fit_params{cone1,mc,1} =fit_res;
+%         fit_acc{cone1,1}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
+%     end
+%     plot(fit_acc{cone1,1})
+%     tmp = squeeze(mean(cone2_effect_neg(:,:,real_cones),2));
+%     fit_acc{cone1,2} = zeros(size(tmp));
+%     x = 1:bin_ng;
+%     for mc=1:length(real_cones)
+%         y = tmp(:,mc);
+%         fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
+%         fit_params{cone1,mc,2} =fit_res;
+%         fit_acc{cone1,2}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
+%     end
+%     plot(fit_acc{cone1,2},'linewidth',2)
+%     title('cone2 max negative, fit')
+%     axis tight
+%     line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
     
     
     subplot(2,3,2)
@@ -207,31 +207,31 @@ for cone1 = 11:17%cones_to_plot
     axis tight
     line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
     
-    subplot(2,3,5)
-    hold on
-    tmp = squeeze(mean(cone2_effect_aver(:,:,put_c),2));
-    fit_acc{cone1,3} = zeros(size(tmp));
-    x = 1:bin_ng;
-    for mc=1:length(put_c)
-        y = tmp(:,mc);
-        fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
-        fit_params{cone1,mc,3} =fit_res;
-        fit_acc{cone1,3}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
-    end
-    plot(fit_acc{cone1,3})
-    tmp = squeeze(mean(cone2_effect_aver(:,:,real_cones),2));
-    fit_acc{cone1,4} = zeros(size(tmp));
-    x = 1:bin_ng;
-    for mc=1:length(real_cones)
-        y = tmp(:,mc);
-        fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
-        fit_params{cone1,mc,4} =fit_res;
-        fit_acc{cone1,4}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
-    end
-    plot(fit_acc{cone1,4},'linewidth',2)
-    title('cone2 max negative, fit')
-    axis tight
-    line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
+%     subplot(2,3,5)
+%     hold on
+%     tmp = squeeze(mean(cone2_effect_aver(:,:,put_c),2));
+%     fit_acc{cone1,3} = zeros(size(tmp));
+%     x = 1:bin_ng;
+%     for mc=1:length(put_c)
+%         y = tmp(:,mc);
+%         fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
+%         fit_params{cone1,mc,3} =fit_res;
+%         fit_acc{cone1,3}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
+%     end
+%     plot(fit_acc{cone1,3})
+%     tmp = squeeze(mean(cone2_effect_aver(:,:,real_cones),2));
+%     fit_acc{cone1,4} = zeros(size(tmp));
+%     x = 1:bin_ng;
+%     for mc=1:length(real_cones)
+%         y = tmp(:,mc);
+%         fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
+%         fit_params{cone1,mc,4} =fit_res;
+%         fit_acc{cone1,4}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
+%     end
+%     plot(fit_acc{cone1,4},'linewidth',2)
+%     title('cone2 max negative, fit')
+%     axis tight
+%     line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
     
     
     subplot(2,3,3)
@@ -243,41 +243,41 @@ for cone1 = 11:17%cones_to_plot
     title('cone2 max positive')
     axis tight
     line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
-    
-    subplot(2,3,6)
-    hold on
-    tmp = squeeze(mean(cone2_effect_pos(:,:,put_c),2));
-    fit_acc{cone1,5} = zeros(size(tmp));
-    x = 1:bin_ng;
-    for mc=1:length(put_c)
-        y = tmp(:,mc);
-        fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
-        fit_params{cone1,mc,5} =fit_res;
-        fit_acc{cone1,5}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
-    end
-    plot(fit_acc{cone1,5})
-    tmp = squeeze(mean(cone2_effect_pos(:,:,real_cones),2));
-    fit_acc{cone1,6} = zeros(size(tmp));
-    x = 1:bin_ng;
-    for mc=1:length(real_cones)
-        y = tmp(:,mc);
-        fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[y(1),8.2,1.89], 'Lower', [0.2, 3,1], 'Upper', [2,12,3]);
-        fit_params{cone1,mc,6} =fit_res;
-        fit_acc{cone1,6}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
-    end
-    plot(fit_acc{cone1,6},'linewidth',2)
-    title('cone2 max negative, fit')
-    axis tight
-    line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
+%     
+%     subplot(2,3,6)
+%     hold on
+%     tmp = squeeze(mean(cone2_effect_pos(:,:,put_c),2));
+%     fit_acc{cone1,5} = zeros(size(tmp));
+%     x = 1:bin_ng;
+%     for mc=1:length(put_c)
+%         y = tmp(:,mc);
+%         fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[0.41,8.2,1.89]);
+%         fit_params{cone1,mc,5} =fit_res;
+%         fit_acc{cone1,5}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
+%     end
+%     plot(fit_acc{cone1,5})
+%     tmp = squeeze(mean(cone2_effect_pos(:,:,real_cones),2));
+%     fit_acc{cone1,6} = zeros(size(tmp));
+%     x = 1:bin_ng;
+%     for mc=1:length(real_cones)
+%         y = tmp(:,mc);
+%         fit_res=fit(x',y,'normcdf(x,mu,sigma)+b','Startpoint',[y(1),8.2,1.89], 'Lower', [0.2, 3,1], 'Upper', [2,12,3]);
+%         fit_params{cone1,mc,6} =fit_res;
+%         fit_acc{cone1,6}(:,mc) = normcdf(x,fit_res.mu,fit_res.sigma)+fit_res.b;
+%     end
+%     plot(fit_acc{cone1,6},'linewidth',2)
+%     title('cone2 max negative, fit')
+%     axis tight
+%     line([xlims(1) xlims(2)], [mean(spike_rate) mean(spike_rate)], 'color', 'k')
     
     mmin = 100;mmax = -100;
-    for i = 1:6
+    for i = 1:3
         subplot(2,3,i)
         tt = get(gca, 'YLim');
         mmin = min(mmin, tt(1));
         mmax = max(mmax,tt(2));
     end
-    for i = 1:6
+    for i = 1:3
         subplot(2,3,i)
         axis([xlims(1) xlims(2) mmin mmax])
     end
@@ -285,67 +285,67 @@ for cone1 = 11:17%cones_to_plot
     drawnow
     
 end
-
-for cone1=11:17
-    figure
-    set(gcf,'Name',int2str(cone1))
-    subplot(3,1,1)
-    a = [];
-    for i=1:6
-        if ~isempty(fit_params{cone1,i,6})
-            a = [a fit_params{cone1,i,6}.b];
-        end
-    end
-    plot(a)
-    a = [];
-    for i=1:6
-        if ~isempty(fit_params{cone1,i,5})
-            a = [a fit_params{cone1,i,5}.b];
-        end
-    end
-    hold on
-    plot(a)
-    axis([1 6 0 1])
-    title('b')
-    
-    
-    subplot(3,1,2)
-    a = [];
-    for i=1:6
-        if ~isempty(fit_params{cone1,i,6})
-            a = [a fit_params{cone1,i,6}.mu];
-        end
-    end
-    plot(a)
-    a = [];
-    for i=1:6
-        if ~isempty(fit_params{cone1,i,5})
-            a = [a fit_params{cone1,i,5}.mu];
-        end
-    end
-    hold on
-    plot(a)
-    axis([1 6 5 9])
-    title('mu')
-    
-    subplot(3,1,3)
-    a = [];
-    for i=1:6
-        if ~isempty(fit_params{cone1,i,6})
-            a = [a fit_params{cone1,i,6}.sigma];
-        end
-    end
-    plot(a)
-    a = [];
-    for i=1:6
-        if ~isempty(fit_params{cone1,i,5})
-            a = [a fit_params{cone1,i,5}.sigma];
-        end
-    end
-    hold on
-    plot(a)
-    axis([1 6 1 5])
-    title('sigma')
-end
-
+% 
+% for cone1=11:17
+%     figure
+%     set(gcf,'Name',int2str(cone1))
+%     subplot(3,1,1)
+%     a = [];
+%     for i=1:6
+%         if ~isempty(fit_params{cone1,i,6})
+%             a = [a fit_params{cone1,i,6}.b];
+%         end
+%     end
+%     plot(a)
+%     a = [];
+%     for i=1:6
+%         if ~isempty(fit_params{cone1,i,5})
+%             a = [a fit_params{cone1,i,5}.b];
+%         end
+%     end
+%     hold on
+%     plot(a)
+%     axis([1 6 0 1])
+%     title('b')
+%     
+%     
+%     subplot(3,1,2)
+%     a = [];
+%     for i=1:6
+%         if ~isempty(fit_params{cone1,i,6})
+%             a = [a fit_params{cone1,i,6}.mu];
+%         end
+%     end
+%     plot(a)
+%     a = [];
+%     for i=1:6
+%         if ~isempty(fit_params{cone1,i,5})
+%             a = [a fit_params{cone1,i,5}.mu];
+%         end
+%     end
+%     hold on
+%     plot(a)
+%     axis([1 6 5 9])
+%     title('mu')
+%     
+%     subplot(3,1,3)
+%     a = [];
+%     for i=1:6
+%         if ~isempty(fit_params{cone1,i,6})
+%             a = [a fit_params{cone1,i,6}.sigma];
+%         end
+%     end
+%     plot(a)
+%     a = [];
+%     for i=1:6
+%         if ~isempty(fit_params{cone1,i,5})
+%             a = [a fit_params{cone1,i,5}.sigma];
+%         end
+%     end
+%     hold on
+%     plot(a)
+%     axis([1 6 1 5])
+%     title('sigma')
+% end
+% 
 

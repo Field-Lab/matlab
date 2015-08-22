@@ -4,8 +4,7 @@ data.aux.int_method='spline';
 data.aux.movie_duration = 31000; % ms,single repetition
 data.aux.nm_repeats = 20;
 
-
-mvpath='/Volumes/Data/stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/';
+mvpath='/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/';
 my_movie=zeros(320,320,3600);
 cnt=1;
 for i=1:30
