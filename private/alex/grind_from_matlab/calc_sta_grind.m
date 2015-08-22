@@ -9,6 +9,7 @@ for i=1:length(tmp)
     movie_id = str2num(tmp(i).name(end-2:end))+1;
     
     if ~isempty(wn_movie_name{movie_id}) % calculate sta
+        end
         if stix_size(movie_id)<3
             config_file = 'primate-1cone_ath.xml';
             my_command = ['/Volumes/Lab/Development/scripts/grind -p -c /Volumes/Lab/Development/vision-xml/current/', config_file,...

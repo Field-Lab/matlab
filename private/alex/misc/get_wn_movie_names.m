@@ -190,7 +190,11 @@ for i=1:ndata
             wnm = [wnm 'sparse'];
         end
         
-        wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '-' params{i,7} 'x' params{i,8} '.xml'];        
+        if eval([params{i,7}, '*', params{i,3}])==640 && eval([params{i,8}, '*', params{i,3}])==320 % don't attach size ending
+            wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '.xml']; 
+        else        
+            wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '-' params{i,7} 'x' params{i,8} '.xml'];
+        end
         my_wn_movie{i} = cell2mat(wnm);  
         stixel_size(i) = str2num(params{i,3}{1});
     end
