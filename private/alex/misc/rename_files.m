@@ -47,5 +47,5 @@ calc_ei_grind('2015-08-17-5', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
 % calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d01-29-norefit/')
 calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
 
-
+get_wn_movie_names('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp');
 
