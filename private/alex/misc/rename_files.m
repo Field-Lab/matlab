@@ -33,6 +33,9 @@ for i=range
    movefile([path2data, myName], [path2data, myNewName])
 end
 
+date = '2015-08-17-1';
+analysis_path = '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/';
+calc_ei('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
 
 
 filepath = '/Volumes/Data/2015-03-09-2/Visual/stimuli.lisp';
