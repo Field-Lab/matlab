@@ -93,12 +93,12 @@ end
         stas=stas_new;
         
         % Used in movie post process
-        cell_params.STAlen=14;
+        cell_params.STAlen=100;
         [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
         
 
 % Calculate STA
-        STA_depth=30;
+        STA_depth=100;
        
         mov = fitmovie_color-0.5;
         dim1=size(mov,1);

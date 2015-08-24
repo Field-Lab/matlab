@@ -122,7 +122,7 @@ if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/%s',destination)))
     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/%s',destination));
 end
 
-save(sprintf('/Volumes/Lab/Users/bhaishahster/%s/Cell_%d.mat',destination,cellID),'fitGMLM','cellID');
+save(sprintf('/Volumes/Lab/Users/bhaishahster/%s/Cell_%d.mat',destination,cellID),'fitGMLM','cellID','stas_true','stas_rand');
 end
 
 

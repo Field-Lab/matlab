@@ -554,6 +554,113 @@ togo=input('Continue?');
 mov_orig=mov_show;
 mov_modify_new=mov_modify_new;
 end
+
+
+
+% WN+null with bound on number of iterations
+
+if(solver==17) % Spatial Nulling, WN+Null stimulus 
+     togo=1;
+     
+mov_params2=mov_params;
+mov_params2.movie_time=mov_params.movie_time;
+mov_params2.mov_type='bw';
+[mov_show,mov_params2]=generate_movie(mov_params2);
+mov_show=0.5*mov_show;
+movie_time_show=mov_params2.movie_time;
+
+mov=0.5*mov;
+mov=mov.*repmat(totalMaskAccept,[1,1,size(mov,3)]);
+mov_proj=mov;
+mov_sta_direction = mov_show;
+
+%[~,~,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+%mov_sta_direction = getSTAmovie(mov,sta_spatial); % Implement this function
+
+zk=mov+mov_sta_direction;
+max_iter=20;
+iterrr=0;
+    while togo==1
+iterrr=iterrr+1
+        % projection C
+  mov=zk-mov_sta_direction;
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+
+mov_modify_new_null = mov_modify_new;
+mov_modify_new = mov_modify_new_null + mov_sta_direction; % xk plus half
+
+
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+
+% Update after projection C
+z_k_half=2*mov_modify_new - zk;
+
+% Projection D
+x_k_1=z_k_half;
+togo_clip=1;
+togo_B=0;
+while(togo_clip==1)
+
+[x_k_1,rat] = scale_pixel_variance(x_k_1,mov_show); % Remove? 
+violations_c = sum(abs(x_k_1(:))>maxClip+0.0001)
+
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+if(violations_c~=0)
+togo_clip=1;
+togo_B=1;
+else
+togo_clip=0;    
+end
+end
+
+% Update after projection D
+zk=zk + x_k_1 - mov_modify_new;
+
+
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001);
+[~,rat] = scale_pixel_variance(mov_modify_new,mov_show); % Remove?
+% Need to change post processing!!
+togo = (iterrr<max_iter) &((togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0.999)) % input('Continue Iterating?');
+    end
+    
+mov_orig=mov_show;
+mov_modify_new=mov_modify_new;
+end
+
+
+
+% Dykstra's spatial - with maximum 20 iterations
+
+if(solver==18) % Dykstra's Alternating Projections, Spatial
+     togo=1;
+     iterrr=0;max_iter=20;
+    while togo==1
+        iterrr=iterrr+1;
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = iterrr<max_iter & violations>0 % input('Continue Iterating?');
+    end
+    
+end
+
 %% see_movie
 % see_movie2
 %% Correct means ,etc ?? Movie correction left ? 
