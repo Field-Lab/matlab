@@ -1,29 +1,31 @@
-function compareAlgHum_dataplots(Output, n)
+function compareAlgHum_dataplots(elecRespAuto, n)
 % Compares activation curves calculated by human sorting with those
 % calculated using Gonzalo's spike sorting algorithm 
 % there must exist an elecResp file in order to run this function
-% Inputs: 
+% Inputs:    elecRespAuto
+%            n: index of the neuronId that should be plotted. n=1 if
+%            there is only one neuron specified to GM algorithm
 
-% figure; set(gcf,'Position', [387         221        1521         877]); 
+% Lauren Grosberg 8/2015
+
 figure; set(gcf,'Position', [1         191        1907         907]);
-neuronIds = Output.neuronInfo.neuronIds;
+neuronIds = elecRespAuto.neuronInfo.neuronIds;
 neuronId = neuronIds(n);
-e = Output.neuronInfo.prefElectrodes{n}(1);
-recElecs     = Output.tracesInfo.recElecs;
-breakAxon    =  Output.tracesInfo.breakAxon{e};
-breakRecElec = Output.tracesInfo.breakRecElecs{e};
-J = Output.tracesInfo.J;
-I = Output.tracesInfo.I;
-T = Output.tracesInfo.T;
+e = elecRespAuto.neuronInfo.prefElectrodes{n}(1);
+breakAxon    =  elecRespAuto.tracesInfo.breakAxon{e};
+breakRecElec = elecRespAuto.tracesInfo.breakRecElecs{e};
+J = elecRespAuto.tracesInfo.J;
+I = elecRespAuto.tracesInfo.I;
 
-spikeProbs    = nansum(Output.spikes{n}')./I;
-spikeLogProbs = Output.LogisticReg(n,:);
-amps = abs(Output.stimInfo.listAmps(:,1))';
+spikeProbs    = nansum(elecRespAuto.spikes{n}')./I;
+spikeLogProbs = elecRespAuto.LogisticReg(n,:);
+amps = abs(elecRespAuto.stimInfo.listAmps(:,1))';
 
 
 clear latencies
+latencies = zeros(J,3);
 for j=1:J
-    lats = Output.latencies{n}(j,1:I(j));
+    lats = elecRespAuto.latencies{n}(j,1:I(j));
     lats = lats(lats>0);
     if(isempty(lats))
         latencies(j,1:3)=NaN;
@@ -35,17 +37,17 @@ for j=1:J
     end
 end
 
-latencies = latencies/Output.params.sampRate*1000;
+latencies = latencies/elecRespAuto.params.sampRate*1000;
 
-if ~strcmp(Output.path(1:18),'/Volumes/Analysis/')
-    gm_path = Output.path;
+if ~strcmp(elecRespAuto.path(1:18),'/Volumes/Analysis/')
+    gm_path = elecRespAuto.path;
     ii = find(gm_path==filesep,3,'last');
     my_path = fullfile('/Volumes/Analysis/',gm_path(ii(1):ii(3)));
-    Output.path = my_path;
+    elecRespAuto.path = my_path;
 end
 
-fname = ['elecResp_n' num2str(neuronId) '_p' num2str(Output.stimInfo.patternNo) '.mat']; 
-filename = fullfile(Output.path,fname); 
+fname = ['elecResp_n' num2str(neuronId) '_p' num2str(elecRespAuto.stimInfo.patternNo) '.mat']; 
+filename = fullfile(elecRespAuto.path,fname); 
 temp = load(filename); 
 elecResp = temp.elecResp; 
 
@@ -81,7 +83,7 @@ axis([amps(1) amps(end) 0 1]);
 
 subplot(2,5,6); 
 colors = lines(2);
-[thresholdHum, thresholdAlg, curveHum, curveAlg] = fitToErfOutputAndHuman(Output) ; 
+[thresholdHum, thresholdAlg, curveHum, curveAlg] = fitToErfOutputAndHuman(elecRespAuto) ; 
 plot(abs(elecResp.stimInfo.stimAmps),elecResp.analysis.successRates,...
     'o','LineWidth',3,'Color',colors(1,:)); grid on; 
 hold on; plot(curveHum(1,:),curveHum(2,:),'LineWidth',3,'Color',colors(1,:)); 
@@ -110,7 +112,7 @@ for ii = 1:4
             latencies = [elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
             
             % Plot neuron template.
-            neuronTemplate = Output.neuronInfo.templates{1};
+            neuronTemplate = elecRespAuto.neuronInfo.templates{1};
             alignmentPoint = find(neuronTemplate == min(neuronTemplate));
             hold on;
             for i = 1:elecResp.stimInfo.nPulses(movieIndex)
@@ -150,7 +152,7 @@ for ii = 1:4
                 end
                 
                 % Plot neuron template.
-                neuronTemplate = Output.neuronInfo.templates{1};
+                neuronTemplate = elecRespAuto.neuronInfo.templates{1};
                 alignmentPoint = find(neuronTemplate == min(neuronTemplate));
                 hold on;
                 for i = 1:elecResp.stimInfo.nPulses(movieIndex)
@@ -184,21 +186,21 @@ end
 %% Plot the raw data traces - artifact estimated by the algorithm 
 for ii = 1:4    
     movieIndex = movieIndexRef - 2 + ii;
-    if size(Output.tracesInfo.data,1) == size(elecResp.stimInfo.movieNos,2)/2
+    if size(elecRespAuto.tracesInfo.data,1) == size(elecResp.stimInfo.movieNos,2)/2
         subplot(2, 5, 6+ii);
         movieIndex = round(movieIndexRef/2) - 2 + ii; 
       
-        dataTraces = Output.tracesInfo.data{movieIndex};
-        subtractionVector = Output.Artifact{1}(movieIndex,:);
+        dataTraces = elecRespAuto.tracesInfo.data{movieIndex};
+        subtractionVector = elecRespAuto.Artifact{1}(movieIndex,:);
         dataToPlot = zeros(size(dataTraces, 1), length(subtractionVector));
         nPulses = size(dataTraces, 1);
         for i = 1:nPulses
             dataToPlot(i, :) = squeeze(dataTraces(i, 1:length(subtractionVector))) - subtractionVector;
         end
-        latencies = Output.latencies{1}(movieIndex,:)'; %[elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
+        latencies = elecRespAuto.latencies{1}(movieIndex,:)'; %[elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
         
         % Plot neuron template.
-        neuronTemplate = Output.neuronInfo.templates{1};
+        neuronTemplate = elecRespAuto.neuronInfo.templates{1};
        
         alignmentPoint = find(neuronTemplate == min(neuronTemplate));
         hold on;
@@ -221,20 +223,20 @@ for ii = 1:4
     elseif movieIndex <= length(elecResp.stimInfo.movieNos)
         subplot(2, 5, 6+ii);
         try
-             dataTraces = Output.tracesInfo.data{movieIndex}; 
+             dataTraces = elecRespAuto.tracesInfo.data{movieIndex}; 
         catch
             keyboard;
         end
-        subtractionVector = Output.Artifact{1}(movieIndex,:);
+        subtractionVector = elecRespAuto.Artifact{1}(movieIndex,:);
         dataToPlot = zeros(size(dataTraces, 1), length(subtractionVector));
         nPulses = size(dataTraces, 1);
         for i = 1:nPulses
             dataToPlot(i, :) = squeeze(dataTraces(i, 1:length(subtractionVector))) - subtractionVector;
         end
-        latencies = Output.latencies{1}(movieIndex,:)'; %[elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
+        latencies = elecRespAuto.latencies{1}(movieIndex,:)'; %[elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
         
         % Plot neuron template.
-        neuronTemplate = Output.neuronInfo.templates{1};
+        neuronTemplate = elecRespAuto.neuronInfo.templates{1};
         alignmentPoint = find(neuronTemplate == min(neuronTemplate));
         hold on;
         for i = 1:elecResp.stimInfo.nPulses(movieIndex)-1
