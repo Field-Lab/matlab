@@ -7,7 +7,9 @@ thresh_alg = zeros(size(OutputAll));
 sameRS = zeros(size(OutputAll)); 
 distantRS = zeros(size(OutputAll)); 
 neighborRS = zeros(size(OutputAll)); 
-
+aa = 1; 
+bb = 1; 
+cc = 1; 
 for p=1:size(OutputAll,2)
     
     alg_output = OutputAll(p);
@@ -16,27 +18,39 @@ for p=1:size(OutputAll,2)
     my_path = fullfile('/Volumes/Analysis/',gm_path(ii(1):ii(3)));
     alg_output.path = my_path; 
     
-    [thresholdHum, thresholdAlg] = fitToErfOutputAndHuman(alg_output);
+    [thresholdHum, thresholdAlg, curveHum, ~] = fitToErfOutputAndHuman(alg_output);
     patternNos(p) = alg_output.stimInfo.patternNo;
     recElec = alg_output.tracesInfo.recElecs; % How to handle multiple recording electrodes?
     stimElec = unique(alg_output.stimInfo.listStimElecs(:)); 
-    disp(['rec electrode: ' num2str(recElec) '; stim electrode(s): ' num2str(stimElec')])
-
+%     disp(['rec electrode: ' num2str(recElec) '; stim electrode(s): ' num2str(stimElec')])
+    disp(num2str(length(curveHum))); 
     if isempty(intersect(recElec, stimElec))
         % The recording electrodes are different than the stimulating elecs
         clusterElectrodes = getCluster512(recElec); 
         if isempty(intersect(clusterElectrodes, stimElec))
             % distant electrode
             distantRS(p) = 1; 
+            if (thresholdHum < 4) && (thresholdHum > 0)
+            distantRS_curve{aa} = curveHum; 
+            aa = aa + 1; 
+            end
         else
             % neighboring electrode
             neighborRS(p) = 1; 
+            if (thresholdHum < 4) && (thresholdHum > 0)
+            neighborRS_curve{bb} = curveHum; 
+            bb = bb + 1; 
+            end
         end
     else
         % At least one recording electrode is the same as the stimulating
         % elec
         sameRS(p) = 1;
-        compareAlgHum_dataplots(alg_output, 1);
+        if (thresholdHum < 4) && (thresholdHum > 0)
+        sameRS_curve{cc} = curveHum;
+        cc = cc + 1;
+        end
+%         compareAlgHum_dataplots(alg_output, 1);
 %         if abs(thresholdHum - thresholdAlg) > 0.2
 %         else
 %             compareAlgHum_dataplots(alg_output, 1);
@@ -182,3 +196,75 @@ fprintf(['for distant stimulating and recording electrode, %0.0f / '...
 fprintf(['for distant stimulating and recording electrode, %0.0f / '...
     '%0.0f (%0.1f%%) were mistakes\n'], num_false_pos + num_false_neg,...
     length(dist_alg_vals),(num_false_pos + num_false_neg)/length(dist_alg_vals)*100);
+
+%% Plot the activation curves of the different cases
+figure; 
+subplot(1,3,1); 
+acolors = summer(round(1.3*size(distantRS_curve,2))); 
+for aa = 1:size(distantRS_curve,2)
+    curve = distantRS_curve{aa}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        plot(curve(2,idx-500:2:idx+500),'Color',acolors(aa,:));
+    catch
+        disp(['missed one at aa = ' num2str(aa)])
+    end
+end
+title('distant rec & stim'); 
+
+bcolors = winter(round(1.3*size(neighborRS_curve,2))); 
+subplot(1,3,2); 
+% figure; 
+for bb = 1:size(neighborRS_curve,2)
+    curve = neighborRS_curve{bb}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        plot(curve(2,idx-500:2:idx+500),'Color',bcolors(bb,:));
+    catch
+        disp(['missed one at bb = ' num2str(bb)])
+    end
+    
+end
+title('neighbor rec & stim');
+ccolors = autumn(round(size(sameRS_curve,2)*1.3));
+subplot(1,3,3); 
+% figure; 
+for cc = 1:size(sameRS_curve,2)
+    curve = sameRS_curve{cc}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        plot(curve(2,idx-500:2:idx+500),'Color',ccolors(cc,:));
+    catch
+        disp(['missed one at cc = ' num2str(cc)])
+    end
+end
+title('Same rec & stim'); 
+
+figure; 
+for aa = 1:size(distantRS_curve,2)
+    curve = distantRS_curve{aa};
+    hold on; 
+    plot(curve(1,:),curve(2,:),'Color',acolors(aa,:));
+end
+title('distant rec & stim'); 
+
+figure; 
+for bb = 1:size(neighborRS_curve,2)
+    curve = neighborRS_curve{bb};
+    hold on;
+    plot(curve(1,:),curve(2,:),'Color',bcolors(bb,:));
+end
+title('neighbor rec & stim');
+
+figure; 
+for cc = 1:size(sameRS_curve,2)
+    curve = sameRS_curve{cc};
+    hold on; 
+    plot(curve(1,:),curve(2,:),'Color',ccolors(cc,:));
+end
+title('same rec & stim'); 
+
+%%

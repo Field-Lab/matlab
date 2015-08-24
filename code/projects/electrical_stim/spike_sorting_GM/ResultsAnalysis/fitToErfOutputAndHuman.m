@@ -3,7 +3,7 @@ function [thresholdHum, thresholdAlg, curveHum, curveAlg] = fitToErfOutputAndHum
 %algorithm using information provided by the Output structure (no need to
 %specify elecResp)
 %Gonzalo Mena 06/15
-% LG modified to include the entire curves for the erf fit 8/2015
+% LG modified to output the entire curves for the erf fit 8/2015
 
 pathToAnalysisData = Output.path;
 patternNo = Output.stimInfo.patternNo;
