@@ -9,7 +9,7 @@ neuronIds = Output.neuronInfo.neuronIds;
 J = Output.tracesInfo.J;
 I = Output.tracesInfo.I;
 for n=1:length(neuronIds)
-    tempPath = [pathToAnalysisData 'elecResp_n' num2str(neuronIds(n)) '_p' num2str(patternNo) '.mat']; 
+    tempPath = [pathToAnalysisData '/elecResp_n' num2str(neuronIds(n)) '_p' num2str(patternNo) '.mat']; 
     load(tempPath)
     
 

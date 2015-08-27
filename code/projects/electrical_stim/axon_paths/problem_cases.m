@@ -1,14 +1,19 @@
-
-
 codebase_path = matlab_code_path; 
 
-dataPath = '/Volumes/Analysis/2015-04-09-2/data001/data001'; 
-%invalidEIs = [616 694 1084 1234 1877 2046 2163 2191 2508 3076 3091 3276 3443 3647 3783 3827 3846 4025 4353 4861 4984 5091 5371 5401 5404 5416 5462 5553 5808 5887 6137 6411 6413 6738 7491];
+%dataPath = '/Volumes/Analysis/2012-04-13-5/data001/data001';
+
+%dataPath = '/Volumes/Analysis/2015-04-09-2/data001/data001';
+
+dataPath = '/Volumes/Analysis/2012-09-24-3/data000/data000';
 
 %65 5134;
 
-cellIds = [1231];
+
+%cellIds = [1821 2508 3076 4025 4353 5091 5206];
  
+%cellIds = 4741;
+
+cellIds = 3457;
 % Load EI. 
 
 datarun  = load_data(dataPath);
@@ -37,30 +42,21 @@ switch length(eiAmps)
 end
 
 
-figure
 
-[~, cell_n] = size(cellIds);
 
+
+
+estimates = {};
  stats = [];
-for n = 1: cell_n
+for n = 1: length(cellIds)
     
-    subplot(ceil(cell_n / 2), (cell_n > 1) + 1, n)
     
     ei = datarun.ei.eis{get_cell_indices(datarun,cellIds(n))}; 
 
     eiAmps = max(ei,[],2) - min(ei,[],2);
 
-    [axon_x, axon_y] = weighted_axon_poly_reg(eiAmps, 'ei_thresh', 4);
+    weighted_axon_poly_reg(eiAmps, 'plot', 1);
  
-
-    scatter(elec_x, elec_y, eiAmps+.1, 'filled', 'MarkerFaceColor', 'black');
-    hold on;
-    plot(axon_x, axon_y, 'r');
-    
-    
-    if n == 1
-        legend('Electrode amplitude', 'Estimated', 'Traced');
-    end    
+    disp(cellIds(n));
     
 end
-
