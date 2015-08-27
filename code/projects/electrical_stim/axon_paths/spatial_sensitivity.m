@@ -19,6 +19,10 @@ datarun  = load_sta(datarun, 'load_sta', 'all');
 datarun  = load_params(datarun);
 datarun  = load_ei(datarun, cellIds,'keep_java_ei','false');
 
+x_coords = [];
+y_coords = [];
+stim_elecs = [];
+
 ei_thresh = 10; 
 %%
 figure(100); 
@@ -42,7 +46,7 @@ for n = 1:length(cellIds)
     else
         plotCoords = false;
     end; 
-    [ax, ay] = eiContour_wPolyFit(eiAmps,'figureNum',100,'ei_thresh', ei_thresh,'plotCoords',plotCoords, 'N', 7);
+    [ax, ay] = eiContour_wPolyFit(eiAmps,'figureNum',100,'ei_thresh', ei_thresh,'plotCoords',plotCoords);
     
     % Find ei amps greater than a particular threshold
     elecs = find(eiAmps > ei_thresh); 
@@ -79,7 +83,7 @@ for n = 1:length(cellIds)
     thresholds = thresh_quad1 + thresh_quad2 + thresh_quad3 + thresh_quad4;
     
     thresholds(thresholds>6) = 0; 
-    thresholds(thresholds<0) = 0; 
+    thresholds(thresholds<1) = 0; 
     idx = find(thresholds);
     
     
@@ -90,12 +94,21 @@ for n = 1:length(cellIds)
     end
         
     figure(100); 
-    hold on; scatter(xc(idx),yc(idx),150, thresholds(idx),'filled');
+    
+    x_coords = [x_coords xc(idx)];
+    y_coords = [y_coords yc(idx)];
+    stim_elecs = [stim_elecs thresholds(idx)];
+    
+    hold on; 
   
     
 end
-colormap(cmap.m); caxis([0.5 4.5]);
+
+scatter(x_coords,y_coords,200, stim_elecs,'filled');
+colormap(cmap.m); caxis([0 5]);
 colorbar;
+
+
 
 figure(300);
 scatter(distance_threshold(:,1), distance_threshold(:,2));
