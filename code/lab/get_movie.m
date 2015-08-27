@@ -22,14 +22,27 @@ if exist('frames','var')
     end
 end
   
-mov=zeros(height,width,3,tduration);
-for i=1:tduration
-    % grab movie frame
-    F = mvi.getFrame(i-1).getBuffer;
 
-    % reshape into proper image
-    F = reshape(F,3,width,height);
-    mov(:,:,:,i) = permute(F,[3 2 1]);
+if length(tduration) > 1
+    mov=zeros(height,width,3,length(tduration));
+    cntr = 0;
+    for i=tduration(1):tduration(length(tduration))
+        F = mvi.getFrame(i-1).getBuffer;
+        
+        F = reshape(F,3,width,height);
+        cntr = cntr + 1;
+        mov(:,:,:,cntr) = permute(F,[3 2 1]);
+    end
+else
+    mov=zeros(height,width,3,tduration);
+    for i=1:tduration
+        % grab movie frame
+        F = mvi.getFrame(i-1).getBuffer;
+
+        % reshape into proper image
+        F = reshape(F,3,width,height);
+        mov(:,:,:,i) = permute(F,[3 2 1]);
+    end
 end
 
 

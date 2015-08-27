@@ -142,7 +142,7 @@ if params.sig_stix
         sig_stix = datarun.stas.marks{cell_index};
         temp_indices = find(full(sig_stix));
         [temp_rows, temp_cols] = ind2sub(size(sig_stix), temp_indices);
-        plot(temp_cols, temp_rows, 'k.')
+        plot(temp_cols, temp_rows, 'ko')
     end
 end
 
