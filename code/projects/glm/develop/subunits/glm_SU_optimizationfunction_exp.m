@@ -29,61 +29,38 @@ n_bins = size(non_stim_lcif);
 n_params = length(SU_params);
 n_time = length(SU_covariates);
 n_loc = length(pooling_weights);
-% penalty_strength = 0;
 
 %% Find Conditional Intensity and its log
 pixels = SU_covariates;
-
-for i = 1:n_params
-    SU_covariates(i, :, :) = SU_covariates(i, :, :) * SU_params(i);
-end
-stim_lcif = pooling_weights'* exp(squeeze(sum(SU_covariates,1)));
+subunit_drive = repmat(pooling_weights, [1, n_time]).*exp(squeeze(sum(repmat(SU_params, [1 n_loc n_time]).*SU_covariates)));
 if ~(time_filter == 0)
-    stim_lcif = conv(stim_lcif, time_filter, 'full');
+    stim_lcif = conv(sum(subunit_drive), time_filter', 'full');
     stim_lcif = stim_lcif(1:n_time);
+else
+    stim_lcif = subunit_drive;
 end
 lcif = imresize(stim_lcif, n_bins, 'nearest') + non_stim_lcif;
+clear sitm_lcif non_stim_lcif
 
 
 % Evaluate the objective function (monotonic in log-likelihood)
 f_eval = sum( lcif(spt) ) - dt * sum(exp(lcif));
 
-% Add penalty
-% f_penalty = penalty_strength*SU_params'*SU_params;
-
 %% Evaluate the gradient
 % gradient of the lcif
-g_eval = zeros(n_params, 1);
-subunit_drive = exp(squeeze(sum(SU_covariates,1)));
-del_lcif = zeros(n_params, n_bins(2));
-for i_SU = 1:n_params
-    temp_del_lcif = zeros(1,n_time);
-    for i_loc = 1:n_loc
-        temp = pooling_weights(i_loc)*(squeeze(pixels(i_SU,i_loc,:)))'.*squeeze(subunit_drive(i_loc,:));
-        temp_del_lcif = temp_del_lcif+temp;
-    end
-    if ~(time_filter == 0)
-        temp_del_lcif = conv(temp_del_lcif, time_filter, 'full');
-        temp_del_lcif = temp_del_lcif(1:n_time);
-    end
-    del_lcif(i_SU,:) = imresize(temp_del_lcif, n_bins, 'nearest');
-    g_eval(i_SU) = sum(del_lcif(i_SU,spt))- dt * exp(lcif)*del_lcif(i_SU,:)';
+del_lcif = squeeze(sum(pixels.*repmat(reshape(subunit_drive, [1 n_loc, n_time]), [n_params, 1,1]),2));
+if ~(time_filter == 0)
+    del_lcif = conv2(del_lcif, time_filter', 'full');
+    del_lcif = del_lcif(1:n_time);
 end
-% del_penalty = zeros(n_params, 1);
-% for i_SU = 1:n_params
-%     del_penalty(i_SU) = f_penalty - penalty_strength*SU_params(i_SU)^2 + 2*penalty_strength*SU_params(i_SU);
-% end
-%g_eval = del_LL;% - del_penalty;
+del_lcif = imresize(del_lcif, [n_params, n_bins(2)], 'nearest');
+g_eval = sum(del_lcif(:,spt),2)'- dt * exp(lcif)*del_lcif';
 
 %% Evaluate the hessian
 H_eval = zeros(n_params);
 for i = 1:n_params
     for j = 1:i
-        di_dj_lcif = zeros(1,n_time);
-        for i_loc = 1:n_loc
-            temp = pooling_weights(i_loc)*(squeeze(pixels(j,i_loc,:)).*squeeze(pixels(i,i_loc,:)))'.*squeeze(subunit_drive(i_loc,:));
-            di_dj_lcif = di_dj_lcif+temp;
-        end
+        di_dj_lcif = sum(squeeze(pixels(i,:,:).*pixels(j,:,:)).*subunit_drive);
         if ~(time_filter == 0)
             di_dj_lcif = conv(di_dj_lcif, time_filter, 'full');
             di_dj_lcif = di_dj_lcif(1:n_time);
@@ -94,12 +71,25 @@ for i = 1:n_params
     end
 end
 
+%%
+% ADD PENALTY
+penalty_strength = 500;
+%L2
+% f_penalty = penalty_strength*(p'*p);
+% del_penalty = 2*penalty_strength*p;
+% saturating
+f_penalty = penalty_strength * sum(atan(SU_params).^2);
+del_penalty = 2*penalty_strength*atan(SU_params).*(SU_params.^2 + 1).^(-1);
+%L1
+% f_penalty = penalty_strength*sum(abs(p));
+% del_penalty = penalty_strength*one(size(p));
+% del_penalty(p<0) = -penalty_strength;
 
 %%
 
 % Switch signs because using a minimizer  fmin
-f       = -f_eval;%+f_penalty;
-grad    = -g_eval;
+f       = -f_eval+f_penalty;
+grad    = -g_eval+del_penalty';
 Hess    = -H_eval;
 log_cif = lcif;
 end

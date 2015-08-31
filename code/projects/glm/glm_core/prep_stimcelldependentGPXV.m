@@ -38,11 +38,6 @@ fitmoviestats.span     =  inputstats.range;
 fitmoviestats.normmean =  inputstats.mu_avgIperpix / inputstats.range;
 
 
-if ~GLMType.Subunits
-
-end
-
-
 %first subunits!
 if exist('SU_filter', 'var') && SU_filter(1)~=0
     for frame=1:stimsize.frames
@@ -61,7 +56,7 @@ else
 end
 
 % convolve the time filter if that's whats happening
-if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit')
+if exist('timefilter', 'var') && timefilter(1)~=0
     timefilter = reshape(timefilter, [1 1 30]);
     stim_temp = convn(stim, timefilter, 'full');
     stim = stim_temp(:,:,1:stimsize.frames);    

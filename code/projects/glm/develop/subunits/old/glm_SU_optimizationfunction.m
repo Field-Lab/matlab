@@ -86,10 +86,20 @@ end
 
 
 %%
+% ADD PENALTY
+penalty_strength = 1000;
+
+%L2
+% f_penalty = penalty_strength*(p'*p);
+% del_penalty = 2*penalty_strength*p;
+
+% saturating
+f_penalty = penalty_strength * sum(atan(SU_params));
+del_penalty = (SU_params.^2 + 1).^(-1);
 
 % Switch signs because using a minimizer  fmin
-f       = -f_eval;%+f_penalty;
-grad    = -g_eval;
+f       = -f_eval+f_penalty;
+grad    = -g_eval+del_penalty;
 Hess    = -H_eval;
 log_cif = lcif;
 end

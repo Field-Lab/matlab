@@ -212,11 +212,6 @@ for i_exp = exps
                     % end NBCoupling
                     
                     % Call appropriate glm_execute
-                    temp = glm_cellinfo.d_save;
-		    for start = 1:10
-                        glm_cellinfo.d_save = [temp '/randomGLMstart_' num2str(start)];
-                        if ~exist(glm_cellinfo.d_save), mkdir(glm_cellinfo.d_save); end
-                        disp(glm_cellinfo.d_save)
                         display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                         tStart = tic;
                         if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
@@ -228,7 +223,6 @@ for i_exp = exps
                         end
                         duration = toc(tStart);
                         display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
-                    end
                 end
             end
         end

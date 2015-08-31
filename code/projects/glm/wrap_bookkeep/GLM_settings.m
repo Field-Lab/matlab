@@ -198,7 +198,8 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                 GLMType.CONVEX = true;
             end
             if strcmp(change.name, 'prefit')
-                GLMType.CONVEX = true;
+                GLMType.timefilter = 'prefit';
+                % GLMType.CONVEX = true;
             end
         end
         
