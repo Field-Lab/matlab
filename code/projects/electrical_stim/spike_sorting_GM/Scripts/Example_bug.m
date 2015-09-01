@@ -8,21 +8,10 @@ clear initial
 clear Gibbs
 clear GibbsNoDelete
 clear Log
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 temp = load('/Users/gomena/Research/EJBigData/Datasetsvisitjun15/Debugging/elecResp_n2796_p138.mat');
 patternNo = temp.elecResp.stimInfo.patternNo;
 pathToAnalysisData = '/Users/gomena/Research/EJBigData/Datasetsvisitjun15/Debugging/';
-=======
-temp = load('/Volumes/Analysis/2012-09-24-3/data003/elecResp_n2796_p138.mat');
-patternNo = temp.elecResp.stimInfo.patternNo;
-pathToAnalysisData = temp.elecResp.names.data_path;
->>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
-=======
-temp = load('/Volumes/Analysis/2012-09-24-3/data003/elecResp_n2796_p138.mat');
-patternNo = temp.elecResp.stimInfo.patternNo;
-pathToAnalysisData = temp.elecResp.names.data_path;
->>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
 neuronIds = temp.elecResp.cells.main;
 
 
