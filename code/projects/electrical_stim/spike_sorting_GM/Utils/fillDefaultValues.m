@@ -97,7 +97,11 @@ input.params.Heuristic.numErrorConds          = 4;   %Used by HExtrapolateBadLog
 input.params.Heuristic.maxCondsShift          = 2;   %Used by HResampleIfLackOfSpiking. It is the maximum number of conditions that will be exprapolated simultaneously
 input.params.Heuristic.maxIter                = 50;   %Maximum number of iterations of the heuristic HExtrapolateBadLogRegression
 input.params.Heuristic.HighThres              = 0.8;  %Definition of a high spike probability
+<<<<<<< HEAD
 input.params.Heuristic.LowThres               = 0.25; %Definition of a low spike probability
+=======
+input.params.Heuristic.LowThres               = 0.15; %Definition of a low spike probability
+>>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
 input.params.Heuristic.VeryLowThres           = 0.1; %Definition of a very low spike probability
 
 

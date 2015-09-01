@@ -11,7 +11,11 @@ end
 for n = 1:nNeurons
     
     for e=prefElectrodes{n}
+<<<<<<< HEAD
         CondsE{e}=[CondsE{e} Conds{n}];
+=======
+        CondsE{e}=[CondsE{e} Conds{prefElectrodes{n}}];
+>>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
     end
 end
 
