@@ -10,10 +10,16 @@ nNeurons    = Gibbs.params.nNeurons;
 breakPoints = input.tracesInfo.breakPoints;
 prefElectrodes = input.neuronInfo.prefElectrodes;
 <<<<<<< HEAD
+<<<<<<< HEAD
 LowThres   = input.params.Heuristic.LowThres;
 HighThres      = input.params.Heuristic.HighThres;
 ActivationThres = input.params.Heuristic.ActivationThres;
 
+=======
+VeryLowThres   = input.params.Heuristic.VeryLowThres;
+HighThres      = input.params.Heuristic.HighThres;
+ActivationThres = input.params.Heuristic.ActivationThres;
+>>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
 =======
 VeryLowThres   = input.params.Heuristic.VeryLowThres;
 HighThres      = input.params.Heuristic.HighThres;
@@ -50,7 +56,11 @@ for n=1:nNeurons
             
             spikeProb = nansum(spikes{n}(firstCondThisRange,:))/nansum(I(firstCondThisRange));
 <<<<<<< HEAD
+<<<<<<< HEAD
             if(spikeProb<LowThres&&nansum(spikes{n}(lastCondPrevRange,:))/I(:,lastCondPrevRange)>HighThres)
+=======
+            if(spikeProb<VeryLowThres&&nansum(spikes{n}(lastCondPrevRange,:))/I(:,lastCondPrevRange)>ActivationThres)
+>>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
 =======
             if(spikeProb<VeryLowThres&&nansum(spikes{n}(lastCondPrevRange,:))/I(:,lastCondPrevRange)>ActivationThres)
 >>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185

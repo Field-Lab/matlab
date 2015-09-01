@@ -58,6 +58,9 @@ end
 
 Gibbs.diagnostics.condSortError    = condSortError;
 <<<<<<< HEAD
+<<<<<<< HEAD
 Gibbs.variables.ProbRobust       = probs;
+=======
+>>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
 =======
 >>>>>>> 61e06a36de854f2e8c9483decfc5a5b2836ee185
