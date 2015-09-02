@@ -1,4 +1,4 @@
-function [spikes, movie, STA, cell_names] = load_spikes_filter(stimtype, exp_nm, cell)
+function [spikes, movie, STA, cell_names] = load_spikes_filter_arb(stimtype, exp_nm, cell)
 
 % stimtype is string either 'WN' or 'NSEM'
 % exp_nm is string like '2012-08-09-3'
@@ -23,7 +23,7 @@ if ischar(cell)
 elseif isnumeric(cell)
     n_cell_input = length(cell);
     for i = 1:n_cell_input
-        matfiles(i) =  dir([spike_directory exp_nm '/WN_mapPRJ/STA/STAandROI_*_' num2str(cell(i)) '.mat']);
+        matfiles(i) =  dir([spike_directory exp_nm '/WN_mapPRJ/STA/STAandROI_*' num2str(cell(i)) '.mat']);
     end
 else
     error('Unrecognizable cell input. Cell must be a string like ONPar or a vector of ids')

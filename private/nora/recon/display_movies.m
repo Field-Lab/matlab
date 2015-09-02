@@ -5,7 +5,7 @@ function display_movies(recon_movie, original_movie, varargin)
 
 p = inputParser;
 p.addParameter('fraction_of_frames', 1, @isnumeric)
-p.addParameter('pause_length', 0.1, @isnumeric)
+p.addParameter('pause_length', 'click')
 p.addParameter('disp_range', 0)
 p.parse(varargin{:});
 
@@ -39,7 +39,12 @@ axis image
 axis(disp_range)
 axis off
 
-pause(p.Results.pause_length)
+if isnumeric(p.Results.pause_length)
+    pause(p.Results.pause_length)
+else
+
+pause()
+end
 
 end
 
