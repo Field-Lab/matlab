@@ -119,14 +119,14 @@ end
 rawfit.init = p_init;
 
 % Initialize or set the pre time filter
-if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit')
-    %[~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
-    %timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
-    load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
-    pre_timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
-else
-    pre_timefilter = 0;
-end
+% if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit')
+%     %[~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
+%     %timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
+%     load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
+%     pre_timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
+% else
+%     pre_timefilter = 0;
+% end
 % start by fitting regular GLM
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
@@ -319,19 +319,22 @@ if ~GLMType.CONVEX || GLMType.Subunits
             
             % Set up the covariate vector
             if strcmp(GLMType.timefilter, 'prefilter')
+                pre_timefilter = pstar(paramind.time1);
                 post_timefilter = 0;
-                non_stim_idx = ones(paramind.paramcount, 1);
-                non_stim_idx(paramind.X) = 0;
-                non_stim_lcif = pstar(logical(non_stim_idx))'*glm_covariate_vec(logical(non_stim_idx), :);
-            elseif strcmp(GLMType.timefilter, 'prefit')
-                if isfield(paramind, 'time1')
-                    post_timefilter = pstar(paramind.time1);
-                    pre_timefilter_init = post_timefilter;
-                else
-                    pre_timefilter_init = 0.1*ones(30,1);
-                    post_timefilter = 0;
-                end  
+                % non_stim_idx = ones(paramind.paramcount, 1);
+                % non_stim_idx(paramind.X) = 0;
+                % non_stim_lcif = pstar(logical(non_stim_idx))'*glm_covariate_vec(logical(non_stim_idx), :);
                 non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
+                %             elseif strcmp(GLMType.timefilter, 'prefit')
+%                 error('Prefit is not ready')
+%                 if isfield(paramind, 'time1')
+%                     post_timefilter = pstar(paramind.time1);
+%                     pre_timefilter_init = post_timefilter;
+%                 else
+%                     pre_timefilter_init = 0.1*ones(30,1);
+%                     post_timefilter = 0;
+%                 end  
+%                 non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
             else
                 pre_timefilter = 0;
                 post_timefilter = pstar(paramind.time1);
@@ -343,6 +346,7 @@ if ~GLMType.CONVEX || GLMType.Subunits
             % Do optimization
             disp(['Iteration ' num2str(iterate) ': Subunit fit'])
             if strcmp(GLMType.timefilter, 'prefit')
+                error('prefit is not ready')
                 p_init_SU = [SU_filter(:); pre_timefilter_init];
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'exp')
@@ -350,7 +354,8 @@ if ~GLMType.CONVEX || GLMType.Subunits
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             elseif strcmp(GLMType.Subunit_NL, 'squared')
                 % currently doesn't work
-                p_init_SU = SU_filter(:);
+                error('Squared does not work yet')
+%                 p_init_SU = SU_filter(:);
                 [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_squared(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
             end
             
@@ -363,7 +368,16 @@ if ~GLMType.CONVEX || GLMType.Subunits
             % Save initial iterations
             rawfit.iter{iterate}.SU = pstar_SU;
             rawfit.iter{iterate}.nonSU = pstar;
-            p_init = pstar;
+            
+            
+            time_size = length(frame_shifts);
+            frame_shifts = 0;
+            paramind.paramcount = paramind.paramcount - time_size + 1;
+            paramind.X = paramind.X(1):paramind.paramcount;
+            paramind.time1 = paramind.paramcount;
+            p_init = pstar(1:paramind.paramcount);
+            p_init(paramind.time1) = 1;
+            
             
             % Then run the loop again
             iterate = iterate + 1; % eventually replace this with some metric of change

@@ -194,13 +194,13 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         
         if strcmp(change.type, 'timefilter')
             GLMType.timefilter = change.name;
-            if strcmp(change.name, 'prefilter')
-                GLMType.CONVEX = true;
-            end
-            if strcmp(change.name, 'prefit')
-                GLMType.timefilter = 'prefit';
-                % GLMType.CONVEX = true;
-            end
+%             if strcmp(change.name, 'prefilter')
+%                 GLMType.CONVEX = true;
+%             end
+%             if strcmp(change.name, 'prefit')
+%                 GLMType.timefilter = 'prefit';
+%                 % GLMType.CONVEX = true;
+%             end
         end
         
         if strcmp(change.type, 'Saccades')
