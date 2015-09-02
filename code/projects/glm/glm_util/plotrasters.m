@@ -31,6 +31,7 @@ addParameter(p,'separate',false, @islogical); % separate windows (true) or in su
 addParameter(p,'PSTH',true, @islogical); % display PSTH if true
 addParameter(p,'start_time',0,@isnumeric); % set the raster start time to something other than 0
 addParameter(p,'PSTH_window_size', 100, @isnumeric); % set the amount smoothing in the PSTH
+addParameter(p, 'rasters', 1, @islogical); % set to 0 to only plot the PSTH
 parse(p,xval, fittedGLM,varargin{:});
 
 if ~isfield(xval.rasters,'recorded')
@@ -55,6 +56,7 @@ catch
 end
 trials   = size(sim_rast,1);
 
+if p.Results.rasters
 if p.Results.separate
     
     if ~predict_only
@@ -140,6 +142,7 @@ else
     end
     
 end
+end
 
 if p.Results.PSTH
     convolve=gausswin(p.Results.PSTH_window_size);
@@ -148,7 +151,7 @@ if p.Results.PSTH
     end
     PSTH_sim=conv(sum(sim_rast),convolve,'same');
     
-    if p.Results.separate
+    if p.Results.separate || ~p.Results.rasters
         hFig3=figure;
         set(hFig3, 'Position', [100 100 800 250])
     else
