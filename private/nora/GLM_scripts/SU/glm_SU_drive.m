@@ -1,5 +1,5 @@
 
-function lcif= glm_SU_drive(stimtype)
+function [lcif, firingrate]= glm_SU_drive(stimtype)
 
 % load original fit and spikes
 % load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_SUexp_init_p8IDp8prefilter/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
@@ -17,6 +17,9 @@ testmovie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
 
 % Process spikes for glm_execute with proper subroutines
 testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
+firingrate = conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(150)', 'same');
+firingrate = downsample(firingrate,10);
+clear spikes_concat PSTH_temp
 fittedGLM.GLMType.Subunits = 0;
 fittedGLM.GLMType.timefilter = 'fit';
 fittedGLM.GLMType.contrast = 0;
@@ -32,11 +35,11 @@ load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_SUexp_init_
 % temp = [-0.1 0.5 0.5 0.5 -0.1];
 % fittedGLM.SU_filter = temp'*temp;
 lcif{2} = eval_xvalperformance_SU(fittedGLM,testspikes_raster,testmovie,inputstats);
-
-fittedGLM.SU_filter = reshape(fittedGLM.rawfit.iter{3}.SU, [3,3]);
-% %fittedGLM.SU_filter(5) = 0.1;
-% fittedGLM.GLMType.timefilter = 'fit';
-lcif{3} = eval_xvalperformance_SU(fittedGLM,testspikes_raster,testmovie,inputstats);
+% 
+% fittedGLM.SU_filter = reshape(fittedGLM.rawfit.iter{3}.SU, [3,3]);
+% % %fittedGLM.SU_filter(5) = 0.1;
+% % fittedGLM.GLMType.timefilter = 'fit';
+% lcif{3} = eval_xvalperformance_SU(fittedGLM,testspikes_raster,testmovie,inputstats);
 
 end
 

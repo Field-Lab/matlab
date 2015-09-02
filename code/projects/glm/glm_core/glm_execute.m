@@ -294,7 +294,10 @@ if ~GLMType.CONVEX
 end
 if ~GLMType.CONVEX || GLMType.Subunits
     iterate = 1;
-    while iterate < 4
+
+    while iterate < 3
+        
+
         % Fit the "normal" parts of GLM: linear stim filter, PS filter,
         % CP filter, etc
         
