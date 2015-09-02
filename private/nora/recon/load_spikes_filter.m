@@ -1,24 +1,27 @@
-function [spikes, movie, STA] = load_spikes_filter()
+function [spikes, movie, STA] = load_spikes_filter(stimtype, exp_nm, cell)
 
-% load GLM to get info to load up movie and get STA
-load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
-STA = flip(fittedGLM.cellinfo.WN_STA, 3);
+% all inputs are strings
+% stimtype is 'WN' or 'NSEM'
+% exp_nm is '2012-08-09-3'
+% cell is 'ONPar_841'
 
-% load spikes
-load('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/WN_mapPRJ/organizedspikes_ONPar_841.mat');
+spike_directory = '/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/';
 
-% Load core directories and all eligible cells
-GLMType = fittedGLM.GLMType;
-exp_nm = fittedGLM.cellinfo.exp_nm;
-stimtype = fittedGLM.GLMType.fit_type;
+% load GLM to get info to load up movie and get white noise STA
+load([spike_directory exp_nm '/WN_mapPRJ/STA/STAandROI_' cell '.mat'])
+STA = flip(STAandROI.STA, 3);
+STA = STA - mean(STA(:));
+clear STAandROI
 
 % Load and process test movie
-[StimulusPars, ~] = StimulusParams(exp_nm, stimtype, GLMType.map_type);
-[testmovie0, ~, ~]          = loadmoviematfile(exp_nm , stimtype, GLMType.cone_model,'testmovie');
+[StimulusPars, ~] = StimulusParams(exp_nm, stimtype, 'mapPRJ');
+[testmovie0, ~, ~]          = loadmoviematfile(exp_nm , stimtype, '8pix_Identity_8pix','testmovie');
 movie             = testmovie0{1}.matrix(:,:,StimulusPars.slv.testframes);
+movie = movie - mean(movie(:));
 clear testmovie0
 
 % Process spikes for glm_execute with proper subroutines
+load([spike_directory exp_nm '/' stimtype '_mapPRJ/organizedspikes_' cell '.mat']);
 spikes = subR_createraster(organizedspikes.block, StimulusPars.slv);
 
 end
