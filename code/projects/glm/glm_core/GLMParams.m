@@ -84,7 +84,13 @@ GLMPars.saccadefilter.bstretch = 0.95;
 GLMPars.saccadefilter.alpha = 0;
 GLMPars.saccadefilter.fratio = 0.5;
 
-
+GLMPars.spikefilters.C.ms = 500;
+GLMPars.spikefilters.C.filternumber = 5;
+GLMPars.spikefilters.C.spacing = pi/2;
+GLMPars.spikefilters.C.bstretch = 0.75;
+GLMPars.spikefilters.C.alpha = 0;
+GLMPars.spikefilters.C.fratio = 0.5;
+GLMPars.spikefilters.C.range = 20;
 
 GLMPars.others.fitblockchange = false;
 

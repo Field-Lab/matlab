@@ -29,7 +29,7 @@ if ~exist('condition','var')
     if GLMType.Subunits
         core = sprintf('%s_SU%s'  , core, GLMType.Subunit_NL);
     end
-    if GLMType.contrast
+    if GLMType.Contrast
         core = sprintf('%s_C'  , core); 
     end
     if isfield(GLMType, 'Saccades')

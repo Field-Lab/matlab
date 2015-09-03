@@ -147,13 +147,14 @@ if GLMType.PostSpikeFilter
     lcif = lcif + lcif_ps;
 end
 
-if isfield(GLMType,'contrast') && GLMType.contrast
-    C = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.C);
+if isfield(GLMType,'Contrast') && GLMType.Contrast
     stimsize.width  = size(testmovie,1);
     stimsize.height = size(testmovie,2);
-    ROIcoord        = ROI_coord(20, fittedGLM.cellinfo.slave_centercoord, stimsize);
-    % C_shift = zeros(bins,1);
-    lcif_C = repmat(C*imresize(squeeze(mean(mean(double(testmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [1 params.bins],'nearest'), [57 1]);
+    GLMPars = GLMParams;
+    ROIcoord        = ROI_coord(GLMPars.spikefilters.C.range, fittedGLM.cellinfo.slave_centercoord, stimsize);
+    contrast = imresize(squeeze(mean(mean(double(testmovie(ROIcoord.xvals,ROIcoord.yvals, :))-0.5))), [params.bins 1],'nearest');
+    lcif_C = conv(contrast,fittedGLM.linearfilters.Contrast.Filter, 'full')';
+    lcif_C = repmat(lcif_C(1:params.bins),[57 1]);
     %         for i_bin = 1:bins
     %             if i_bin > 99
     %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);

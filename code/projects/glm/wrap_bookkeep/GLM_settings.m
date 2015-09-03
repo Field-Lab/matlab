@@ -46,7 +46,7 @@ if strcmp(base_type, 'default')
     GLMType.nullpoint  = 'mean'; 
     GLMType.map_type   = 'mapPRJ'; 
     GLMType.debug      = false;
-    GLMType.contrast   = false;
+    GLMType.Contrast   = false;
     GLMType.Subunits   = false;
     GLMType.STA_init   = true;
     GLMType.timefilter = 'fit';
@@ -183,7 +183,7 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         
         % Add a covariate for local contrast NB
         if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
-            GLMType.contrast = true;
+            GLMType.Contrast = true;
         end
         
         % NB I just added this quick to allow me to save in a different

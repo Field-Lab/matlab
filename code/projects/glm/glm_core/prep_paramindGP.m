@@ -33,9 +33,10 @@ if isfield(GLMType, 'Saccades')
 	numParams = numParams + GLMPars.saccadefilter.filternumber;
 end
 
-if GLMType.contrast
-    paramind.C = (numParams + 1);%:(numParams+100);
-    numParams = numParams + 1;%00;
+if GLMType.Contrast
+    Cstart = numParams + 1;  Cend = numParams + GLMPars.spikefilters.C.filternumber;
+	paramind.C = [Cstart  : Cend];
+	numParams = numParams + GLMPars.spikefilters.C.filternumber;
 end
 
 % if GLMType.Subunits

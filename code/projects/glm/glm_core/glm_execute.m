@@ -59,6 +59,10 @@ if GLMType.CouplingFilters
     % load('CP_basis.mat');
     % cp_basis = waveform; 
 end
+if isfield(GLMType,'Contrast') && GLMType.Contrast
+    basis_params  = GLMPars.spikefilters.C;
+    C_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
+end
 if isfield(GLMType, 'Saccades')
    basis_params = GLMPars.saccadefilter;
    sa_basis = prep_spikefilterbasisGP(basis_params, bin_size);
@@ -75,6 +79,18 @@ home_spbins = home_spbins(find(home_spbins < bins) );
 if GLMType.PostSpikeFilter
     basis         = ps_basis';
     PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
+end
+center_coord       = glm_cellinfo.slave_centercoord;
+if isfield(GLMType,'Contrast') && GLMType.Contrast
+    stimsize.width  = size(fitmovie,1);
+    stimsize.height = size(fitmovie,2);
+    ROIcoord        = ROI_coord(GLMPars.spikefilters.C.range, center_coord, stimsize);
+    contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))-0.5))), [bins 1],'nearest');
+    C_bin = zeros(GLMPars.spikefilters.C.filternumber,bins);
+    for i = 1:GLMPars.spikefilters.C.filternumber
+       tmp = conv(contrast, C_basis(:,1), 'full');
+       C_bin(i,:) = tmp(1:bins); 
+    end
 end
 % NBCoupling 05-28-14
 if GLMType.CouplingFilters;
@@ -109,9 +125,7 @@ p_init     = .01* ones(paramind.paramcount,1);
 % NB SU
 % Initialize the subunits
 if GLMType.Subunits
-   % SU_filter = rand(GLMPars.subunit.size)-0.5;
    SU_filter = 0.1*ones(GLMPars.subunit.size);
-   % SU_filter(round(GLMPars.subunit.size^2/2)) = 0.4;
    rawfit.SU_init = SU_filter;
 else
    SU_filter = 0;
@@ -128,7 +142,7 @@ rawfit.init = p_init;
 %     pre_timefilter = 0;
 % end
 % start by fitting regular GLM
-center_coord       = glm_cellinfo.slave_centercoord;
+
 WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 % clear WN_STA
@@ -229,17 +243,7 @@ if GLMType.CONVEX
         glm_covariate_vec(paramind.SA, :) = SA_bin;
     end
     if isfield(paramind, 'C')
-        stimsize.width  = size(fitmovie,1);
-        stimsize.height = size(fitmovie,2);
-        ROIcoord        = ROI_coord(20, center_coord, stimsize);
-        % C_shift = zeros(bins,1);
-        contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
-        %         for i_bin = 1:bins
-        %             if i_bin > 99
-        %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
-        %             end
-        %         end
-        glm_covariate_vec(paramind.C, :) = contrast;
+        glm_covariate_vec(paramind.C, :) = C_bin;
     end
     if ~GLMType.Subunits
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -278,26 +282,16 @@ if ~GLMType.CONVEX
         convex_cov(paramind.SA, :) = SA_bin;
     end
     if isfield(paramind, 'C')
-        stimsize.width  = size(fitmovie,1);
-        stimsize.height = size(fitmovie,2);
-        ROIcoord        = ROI_coord(20, center_coord, stimsize);
-        % C_shift = zeros(bins,1);
-        contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [bins 1],'nearest');
-        %         for i_bin = 1:bins
-        %             if i_bin > 99
-        %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
-        %             end
-        %         end
-        convex_cov(paramind.C, :) = contrast;
+        convex_cov(paramind.C, :) = C_bin;
     end
     filtertype = GLMType.stimfilter_mode;
 end
 if ~GLMType.CONVEX || GLMType.Subunits
     iterate = 1;
-
+    
     while iterate < 3
         
-
+        
         % Fit the "normal" parts of GLM: linear stim filter, PS filter,
         % CP filter, etc
         
@@ -412,7 +406,12 @@ if isfield(paramind, 'PS')
     linearfilters.PostSpike.Filter     = ps_basis * pstar(paramind.PS);
     linearfilters.PostSpike.startbin   = 1;
     linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
-    linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
+end
+if isfield(paramind, 'C')
+    rawfit.C_basis = C_basis;
+    linearfilters.Contrast.Filter     = C_basis * pstar(paramind.C);
+    linearfilters.Contrast.startbin   = 1;
+    linearfilters.Contrast.note0       = 'Filter starts at "startbin" bins after the spikebin';
 end
 % NBCoupling 05-28-14
 if isfield(paramind, 'CP')
