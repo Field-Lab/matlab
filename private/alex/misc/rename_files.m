@@ -1,11 +1,11 @@
-path2data='/Volumes/Analysis/2015-08-17-5/d24-48-norefit/';
+path2data='/Volumes/Analysis/2015-03-09-2/d05-27-norefit/';
 
-name_extension='-from-data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039_data040_data041_data042_data043_data044_data045_data046_data047_data048';
+name_extension='-from-d05-d27';
 
 add_extension = '';
 % add_extension='-from-d04_20';
 
-range = [24:48];
+range = [5:27];
 % rename files
 for i=range
    tmp=['00', int2str(i)];
@@ -37,15 +37,17 @@ end
 addpath(genpath('/home/vision/alex/matlab/private/alex'))
 addpath(genpath('/Users/alexth/test4/matlab/private/alex'))
 
-% calc_ei_grind('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
-calc_ei_grind('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d18-40-norefit/')
+%  calc_ei_grind('2015-03-09-2', '/Volumes/Analysis/2015-03-09-2/d05-27-norefit/')
 
-calc_ei_grind('2015-08-17-5', '/Volumes/Analysis/2015-08-17-5/d01-29-norefit/')
-calc_ei_grind('2015-08-17-5', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
+% calc_ei_grind('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d01-29-norefit/')
+% calc_ei_grind('2015-08-17-1', '/Volumes/Analysis/2015-08-17-1/d18-40-norefit/')
+
+% calc_ei_grind('2015-08-17-5', '/Volumes/Analysis/2015-08-17-5/d01-29-norefit/')
+% calc_ei_grind('2015-08-17-5', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
 
 % calc_sta_grind('/Volumes/Data/2015-08-17-1/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-1/d18-40-norefit/')
 % calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d01-29-norefit/')
-calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
+% calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
 
 get_wn_movie_names('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp');
 

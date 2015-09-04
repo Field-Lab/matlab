@@ -11,9 +11,7 @@ units=dir([mainpath,date,'/units/*.mat']);
 load([mainpath,date,'/units/',filename]);
 
 nonEmpty = find(~cellfun('isempty', unit{1, 2}(:,1)),1,'last');
-
 stimFiles = find(cellfun(@(x)( ~isempty(x) ), regexp(unit{1, 2}(1:nonEmpty,1), codeWord)));
-
 nds = find(cellfun(@(x)( ~isempty(x) ), regexp(unit{1, 2}(1:nonEmpty,1), 'nd%nd')));
 for j=1:length(nds)
     [~,nd] = regexp(unit{1, 2}{nds(j,1),1},'(?<=nd%nd_)\d','tokens','match');

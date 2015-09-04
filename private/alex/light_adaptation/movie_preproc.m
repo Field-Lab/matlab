@@ -430,7 +430,7 @@ end
 scale = true;
 mean_rgb = false;
 
-data='011';
+data='018';
 [first_nd.psr, first_nd.asr, first_nd.gs, first_nd.r2, first_nd.ind, first_nd.cellID] = get_LN_ndf(data, scale, mean_rgb);
 save(['/Users/alexth/Desktop/Light_adaptation/movie_GS/2015-03-09-2/d05-27-norefit/not_scaled/', 'data_',data,'.mat'], 'first_nd');
 
@@ -496,7 +496,7 @@ even_bin = true;
 data='008';
 data1 = fit_LN_ndf(data, mean_rgb, even_bin);
 
-data='0111';
+data='011';
 data2 = fit_LN_ndf(data, mean_rgb, even_bin);
 
 scales = zeros(length(data1.sta),2);

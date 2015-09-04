@@ -1,7 +1,7 @@
 function [inputs, refresh, duration] = get_wn_movie_ath_rgb(datarun, movie_name)
 
 triggers=datarun.triggers; % onsets of the stimulus presentation in s
-mdf_file=['/Volumes/Data/Stimuli/white-noise/', movie_name];
+mdf_file=['/Volumes/Analysis/stimuli/white-noise-xml/', movie_name];
 
 % if ~exist(mdf_file, 'file')
 %     copyfile('/Volumes/Data/Stimuli/white-noise/BW-sparse0.5-10-1-0.48-11111-32x32.xml', mdf_file);

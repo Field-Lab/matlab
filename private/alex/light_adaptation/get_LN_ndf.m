@@ -10,7 +10,7 @@ movie_duration = 31000; % ms,single repetition
 nm_repeats = 20;
 
 
-mvpath='/Volumes/Data/stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/';
+mvpath='/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/';
 my_movie=zeros(320,320,3600);
 cnt=1;
 for i=1:30
@@ -76,13 +76,13 @@ for i=1
             ndf=0;
             nmdata='024';
     end
-    starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'-from-d05-d27/data',data,'-from-d05-d27']);
+    starun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',data,'/data',data]);
     starun = load_params(starun,'verbose',1);
     starun = set_polarities(starun);
     starun = load_neurons(starun);
     starun = load_sta(starun,'load_sta','all','keep_java_sta',true);
     
-    nmrun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',nmdata,'-from-d05-d27/data',nmdata,'-from-d05-d27']);
+    nmrun = load_data(['/Volumes/Analysis/2015-03-09-2/d05-27-norefit/data',nmdata,'/data',nmdata]);
     nmrun = load_params(nmrun,'verbose',1);
     nmrun = load_neurons(nmrun);
 end
@@ -201,7 +201,8 @@ for cellID = starun.cell_ids
         end
         spikes(ia)=[];
     end
-    my_sta=my_sta/sum(spike_rate);
+    my_sta=my_sta/sum(spike_rate);    
+
     
     % convolve raw input with linear filter
     my_filtered_inputs=zeros(size(my_inputs,1),size(my_inputs,2)-size(my_sta,2)+1);
@@ -228,6 +229,9 @@ for cellID = starun.cell_ids
         cnt=cnt+1;
     end
     
+    figure
+    plot(my_nl/2)
+    
     % calculate predicted FR
     cnt=1;
     predicted_rate=zeros(size(spike_rate));
@@ -242,6 +246,10 @@ for cellID = starun.cell_ids
     sst = sum((spike_rate-mean(spike_rate)).^2);
     r2(cell_cnt,1) = 1 - sse/sst;
     
+    figure
+    plot(predicted_rate)
+    hold on
+    plot(spike_rate)
     
     %****** PART 2 calculate gen signal from NSEM using STA ******
     
@@ -273,6 +281,9 @@ for cellID = starun.cell_ids
         end
         my_sta=tt;
     end
+    
+
+    
     % convolve raw input with linear filter
     my_inputs=scaled_movie(inds, :);
     my_filtered_inputs=zeros(size(my_inputs,1),size(my_inputs,2)-size(my_sta,2)+1);
