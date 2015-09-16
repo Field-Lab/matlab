@@ -19,9 +19,15 @@ movieInt = 0;
 %% filling elecRespInfo with details for creation of elecResp
 
 % Experiment specific inputs
+<<<<<<< HEAD
 elecRespInfo.experimentName = '2015-04-09-2';
 elecRespInfo.dataPath       = '/Volumes/Analysis/2015-04-09-2/data002/';  %Location of raw data chunks
 elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-04-09-2/data001/';  %Location of vision output files
+=======
+% elecRespInfo.experimentName = '2014-11-24-2';
+% elecRespInfo.dataPath       = '/Volumes/Analysis/2014-11-24-2/data002/';  %Location of raw data chunks
+% elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-11-24-2/data008/';  %Location of vision output files
+>>>>>>> 1d927f0037994b053afef3fb62c57840dc9fa81b
 
 
 % elecRespInfo.experimentName = '2015-04-14-0';
@@ -36,9 +42,9 @@ elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-04-09-2/data001/';  %Locat
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2014-09-10-0/data006/';  %Location of raw data chunks
 % elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-09-10-0/data000/';  %Location of vision output files
 
-% elecRespInfo.experimentName = '2012-09-24-3';
-% elecRespInfo.dataPath       = '/Volumes/Analysis/2012-09-24-3/data006/';  %Location of raw data chunks
-% elecRespInfo.analysisPath   = '/Volumes/Analysis/2012-09-24-3/data007/';  %Location of vision output files
+elecRespInfo.experimentName = '2012-09-24-3';
+elecRespInfo.dataPath       = '/Volumes/Analysis/2012-09-24-3/data006/';  %Location of raw data chunks
+elecRespInfo.analysisPath   = '/Volumes/Analysis/2012-09-24-3/data007/';  %Location of vision output files
 
 % elecRespInfo.experimentName = '2014-08-20-1';
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2014-08-20-1/data003/';  %Location of raw data chunks
@@ -104,7 +110,7 @@ end
 i = find(elecRespInfo.analysisPath == filesep,2,'last');
 
 elecRespInfo.analysisBaseName = elecRespInfo.analysisPath(i(1)+1:i(2)-1)
-elecRespInfo.savePath         = elecRespInfo.dataPath;
+elecRespInfo.savePath         = '/Volumes/Analysis/2012-09-24-3/443_elec_resp/'
 elecRespInfo.movieInt         =   movieInt;
 
 elecRespInfo.mainNeuron =       input('Enter main neuron id: '); %108;
@@ -150,14 +156,14 @@ for i = 1:length(patternNos)
     %elecResp = temp.elecResp;
     
     elecRespName = ['elecResp_n' num2str(elecRespInfo.mainNeuron) '_p' num2str(patternNos(i)) '.mat'];
-    save([elecRespInfo.dataPath filesep elecRespName], 'elecResp')
+    save([elecRespInfo.savePath filesep elecRespName], 'elecResp')
     
 
     for j = 1:length(elecResp.stimInfo.movieNos)
         elecResp = templateMatchClustering(elecResp, elecResp.stimInfo.movieNos(j), params,...
             'modelType', modelType);
             
-        save([elecResp.names.data_path filesep elecRespName], 'elecResp')
+        save([elecResp.names.savePath filesep elecRespName], 'elecResp')
         disp(['done analyzing movie ' num2str(elecResp.stimInfo.movieNos(j)) ', pattern ' num2str(patternNos(i))])
     end
 end

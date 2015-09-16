@@ -71,7 +71,8 @@ end
 firstArtifact = mean(dataTraces,1);
 f = figure; set(f,'Position',[100 465 845 445]);
 set(f,'Color','white');
-for movieIndex = mIndices
+
+for movieIndex = 32: length(mIndices)
     cla;
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(movieIndex), 99999);

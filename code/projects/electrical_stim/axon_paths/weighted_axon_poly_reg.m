@@ -3,7 +3,8 @@ function [curve_x, curve_y, p, soma_x, soma_y, valid, res] = weighted_axon_poly_
 % line of best fit for the weighted amplitudes.
 %   inputs:        eiAmps - either the max ei amps (512 x 1) or the entire
 %                           EI may be imputted. The entire EI enables
-%                           amacrine cell testing.
+%                           for possible axon speed/temporal testing, but
+%                           needs more work.
 %           end_electrode - The endpoint of the axon approximation. Soma
 %                           location is estimated, but end electrod must
 %                           be specified by number. (ex: 509 out of 512)
@@ -24,14 +25,13 @@ N = 7;
 ei = [];
 
 
-% Thresholds that yield the best fit vary from cell to cell.
-% 5 seems to be a good comproimse.
-point_threshold = max(eiAmps) / 20;
+% Thresholds that yield the best fit vary between cells and datasets
+point_threshold = max(eiAmps) / 15;
 
 plot_reg = false;
 valid = true;
 
-% Read if plot is true.
+
 nbin = length(varargin);
 for j=1:(nbin/2)
     if ~ischar(varargin{j*2-1})
@@ -105,6 +105,7 @@ adj = adj_matrix{max_amp_i};
 
 indicies = [max_amp_i;adj(max_adj_i)];
 
+% Soma location is center of mass of largest amplitude and largest neighbor
 soma_x = sum(coords(indicies,1).*eiAmps(indicies)) / (max_amp + max_adj);
 soma_y = sum(coords(indicies,2).*eiAmps(indicies)) / (max_amp + max_adj);
 
@@ -112,9 +113,6 @@ soma_y = sum(coords(indicies,2).*eiAmps(indicies)) / (max_amp + max_adj);
 
 above_thresh_points = [];
 above_thresh_amps = [];
-
-% The regression will only consider points above the point threshold, which
-% are plotted repeatedly in proportion to their amplitude.
 
 % Locations of the electrodes above point_threshold
 above_thresh_x = [];
@@ -130,7 +128,7 @@ for n = 1:length(eiAmps)
     end    
 end
 
-if size(above_thresh_x) < 20
+if size(above_thresh_x) < 18
     valid = false;
     warning('weighted_axon_poly_reg:Unclear',...
     'Threshold is too high, or there are too few points with signal for a good fit. ');
@@ -178,10 +176,9 @@ left_of_soma = find(search_coords < soma_x);
 indicies = 1:length(eiAmps);
 right_of_soma = setxor(indicies, left_of_soma);
 
-% Pad to prevent a small range from having artificially high average
-% values.
-val_left = sum(eiAmps(left_of_soma));
-val_right = sum(eiAmps(right_of_soma));
+% Signal on either side of soma for deciding which direction the axon goes.
+val_left = sum(eiAmps(left_of_soma))*abs(soma_x - first_coord);
+val_right = sum(eiAmps(right_of_soma))*abs(soma_x - last_coord);
 
 x_steps = 1;
 
@@ -195,6 +192,9 @@ else
     x_range = last_coord - soma_x;
 end  
 
+% The following code that alters N is meant to give smaller axons an
+% estimate with a smaller-order polynomial (smaller slices of the array
+% don't need a 7th order polynomial)
 soma_range = floor((arrayX*2)/x_range);
    
 while soma_range > 1
@@ -202,7 +202,7 @@ while soma_range > 1
     soma_range = soma_range - 1;
 end    
 
-
+% The order should be at least 3
 if N < 3
     N = 3;
 end    
@@ -268,12 +268,13 @@ end
 
 if plot_reg
     figure
-    scatter(coords(:,1),coords(:,2), eiAmps+.1, 'filled');
+    scatter(coords(:,1),coords(:,2), (eiAmps+0.1)*8, 'filled', 'MarkerFaceColor', 'black');
     hold on;
-    plot(curve_x, curve_y, '-');
+    plot(curve_x, curve_y, 'r');
+    scatter(soma_x, soma_y, max(eiAmps), 'MarkerFaceColor', 'red'); 
 end   
 
-% Amacrine testing- when the whole EI is included.
+% Amacrine testing- when the whole EI is included. Currently doesn't work
 if ~isempty(ei)
     spike = [];
     
@@ -283,15 +284,17 @@ if ~isempty(ei)
     
     [~,spike_max] = max(spike);
     if spike_max > 35
-        warning('weighted_axon_poly_reg:PossibleAmacrine',...
+        warning('weighted_axon_poly_reg:PossibleAmacrine');
         valid = false;
     end
 end
 
-if ~valid
-    curve_x = [];
-    curve_y = [];
-end    
+
+%if ~valid
+%    curve_x = [];
+%    curve_y = [];
+%end 
+
 
 end
 
