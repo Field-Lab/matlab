@@ -10,6 +10,7 @@ function [rawData, amplitudes] = generateEiFromStimPattern(pathToAnalysisData, p
 %                'electrodes'
 %                suppressPlots - option not to show plots, default 0
 %                plotElecWaveforms
+%                showElecNums logical true or false, default false, 
 % Usage: generateEiFromStimPattern('/Volumes/Analysis/2012-09-24-3/data006/', 49,'movieNo',443)
 % Lauren Grosberg 9/2014
 
@@ -99,7 +100,7 @@ for movieIndex = mIndices
         
         f2 = figure; set(f2,'Position',[100 465 845 445]);
         set(f2,'Color','white');
-        scatter(positions(:,1),positions(:,2),scatterData,'filled','green');
+        scatter(positions(:,1),positions(:,2),scatterData,'filled','green','ButtonDownFcn',{@plotWaveform,positions});
         axis image; axis off;
         title(sprintf('%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA',pathToAnalysisData,patternNo,movieNos(movieIndex),amps(1)));
         hold on; scatter(positions(stimChan,1),positions(stimChan,2),350,'black');
@@ -141,4 +142,25 @@ if saveImages
     saveas(f,imageFileName,'epsc'); saveas(f,imageFileName,'jpeg');
     saveas(f2,imageFileName,'epsc'); saveas(f2,imageFileName,'jpeg');
 end
+
+    function plotWaveform(src,~,positions)
+        axesHandle = get(src,'Parent');
+        a = get(axesHandle,'CurrentPoint');
+        x = a(1,1);
+        y = a(1,2);
+        diffX = positions(:,1) - x;
+        diffY = positions(:,2) - y;
+        d = hypot(diffX,diffY);
+        electrode = find(d == min(d));
+        figure;
+        plot(linspace(0,size(trialAvg,2)/20,size(trialAvg,2)), trialAvg(electrode,:));
+        title(sprintf('electrode %0.0f', electrode));
+        xlabel('ms');  xlim([0 1.5]); ylim([-100 100]);
+        figure(f2);
+        text(positions(electrode,1), ...
+            positions(electrode,2), num2str(electrode), ...
+            'HorizontalAlignment','center');
+%         keyboard;
+%         set(src,'CData',[0 0 1]); 
+    end
 end
