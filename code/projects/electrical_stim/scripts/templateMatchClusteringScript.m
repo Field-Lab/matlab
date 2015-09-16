@@ -19,9 +19,15 @@ movieInt = 0;
 %% filling elecRespInfo with details for creation of elecResp
 
 % Experiment specific inputs
+<<<<<<< HEAD
+elecRespInfo.experimentName = '2015-04-09-2';
+elecRespInfo.dataPath       = '/Volumes/Analysis/2015-04-09-2/data002/';  %Location of raw data chunks
+elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-04-09-2/data001/';  %Location of vision output files
+=======
 % elecRespInfo.experimentName = '2014-11-24-2';
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2014-11-24-2/data002/';  %Location of raw data chunks
 % elecRespInfo.analysisPath   = '/Volumes/Analysis/2014-11-24-2/data008/';  %Location of vision output files
+>>>>>>> 1d927f0037994b053afef3fb62c57840dc9fa81b
 
 
 % elecRespInfo.experimentName = '2015-04-14-0';

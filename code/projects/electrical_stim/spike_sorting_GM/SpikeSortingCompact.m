@@ -97,13 +97,16 @@ end
 %finds initial values for the artifact and rest of variables (via convex
 %relaxation with cvx-Mosek)
 initial = Initialize(input);
-
+toc
+disp('finished initialize');
 %The Core of the algorithm: spike sorting via gibbs sampler + heuristics.
 %solutions are stored in Gibbs Structure
 [Gibbs, ~, ~, input, Log] = doSpikeSortingElectricalArtifact(input,initial);
- 
+ toc
+disp('finished doSpikeSortingElectricalArtifact');
 %Creates the output structures
+toc
 Output = OutputResults(input,Gibbs,Log);
-    
+disp('finished create output');    
     
 

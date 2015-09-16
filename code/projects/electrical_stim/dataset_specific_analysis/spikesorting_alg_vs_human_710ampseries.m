@@ -10,6 +10,36 @@ neighborRS = zeros(size(OutputAll));
 aa = 1; 
 bb = 1; 
 cc = 1; 
+%%
+for kk =  551:560  %1:size(OutputAll,2)
+    alg_output = OutputAll(kk);
+    gm_path = alg_output.path;
+    ii = find(gm_path==filesep,3,'last');
+    my_path = fullfile('/Volumes/Analysis/',gm_path(ii(1):ii(3)));
+    alg_output.path = my_path; 
+%     disp([my_path 'elecResp_n' num2str(alg_output.neuronInfo.neuronIds) ...
+%         '_p' num2str(alg_output.stimInfo.patternNo) ]);
+
+    compareAlgHum_dataplots(alg_output, 1);
+    suptitle(num2str(kk)); 
+%     recElec = alg_output.tracesInfo.recElecs; % How to handle multiple recording electrodes?
+%     stimElec = unique(alg_output.stimInfo.listStimElecs(:));
+%     if isempty(intersect(recElec, stimElec))
+%         % The recording electrodes are different than the stimulating elecs
+%         clusterElectrodes = getCluster512(recElec);
+%         if isempty(intersect(clusterElectrodes, stimElec)) % distant electrode
+% %             disp('distant');
+%         else % neighboring electrode
+% %             disp('neighbor'); 
+%         end
+%     else % At least one recording electrode is the same as the stimulating elec
+% %         disp('same');
+%         disp(num2str(kk)); 
+%         compareAlgHum_dataplots(alg_output, 1);
+%     end
+
+end
+%%
 for p=1:size(OutputAll,2)
     
     alg_output = OutputAll(p);
@@ -18,12 +48,13 @@ for p=1:size(OutputAll,2)
     my_path = fullfile('/Volumes/Analysis/',gm_path(ii(1):ii(3)));
     alg_output.path = my_path; 
     
-    [thresholdHum, thresholdAlg, curveHum, ~] = fitToErfOutputAndHuman(alg_output);
+    [thresholdHum, thresholdAlg, curveHum, ~,paramsHum,~] = fitToErfOutputAndHuman(alg_output);
+     
     patternNos(p) = alg_output.stimInfo.patternNo;
     recElec = alg_output.tracesInfo.recElecs; % How to handle multiple recording electrodes?
     stimElec = unique(alg_output.stimInfo.listStimElecs(:)); 
 %     disp(['rec electrode: ' num2str(recElec) '; stim electrode(s): ' num2str(stimElec')])
-    disp(num2str(length(curveHum))); 
+%     disp(num2str(length(curveHum))); 
     if isempty(intersect(recElec, stimElec))
         % The recording electrodes are different than the stimulating elecs
         clusterElectrodes = getCluster512(recElec); 
@@ -32,6 +63,12 @@ for p=1:size(OutputAll,2)
             distantRS(p) = 1; 
             if (thresholdHum < 4) && (thresholdHum > 0)
             distantRS_curve{aa} = curveHum; 
+            distantRS_params(aa,:) = paramsHum; 
+            if aa>80 && aa<84
+                disp([alg_output.path 'p' ...
+                    num2str(alg_output.stimInfo.patternNo) ' n' ...
+                    num2str(alg_output.neuronInfo.neuronIds)]); 
+            end
             aa = aa + 1; 
             end
         else
@@ -39,6 +76,7 @@ for p=1:size(OutputAll,2)
             neighborRS(p) = 1; 
             if (thresholdHum < 4) && (thresholdHum > 0)
             neighborRS_curve{bb} = curveHum; 
+            neighborRS_params(bb,:) = paramsHum; 
             bb = bb + 1; 
             end
         end
@@ -48,6 +86,7 @@ for p=1:size(OutputAll,2)
         sameRS(p) = 1;
         if (thresholdHum < 4) && (thresholdHum > 0)
         sameRS_curve{cc} = curveHum;
+        sameRS_params(cc,:) = paramsHum; 
         cc = cc + 1;
         end
 %         compareAlgHum_dataplots(alg_output, 1);
@@ -67,7 +106,7 @@ for p=1:size(OutputAll,2)
         thresh_alg(p) = thresholdAlg;
     end
 %     if p<100
-%         Display results if the patterns are not well matched.
+% %         Display results if the patterns are not well matched.
 %         if abs(thresh_hum(p) - thresh_alg(p)) > 0.1
 %             displayResults_compareOutput(alg_output,1,0)
 %             suptitle([alg_output.path ' n:' num2str(alg_output.neuronInfo.neuronIds) ...
@@ -201,7 +240,7 @@ fprintf(['for distant stimulating and recording electrode, %0.0f / '...
 figure; 
 subplot(1,3,1); 
 acolors = summer(round(1.3*size(distantRS_curve,2))); 
-for aa = 1:size(distantRS_curve,2)
+for aa = [1:80 84:size(distantRS_curve,2)]
     curve = distantRS_curve{aa}; 
     idx = find(curve(2,:)>0.5,1,'first');
     hold on; 
@@ -216,7 +255,7 @@ title('distant rec & stim');
 bcolors = winter(round(1.3*size(neighborRS_curve,2))); 
 subplot(1,3,2); 
 % figure; 
-for bb = 1:size(neighborRS_curve,2)
+for bb = [1:31 33:size(neighborRS_curve,2)]
     curve = neighborRS_curve{bb}; 
     idx = find(curve(2,:)>0.5,1,'first');
     hold on; 
@@ -244,15 +283,17 @@ end
 title('Same rec & stim'); 
 
 figure; 
-for aa = 1:size(distantRS_curve,2)
+for aa = [1:80 84:size(distantRS_curve,2)]
     curve = distantRS_curve{aa};
     hold on; 
     plot(curve(1,:),curve(2,:),'Color',acolors(aa,:));
+%     disp(num2str(aa));
+%     pause; 
 end
 title('distant rec & stim'); 
 
 figure; 
-for bb = 1:size(neighborRS_curve,2)
+for bb = [1:31 33:size(neighborRS_curve,2)]
     curve = neighborRS_curve{bb};
     hold on;
     plot(curve(1,:),curve(2,:),'Color',bcolors(bb,:));
@@ -267,4 +308,136 @@ for cc = 1:size(sameRS_curve,2)
 end
 title('same rec & stim'); 
 
-%%
+%% Plot the different curves as overlays
+
+figure; 
+acolors = summer(round(1.3*size(distantRS_curve,2))); 
+for aa = [1:80 84:size(distantRS_curve,2)]
+    curve = distantRS_curve{aa}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        plot(curve(2,idx-500:2:idx+500),'Color',acolors(aa,:));
+    catch
+        disp(['missed one at aa = ' num2str(aa)])
+    end
+end
+title('distant rec & stim'); 
+
+bcolors = winter(round(1.3*size(neighborRS_curve,2))); 
+
+for bb = [1:31 33:size(neighborRS_curve,2)]
+    curve = neighborRS_curve{bb}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        plot(curve(2,idx-500:2:idx+500),'Color',bcolors(bb,:));
+    catch
+        disp(['missed one at bb = ' num2str(bb)])
+    end
+    
+end
+title('neighbor rec & stim');
+ccolors = autumn(round(size(sameRS_curve,2)*1.3));
+ 
+for cc = 1:size(sameRS_curve,2)
+    curve = sameRS_curve{cc}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        plot(curve(2,idx-500:2:idx+500),'Color',ccolors(cc,:));
+    catch
+        disp(['missed one at cc = ' num2str(cc)])
+    end
+end
+title('Same rec & stim'); 
+
+%% Plot the shifted curves
+pointsToPlot = 300; 
+figure; 
+subplot(1,3,3);
+acolors = summer(round(1.3*size(distantRS_curve,2))); 
+thresholds_distantRS = zeros(size([1:80 84:size(distantRS_curve,2)])); 
+for aa = [1:80 84:size(distantRS_curve,2)]
+    curve = distantRS_curve{aa}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        xvals = curve(1,:)/curve(1,idx); 
+        plot(xvals,curve(2,:),'Color',acolors(aa,:));
+        thresholds_distantRS(aa) = curve(1,idx);
+    catch
+        disp(['missed one at aa = ' num2str(aa)])
+    end
+     
+end
+title('distant rec & stim'); 
+xlim([0.4 1.6]);
+xlabel('stimulation amplitude (normalized \muA)'); 
+
+% bcolors = winter(round(1.3*size(neighborRS_curve,2))); 
+subplot(1,3,2);
+thresholds_neighborRS = zeros(size([1:31 33 35:size(neighborRS_curve,2)])); 
+for bb = [1:31 33 35:size(neighborRS_curve,2)]
+    curve = neighborRS_curve{bb}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        xvals = curve(1,:)/curve(1,idx); 
+        plot(xvals,curve(2,:),'Color',bcolors(bb,:));
+        xlim([0.4 1.6]);
+    catch
+        disp(['missed one at bb = ' num2str(bb)])
+    end
+     thresholds_neighborRS(bb) = curve(1,idx);
+end
+xlim([0.4 1.6]);
+xlabel('stimulation amplitude (normalized \muA)'); 
+title('neighbor rec & stim');
+% ccolors = autumn(round(size(sameRS_curve,2)*1.3));
+thresholds_sameRS = zeros(1,size(sameRS_curve,2)); 
+subplot(1,3,1);
+for cc = 1:size(sameRS_curve,2)
+    curve = sameRS_curve{cc}; 
+    idx = find(curve(2,:)>0.5,1,'first');
+    hold on; 
+    try
+        xvals = curve(1,:)/curve(1,idx); 
+        plot(xvals,curve(2,:),'Color',ccolors(cc,:));
+    catch
+        disp(['missed one at cc = ' num2str(cc)])
+    end
+    thresholds_sameRS(cc) = curve(1,idx);
+end
+title('same rec & stim'); 
+xlim([0.4 1.6]);
+ylabel('activation probability')
+xlabel('stimulation amplitude (normalized \muA)'); 
+%% Plot the sigma of the cumulative gaussians for the different activation curves
+distant_vals = [1:80 84:size(distantRS_curve,2)];
+neighbor_vals = [1:31 33 35:size(neighborRS_curve,2)];
+
+distantRS_sigma = 1./(distantRS_params(distant_vals,1)*sqrt(2)); 
+neighborRS_sigma = 1./(neighborRS_params(neighbor_vals,1)*sqrt(2)); 
+sameRS_sigma = 1./(sameRS_params(:,1)*sqrt(2)); 
+
+types = [cellstr(repmat('distant',length(distantRS_sigma),1)); ...
+    cellstr(repmat('neighbor',length(neighborRS_sigma),1));...
+    cellstr(repmat('same',length(sameRS_sigma),1))];
+figure; boxplot([distantRS_sigma; neighborRS_sigma; sameRS_sigma],types) ;
+
+
+
+thresh_sameRS = -sameRS_params(:,2)./sameRS_params(:,1);
+thresh_neighborRS = -neighborRS_params(neighbor_vals,2)./neighborRS_params(neighbor_vals,1);
+thresh_distantRS = -distantRS_params(distant_vals,2)./distantRS_params(distant_vals,1);
+
+distantRS_coeffVar = 1./(distantRS_params(distant_vals,1)*sqrt(2))./thresh_distantRS; 
+neighborRS_coeffVar = 1./(neighborRS_params(neighbor_vals,1)*sqrt(2))./thresh_neighborRS; 
+sameRS_coeffVar = 1./(sameRS_params(:,1)*sqrt(2))./thresh_sameRS; 
+
+types = [cellstr(repmat('same',length(sameRS_sigma),1)); ...
+    cellstr(repmat('neighbor',length(neighborRS_sigma),1));...
+    cellstr(repmat('distant',length(distantRS_sigma),1))];
+figure; boxplot([sameRS_coeffVar; neighborRS_coeffVar; distantRS_coeffVar],types) ;
+title('Coefficients of variation')

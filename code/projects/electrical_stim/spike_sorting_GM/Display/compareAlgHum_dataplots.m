@@ -184,32 +184,33 @@ try legend([hits misses],'spikes', 'no spikes');
 catch
 end
 %% Plot the raw data traces - artifact estimated by the algorithm 
+ 
+if ~isempty(movieIndexRef)
 for ii = 1:4    
     movieIndex = movieIndexRef - 2 + ii;
     if size(elecRespAuto.tracesInfo.data,1) == size(elecResp.stimInfo.movieNos,2)/2
         subplot(2, 5, 6+ii);
-        movieIndex = round(movieIndexRef/2) - 2 + ii; 
-      
-        dataTraces = elecRespAuto.tracesInfo.data{movieIndex};
-        subtractionVector = elecRespAuto.Artifact{1}(movieIndex,:);
+        adjustedIndex = round(movieIndexRef/2) - 2 + ii; 
+        dataTraces = elecRespAuto.tracesInfo.data{adjustedIndex};
+        subtractionVector = elecRespAuto.Artifact{1}(adjustedIndex,:);
         dataToPlot = zeros(size(dataTraces, 1), length(subtractionVector));
         nPulses = size(dataTraces, 1);
         for i = 1:nPulses
             dataToPlot(i, :) = squeeze(dataTraces(i, 1:length(subtractionVector))) - subtractionVector;
         end
-        latencies = elecRespAuto.latencies{1}(movieIndex,:)'; %[elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
+        latencies = elecRespAuto.latencies{1}(adjustedIndex,:)'; %[elecResp.analysis.latencies{movieIndex} elecResp.analysis.otherLatencies{movieIndex}];
         
         % Plot neuron template.
         neuronTemplate = elecRespAuto.neuronInfo.templates{1};
        
         alignmentPoint = find(neuronTemplate == min(neuronTemplate));
         hold on;
-        for i = 1:elecResp.stimInfo.nPulses(movieIndex)-1
+        for i = 1:elecResp.stimInfo.nPulses(adjustedIndex)-1
             if ~any(latencies(i,:))
                 misses = plot(dataToPlot(i, :), 'Color',[0.8 0.8 0.8]);
             end
         end
-        for i = 1:elecResp.stimInfo.nPulses(movieIndex)-1
+        for i = 1:elecResp.stimInfo.nPulses(adjustedIndex)-1
             if any(latencies(i,:))
                 shiftedData = circshift(dataToPlot(i, :)', alignmentPoint + 1 - round(latencies(i,:)));
                 hits = plot(shiftedData, 'r');
@@ -218,14 +219,14 @@ for ii = 1:4
         plot(neuronTemplate,'k','LineWidth',1);
         ylim([min(neuronTemplate)-50 max(neuronTemplate)+50])
         xlim([0 40]);
-        title(sprintf('algorithm\n%0.0f: stimAmp %0.3f uA', movieIndex,...
-            elecResp.stimInfo.stimAmps(movieIndex)));
-    elseif movieIndex <= length(elecResp.stimInfo.movieNos)
+        title(sprintf('algorithm\n%0.0f: stimAmp %0.3f uA', adjustedIndex,...
+            elecRespAuto.stimInfo.listAmps(adjustedIndex,1)));
+    elseif movieIndex <= length(elecRespAuto.tracesInfo.data)
         subplot(2, 5, 6+ii);
-        try
-             dataTraces = elecRespAuto.tracesInfo.data{movieIndex}; 
-        catch
-            keyboard;
+        
+        dataTraces = elecRespAuto.tracesInfo.data{movieIndex}; 
+        if size(elecRespAuto.tracesInfo.data,1) ~= size(elecResp.stimInfo.movieNos,2)
+            keyboard; %test these cases, 
         end
         subtractionVector = elecRespAuto.Artifact{1}(movieIndex,:);
         dataToPlot = zeros(size(dataTraces, 1), length(subtractionVector));
@@ -256,4 +257,5 @@ for ii = 1:4
         title(sprintf('algorithm\n%0.0f: stimAmp %0.3f uA', movieIndex,...
             elecResp.stimInfo.stimAmps(movieIndex)));
     end
+end
 end
