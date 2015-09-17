@@ -54,7 +54,7 @@ else
     recElecs = options.recElecs;
     [templates, recElecs] = makeTemplatesFromEi(pathToEi,neuronIds,recElecs);
 end
-
+fprintf('recording electrode for n%0.0f is %0.0f\n',neuronIds,recElecs);
 templates = AlignTemplates(templates);
 prefElectrodes = PreferredElectrodes(templates); % Looks for the template with the maximum signal for each neuron
 input.neuronInfo.prefElectrodes =   prefElectrodes; %Define preferred electrodes
@@ -102,11 +102,10 @@ disp('finished initialize');
 %The Core of the algorithm: spike sorting via gibbs sampler + heuristics.
 %solutions are stored in Gibbs Structure
 [Gibbs, ~, ~, input, Log] = doSpikeSortingElectricalArtifact(input,initial);
- toc
+toc
 disp('finished doSpikeSortingElectricalArtifact');
 %Creates the output structures
-toc
 Output = OutputResults(input,Gibbs,Log);
-disp('finished create output');    
+   
     
 

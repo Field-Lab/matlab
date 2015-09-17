@@ -7,5 +7,7 @@ addpath(genpath('/Volumes/Lab/Users/grosberg/matlab/code'));
 addpath(genpath('/Volumes/Lab/Users/grosberg/matlab/private/lgrosberg'));
 addpath(genpath('/Volumes/Lab/Users/grosberg/direwolf_matlab')); 
 
+run /Volumes/Lab/Users/grosberg/cvx/cvx_startup.m
+
 set(0,'DefaultAxesFontSize',18,'DefaultAxesFontName','Myriad Pro');
 set(0,'DefaultFigureColor','w'); 
