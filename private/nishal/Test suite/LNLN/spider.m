@@ -164,7 +164,7 @@ text(0,1.3,tle,'horizontalalignment','center','fontweight','bold');
 
 
 % define data case colors
-col = color_index(c);
+col = distinguishable_colors(c);%color_index(c);
 
 
 % scale by range

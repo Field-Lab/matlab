@@ -20,8 +20,8 @@ for ipt=1:dim
 E(ipt,:) = E(ipt,:)/norm(E(ipt,:));
 end
 
-%h=figure;
-%plot(lam_sort,'*');
+h=figure;
+plot(lam_sort,'*');
 %k=input('Insert number of clusters');
 k=nSU;
 

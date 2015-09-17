@@ -98,7 +98,7 @@ end
 %         
 
 % Calculate STA
-        STA_depth=30;
+        STA_depth=100;
        
         mov = fitmovie_color-0.5;
         dim1=size(mov,1);
@@ -119,7 +119,7 @@ end
         %[stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs_largestblob(stas,cell_params);
         figure; 
         subplot(1,2,1);
-        imagesc(mean(stas{1}(:,:,:,6),3));
+        imagesc(mean(stas{1}(:,:,:,25),3));
         colormap gray
         axis image
         subplot(1,2,2);

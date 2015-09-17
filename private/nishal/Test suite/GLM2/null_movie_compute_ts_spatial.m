@@ -31,7 +31,7 @@ pause(1/120);
 end
 
 %% Replace 'stas_big2' with something WN-STA  
-destination_mat='~/Nishal/TS_data';
+destination_mat='/Volumes/Lab/Users/bhaishahster/Spatial_null/Figures_EJ';
 
 cell_params2=struct();
 cell_params2.type_name_inp='nc2';%'userCellList';
@@ -70,7 +70,7 @@ movie_full(:,:,(icnt-1)*size(movies{imov},3)+1:icnt*size(movies{imov},3))=movies
 icnt=icnt+1;
 end
 mov_idx=18;
-write_movie_idx(destination_mat,movie_full,mov_idx);
+write_movie_idx(destination_mat,movie_full,mov_idx,10);
 display(sprintf('Movie Length %d',size(movie_full,3)));
 
 %%

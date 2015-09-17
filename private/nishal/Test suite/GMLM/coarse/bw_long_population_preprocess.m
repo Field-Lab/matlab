@@ -17,14 +17,14 @@ movie_full(:,:,(imov-1)*3600+1:imov*3600) = double(movie_frames{imov}.matrix) - 
 end
 
 
-%%
-cell_list = [467,497,1292,1321,1471,1771,1786,2211,2506,2851,3361,3676,3843,4336,4367,4576,5086,5161,5386,5851,5986,6196,6256,7066,7292,7606]
+%% 
+cell_list = [121,586,650,826,841,1205,1276,1352,1426,1502,1772,1921,2101,2312,2313,2641,3152,3226,3647,3799,4021,4216,4366,4456,4711,4756,5131,5132,5134,5137,5431,5777,5778,5783,5914,5972,6257,6721,7068,7171,7291,7381,7607,7756];
 binnedSpikeResponses_coll = zeros(length(cell_list),size(movie_full,3));
 ttf = zeros(30,length(cell_list));
 total_mask_log = zeros(80*40,length(cell_list));
 for icell_list=1:length(cell_list)
     icell_list
-load(sprintf('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/WN_mapPRJ/organizedspikes_OFFPar_%d.mat',cell_list(icell_list)));
+load(sprintf('/Volumes/Lab/Users/akheitman/NSEM_Home/BlockedSpikes/2012-08-09-3/WN_mapPRJ/organizedspikes_ONPar_%d.mat',cell_list(icell_list)));
 spikes_by_block = organizedspikes.block.t_sp_withinblock(2:2:end);
 
 binnedSpikeResponses =[];
@@ -105,5 +105,5 @@ ttf = mean(ttf,2);
       mov = movie_full; 
       maskedMovdd= filterMov(mov,logical(0*totalMaskAccept2+1),squeeze(ttf));
       
-      save('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2012_08_09_3/Off_par2.mat','-v7.3','maskedMovdd','binnedSpikeResponses_coll','ttf','total_mask_log');
+      save('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2012_08_09_3/On_par2.mat','-v7.3','maskedMovdd','binnedSpikeResponses_coll','ttf','total_mask_log');
      

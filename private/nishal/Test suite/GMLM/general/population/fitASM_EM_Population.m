@@ -21,8 +21,8 @@ dt = 1/120;
 
 
 %% Initialize
-K = 0.01*randn(d,Ns);
-B = 0.01*randn(Ns,Nc);
+K =  2*(rand(d,Ns)-0.5);
+B = 2*(rand(Ns,Nc)-0.5);
 
 
 
@@ -56,7 +56,7 @@ while togo
  Bnew = 0*B;
  total_SU_act = sum(exp(Knew'*X),2);
  for isu=1:Ns
- Bnew(isu,:) = Bnew(isu,:) + gather(sum(squeeze(alpha(:,isu,:)).*Y,2)'/T);
+ Bnew(isu,:) = Bnew(isu,:) + gather(sum(squeeze(alpha(:,isu,:))'.*Y,2)'/T);
  end
 Bnew =log(Bnew);
 Bnew = Bnew - log(repmat(total_SU_act,[1,Nc]));

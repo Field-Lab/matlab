@@ -15,13 +15,13 @@ spatial_method{1}.struct_orig=[];
 spatial_method{1}.struct_null=[];
 
 icell_list=0;
-for cellID= [3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726];%]%[3152,3331,3692,4726,4921]%
+for cellID= [2747];%]%[3152,3331,3692,4726,4921]%
 try
     icell_list=icell_list+1
 %fittedGLM=glm_fit_from_WNrun({3152,3331,3365,3620,3637,3692,3901,3902,3903,3904,3916,4129,4246,4291,4726,4789,4921,5059,5177,5326,5581,6006,6076,6391,6541,6725,6812,6826,6829,6856,7188,7532,7533,7651,7652,7726}, '2014-11-05-2/data009_nps', 'RGB-10-2-0.48-11111-32x32', 900, '/Volumes/Analysis/nora/nishal_glmfits/15min_rank2');
 %save(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min_rank2/%d.mat',cellID),'fittedGLM');
 
-load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
+load(sprintf('/Volumes/Lab/Users/Nora/nishal_glmfits/30min/%d.mat',cellID));
 
 %% Replace fitted linear filter with STA - better filter?
 % 
@@ -39,29 +39,31 @@ load(sprintf('/Volumes/Analysis/nora/nishal_glmfits/15min/%d.mat',cellID));
 % fittedGLM.linearfilters.Stimulus.Filter = sta_filter*max(abs(fittedGLM.linearfilters.Stimulus.Filter(:)))/max(abs(sta_filter(:)));
 h1= figure;
 
-subplot(1,2,1);
-imagesc(fittedGLM.linearfilters.Stimulus.Filter(:,:,6));
+%subplot(1,2,1);
+imagesc(repelem(fittedGLM.linearfilters.Stimulus.Filter(:,:,6),20,20));
 colormap gray
+axis image
 caxis([min(fittedGLM.linearfilters.Stimulus.Filter(:)),max(fittedGLM.linearfilters.Stimulus.Filter(:))]);
-pause(1)
+set(gca,'xTick',[]);set(gca,'yTick',[]);
+%pause(1)
+% 
+% subplot(1,2,2);
+% ssta_dummy = zeros(size(fittedGLM.linearfilters.Stimulus.Filter,1)^2,30);
+% for itime =1:30
+%     xx=fittedGLM.linearfilters.Stimulus.Filter(:,:,itime);
+%     ssta_dummy(:,itime)=xx(:);
+% end
+% 
+% s=svd(ssta_dummy);
+% subplot(1,2,2);
+% plot(s,'*');
+% title(sprintf('Cell %d',cellID));
 
-subplot(1,2,2);
-ssta_dummy = zeros(size(fittedGLM.linearfilters.Stimulus.Filter,1)^2,30);
-for itime =1:30
-    xx=fittedGLM.linearfilters.Stimulus.Filter(:,:,itime);
-    ssta_dummy(:,itime)=xx(:);
-end
-
-s=svd(ssta_dummy);
-subplot(1,2,2);
-plot(s,'*');
-title(sprintf('Cell %d',cellID));
-
-print(h1,'-depsc',sprintf('/Volumes/Analysis/nishal/Spatial_null/GLM_STA_srun/cell_%d_linear_filter.eps',cellID));
+print(h1,'-depsc',sprintf('/Volumes/Lab/Users/bhaishahster/Spatial_null/Figures_EJ/cell_%d_linear_filter.eps',cellID));
 
 %% Test cell
 WNtime=120*24;
-WNmovie =double(rand(32,32,WNtime)>0.5)-0.5;
+WNmovie =(double(rand(32,32,WNtime)>0.5)-0.5);
 x=GLM_predict(fittedGLM, WNmovie, 50);
 plotraster(x,fittedGLM,'labels',true,'raster_length',24,'start_time',0)
 figure;
@@ -95,16 +97,17 @@ plotSpikeRaster(logical(x.rasters.glm_sim))
     WNSTA = response.analyse.STA;
          figure
          for itime=1:sta_params.Filtlen
+             itime
          imagesc(squeeze((WNSTA(:,:,itime)))');colormap gray
          caxis([min(WNSTA(:)),max(WNSTA(:))]);
          colorbar
-         pause(1/120)
+         pause
          end
 
     %% Generate null movie from STA calculated above ? 
     use_fit_list=[2,0,0,2,0];
     sta_spatial_method_list=[1,2,3,4,0];
-    for ispatial_method=1:5%1:5
+    for ispatial_method=4%1:5%1:5
     use_fit_var=use_fit_list(ispatial_method) % 2, 0,0,2
     sta_spatial_method_var=sta_spatial_method_list(ispatial_method)%1,2 ,3,4
     if(ispatial_method~=5) 
@@ -112,14 +115,15 @@ plotSpikeRaster(logical(x.rasters.glm_sim))
     else
       null_movie_compute_ts
     end
-      testmovie_filename='~/Nishal/TS_data/18.rawMovie';
-      testmovie=get_rawmovie(testmovie_filename,2880);
+      testmovie_filename='/Volumes/Lab/Users/bhaishahster/Spatial_null/Figures_EJ/18.rawMovie';
+      testmovie=get_rawmovie(testmovie_filename,2400);
       testmovie=permute(testmovie,[2 3 1]);
        
     %% Generate rasters
 x=GLM_predict(fittedGLM, testmovie, 100);
 
-hFig = plotraster(x,fittedGLM,'labels',true,'raster_length',24,'start_time',0)
+hFig = plotraster(x,fittedGLM,'labels',true,'start_time',0,'raster_length',10)
+hfig2 = plotraster(x,fittedGLM,'labels',true,'start_time',10,'raster_length',10)
 % figure;
 % plotSpikeRaster(logical(x.rasters.glm_sim))
 original_struct= sqrt(var(x.rate(1:floor(end/2))));

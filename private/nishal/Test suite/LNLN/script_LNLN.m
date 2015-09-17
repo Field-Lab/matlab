@@ -15,7 +15,7 @@ h= figure;
 plotSpikeRaster(response~=0,'PlotType','vertline');
 %print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/sample_firing.pdf'));
 
-Tlen = 120*60*90;
+Tlen = 120*60*30;
 movie = (randn(sz,sz,Tlen)>0)-0.5;
 dt=1/120;
 nTrials=1;
@@ -71,7 +71,7 @@ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN
  binnedResponses = response';
 
  filteredStimDim =size(maskedMov,1);
-
+ 
  %  EM like Max Expected Likelihood .. 
  interval=1;
  %[fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov2,8,4,interval);   
@@ -89,7 +89,7 @@ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN
  fval_log(ifit) = f_val;
  
  end
- save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU),'fitGMLM_log','fval_log','model','mask2');
+ %save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU),'fitGMLM_log','fval_log','model','mask2');
  end
   
 
@@ -134,7 +134,7 @@ set(gca,'yTick',[]);
 title(sprintf('SU # %d',ifilt));
 end
 
-print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/Exp_ASM_MEL_EM_filters SU%d.pdf',nSU));
+%print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/Exp_ASM_MEL_EM_filters SU%d.pdf',nSU));
 
 % plot weights
 figure;
@@ -165,7 +165,7 @@ end
 
 h =spider(dot_filter_su',sprintf('Extracted filters: %d',nSU));
 
-print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/spider SU%d.pdf',nSU));
+%print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/spider SU%d.pdf',nSU));
 end
 
 %% Weight magnitudes

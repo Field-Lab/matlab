@@ -95,7 +95,7 @@ end
         % Used in movie post process
         cell_params.STAlen=30;
         [stas_clipped,totalMaskAccept2,CellMasks]= clipSTAs(stas,cell_params);
-        
+     
 
 % Calculate STA
         STA_depth=30;
@@ -114,9 +114,10 @@ end
         
         % Find the mask using freshly calculated STA
         hhh=figure; 
-        for itime=1:STA_depth
+        for itime=25%1:STA_depth
+            itime
         subplot(1,2,1);
-        imagesc(mean(STA_recalc(:,:,:,itime),3)');
+        imagesc(mean(STA_recalc(:,:,:,itime),3));
         colormap gray
        caxis([min(STA_recalc(:)),max(STA_recalc(:))]);
        
@@ -126,7 +127,7 @@ end
       %  colormap gray
         axis image
         %tf 
-        pause(0.1); 
+       pause(0.1); 
         end
         
         xx = abs(mean(STA_recalc(:,:,:,26),3));
@@ -144,47 +145,8 @@ end
       figure;
         plot(ttf);
      
- mov=squeeze(mean(mov,3));
- maskedMovdd= filterMov(mov,totalMaskAccept2,squeeze(ttf));
+%         
+%  mov=squeeze(mean(mov,3));
+%  maskedMovdd= filterMov(mov,ones(size(mov,1),size(mov,2)),squeeze(ttf_avg));
  %maskedMov2dd=[maskedMovdd;ones(1,size(maskedMovdd,2))];
  totalMaskAccept = totalMaskAccept2;
- 
- clear mov
-% [fitGMLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,maskedMov,7,4);
-%  
-%  x_coord=[26-13:26+13]; y_coord = [26-13:26+13];
-% %% Load old GLM fits
-% fitGLM = load (cell_glm_fit);
-% fitGLM=fitGLM.fittedGLM;
-% % tf = fitGLM.linearfilters.Stimulus.time_rk1;
-% % figure;
-% % plot(tf);
-% x_coord = fitGLM.linearfilters.Stimulus.x_coord;
-% y_coord = fitGLM.linearfilters.Stimulus.y_coord;
-% totalMaskAccept = zeros(40,40);
-% totalMaskAccept(x_coord,y_coord)=1;
-% 
-%  
-%         mov = fitmovie_color-0.5;
-%         iisp = 1:size(mov,4);
-%         iisp = iisp(spksGen~=0 & iisp' > 31);
-%         STA_recalc = zeros(40,40,3,30);
-%         for ilen=1:length(iisp)
-%         STA_recalc = STA_recalc + mov(:,:,:,iisp(ilen)-29:iisp(ilen));
-%         end
-%         STA_recalc =STA_recalc/numel(iisp);
-%         
-%         figure; 
-%         subplot(1,2,1);
-%         imagesc(mean(STA_recalc(:,:,:,26),3));
-%         colormap gray
-%         subplot(1,2,2);
-%         imagesc(totalMaskAccept);
-%         colormap gray
-%         
-%         figure;
-%         imagesc(mean(STA_recalc(x_coord,y_coord,:,26),3));colormap gray
-%         
-% mov=squeeze(mean(mov,3));
-% maskedMovdd= filterMov(mov,totalMaskAccept,squeeze(tf));
-% maskedMov2dd=[maskedMovdd;ones(1,size(maskedMo

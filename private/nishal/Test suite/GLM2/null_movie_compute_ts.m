@@ -47,7 +47,7 @@ pause(1/120);
 end
 
 %% Replace 'stas_big2' with something WN-STA  
-destination_mat='~/Nishal/TS_data';
+destination_mat='/Volumes/Lab/Users/bhaishahster/Spatial_null/Figures_EJ';
 
 cell_params2=struct();
 cell_params2.type_name_inp='cell';

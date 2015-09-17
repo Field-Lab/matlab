@@ -1,8 +1,14 @@
-function sig_log = plot_cone_interaction(binnedResponsesbigd  , maskedMov ,cones,plot_fits)
+function sig_log = plot_cone_interaction2(binnedResponsesbigd  , maskedMov ,ref_cone,cones1,cones2,plot_fits)
 
-icone = cones(1);jcone=cones(2);sig_log=[];
+icone = ref_cone;sig_log=[];
 col='rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr';
+for jcone = cones1
 col(jcone)='b';
+end
+
+for jcone = cones2
+    col(jcone)='g';
+end
 
 %figure;
 % subplot(3,1,1);
@@ -33,8 +39,8 @@ end
 hold on;
 
 
-    line_width=1;
-    if(strcmp(col(jcone),'b'))
+    line_width=0.5;
+    if(strcmp(col(jcone),'b')|strcmp(col(jcone),'g') )
     line_width=2;
     end
 if(~plot_fits)
@@ -49,6 +55,8 @@ hold on;
 end
 
 
+end
+
 spkRate=[];
 for iconeInp=1:nbins-1
     idx = (maskedMov(icone,:) >= X(iconeInp) & maskedMov(icone,:) <= X(iconeInp+1));
@@ -58,15 +66,13 @@ end
 
 
 if(~plot_fits)
-plot(iconeInp_log,spkRate,'k');
+plot(iconeInp_log,spkRate,'k','LineWidth',2);
 hold on;
 else
 fit_res = fit(iconeInp_log',spkRate','normcdf(x,mu,sigma)+b');
 sig_log=[sig_log;fit_res.sigma];
-plot(iconeInp_log',feval(fit_res,iconeInp_log'),'k') 
+plot(iconeInp_log',feval(fit_res,iconeInp_log'),'k','LineWidth',2) 
 hold on;
-end
-
 end
 
 % 
