@@ -28,29 +28,29 @@ close all
 clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-run_opts.date='2006-06-06-2/'; % one slash at the end
-run_opts.concatname='data003-nwpca'; % Name (or modified name) of run, no slashes
-run_opts.concatname_parasol='data003-nwpca'; % Name (or modified name) of run, no slashes
+run_opts.date='2015-08-17-5/'; % one slash at the end
+run_opts.concatname='d01-29-norefit'; % Name (or modified name) of run, no slashes
+run_opts.concatname_parasol='d01-29-norefit'; % Name (or modified name) of run, no slashes
 
 % Sometimes the data has two versions of the concate name
-run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data003'];
+run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data014/data014'];
 % run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  run_opts.concatname];
 % 
 % run_opts.file_name_parasol = [run_opts.date, '/', run_opts.concatname_parasol, '/',  run_opts.concatname_parasol];
-run_opts.file_name_parasol = [run_opts.date, '/', run_opts.concatname_parasol, '/',  'data003'];
+run_opts.file_name_parasol = [run_opts.date, '/', run_opts.concatname_parasol, '/',  'data014/data014'];
 
 
 % Full path to movie xml
 % run_opts.movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
 
 
-run_opts.load_location = ['/Users/colleen/Desktop/Cell Characteristics/', run_opts.date, '/', run_opts.concatname];
-run_opts.load_location_parasol = ['/Users/colleen/Desktop/Cell Characteristics/', run_opts.date, '/', run_opts.concatname_parasol];
+run_opts.load_location = ['/Users/colleen/Desktop/Cell Characteristics/', run_opts.date, '/', run_opts.concatname,'/data014'];
+run_opts.load_location_parasol = ['/Users/colleen/Desktop/Cell Characteristics/', run_opts.date, '/', run_opts.concatname_parasol, '/data014'];
 
 run_opts.save_location_root = '/Users/colleen/Desktop/Large Cell Summary Fitted/';
 % Number of frames to use for generator signal as well as number of frames
 % of the timecourse to display
-run_opts.num_frames = 15;
+run_opts.num_frames = 20;
 
 % Number of bins to use for the nonlinearity graph
 run_opts.num_bins = 10;
@@ -61,7 +61,7 @@ params.padding = 7;
 % Cell specification can be one cell type or multiple in a cell array.
 % Use the same spelling/capitalization as the vision params file
 % OFF large-2 in vision = OFF large 2
-cell_specification = {'ON large 4'};
+cell_specification = {'ON large 3'};
 cell_specification_parasol = {'ON parasol'};
 run_parasol = 1;
 run_genSignal = 0;
@@ -70,13 +70,13 @@ num_electrodes = 512;
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Where to save
-run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, '/'];
-run_opts.filepath_parasol= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname_parasol, '/'];
+run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, '/data014/'];
+run_opts.filepath_parasol= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname_parasol, '/data014/'];
 
 % Used for labeling plot
 run_opts.cell_type = cell_specification;
 
-% load fitted data
+% load fitted datadata014
 s=dir(fullfile(run_opts.load_location,'*.mat'));
 
 if size(cell_specification,2) > 1
