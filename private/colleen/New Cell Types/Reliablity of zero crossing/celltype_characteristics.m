@@ -7,11 +7,11 @@ clear
 close all
 clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-run_opts.date='2006-06-06-2'; % one slash at the end
-run_opts.concatname='data003-nwpca'; % Name (or modified name) of run, no slashes
+run_opts.date='2007-05-01-2'; % one slash at the end
+run_opts.concatname='data000'; % Name (or modified name) of run, no slashes
 
 % Sometimes the data has two versions of the concate name
-run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data003'];
+run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data000'];
 % run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  run_opts.concatname];
 %
 % Full path to movie xml
@@ -19,17 +19,19 @@ run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  'data003'];
 
 
 run_opts.save_location_root = '/Users/colleen/Desktop/Cell Characteristics/';
+% Where to save
+run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, ];
 
 
 % Cell specification can be one cell type or multiple in a cell array.
 % Use the same spelling/capitalization as the vision params file
 % OFF large-2 in vision = OFF large 2
-run_opts.cell_specification = {'ON large 1'};
+run_opts.cell_specification = {'ON large 2'};
 
 if isempty(strfind(run_opts.cell_specification{1}, 'large'))
     run_opts.fitted = 0;
 else
-    run_opts.fitted = 1;
+    run_opts.fitted = 0;
 end
 
 
@@ -55,8 +57,6 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Where to save
-run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, '/'];
 
 
 
@@ -169,7 +169,12 @@ else
         % temp_stix = biggestBlob;
         % temp_stix = sig_stixels
         % fit_tc = time_course_from_sta(sta_fit, temp_stix);
-        [threshold] = sig_stixels_threshold(sta, run_opts.false_stixels);
+        try
+            [threshold] = sig_stixels_threshold(sta, run_opts.false_stixels);
+        catch
+            threshold = 2;
+        end
+        
         [sig_stixels] = significant_stixels(sta, 'select', 'thresh', 'thresh', threshold);
         fit_tc_full = time_course_from_sta(sta, sig_stixels);
         
@@ -177,34 +182,42 @@ else
         % fit_tc{i} = fit_tc_full ./ norm_factor;
         fit_tc{i} = fit_tc_full;
         
-        if size(fit_tc{i},2) > 1
-            timecourse_green(i,:) = fit_tc{i}(:,2);
-        else
-            timecourse_green(i,:) = fit_tc{i}(:,1);
-        end
+        if ~isempty(fit_tc{i})
+            if size(fit_tc{i},2) > 1
+                timecourse_green(i,:) = fit_tc{i}(:,2);
+            else
+                timecourse_green(i,:) = fit_tc{i}(:,1);
+            end
         
+
+            if size(sta, 3) == 3
+                plot(linspace(1,size(sta,4),size(fit_tc{i},1)), fit_tc{i}(:,1), 'r')
+                hold on
+                plot(linspace(1,size(sta,4),size(fit_tc{i},1)),fit_tc{i}(:,2), 'g')
+                t_line = plot(linspace(1,size(sta,4),size(fit_tc{i},1)),fit_tc{i}(:,3), 'b');
+            elseif size(sta, 3) == 1
+                t_line = plot(linspace(1,size(sta,4),size(fit_tc{i},1)), fit_tc{i}, 'k');
+                hold on
+            else
+                error('dimensions of sta color is not recognized')
+            end
+                
         
-        if size(sta, 3) == 3
-            plot(linspace(1,size(sta,4),size(fit_tc{i},1)), fit_tc{i}(:,1), 'r')
-            hold on
-            plot(linspace(1,size(sta,4),size(fit_tc{i},1)),fit_tc{i}(:,2), 'g')
-            t_line = plot(linspace(1,size(sta,4),size(fit_tc{i},1)),fit_tc{i}(:,3), 'b');
-        elseif size(sta, 3) == 1
-            t_line = plot(linspace(1,size(sta,4),size(fit_tc{i},1)), fit_tc{i}, 'k');
-            hold on
-        else
-            error('dimensions of sta color is not recognized')
-        end
-        
-        
-        if abs(min(timecourse_green(i,:))) > abs(max(timecourse_green(i,:)))
-            flip = 1;
-        else
-            flip =0;
-        end
+            if abs(min(timecourse_green(i,:))) > abs(max(timecourse_green(i,:)))
+                flip = 1;
+            else
+                flip =0;
+            end
+end
         
         figure
         temp_rf = rf_from_sta(sta, 'sig_stixels', sig_stixels);
+        
+                if isempty(fit_tc{i})
+flip = 0;
+                end
+                
+                    
         if flip == 1
             sta_img = imagesc(norm_image(-temp_rf));
             hold on
