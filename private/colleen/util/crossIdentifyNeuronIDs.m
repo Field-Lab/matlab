@@ -1,5 +1,5 @@
 function neuronPairsRefVsNew = crossIdentifyNeuronIDs(dataFolderRef, dataFolderNew,...
-                                refNeuronIDs, newNeuronIDs)
+                                refNeuronIDs, newNeuronIDs, autoClassify)
 % crossIdentifyNeuronIDs(dataFolderRef,dataFolderNew,...
 %                        refNeuronIDs,newNeuronIDs)
 %
@@ -68,43 +68,64 @@ for kk=1:length(contentsDataFolder)
     isNeuronFile = strfind(contentsDataFolder(kk).name,'.neurons');
     isNeuronRawFile = strfind(contentsDataFolder(kk).name,'.neurons-raw');
     isEIFile = strfind(contentsDataFolder(kk).name,'.ei');
+    if autoClassify
+            isParamFile = strfind(contentsDataFolder(kk).name,'.params');
+    end
     if isNeuronFile
         if isNeuronRawFile
         else
             if (isNeuronFile+length('.neurons')-1)==length(contentsDataFolder(kk).name)
-                neuronRef_path =  [dataFolderRef contentsDataFolder(kk).name];
-                break;
+                neuronRef_path =  [dataFolderRef contentsDataFolder(kk).name];                
             end
         end
     end
     if isEIFile
         eiRef_path = [dataFolderRef contentsDataFolder(kk).name];
     end
+    if autoClassify       
+        if isParamFile
+            paramRef_path = [dataFolderRef contentsDataFolder(kk).name];
+        end
+        
+    end
 end
 neuronRefFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronRef_path);
 eiRefFile = edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile(eiRef_path);
-
+if autoClassify
+    paramRefFile = edu.ucsc.neurobiology.vision.io.ParametersFile(paramRef_path);
+end
 % Finding the new neuron and ei files
 contentsDataFolder = dir(dataFolderNew);
 for kk=1:length(contentsDataFolder)
     isNeuronFile = strfind(contentsDataFolder(kk).name,'.neurons');
     isNeuronRawFile = strfind(contentsDataFolder(kk).name,'.neurons-raw');
     isEIFile = strfind(contentsDataFolder(kk).name,'.ei');
+    if autoClassify
+        isParamFile = strfind(contentsDataFolder(kk).name,'.params');
+    end
     if isNeuronFile
         if isNeuronRawFile
         else
             if (isNeuronFile+length('.neurons')-1)==length(contentsDataFolder(kk).name)
                 neuronNew_path =  [dataFolderNew contentsDataFolder(kk).name];
-                break;
             end
         end
     end
     if isEIFile
         eiNew_path = [dataFolderNew contentsDataFolder(kk).name];
     end
+    if autoClassify
+        if isParamFile
+            paramNew_path = [dataFolderNew contentsDataFolder(kk).name];
+        end
+    end
 end
 neuronNewFile = edu.ucsc.neurobiology.vision.io.NeuronFile(neuronNew_path);
 eiNewFile = edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile(eiNew_path);
+if autoClassify
+    paramNewFile = edu.ucsc.neurobiology.vision.io.ParametersFile(paramNew_path);
+
+end
 
 %% Reading the EIs 
 
@@ -187,6 +208,22 @@ for kk=1:nNeuronsRef
     end
 end
 
+if autoClassify
+    for i = 1:length(neuronPairsRefVsNew)
+        if ~isnan(neuronPairsRefVsNew(i,2))
+            class = paramRefFile.getCell(neuronPairsRefVsNew(i,1), 'classID');
+            string = char(class.toString);
+            begin = strfind(string, 'All');
+            paramNewFile.setCell(neuronPairsRefVsNew(i,2), 'classID', string(begin:end));
+        end
+    end
+end
+
 match_rate = (nNeuronsRef - counter)/nNeuronsRef
 mean(l2dist)
+if autoClassify
+    paramNewFile.close(1);
+    paramRefFile.close(1);
+end
+
 end % crossCheckDatasets
