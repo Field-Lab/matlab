@@ -7,7 +7,7 @@ mdf_file = dataparam.mdf_file;
 num_frames = dataparam.num_frames;
 cell_index = get_cell_indices(datarun, vision_id);
 to_save = dataparam.to_save;
-save_location = ['/Users/colleen/Desktop/MATLAB_STAs/', dataparam.date, '/', dataparam.concatname, '/'];
+save_location = dataparam.save_location;
 if exist('dataparam.scale')
     scale = dataparam.scale;
 else
