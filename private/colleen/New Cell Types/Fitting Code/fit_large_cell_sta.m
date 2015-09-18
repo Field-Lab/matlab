@@ -13,32 +13,9 @@ dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48
 % Right Movie Information
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
 dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname, '/','data003'];
-% 
+%
 dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
 
-
-% % Wrong Movie Information
-% dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-22222.xml';
-% 
-% % Right Movie Information
-% dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
-% 
-% % 
-
-
-
-
-
-% file_name = '2010-09-24-1/d05-36-norefit/data006-from-d05_36/fake_sta/data006-from-d05_36';
-% mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-1-6-0.48-22222.xml';
-% 
-% % Right Movie Information
-% file_name2 = '2010-09-24-1/d05-36-norefit/data006-from-d05_cl36/real_sta/data006-from-d05_36';
-% mdf_file2='/Volumes/Analysis/stimuli/white-noise-xml/BW-1-6-0.48-11111.xml';
-% 
-% 
-% date='2010-09-24-1';
-% concatname='data006-from-d05_36';
 
 
 
@@ -46,7 +23,7 @@ dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48
 fitparam.fit_n_one_filters = true;
 fitparam.fit_n_two_filters = true;
 fitparam.fit_surround_sd_scale = false;
-fitparam.fit_surround = false; 
+fitparam.fit_surround = false;
 fitparam.initial_n_one_filters =8;
 fitparam.initial_n_two_filters = 8;
 
@@ -66,14 +43,14 @@ dataparam.cell_type = {'ON large 1'};
 
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 0;
-% cell_specification = [218];%,861,1113,187,1307,1367,1669,1700,1787,1999,2133,2254,2315,2342,2417,2462]; %ON parasol
-dataparam.cell_specification = [5716]; %OFF parasol
+dataparam.cell_specification = [5716]; %can be anything if select_cells =0
 
-% cell_specification = [481];
+
+dataparam.filepath=['/Users/colleen/Desktop/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
+
 %% END OF INPUT
 dataparam.folder = dataparam.cell_type{1};
 % file path to save data and pictures
-dataparam.filepath=['/Users/colleen/Desktop/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
 if ~exist([dataparam.filepath,dataparam.folder],'dir')
     mkdir([dataparam.filepath,dataparam.folder]);
 end
@@ -174,26 +151,6 @@ for rgc = 1:num_rgcs
     % rate
     
     [threshold] = sig_stixels_threshold(temp_sta, fitparam.false_stixels);
-%     [sig_stixels] = significant_stixels(temp_sta, 'select', 'thresh', 'thresh', threshold);
-%     if sum(sum(full(sig_stixels))) == 0
-%         fitparam.false_stixels = fitparam.false_stixels +1;
-%         [threshold] = sig_stixels_threshold(temp_sta, fitparam.false_stixels);
-%         [sig_stixels] = significant_stixels(temp_sta, 'select', 'thresh', 'thresh', threshold)
-%         if sum(sum(full(sig_stixels))) == 0
-%             fitparam.false_stixels = fitparam.false_stixels +1;
-%             [threshold] = sig_stixels_threshold(temp_sta, fitparam.false_stixels);
-%             [sig_stixels] = significant_stixels(temp_sta, 'select', 'thresh', 'thresh', threshold)
-%             if sum(sum(full(sig_stixels))) == 0
-%                 fitparam.false_stixels = fitparam.false_stixels - 2;
-% 
-%                 continue;
-%             else
-%                                 fitparam.false_stixels = fitparam.false_stixels - 1;
-% 
-%             end
-%         end
-%         
-%     end
     
     mark_params.select = 'thresh';
     mark_params.thresh = threshold;
@@ -202,16 +159,16 @@ for rgc = 1:num_rgcs
     
     % Get the STA from the right movie
     temp_sta = datarun2.stas.stas{cell_indices(rgc)};
+    
+    % doesn't work well
     if fitparam.independent_fit
         [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta_(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'frame_number', fitparam.num_frames, 'mark_params', mark_params);
         print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]));
         
     else
-        
-%         [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', true, 'fit_n_two_filters', true, 'fit_surround_sd_scale', false, 'fit_surround', false, 'frame_number', num_frames, 'mark_params', mark_params);
         [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'frame_number', fitparam.num_frames, 'mark_params', mark_params,'biggest_blob', true);
-       
-flip = strfind(lower(dataparam.cell_type{1}), 'off');
+        
+        flip = strfind(lower(dataparam.cell_type{1}), 'off');
         if flip == 1
             plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
         else
@@ -225,24 +182,7 @@ flip = strfind(lower(dataparam.cell_type{1}), 'off');
         save_sig_stixels{rgc} = sig_stixels;
     end
     
-    % Plot result
-    %  plot_sta_fit(sta_temp, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'off');
-    
-    
-    % Add raw data to plot
-    % hold on
-    %         real_stix = significant_stixels(temp_sta);
-    %       biggestBlob = ExtractNLargestBlobs(full(real_stix), 1);
-    %     real_stix = biggestBlob;
-    %     tc = time_course_from_sta(temp_sta, real_stix);
-    %     norm_factor = max(abs(reshape(tc, 1, [])));
-    %     tc = tc ./ norm_factor;
-    %     hold on
-    %     subplot(2,1,2)
-    %         plot(tc(:,1), 'r', 'linewidth', 2)
-    %         plot(tc(:,2), 'g', 'linewidth', 2)
-    %         plot(tc(:,3), 'b', 'linewidth', 2)
-    
+ 
     
     
     if isempty(temp_fit_params)
@@ -250,51 +190,45 @@ flip = strfind(lower(dataparam.cell_type{1}), 'off');
         warn_message = ['cell ',num2str(temp_id), ' has no sig stixels and no fit'];
         warning(warn_message)
     end
-  
+    
     datarun2.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
     datarun2.matlab.sta_fits{cell_indices(rgc)}.sig_stixels = sig_stixels;
     
     
     
-        parameters(rgc,1) = dataparam.cell_specification(rgc);
-        parameters(rgc,2) = cell_indices(rgc);
-        parameters(rgc,3) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_point_x;
-        parameters(rgc,4) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_point_y;
-        parameters(rgc,5) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_sd_x;
-        parameters(rgc,6) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_sd_y;
-        parameters(rgc,7) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_rotation_angle;
-        parameters(rgc,8) = datarun2.matlab.sta_fits{cell_indices(rgc)}.color_weight_a;
-        parameters(rgc,9) = datarun2.matlab.sta_fits{cell_indices(rgc)}.color_weight_b;
-        parameters(rgc,10) = datarun2.matlab.sta_fits{cell_indices(rgc)}.color_weight_c;
-        parameters(rgc,11) = datarun2.matlab.sta_fits{cell_indices(rgc)}.x_dim;
-        parameters(rgc,12) = datarun2.matlab.sta_fits{cell_indices(rgc)}.y_dim;
-        parameters(rgc,13) = datarun2.matlab.sta_fits{cell_indices(rgc)}.surround_sd_scale;
-        parameters(rgc,14) = datarun2.matlab.sta_fits{cell_indices(rgc)}.surround_amp_scale;
-        parameters(rgc,15) = datarun2.matlab.sta_fits{cell_indices(rgc)}.scale_one;
-        parameters(rgc,16) = datarun2.matlab.sta_fits{cell_indices(rgc)}.scale_two;
-        parameters(rgc,17) = datarun2.matlab.sta_fits{cell_indices(rgc)}.tau_one;
-        parameters(rgc,18) = datarun2.matlab.sta_fits{cell_indices(rgc)}.tau_two;
-        parameters(rgc,19) = datarun2.matlab.sta_fits{cell_indices(rgc)}.n_one_filters;
-        parameters(rgc,20) = datarun2.matlab.sta_fits{cell_indices(rgc)}.n_two_filters;
+    parameters(rgc,1) = dataparam.cell_specification(rgc);
+    parameters(rgc,2) = cell_indices(rgc);
+    parameters(rgc,3) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_point_x;
+    parameters(rgc,4) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_point_y;
+    parameters(rgc,5) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_sd_x;
+    parameters(rgc,6) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_sd_y;
+    parameters(rgc,7) = datarun2.matlab.sta_fits{cell_indices(rgc)}.center_rotation_angle;
+    parameters(rgc,8) = datarun2.matlab.sta_fits{cell_indices(rgc)}.color_weight_a;
+    parameters(rgc,9) = datarun2.matlab.sta_fits{cell_indices(rgc)}.color_weight_b;
+    parameters(rgc,10) = datarun2.matlab.sta_fits{cell_indices(rgc)}.color_weight_c;
+    parameters(rgc,11) = datarun2.matlab.sta_fits{cell_indices(rgc)}.x_dim;
+    parameters(rgc,12) = datarun2.matlab.sta_fits{cell_indices(rgc)}.y_dim;
+    parameters(rgc,13) = datarun2.matlab.sta_fits{cell_indices(rgc)}.surround_sd_scale;
+    parameters(rgc,14) = datarun2.matlab.sta_fits{cell_indices(rgc)}.surround_amp_scale;
+    parameters(rgc,15) = datarun2.matlab.sta_fits{cell_indices(rgc)}.scale_one;
+    parameters(rgc,16) = datarun2.matlab.sta_fits{cell_indices(rgc)}.scale_two;
+    parameters(rgc,17) = datarun2.matlab.sta_fits{cell_indices(rgc)}.tau_one;
+    parameters(rgc,18) = datarun2.matlab.sta_fits{cell_indices(rgc)}.tau_two;
+    parameters(rgc,19) = datarun2.matlab.sta_fits{cell_indices(rgc)}.n_one_filters;
+    parameters(rgc,20) = datarun2.matlab.sta_fits{cell_indices(rgc)}.n_two_filters;
+    
+    parameters(rgc,21) = datarun2.matlab.sta_fits{cell_indices(rgc)}.frame_number;
+    parameters(rgc,22) = datarun2.matlab.sta_fits{cell_indices(rgc)}.rmse;
+    
+    sta = datarun2.stas.stas{cell_indices(rgc)};
+    parameters_per_cell = datarun2.matlab.sta_fits{cell_indices(rgc)};
+    save(sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],['cell_',int2str(datarun.cell_ids(cell_indices(rgc)))]), 'dataparam', 'fitparam', 'parameters_per_cell', 'sta' )
 
-        parameters(rgc,21) = datarun2.matlab.sta_fits{cell_indices(rgc)}.frame_number;
-        parameters(rgc,22) = datarun2.matlab.sta_fits{cell_indices(rgc)}.rmse;
-        
-        sta = datarun2.stas.stas{cell_indices(rgc)};
-        parameters_per_cell = datarun2.matlab.sta_fits{cell_indices(rgc)};
-save(sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],['cell_',int2str(datarun.cell_ids(cell_indices(rgc)))]), 'dataparam', 'fitparam', 'parameters_per_cell', 'sta' )
-
-    %
-    %
-    %
-    % information{3} = parameters;
-    % information{4} = datarun.matlab.sta_fits;
-    % save([dataset,'-', cell_type{1}], 'information')
     
 end
 
 
-% return;
+;
 
 figure
 for q = 1:num_rgcs
@@ -302,46 +236,13 @@ for q = 1:num_rgcs
     temp_fit_params = datarun2.matlab.sta_fits{cell_indices(q)};
     fit_tc{q} =  plot_fit_timecourses(temp_sta, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, temp_fit_params.fit_params, temp_fit_params.fixed_params, save_sig_stixels{rgc}, 1); % plot_raw = 1
     hold on
-
+    
 end
 title({['Fits of ' num2str(length(dataparam.cell_specification)), ' ', dataparam.cell_type{1}, ' Cells']; dataset})
 xlabel('Time')
 ylabel('Amplitude')
 
 print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],[dataparam.cell_type{1}, ' Timecourses']));
-
-
-%% Look at the results
-% figure
-% suptitle({information{1}; [num2str(size(information{3},1)), cell_type{1}, ' cells']})
-%
-% %scale 1
-% scale_one = information{3}(:,15);
-% subplot(3,2,1)
-% hist(scale_one);
-% title('Scale One');
-%
-% scale_two = information{3}(:,16);
-% subplot(3,2,2) ; hist(scale_two);
-% title('Scale Two');
-%
-% tau_one = information{3}(:,17);
-% subplot(3,2,3) ; hist(tau_one);
-% title('Tau One');
-%
-% tau_two = information{3}(:,18);
-% subplot(3,2,4) ; hist(tau_two);
-% title('Tau Two');
-%
-% n = information{3}(:,19);
-% subplot(3,2,5) ; hist(n);
-% title('N Filters');
-%
-% area = information{3}(:,5).*information{3}(:,6)*pi;
-% subplot(3,2,6) ; hist(area);
-% title('RF Size');
-
-
 
 %% Plot mosaic
 figure
@@ -362,9 +263,6 @@ for q = 1:num_rgcs
     
     
     hold on
-    %     temp_rf = rf_from_sta(sta);
-    %     imagesc(norm_image(temp_rf))
-    %     hold on
     h(q) = plot_spatial_sd(all_params);
     set(h(q), 'DisplayName', 'Fitting Code');
     drawnow
@@ -375,11 +273,7 @@ set(gca, 'xlim', [0, datarun2.stimulus.field_width]);
 set(gca, 'ylim', [0, datarun2.stimulus.field_height]);
 set(gca,'YDir','reverse');
 %% compare mosaic to that from vision
-% datarun=load_data('2010-09-24-0/data001-nwpca-cr');
-% datarun=load_sta(datarun);
-% datarun=load_params(datarun);
-% datarun=load_neurons(datarun);
-% datarun=set_polarities(datarun);
+
 hold on
 g = plot_rf_summaries(datarun2,{cell_type_index}, 'plot_fits',1,'label',0, 'foa', -1, 'clear', 0); %looking at the data type 8 is on large
 children = get(g,'children');
@@ -389,25 +283,4 @@ legend_handle = legend([h(1), children(1)], {'Fitting Code', 'Vision'}, 'locatio
 title({['STA Fitting Code:  ', dataparam.cell_type{1}] ; dataset})
 print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],[dataparam.cell_type{1}, ' Mosaic']));
 
-
-%
-% area  = parameters(:,5) .* parameters(:,6) .* pi;
-% diameters = 2*[parameters(:,5) , parameters(:,6)];
-% column1_larger = find(diameters(:,1)>diameters(:,2));
-% column2_larger = find(diameters(:,1)<=diameters(:,2));
-% max_diameters = [diameters(column1_larger,1); diameters(column2_larger,2)];
-% disp('Mean RF diameter')
-% mean(max_diameters)
-% %% Calculate zero crossing
-% zero_crossing = zeros(size(fit_tc,2),1);
-% for i = 1:size(fit_tc,2)
-%     cell_ = fit_tc{i}(:,2)*16.65; % units of ms
-%
-%     [x0,y0] = intersections(1:num_frames,cell_,1:num_frames, zeros(num_frames,1)); % find zero crossing
-%     zero_crossing(i) = x0(1);
-% end
-% information{5} = zero_crossing;
-% save([dataset,'-', cell_type{1}], 'information')
 fitting_results = datarun2.matlab.sta_fits;
-% [init_mean, init_sd, init_color_weight, init_scale, init_tau, init_n_filters] = computeAverageFittingParameters(fitting_results)
-% save([sprintf('%s%s',[dataparam.filepath,dataparam.folder,'/']), 'results.mat'], 'fitting_results')
