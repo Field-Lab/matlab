@@ -71,7 +71,7 @@ end
 %   yy = yy(find(yy ~= 0 & yy~=1));
 %   xx = xx(find(yy ~= 0 & yy~=1));
   h=plot(xx, yy, plotcolor, 'linewidth',plotwidth);
-  axis ([xlim,0,(numtrials)*1.5]);  
+%   axis ([xlim,0,numtrials*2]);  
   
   if (showtimescale)
     set(hresp, 'ytick', [],'tickdir','out');        
