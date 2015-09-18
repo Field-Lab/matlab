@@ -18,11 +18,11 @@ clear
 %%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load the Data for the DS run
-run_opt.data_set = '2008-04-30-1';
-run_opt.data_run = 'data019';
-location = 'Archive';
+run_opt.data_set = '2015-08-17-5';
+run_opt.data_run = 'd01-29-norefit/data023';
+location = 'Data';
 
-interval = 4; % each stimulus was displayed for 5 seconds
+interval = 5; % number of seconds each stimulus was displayed for 
 
 % Where to save the data
 filepath= ['/Users/colleen/Desktop/DS/', run_opt.data_set, '/', run_opt.data_run, '/'];
@@ -30,17 +30,23 @@ filepath= ['/Users/colleen/Desktop/DS/', run_opt.data_set, '/', run_opt.data_run
 % You can give the cells as all of them (datarun{2}.cell_ids) or give
 % specific vision ids
 % Find the cell to run by mapping a large cell EI from a white noise run
-cells = 5287; % 'all' or give a vector of vision cell ids
+cells = 'all'; % 'all' or give a vector of vision cell ids
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data023', '.params'];
+% datarun{1}.names.rrs_sta_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data022', '.sta'];
 
-datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.params'];
-datarun{1}.names.rrs_sta_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.sta'];
-
-datarun{2}.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.neurons'];
+datarun{2}.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data023', '.neurons'];
 datarun{2}.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', run_opt.data_run(end-1:end)];
+
+
+% datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.params'];
+% datarun{1}.names.rrs_sta_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.sta'];
+% 
+% datarun{2}.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.neurons'];
+% datarun{2}.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', run_opt.data_run(end-1:end)];
 opt=struct('verbose',1,'load_sta', 1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 
 datarun=load_data(datarun,opt);
@@ -74,7 +80,7 @@ for x = 1:length(cells)
     % Get spikes times for the specified cell   
     n = datarun{2}.spikes{cell_indices2(1)}';
     psth_r = [];
-    for z = 25:size(tr,2) % skip the first 12 trials due to contrast adapation
+    for z = 1:size(tr,2) % skip the first 12 trials due to contrast adapation
         ind = find(tr(z) == datarun{2}.triggers);
         spatial = datarun{2}.stimulus.trials(z).SPATIAL_PERIOD;
         temporal = datarun{2}.stimulus.trials(z).TEMPORAL_PERIOD;
@@ -98,9 +104,9 @@ for x = 1:length(cells)
             
         end
         psth_mat{z} = psth_r; % Put all the psths from all the temporal, spatial and direction combinations into a cell array
-               if rgb(1) == 0.48
-                   psth_mat{z} = [];
-               end
+%                if rgb(1) == 0.48
+%                    psth_mat{z} = [];
+%                end
                
         psth_r = [];
         
@@ -179,5 +185,5 @@ for x = 1:length(cells)
     
     export_fig([filepath, 'Cell_',num2str(cell_to_run)], '-pdf')
     % print(gcf,[filepath, 'Cell_',num2str(cell_to_run)], '-depsc', '-opengl');
-%     close(gcf);
+    close(gcf);
 end
