@@ -20,17 +20,25 @@ GLMPars.timenotes_3    = 'true tstim only matters for binning the spike times wh
 
 
 GLMPars.stimfilter.fixedSP_type = 'WNSTA';
-GLMPars.stimfilter.ROI_length = 11;  
+
+GLMPars.stimfilter.ROI_length = 13;  
+
+
+
 GLMPars.stimfilter.frames = 30;  % orig 30
 GLMPars.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMPars.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMPars.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
 GLMPars.stimfilter.note4 = 'Frames: Time duration of the fitted stim filter in frames';
+% GLMPars.stimfilter.frames_negative = 2;
 
 % NBsubunits eventually these will be parameters in a dual fitting type thing
 GLMPars.others.point_nonlinearity.increment_to_decrement=3;
 GLMPars.others.point_nonlinearity.scalar_raisedpower=2;
-GLMPars.subunit_size = 3;
+GLMPars.subunit.size = 3;
+GLMPars.subunit.pretime_filter_frames = 30;
+%GLMPars.time = 'pre_conv';
+% GLMPars.subunit.time_after = 'fit';
   
 
 
@@ -69,7 +77,20 @@ GLMPars.spikefilters.ps.fratio = .5  ;  % legacy afraid to take out
 GLMPars.spikefilters.cp.fratio = .4  ;  % legacy afraid to take out
 GLMPars.spikefilters.cp.n_couplings = 6  ;
 
+GLMPars.saccadefilter.ms = 100;
+GLMPars.saccadefilter.filternumber = 10;
+GLMPars.saccadefilter.spacing = pi/4;
+GLMPars.saccadefilter.bstretch = 0.95;
+GLMPars.saccadefilter.alpha = 0;
+GLMPars.saccadefilter.fratio = 0.5;
 
+GLMPars.spikefilters.C.ms = 500;
+GLMPars.spikefilters.C.filternumber = 5;
+GLMPars.spikefilters.C.spacing = pi/2;
+GLMPars.spikefilters.C.bstretch = 0.75;
+GLMPars.spikefilters.C.alpha = 0;
+GLMPars.spikefilters.C.fratio = 0.5;
+GLMPars.spikefilters.C.range = 20;
 
 GLMPars.others.fitblockchange = false;
 

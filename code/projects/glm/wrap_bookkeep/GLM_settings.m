@@ -46,9 +46,10 @@ if strcmp(base_type, 'default')
     GLMType.nullpoint  = 'mean'; 
     GLMType.map_type   = 'mapPRJ'; 
     GLMType.debug      = false;
-    GLMType.contrast   = false;
+    GLMType.Contrast   = false;
     GLMType.Subunits   = false;
-    GLMType.STA_init   = false;
+    GLMType.STA_init   = true;
+    GLMType.timefilter = 'fit';
 end
 %%%%% Cone Names %%%%%%%
 
@@ -175,12 +176,39 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             GLMType.specialchange_name = change.name;
         end
         
-        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'ON')
+        % set SU and SU type NB
+        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'exp')
             GLMType.Subunits = true;
+            GLMType.Subunit_NL = 'exp';
+        elseif strcmp(change.type, 'Subunits') && strcmp(change.name, 'squared')
+            GLMType.Subunits = true;
+            GLMType.Subunit_NL = 'squared';
         end
         
+        % Add a covariate for local contrast NB
         if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
-            GLMType.contrast = true;
+            GLMType.Contrast = true;
+        end
+        
+        % NB I just added this quick to allow me to save in a different
+        % folder and not overwrite
+        if strcmp(change.type, 'Name')
+            GLMType.name_change = change.name;
+        end
+        
+        if strcmp(change.type, 'timefilter')
+            GLMType.timefilter = change.name;
+%             if strcmp(change.name, 'prefilter')
+%                 GLMType.CONVEX = true;
+%             end
+%             if strcmp(change.name, 'prefit')
+%                 GLMType.timefilter = 'prefit';
+%                 % GLMType.CONVEX = true;
+%             end
+        end
+        
+        if strcmp(change.type, 'Saccades')
+            GLMType.Saccades = true;
         end
 
         %{

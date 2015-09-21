@@ -77,6 +77,7 @@ else
     GLMType = GLM_settings('default');
 end
 GLMType.fitname    = GLM_fitname(GLMType); 
+% GLMType.fitname = [GLMType.fitname '_newtstim'];
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
@@ -122,7 +123,7 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-
+        
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
@@ -211,17 +212,17 @@ for i_exp = exps
                     % end NBCoupling
                     
                     % Call appropriate glm_execute
-                    display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
-                    tStart = tic;
-                    if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                        [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
-                            fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
-                    else
-                        [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
-                            testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
-                    end
-                    duration = toc(tStart);
-                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
+                        display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
+                        tStart = tic;
+                        if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
+                            [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
+                                fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
+                        else
+                            [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+                                testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+                        end
+                        duration = toc(tStart);
+                        display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
                 end
             end
         end
