@@ -118,31 +118,9 @@ end
 [paramind] =  prep_paramindGP(GLMType, GLMPars);
 %p_init     =  zeros(paramind.paramcount,1);
 p_init     = .01* ones(paramind.paramcount,1);
-
-
-% ORGANIZE STIMULUS COVARIATES
-
-% NB SU
-% Initialize the subunits
-if GLMType.Subunits
-   SU_filter = 0.1*ones(GLMPars.subunit.size);
-   rawfit.SU_init = SU_filter;
-else
-   SU_filter = 0;
-end
 rawfit.init = p_init;
 
-% Initialize or set the pre time filter
-% if strcmp(GLMType.timefilter, 'prefilter') || strcmp(GLMType.timefilter, 'prefit')
-%     %[~,timefilter] = spatialfilterfromSTA(STA,ROIcoord.xvals,ROIcoord.yvals);
-%     %timefilter = flip(reshape(timefilter,[1 1 length(timefilter)]));
-%     load('/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/rk1_MU_PS_noCP_p8IDp8/standardparams/WN_mapPRJ/2012-08-09-3/ONPar_841.mat')
-%     pre_timefilter = reshape(flip(fittedGLM.linearfilters.Stimulus.time_rk1), [1 1 30]);
-% else
-%     pre_timefilter = 0;
-% end
-% start by fitting regular GLM
-
+% ORGANIZE STIMULUS COVARIATES
 WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 % clear WN_STA
@@ -243,17 +221,16 @@ if GLMType.CONVEX
     if isfield(paramind, 'C')
         glm_covariate_vec(paramind.C, :) = C_bin;
     end
-
-    if ~GLMType.Subunits
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
-            [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
-        end
-        if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-            [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
-                (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
-            % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
-        end
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
+        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
+    end
+    if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
+        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
+            (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
+        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
     end
 end
 
@@ -284,112 +261,14 @@ if ~GLMType.CONVEX
         convex_cov(paramind.C, :) = C_bin;
     end
     filtertype = GLMType.stimfilter_mode;
-end
-if ~GLMType.CONVEX || GLMType.Subunits
-    iterate = 1;
-
-    
-    while iterate < 3
-        
-        
-        % Fit the "normal" parts of GLM: linear stim filter, PS filter,
-        % CP filter, etc
-        
-        disp(['Iteration ' num2str(iterate) ': Main fit'])
-        if GLMType.CONVEX
-            glm_covariate_vec( paramind.X , : ) = X_bin;
-            [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
-            
-        else
-            [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
-                (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
-        end
-        
-        if GLMType.Subunits
-            
-            % Unpack the linear pooling filter
-            stimsize.width  = size(fitmovie,1);
-            stimsize.height = size(fitmovie,2);
-            ROI_length      = GLMPars.stimfilter.ROI_length;
-            ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
-            pooling_filter = reshape(pstar(paramind.space1), [ROI_length, ROI_length]);
-            
-            % Set up the covariate vector
-            if strcmp(GLMType.timefilter, 'prefilter')
-                pre_timefilter = pstar(paramind.time1);
-                post_timefilter = 0;
-                % non_stim_idx = ones(paramind.paramcount, 1);
-                % non_stim_idx(paramind.X) = 0;
-                % non_stim_lcif = pstar(logical(non_stim_idx))'*glm_covariate_vec(logical(non_stim_idx), :);
-                non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
-                %             elseif strcmp(GLMType.timefilter, 'prefit')
-%                 error('Prefit is not ready')
-%                 if isfield(paramind, 'time1')
-%                     post_timefilter = pstar(paramind.time1);
-%                     pre_timefilter_init = post_timefilter;
-%                 else
-%                     pre_timefilter_init = 0.1*ones(30,1);
-%                     post_timefilter = 0;
-%                 end  
-%                 non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
-            else
-                pre_timefilter = 0;
-                post_timefilter = pstar(paramind.time1);
-                non_stim_lcif = pstar(paramind.convParams_ind)'*convex_cov;
-            end
-            
-            [SU_cov, pooling_weights] = prep_SU_covariates(pooling_filter, fitmovie, ROIcoord, inputstats, pre_timefilter);
-            
-            % Do optimization
-            disp(['Iteration ' num2str(iterate) ': Subunit fit'])
-            if strcmp(GLMType.timefilter, 'prefit')
-                error('prefit is not ready')
-                p_init_SU = [SU_filter(:); pre_timefilter_init];
-                [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_time_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
-            elseif strcmp(GLMType.Subunit_NL, 'exp')
-                p_init_SU = SU_filter(:);
-                [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_exp(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
-            elseif strcmp(GLMType.Subunit_NL, 'squared')
-                % currently doesn't work
-                error('Squared does not work yet')
-%                 p_init_SU = SU_filter(:);
-                [pstar_SU fstar eflag output]     = fminunc(@(p_SU) glm_SU_optimizationfunction_squared(p_SU,SU_cov,pooling_weights,post_timefilter,home_spbins,t_bin, non_stim_lcif),p_init_SU,optim_struct);
-            end
-            
-            % Unpack the subunit filter
-            SU_filter = reshape(pstar_SU, [GLMPars.subunit.size, GLMPars.subunit.size]);
-            
-            % Remake the stimulus with the new subunit filter
-            [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA, SU_filter, pre_timefilter);
-            
-            % Save initial iterations
-            rawfit.iter{iterate}.SU = pstar_SU;
-            rawfit.iter{iterate}.nonSU = pstar;
-            
-            
-            time_size = length(frame_shifts);
-            frame_shifts = 0;
-            paramind.paramcount = paramind.paramcount - time_size + 1;
-            paramind.X = paramind.X(1):paramind.paramcount;
-            paramind.time1 = paramind.paramcount;
-            p_init = pstar(1:paramind.paramcount);
-            p_init(paramind.time1) = 1;
-            
-            
-            % Then run the loop again
-            iterate = iterate + 1; % eventually replace this with some metric of change
-        else
-            % If not using subunits, just fit the "normal" GLM once and move on
-            iterate = 10;
-        end
-    end
+    [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
+        (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
 end
 
 fittedGLM.fminunc_output = output;
 
 %% Unpack the output into filters
 
-%rawfit.p_init            = p_init;
 rawfit.opt_params        = pstar;
 rawfit.paramind          = paramind;
 rawfit.objective_val     = fstar;
@@ -522,12 +401,6 @@ if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.
 
     
     end  
-end
-
-if GLMType.Subunits
-    fittedGLM.SU_filter = SU_filter;
-else
-    fittedGLM.SU_filter = 0;
 end
 
 fittedGLM.rawfit               = rawfit;
