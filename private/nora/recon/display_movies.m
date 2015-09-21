@@ -25,7 +25,7 @@ for i_frame = 1:frames
 subplot(2,1,1)
 imagesc(original_movie(:,:,i_frame)')
 colormap gray
-caxis([-0.5 0.5])
+caxis([0 191])
 axis image
 axis(disp_range)
 axis off
@@ -34,7 +34,7 @@ axis off
 subplot(2,1,2)
 imagesc(recon_movie(:,:,i_frame)')
 colormap gray
-caxis([-0.5 0.5])
+caxis([-4 4])
 axis image
 axis(disp_range)
 axis off

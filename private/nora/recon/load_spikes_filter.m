@@ -38,6 +38,8 @@ elseif n_cells < n_cell_input
 end
 clear n_cell_input cell
 
+data_missing = [];
+
 % load up spikes and filter for each cell
 for i_cell = 1:n_cells
     load([spike_directory exp_nm '/WN_mapPRJ/STA/' matfiles(i_cell).name])
@@ -46,14 +48,18 @@ for i_cell = 1:n_cells
     clear STAandROI
     
     % Process spikes for glm_execute with proper subroutines
-    cell_names{i_cell} = matfiles(i_cell).name(11:(end-4));
-    load([spike_directory exp_nm '/' stimtype '_mapPRJ/organizedspikes_' cell_names{i_cell} '.mat']);
-    spikes(i_cell, :) = subR_createraster(organizedspikes.block, StimulusPars.slv);
+    try
+        cell_names{i_cell} = matfiles(i_cell).name(11:(end-4));
+        load([spike_directory exp_nm '/' stimtype '_mapPRJ/organizedspikes_' cell_names{i_cell} '.mat']);
+        spikes(i_cell, :) = subR_createraster(organizedspikes.block, StimulusPars.slv);
+    catch
+        data_missing = [data_missing i_cell];
+    end
 end
 
 cells = 1:n_cells;
 for i_cell = 1:n_cells
-   if any(isnan(STA{i_cell}))
+   if any(isnan(STA{i_cell}(:))) || any(data_missing == i_cell)
        cells = cells(cells ~= i_cell);
    end
 end

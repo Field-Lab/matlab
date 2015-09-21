@@ -8,7 +8,7 @@ p.addParameter('fps', 1/0.0083275, @isnumeric) % frames per second, using calcul
 p.parse(varargin{:});
 
 % round to nearest whole second
-movie_length = ceil(ceil(max(spikes{1})) * p.Results.fps);
+movie_length = ceil(ceil(max(spikes{2})) * p.Results.fps);
 
 % these are fixed for this function
 filter_size = size(linear_filter{1});
