@@ -64,6 +64,7 @@ for imov=[1,2,4,6,8,10]
     
 end
 
+%%
 % make contrast map
 rawMovFrames=1272/(2);
 figure;
@@ -246,6 +247,9 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     % Plot recorded raster
     % [spkColl,spkCondColl,h]=plot_raster_script_pc2015_02_24_2(datarun,WN_datafile,WN_datafile_full,Null_datafile,InterestingCell_vis_id,imov,ref_cell_number,nConditions,condDuration,cond_str,neuronPath);
     [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+    
+  
+    
 %    plot_mosaic_pc2015_03_09_2(datarun,InterestingCell_vis_id,ref_cell_number,NullCells1,NullCells3);
 %     s=hgexport('readstyle','ras_mos4');
 %     hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/recorded.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
@@ -291,24 +295,24 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
 %   
 
         
-   event_tol=0.03;
-   thr=0.4;
-    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
-   s=hgexport('readstyle','event');
-   hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
-   save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
-    
-    event_tol=0.05;
-   thr=0.4;
-    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
-    
-   s=hgexport('readstyle','event');
-   hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
-   save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
-
-    [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light_fig(cellID,nConditions,condDuration,cond_str,neuronPath,[1,4]);
-     [h] = plot_psth_pc2015_03_09_2(spkCondColl,condDuration,thr,[1,4]) 
-    InterestingCell_vis_id(ref_cell_number)
+%    event_tol=0.03;
+%    thr=0.4;
+%     [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+%    s=hgexport('readstyle','event');
+%    hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+%    save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+%     
+%     event_tol=0.05;
+%    thr=0.4;
+%     [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol); 
+%     
+%    s=hgexport('readstyle','event');
+%    hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+%    save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data042/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+% 
+%     [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light_fig(cellID,nConditions,condDuration,cond_str,neuronPath,[1,4]);
+%      [h] = plot_psth_pc2015_03_09_2(spkCondColl,condDuration,thr,[1,4]) 
+%     InterestingCell_vis_id(ref_cell_number)
     %  pause
 end
 

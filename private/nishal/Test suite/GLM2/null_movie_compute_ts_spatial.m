@@ -7,17 +7,18 @@
 
 % Use WN STA
 k=WNSTA(:,:,end:-1:1);
+kd=zeros(size(WNSTA,2),size(WNSTA,1),size(WNSTA,3));
         for iframe=1:size(k,3) % Flipping? Doubt!!
-            k(:,:,iframe)=k(:,:,iframe)';
+            kd(:,:,iframe)=(k(:,:,iframe)');
         end
-xcoords=1:size(WNSTA,1);
-ycoords=1:size(WNSTA,2);
+xcoords=1:size(kd,1);
+ycoords=1:size(kd,2);
 
 datafile = 'load_from_cell_params';
-stas_big{1}=zeros(32,32,3,30); %zeros(32,64,3,30);
-stas_big{1}(xcoords,ycoords,1,1:end)=k;
-stas_big{1}(xcoords,ycoords,2,1:end)=k;
-stas_big{1}(xcoords,ycoords,3,1:end)=k;
+stas_big{1}=zeros(size(WN_orig,2),size(WN_orig,1),3,30); %zeros(32,64,3,30);
+stas_big{1}(xcoords,ycoords,1,1:end)=kd;
+stas_big{1}(xcoords,ycoords,2,1:end)=kd;
+stas_big{1}(xcoords,ycoords,3,1:end)=kd;
 stas_big2{1}=stas_big{1};%+rand(size(stas_big{1}))*0.06;
 
 figure;
@@ -47,14 +48,15 @@ cell_params2.stas=stas_big2;
 % cell_params.sta_spatial_method = 2;
 
 mov_params2=struct();
-mov_params2.mov_type='bw';
+mov_params2.mov_type='userProvided';
+mov_params2.movProvided = WN_orig;
 mov_params2.movie_time=120*10;
 mov_params2.mean=0.5*255;
 mov_params2.deviation=0.48*255;
 mov_params2.scaling_loss=0.01; % a number in [0,1], fraction of values that is changed by scaling.
 
 
-solver=4; % Solver 4 used for spatial nulling!
+solver=8; % Solver 4 used for spatial nulling!
 [mov_orignial,mov_modify_new]=null_space_movie2(datafile,cell_params2,mov_params2,solver);
 
 % Write movies
@@ -70,7 +72,7 @@ movie_full(:,:,(icnt-1)*size(movies{imov},3)+1:icnt*size(movies{imov},3))=movies
 icnt=icnt+1;
 end
 mov_idx=18;
-write_movie_idx(destination_mat,movie_full,mov_idx,10);
+write_movie_idx(destination_mat,movie_full,mov_idx,8);
 display(sprintf('Movie Length %d',size(movie_full,3)));
 
 %%

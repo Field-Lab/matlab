@@ -65,8 +65,8 @@ stas_orig=stas_new;
 
 if(isfield(cell_params,'use_fits')==1)
     if(cell_params.use_fits==1)
-    addpath(genpath('~/Nishal/matlab/code')); 
-    addpath(genpath('~/Nishal/matlab/private/nishal/fwdfittingfunctions'));
+    addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/code')); 
+    addpath(genpath('/Volumes/Lab/Users/bhaishahster/GITs/matlab/private/nishal/fwdfittingfunctions'));
     
     fit_info=cell(length(stas),1);
     display('Starting STA fitting');

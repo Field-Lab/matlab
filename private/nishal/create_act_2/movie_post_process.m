@@ -1,7 +1,7 @@
 function [mov_orig,mov_modify_new]=movie_post_process(mov_orig,mov_modify_new,mov_params)
 
 
-if(strcmp(mov_params.mov_type,'bw')||strcmp(mov_params.mov_type,'bw-precomputed'))
+if(strcmp(mov_params.mov_type,'bw')||strcmp(mov_params.mov_type,'bw-precomputed')||strcmp(mov_params.mov_type,'userProvided'))
     
  if(~isfield(mov_params,'post_process_method'))   
  stretch_post_process_bw

@@ -98,7 +98,7 @@ end
         
 
 % Calculate STA
-        STA_depth=30;
+        STA_depth=user_STA_depth;
        
         mov = fitmovie_color-0.5;
         dim1=size(mov,1);
@@ -128,13 +128,7 @@ end
         %tf 
         pause(0.1); 
         end
-        
-        xx = abs(mean(STA_recalc(:,:,:,26),3));
-        v=max(max(xx));
-        [r,c] = find(v==xx);
-        x_coord = [max(r-8,1):min(r+8,dim1)];
-        y_coord = [max(c-8,1):min(c+8,dim2)];
-        
+            
       ttf=squeeze(mean(mean(mean(STA_recalc.*repmat(totalMaskAccept2,[1,1,3,STA_depth]),3),1),2));
       %tf=tf/max(abs(tf));
       %idx=1:length(tf);
@@ -142,7 +136,16 @@ end
       %tf=tf.*double(idx<15)';
      
       figure;
-        plot(ttf);
+      plot(ttf);
+      title('Is this STA depth correct? ');
+      pause(0.5);
+      
+      [maxV,maxSTATime] = max(squeeze(ttf));
+      
+        [r,c] = find(totalMaskAccept2>0);
+        x_coord = [max(min(r)-3,1):min(max(r)+3,size(totalMaskAccept2,1))];
+        y_coord = [max(min(c)-3,1):min(max(c)+3,size(totalMaskAccept2,2))];
+    
      
  mov=squeeze(mean(mov,3));
  maskedMovdd= filterMov(mov,totalMaskAccept2,squeeze(ttf));

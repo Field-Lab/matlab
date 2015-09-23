@@ -155,5 +155,11 @@ end
 end
 
 
+if(strcmp(movie_params.mov_type,'userProvided'))
+    mov = movie_params.movProvided;
+    mov=mov*movie_params.deviation/max(abs(mov(:)));
+    mov_buffered = mov;
+    movie_params.movie_time = size(mov_buffered,3);
+end
 
 end

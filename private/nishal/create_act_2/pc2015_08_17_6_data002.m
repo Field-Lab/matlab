@@ -112,7 +112,7 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 %WN_datafile = '2015-03-09-2/streamed/data038/data038';
 movie_xml = 'BW-8-6-0.48-11111';
 stim_length=900;% 
-cellID_list = [646,901,1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490,];
+cellID_list = [646,901,1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
 nSU_list= 2*ones(1,length(cellID_list));
 destination= 'pc-2015-08-17-6-gmlm2'
 [stas_t,stas_r] = get_gmlm_sta(datafile,movie_xml,stim_length,cellID_list,nSU_list,destination)

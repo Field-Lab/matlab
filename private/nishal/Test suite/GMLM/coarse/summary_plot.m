@@ -26,7 +26,7 @@ movie_xml = 'BW-8-2-0.48-11111-40x40';
 stim_length=1800;%
 
 %% 
-ifgmlm=0; % 0 if nnmf
+ifgmlm=1; % 0 if nnmf
 
 folder = '/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/';
 icellType=2;
@@ -35,6 +35,12 @@ WN_datafile = '2015-03-09-2/streamed/data038/data038';
 WN_datafile_short='2015-03-09-2/streamed/data038/data038';
 movie_xml = 'BW-8-2-0.48-11111-40x40';
 stim_length=1800;%
+
+
+
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+datarun =load_sta(datarun)
 
 %%
 ifgmlm=1; % 0 if nnmf
@@ -488,22 +494,135 @@ colorbar
 axis square
 end
 
-    if(ifgmlm==1)
-       
-if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU),'dir');
-    mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU));
-end
-   print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/gmlm_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
-    else
-if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU),'dir');
-    mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU));
-end
-   print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/nnmf_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
-   
-    end
+%     if(ifgmlm==1)
+%        
+% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU),'dir');
+%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU));
+% end
+%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/gmlm_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
+%     else
+% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU),'dir');
+%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU));
+% end
+%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/nnmf_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
+%    
+%     end
 end
 
     end
     
 end
+
+
+%% cellID1531 figure
+
+ cellID = 1531%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[datarun.cell_types{icellType}.cell_ids];
+    
+    close all
+    %h=figure('Color','w','PaperSize',[42,7],'PaperPosition',[0 0 42 7]);
+    iidx=1:length(datarun.cell_ids);
+   sta = -mean(datarun.stas.stas{iidx(datarun.cell_ids==cellID)}(:,:,:,24),3)';
+   
+    iSU=0;
+    nSU=4%[2,3,4,5,6,7]   
+        iSU=iSU+1;
+       
+     
+        if(ifgmlm==1)
+          load(strcat(folder,sprintf('CellID_%d/gmlm/Cell%d_gmlm_su_%d.mat',cellID,cellID,nSU)));
+        else
+            load(strcat(folder,sprintf('CellID_%d/nnmf/Cell%d_nnmf_su_%d.mat',cellID,cellID,nSU)));
+        end
+        %load(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed/CellID_%d/Cell%d_full_su4_5.mat',cellID,cellID));
+        
+        su_log=su_log;
+        %
+        [label] = cluster_spect(su_log,nSU);
+        
+        
+        %
+        [col_label]=distinguishable_colors(20);
+        
+       
+      mask = totalMaskAccept;
+sta_dim1 = size(mask,1);
+sta_dim2 = size(mask,2);
+indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
+masked_frame = indexedframe(logical(mask));
+x_coord =x_coord;
+y_coord = y_coord;
+
+u_spatial_log = zeros(40,40,nSU);
+ifit=1%1:50
+    lw=1.5;
+    close all
+    h=figure('Color','w')
+    if(ifgmlm==1)
+fitGMLM = fitGMLM_log{ifit};
+W=zeros(length(masked_frame),nSU);
+    else
+    W=W_log{ifit};    
+    end
+    
+    subplot(3,2,1);
+    xxsta =-repelem(sta(x_coord,y_coord),20,20);
+%     xxsta = xxsta - mean(mean(xxsta((abs(xxsta)<0.2*max(abs(xxsta(:)))))));
+    B = bwboundaries(abs(xxsta)>0.2*max(abs(xxsta(:))));
+    hullidx = convhull(B{1}(:,1),B{1}(:,2),'simplify',true);
+    xxsta = xxsta/max(abs(xxsta(:)));
+    imagesc((1-repmat(xxsta,[1,1,3]))/2);
+    hold on;
+    plot(B{1}(hullidx,2),B{1}(hullidx,1),'LineWidth',lw);
+    title('sta');
+    set(gca,'xTick',[]);
+    set(gca,'yTick',[]);
+
+    colormap gray
+      caxis([0,1]);
+  % colorbar
+    axis image
+    
+for ifilt=1:nSU
+subplot(3,2,ifilt+1);
+
+if(ifgmlm==1)
+u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+else
+u_spatial = reshape_vector(W(:,ifilt)/sum(W(:,ifilt)),masked_frame,indexedframe);
+end
+%subplot(ceil((nSU+1)/2),ceil((nSU+1)/2),ifilt)
+xxu = repelem(u_spatial(x_coord,y_coord),20,20);
+xxu = xxu/max(abs(xxu(:)));
+
+imagesc(-xxu);
+   hold on;
+    plot(B{1}(hullidx,2),B{1}(hullidx,1),'LineWidth',lw);
+     caxis([-1,1]);
+    set(gca,'xTick',[]);
+    set(gca,'yTick',[]);
+colormap gray
+%colorbar
+%title(sprintf('asm Filter: %d',ifilt));
+axis image
+title('Sub-unit')
+end
+print(h,'-clipboard','-dpdf');
+%     if(ifgmlm==1)
+%        
+% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU),'dir');
+%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU));
+% end
+%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/gmlm_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
+%     else
+% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU),'dir');
+%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU));
+% end
+%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/nnmf_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
+%    
+%     end
+
+
+
+    
+
 

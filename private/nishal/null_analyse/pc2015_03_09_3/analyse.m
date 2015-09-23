@@ -185,13 +185,6 @@ end
 InterestingCell_vis_id = 1068;%[4083,1804,2448,5221,1068]; % OFF 
 
 
-NullCells1=[4083,1804,2448,5221,1068];  % OFF
-NullCells2=[];   % ON
-
-
-condDuration=1272/120;
-GLM_fit_link= '/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_3/data008/CellType_OFFParasol/';
-nConditions=3;
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
     cellID=InterestingCell_vis_id(ref_cell_number);

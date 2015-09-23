@@ -15,7 +15,7 @@ spks=double(CellSpkTimes);
 rawMovFrames = condDuration*120;
 TTLperCondperTrial=floor(rawMovFrames/100)+1;
 
-nTrials=floor(length(TTL)/(TTLperCondperTrial*nConditions));
+nTrials=30%floor(length(TTL)/(TTLperCondperTrial*nConditions));
 
 spkColl=cell(nTrials,1);
 
