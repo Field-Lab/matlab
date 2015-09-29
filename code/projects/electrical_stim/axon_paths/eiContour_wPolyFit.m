@@ -98,7 +98,7 @@ eiAmpsT(find(eiAmpsT>max(eiAmpsT)/threshForContours)) = max(eiAmpsT)/threshForCo
 % Generate contour plot in a new figure window
 hex_contour(xc, yc, eiAmpsT, numContourLevels, 'fig_or_axes', figureNum, ...
     'contourSpacing', 'linear','plotCoords',plotCoords);
-
+%scatter(xc,yc,eiAmpsT*7,'filled','MarkerFaceColor', 'black');
 % Calculate linear fit using only eiAmpls above a given threshold
 if size(eiAmps,2) == 1
     eiAmps = eiAmps'; 

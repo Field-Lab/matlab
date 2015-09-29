@@ -9,9 +9,12 @@ I           = Gibbs.params.I;
 nNeurons    = Gibbs.params.nNeurons;
 breakPoints = input.tracesInfo.breakPoints;
 prefElectrodes = input.neuronInfo.prefElectrodes;
+
+LowThres   = input.params.Heuristic.LowThres;
 VeryLowThres   = input.params.Heuristic.VeryLowThres;
 HighThres      = input.params.Heuristic.HighThres;
 ActivationThres = input.params.Heuristic.ActivationThres;
+
 for n=1:nNeurons
     contLog(n) = Log(n).params.contLogHeuristic;
 end
@@ -42,7 +45,10 @@ for n=1:nNeurons
             latencies = Gibbs.variables.latencies;
             
             spikeProb = nansum(spikes{n}(firstCondThisRange,:))/nansum(I(firstCondThisRange));
-            if(spikeProb<VeryLowThres&&nansum(spikes{n}(lastCondPrevRange,:))/I(:,lastCondPrevRange)>ActivationThres)
+
+            if(spikeProb<LowThres&&nansum(spikes{n}(lastCondPrevRange,:))/I(:,lastCondPrevRange)>HighThres)
+
+           
                 contLog(n)=contLog(n)+1;
                 Log(n).Heuristic{contLog(n)}=['Lack of activity in breakpoint range ' num2str(breakRange) ' follows activation in last condition of previous range. Going to add spikes in all trials from condition ' num2str(Range(1)) ' to condition ' num2str(Range(end))];
                 Log(n).params.contLogHeuristic = contLog(n);

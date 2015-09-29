@@ -18,7 +18,7 @@ h = load(fname);
 electrodeMatrix = h.array_matrix_id510; clear h; 
 
 EIm = oneEI(electrodeMatrix(:)); 
-EIm = reshape(EIm, size(electrodeMatrix)); %figure; imagesc(matrixEI);axis image; 
+EIm = reshape(EIm, size(electrodeMatrix)); %figure; imagesc(EIm);axis image; 
 
 % Reshape the matrix so it can be viewed accurately as an image
 EImView = upsample(EIm',2)'; 

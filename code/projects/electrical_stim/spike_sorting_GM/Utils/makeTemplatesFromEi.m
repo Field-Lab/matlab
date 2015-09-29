@@ -22,10 +22,9 @@ elseif(nargin==2)
 end
 
 eiFile = edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile(pathToEi);
-
 for n=1:length(neuronIds)
     neuronEI = eiFile.getImage(neuronIds(n));
-    neuronEI_volt = squeeze(neuronEI(1,:,:)); 
+    neuronEI_volt = squeeze(neuronEI(1,2:end,:)); 
     if isempty(recElecs)
         recElecs = find(min(neuronEI_volt,[],2) == min(neuronEI_volt(:)));
     end
