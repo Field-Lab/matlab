@@ -1,6 +1,6 @@
 function spikes_by_trials = get_raster(spike_times, trial_begin_times, varargin)
 %
-% raster_gdf(spike_times,cell_specification,trigger,varargin)
+% spikes_by_trials = get_raster(spike_times,trial_begin_times,trigger,varargin)
 %  
 % Plots spike rasters
 %
