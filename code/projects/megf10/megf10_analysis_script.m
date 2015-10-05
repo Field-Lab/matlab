@@ -26,7 +26,7 @@ datamb{1} = load_stim_matlab(datamb{1});
 %% classify DS vs non-DS cells (using moving bars)
   
 i = 1; % which datarun to use for classification
-[NumSpikesCell, MaxRate, StimComb] = get_spikescellstim_mb_gdf(datamb{i},datamb{i}.cell_ids, datamb{1}.triggers(end)+6, 1);
+[NumSpikesCell, MaxRate, StimComb] = get_spikescellstim_mb_photons(datamb{i},datamb{i}.cell_ids, datamb{1}.triggers(end)+6, 1);
 ds_struct = mbcellanalysis(NumSpikesCell, StimComb);
 
 a = 1; b = 2; % which parameters to use for classification
