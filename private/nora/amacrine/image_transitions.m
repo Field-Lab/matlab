@@ -48,7 +48,7 @@ testblocks = NSEM(1:2:end);
 testmovie_frames_per_block = 20*120;
 testmovie_seconds_per_block = testmovie_frames_per_block/120;
 
-cells = get_cell_indices(datarun_class, 'Off Parasol');
+cells = get_cell_indices(datarun_class, 'Off Amacrine');
 n_cells = length(cells);
 %% Load up cell info
 
@@ -87,5 +87,18 @@ for i_cell = 1:n_cells
 end
 
 %%
-res_spikes_plot(testmovie, res, '/Users/Nora/Desktop/OFFPar_movie.avi')
-
+n_images = 20;
+peaks = zeros(n_cells, n_images);
+[y_pos, y_pos_index] = sort(res.centers(:,1));
+for i = 1:n_images
+   image_transition_time = (i-1)*120+1;
+   index = image_transition_time:(image_transition_time+20);
+   for j = 1:n_cells
+       cell = y_pos_index(j);
+       try
+           [~,peaks(j, i)] = max(res.spikes(cell, index));
+       catch
+           peaks(j,i) = 21;
+       end
+   end
+end

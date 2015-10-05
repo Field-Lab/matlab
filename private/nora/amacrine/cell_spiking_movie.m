@@ -1,5 +1,5 @@
 clear
-
+moviename = '/Users/Nora/Desktop/test.avi';
 %% Load data
 datapath = '2015-05-27-11/data001-data005-norefit/data002-from-data001_data002_data003_data004_data005/data002-from-data001_data002_data003_data004_data005';
 datarun= load_data(datapath);
@@ -42,18 +42,18 @@ for i = 1:length(block_starts)-1
     end
 end
 
-clear WN8 WN4 repeats_within_block repeat_starts block_starts
+clear WN4 repeats_within_block repeat_starts block_starts
 % Organize test spikes
-testblocks = NSEM(1:2:end);
+testblocks = WN8(1:2:end);
 testmovie_frames_per_block = 20*120;
 testmovie_seconds_per_block = testmovie_frames_per_block/120;
 
-cells = get_cell_indices(datarun_class, 'Off Parasol');
+cells = get_cell_indices(datarun_class, 'On Parasol');
 n_cells = length(cells);
 %% Load up cell info
 
 res.spikes = zeros(n_cells, testmovie_frames_per_block);
-res.centers = zeros(n_cells, 2);
+res.cid = zeros(n_cells, 1);
 
 for i_cell = 1:n_cells
     
@@ -71,21 +71,23 @@ for i_cell = 1:n_cells
 %         start = start + fitmovie_seconds_per_block;
 %     end
 
-    spikes_concat = [];
-    for i = 1:length(testblocks)
-        trial_spikes = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
-        spikes_concat = [spikes_concat; trial_spikes];
-    end
-    spikes_frame = floor(spikes_concat * 120);
+%     end   
+%     res.centers(i_cell,:) = flip(datarun_master.vision.sta_fits{master_idx}.mean);
+
+    trial = 3;
+    trial_spikes = spikes(spikes > testblocks(trial) & spikes < testblocks(trial)+testmovie_seconds_per_block) - testblocks(trial);
+    
+    spikes_frame = floor(trial_spikes * 120);
     for i_frame = 1:testmovie_frames_per_block
        res.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame); 
     end
 
-    res.centers(i_cell,:) = flip(datarun_class.vision.sta_fits{cells(i_cell)}.mean);
+    res.cid(i_cell) = datarun_class.cell_ids(cells(i_cell));
     % center(2) = 40 - center(2);
 
 end
 
 %%
-res_spikes_plot(testmovie, res, '/Users/Nora/Desktop/OFFPar_movie.avi')
+res.spikes(res.spikes>1) = 1;
+cell_spikes_movie(testmovie, res, moviename, datarun_class)
 

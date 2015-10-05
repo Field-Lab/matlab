@@ -1,3 +1,3 @@
 function error = err(a,b)
-    error = corr(a,b);
+    error = norm(a-b);
 end

@@ -8,4 +8,4 @@ for file = 1% :length(matfiles)
     [xx, yy] = rasterplot(nmrasters, 40, 30000);
 end
 
-res_spikes_plot(testmovie, firing_rate)
+% res_spikes_plot(testmovie, firing_rate)

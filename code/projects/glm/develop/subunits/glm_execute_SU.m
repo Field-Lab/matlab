@@ -17,8 +17,10 @@
 %  prep_stimcelldependentGPXV
 
 
-function [fittedGLM] = glm_execute_SU(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
+function [fittedGLM] = glm_execute_SU(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes)
 
+
+%% NON STIMULUS STUFF, can leave alone, will be added in linearly 
 % setup
 fittedGLM.cell_savename = glm_cellinfo.cell_savename;
 fittedGLM.d_save        = glm_cellinfo.d_save;
@@ -39,7 +41,6 @@ bins   = frames * GLMPars.bins_per_frame;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
 fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
-
 
 % Make bases for the other inputs
 bin_size      = t_bin;
@@ -105,8 +106,28 @@ end
 [paramind] =  prep_paramindGP(GLMType, GLMPars);
 p_init     = .01* ones(paramind.paramcount,1);
 rawfit.init = p_init;
+glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
+if isfield(paramind, 'MU')
+    glm_covariate_vec( paramind.MU , : ) = MU_bin;
+end
+if isfield(paramind, 'PS')
+    glm_covariate_vec( paramind.PS , : ) = PS_bin;
+end
+% NBCoupling 05-28-14
+if isfield(paramind, 'CP')
+    for j_pair=1:GLMPars.spikefilters.cp.n_couplings
+        glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
+    end
+end
+if isfield(paramind, 'SA')
+    glm_covariate_vec(paramind.SA, :) = SA_bin;
+end
+if isfield(paramind, 'C')
+    glm_covariate_vec(paramind.C, :) = C_bin;
+end
 
-% ORGANIZE STIMULUS COVARIATES
+
+% STIM
 WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 % clear WN_STA
@@ -131,6 +152,7 @@ if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     clear STA U S V
 end
 
+% OPTIMIZATION
 % INITIALIZE OPTIMIZATION STRUCTURE FOR MATLAB FMIN SOLVERS
 if ~GLMType.CONVEX
     GLMPars.optimization.tolfun = GLMPars.optimization.tolfun - 1;
@@ -162,90 +184,8 @@ if ~GLMType.CONVEX
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
    'TolX',10^(-(GLMPars.optimization.tolx))   );
 end
-
-
-%% Run through optimization .. get out pstart, fstar, eflag, output
-% CONVEXT OPTIMIZATION
-if GLMType.CONVEX
-    glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
-    % Maybe move this inside of the stimulus preparation %
-    bpf         = GLMPars.bins_per_frame;
-    
-    if strcmp(GLMType.timefilter,'fit')
-        shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-        if isfield(GLMPars.stimfilter,'frames_negative')
-            shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-        end
-        X_bin_shift = prep_timeshift(X_bin,shifts);
-    else
-        X_bin_shift = X_bin;
-    end
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if isfield(paramind, 'MU')
-        glm_covariate_vec( paramind.MU , : ) = MU_bin;
-    end
-    if isfield(paramind, 'X')
-        glm_covariate_vec( paramind.X , : ) = X_bin_shift;
-    end
-    if isfield(paramind, 'PS')
-        glm_covariate_vec( paramind.PS , : ) = PS_bin;
-    end
-    % NBCoupling 05-28-14
-    if isfield(paramind, 'CP')
-        for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-            glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
-        end
-    end
-    if isfield(paramind, 'SA')
-        glm_covariate_vec(paramind.SA, :) = SA_bin;
-    end
-    if isfield(paramind, 'C')
-        glm_covariate_vec(paramind.C, :) = C_bin;
-    end
-    
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
-    end
-    if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
-            (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
-        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
-    end
-end
-
-
-
-% NONCONVEX OPTMIZATION
-if ~GLMType.CONVEX
-    bpf               = GLMPars.bins_per_frame;
-    frame_shifts      = 0:1:(GLMPars.stimfilter.frames-1);
-    % dnote part that is convex
-    convex_cov = NaN(paramind.convParams , bins );  % convex covariates
-    if isfield(paramind, 'MU')
-        convex_cov( paramind.MU , : ) = MU_bin;
-    end
-    if isfield(paramind, 'PS')
-        convex_cov( paramind.PS , : ) = PS_bin;
-    end
-    % NBCoupling
-    if isfield(paramind, 'CP')
-        for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-            convex_cov( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
-        end
-    end
-    if isfield(paramind, 'SA')
-        convex_cov(paramind.SA, :) = SA_bin;
-    end
-    if isfield(paramind, 'C')
-        convex_cov(paramind.C, :) = C_bin;
-    end
-    filtertype = GLMType.stimfilter_mode;
-    [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
-        (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
-end
+    [pstar fstar eflag output] = fminunc(@(p) glm_SU_optimizationfunction...
+        (p,filtertype,paramind,glm_covariate_vec,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
 
 fittedGLM.fminunc_output = output;
 
