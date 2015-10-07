@@ -79,55 +79,236 @@ fitGMLM_log{isu} = data2.fitGMLM_full2_log{isu};
 end
 mask=data2.totalMaskAccept2;
 %%
- nSU=4
-    fitGMLM=fitGMLM_log{nSU};
+nSU=5
+fitGMLM=fitGMLM_log{nSU};
    % fitGMLM = scramble_fitGMLM_mix(fitGMLM);
 
    
 [spkColl,spkCondColl,h]=plot_raster_script_pc2015_03_09_2_light(cellID,nConditions,condDuration,cond_str,neuronPath);
-   fr=[];
-   gain_range = [1:0.2:5];
-    for igain=gain_range
+%% multiplicative gains 
 
+gain_range = [1:0.2:6,6.5,7,7.5,8,8.5,9];
+
+    convolve=150;
+    len = 12720;
+    binSz=1/1200;
+icond=5;%1:nConditions
+spkMat = makeSpikeMat(spkCondColl(icond).spksColl,binSz,len);
+[PSTH_rec,time]=calculate_psth_fcn2(convolve,binSz,len,spkMat);
+jgainrange = [0.1,0.3,0.6,0.8,1,2,2.2,2.4,2.6,2.8,3];
+
+fr = zeros(length(jgainrange),length(gain_range)); var_log=zeros(length(jgainrange),length(gain_range)); R2_log = var_log ; 
+fr_l=fr; var_l = var_log; R2_l = R2_log;
+nfits =1 ;
+nl = @(x)x;
+for ifit =1:nfits
+    
+fr = zeros(length(jgainrange),length(gain_range)); var_log=zeros(length(jgainrange),length(gain_range)); R2_log = var_log ; 
+jidx=0;
+for jgain = jgainrange
+    jidx = jidx+1
+    iidx=0;
+for igain=gain_range
+    iidx=iidx+1;
 close all;
 % Make predictions
 pred1=cell(1,1);
-icond=5%1:nConditions
+
 movd = condMov{icond};
  maskedMov= filterMov(movd,mask,squeeze(ttf))*igain;
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=29;
- [pred1{1},lam]= predictGMLM_full(fitGMLM,maskedMov,nTrials);
+ [pred1{1},lam]= predictGMLM_full_gains(fitGMLM,maskedMov,nTrials,nl,jgain);
  pred1{1} = pred1{1}';
- fr =[fr;sum(pred1{1}(:))/(size(pred1{1},1) * size(pred1{1},2)/1200)];
+ fr(jidx,iidx) =sum(pred1{1}(:))/(size(pred1{1},1) * size(pred1{1},2)/1200);
+  
+ % Calculate psth
+ [PSTH_pred,time]=calculate_psth_fcn2(convolve,binSz,len,pred1{1});
+    
+    % Recorded 
+ var_log(jidx,iidx) = var(PSTH_pred);
  
-    end
+   R2_log(jidx,iidx) = R_2_value(PSTH_rec',PSTH_pred'); 
+
+end
+end
+R2_l = R2_l + R2_log;
+var_l = var_l + var_log;
+fr_l = fr_l + fr;
+end
+
+R2_l=R2_l/nfits;
+var_l = var_l/nfits;
+fr_l = fr_l/nfits;
+
+fr_rec = spkCondColl(icond).avgSpkRate
+var_rec = var(PSTH_rec)
+figure;
+subplot(1,4,1);
+[C_fr,h] = contourf(gain_range,jgainrange,fr_l,[fr_rec,fr_rec]);
+subplot(1,4,2);
+[C_var,h]=contourf(gain_range,jgainrange,var_l,[var_rec,var_rec]);
+subplot(1,4,3);
+contourf(gain_range,jgainrange,R2_l,20);
+
+hh=figure;
+subplot(1,4,1);
+[~,h] = contourf(gain_range,jgainrange,fr_l,20);
+
+subplot(1,4,2);
+[~,h]=contourf(gain_range,jgainrange,var_l,20);
+
+subplot(1,4,3);
+contourf(gain_range,jgainrange,R2_l,20);
+
+subplot(1,4,4)
+plot(C_fr(1,2:end),C_fr(2,2:end));hold on;
+plot(C_var(1,2:end),C_var(2,2:end));
+
+%legend('Observed average firing rate','Observed PSTH varaince');
+%%
+
 figure;
 plot(gain_range,fr);
 hold on;
 plot(gain_range,spkCondColl(icond).avgSpkRate *ones(size(gain_range)));
 
+%%
 realResp = makeSpikeMat(spkCondColl(icond).spksColl,1/120,1272);
 fr= mean(realResp,1)/(1/120);
 
-igain=input('What gain to choose?');
+igain=1.9%2%2%input('What gain to choose?');
+jgain = 0.7%0.8%0.6275%0.6275;
 pred1=cell(1,1);
-icond=5%1:nConditions
+icond=5%5%1:nConditions
+movd = condMov{icond};
+ maskedMov= filterMov(movd,mask,squeeze(ttf))*igain;
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+ R2_pl = [];
+ for ipred = 1:20
+nTrials=100;
+ [pred1{1},lam]= predictGMLM_full_gains(fitGMLM,maskedMov,nTrials,nl,jgain);
+ pred1{1} = pred1{1}';
+ [PSTH_pred,time]=calculate_psth_fcn2(convolve,binSz,len,pred1{1});
+ R2_pl(ipred) = R_2_value(PSTH_rec',PSTH_pred')
+ end
+ R2_p = mean(R2_pl)
+ 
+   h=figure('Color','w','PaperSize',[10,7],'PaperPosition',[0 0 42 7]);
+    % close all
+    %figure;
+    ss = spkCondColl(icond);
+   hh=plot_record_prediction(ss,pred1);
+
+   %% multiplicative for stimulus, and power law of o/p NL
+jgainrange = [0.005,0.01,0.05,0.1,0.3,0.6,0.8,1,2,2.2,2.4,2.6,2.8,3];
+gain_range =  [1:0.2:6,6.5,7,7.5,8,8.5,9];
+
+    convolve=150;
+    len = 12720;
+    binSz=1/1200;
+icond=5;%1:nConditions
+spkMat = makeSpikeMat(spkCondColl(icond).spksColl,binSz,len);
+[PSTH_rec,time]=calculate_psth_fcn2(convolve,binSz,len,spkMat);
+
+
+fr = zeros(length(jgainrange),length(gain_range)); var_log=zeros(length(jgainrange),length(gain_range)); R2_log = var_log ; 
+fr_l=fr; var_l = var_log; R2_l = R2_log;
+nfits =1 ;
+
+for ifit =1:nfits
+    
+fr = zeros(length(jgainrange),length(gain_range)); var_log=zeros(length(jgainrange),length(gain_range)); R2_log = var_log ; 
+jidx=0;
+for jgain = jgainrange
+    nl = @(x)(x.^jgain);
+    jidx = jidx+1
+    iidx=0;
+for igain=gain_range
+    iidx=iidx+1;
+close all;
+% Make predictions
+pred1=cell(1,1);
+
 movd = condMov{icond};
  maskedMov= filterMov(movd,mask,squeeze(ttf))*igain;
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
 nTrials=29;
- [pred1{1},lam]= predictGMLM_full(fitGMLM,maskedMov,nTrials);
+ [pred1{1},lam]= predictGMLM_full_gains(fitGMLM,maskedMov,nTrials,nl,1);
  pred1{1} = pred1{1}';
+ fr(jidx,iidx) =sum(pred1{1}(:))/(size(pred1{1},1) * size(pred1{1},2)/1200);
+  
+ % Calculate psth
+ [PSTH_pred,time]=calculate_psth_fcn2(convolve,binSz,len,pred1{1});
+    
+    % Recorded 
+ var_log(jidx,iidx) = var(PSTH_pred);
  
-   % h=figure('Color','w','PaperSize',[10,7],'PaperPosition',[0 0 42 7]);
-    close all
+   R2_log(jidx,iidx) = R_2_value(PSTH_rec',PSTH_pred'); 
+
+end
+end
+R2_l = R2_l + R2_log;
+var_l = var_l + var_log;
+fr_l = fr_l + fr;
+end
+
+R2_l=R2_l/nfits;
+var_l = var_l/nfits;
+fr_l = fr_l/nfits;
+
+fr_rec = spkCondColl(icond).avgSpkRate
+var_rec = var(PSTH_rec)
+figure;
+subplot(1,4,1);
+[C_fr,h] = contourf(gain_range,jgainrange,fr_l,[fr_rec,fr_rec]);
+subplot(1,4,2);
+[C_var,h]=contourf(gain_range,jgainrange,var_l,[var_rec,var_rec]);
+subplot(1,4,3);
+contourf(gain_range,jgainrange,R2_l,20);
+
+hh=figure;
+subplot(1,4,1);
+[~,h] = contourf(gain_range,jgainrange,fr_l,20);
+
+subplot(1,4,2);
+[~,h]=contourf(gain_range,jgainrange,var_l,20);
+
+subplot(1,4,3);
+contourf(gain_range,jgainrange,R2_l,20);
+
+subplot(1,4,4)
+plot(C_fr(1,2:end),C_fr(2,2:end));hold on;
+plot(C_var(1,2:end),C_var(2,2:end));
+
+%legend('Observed average firing rate','Observed PSTH varaince');
+%%
+
+realResp = makeSpikeMat(spkCondColl(icond).spksColl,1/120,1272);
+fr= mean(realResp,1)/(1/120);
+
+igain=3%2%2%input('What gain to choose?');
+jgain =0.7%0.8%0.6275%0.6275;
+nl = @(x) (x.^jgain);
+pred1=cell(1,1);
+icond=5%5%1:nConditions
+movd = condMov{icond};
+ maskedMov= filterMov(movd,mask,squeeze(ttf))*igain;
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+ R2_pl = [];
+ for ipred = 1:1
+nTrials=100;
+ [pred1{1},lam]= predictGMLM_full_gains(fitGMLM,maskedMov,nTrials,nl,1);
+ pred1{1} = pred1{1}';
+ [PSTH_pred,time]=calculate_psth_fcn2(convolve,binSz,len,pred1{1});
+ R2_pl(ipred) = R_2_value(PSTH_rec',PSTH_pred')
+ end
+ R2_p = mean(R2_pl)
+ 
+   h=figure('Color','w','PaperSize',[10,7],'PaperPosition',[0 0 42 7]);
+    % close all
+    %figure;
     ss = spkCondColl(icond);
    hh=plot_record_prediction(ss,pred1);
-% 
-      
- %      print(hh,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data042/OFF Parasol/null_pred_full_mix/cellID_%d/cellID_%d_SU_%d_gain_%d.pdf',cellID,cellID,nSU,igain));
-%   
-%save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data042/OFF Parasol/null_pred_full_mix/cellID_%d/data_cellID_%d_SU_%d_gain_%d.mat',cellID,cellID,nSU,igain),'pred1','mask','ttf','spkCondColl','spkColl')
-    
 
+    hh=plot_record_pred12(ss,pred4,pred1);

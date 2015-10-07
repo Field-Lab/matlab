@@ -232,3 +232,128 @@ hold on;
 plot([0,0],[-max(abs(gamma1_eq_log)),max(abs(gamma1_eq_log))],'g');
 hold on;
 plot([-max(abs(gamma2_eq_log)),max(abs(gamma2_eq_log))],[0,0],'g');
+
+%% Different weights -imaginary probe
+SU_cone_wt(1,1) = 0.7;
+SU_cone_wt(1,2) = 1;
+icell=1;
+
+ gamma_expt = cell(3,1); gamma_emp_expt=cell(3,1);
+gamma_range = 0.5:0.5:5;
+ 
+ for jjpix=[2,3]
+     
+ gamma1_eq_log = [];
+ gamma2_eq_log = [];
+ 
+ gamma1_emp_eq_log = [];
+ gamma2_emp_eq_log = [];
+for gamma_norm = gamma_range;
+    gamma_norm
+    
+gamma1_log=[];moment_emp_11_log=[];moment_emp_12_log=[];moment_11_log=[];moment_12_log=[];
+
+for e=0:0.01:gamma_norm^2
+    gamma1 = sqrt(e);
+   gamma2 = -sqrt(gamma_norm^2-gamma1^2);
+   
+   
+  u=zeros(nCones,1);
+  u(1)=gamma1; u(2)=gamma2; u = sqrt(-1)*u;
+  moment_emp_11 =  sum(resp(icell,:)'/T ) * sum(exp(u'*movie_c))/T; 
+  moment_11 = sum(2*exp((sum(SU_cone_wt(logical(cell_su_mat(icell,:)'),:).^2,2)*sig^2 )/2),1)*dt * exp((sum(u.^2)*sig^2) / 2); 
+      
+  ipix=1;jpix=jjpix;
+   u=zeros(nCones,1);
+   u(ipix)=gamma1; u(jpix)=gamma2;u = sqrt(-1)*u;
+   moment_emp_12 = exp(u'*movie_c)*resp(icell,:)'/T; 
+   
+   xx=SU_cone_wt(logical(cell_su_mat(icell,:)'),:);
+   xx = xx + repmat(u',[size(xx,1),1]);
+   moment_12 = sum(2*exp((sum(xx.^2,2)*sig^2 )/2),1) *dt; 
+
+   gamma1_log = [gamma1_log;gamma1];
+   moment_emp_11_log = [moment_emp_11_log;moment_emp_11];
+   moment_11_log = [moment_11_log;moment_11];
+   moment_emp_12_log = [moment_emp_12_log;moment_emp_12];
+   moment_12_log = [moment_12_log;moment_12];
+end
+
+ figure;
+ plot((gamma1_log.^2)/(gamma_norm^2),real(moment_12_log));
+ hold on;
+ plot((gamma1_log.^2)/(gamma_norm^2),real(moment_11_log));
+ hold on;
+ plot((gamma1_log.^2)/(gamma_norm^2),imag(moment_12_log));
+ hold on;
+ plot((gamma1_log.^2)/(gamma_norm^2),imag(moment_11_log));
+
+ title(sprintf('Pixels 1-%d : gamma norm : %f',jpix,gamma_norm));
+% hold on;plot((gamma1_log.^2)/(gamma_norm^2),moment_emp_12_log);hold on;plot((gamma1_log.^2)/(gamma_norm^2),moment_emp_11_log)
+
+ 
+ 
+ % intersection -moment
+ [v,I] = min(abs(moment_11_log-moment_12_log).^2);
+ 
+ gamma1_eq = gamma1_log(I);
+ gamma2_eq = -sqrt(gamma_norm^2-gamma1_eq^2); 
+ 
+ gamma1_eq_log = [gamma1_eq_log;gamma1_eq];
+ gamma2_eq_log = [gamma2_eq_log;gamma2_eq];
+ 
+ 
+ 
+ % intersection -moment empirical
+ [v,I] = min((moment_emp_11_log-moment_emp_12_log).^2);
+ 
+ gamma1_eq = gamma1_log(I);
+ gamma2_eq = -sqrt(gamma_norm^2-gamma1_eq^2); 
+ 
+ gamma1_emp_eq_log = [gamma1_emp_eq_log;gamma1_eq];
+ gamma2_emp_eq_log = [gamma2_emp_eq_log;gamma2_eq];
+ 
+ 
+end
+
+figure; 
+plot(gamma2_eq_log,gamma1_eq_log); hold on;
+plot([0,0],[-max(abs(gamma1_eq_log)),max(abs(gamma1_eq_log))],'g');
+hold on;
+plot([-max(abs(gamma2_eq_log)),max(abs(gamma2_eq_log))],[0,0],'g');
+hold on;
+plot(gamma2_emp_eq_log,gamma1_emp_eq_log,'--');
+
+
+
+gamma_expt{jjpix} = [gamma1_eq_log,gamma2_eq_log];
+gamma_emp_expt{jjpix} = [gamma1_emp_eq_log,gamma2_emp_eq_log];
+ end
+ 
+ 
+figure; 
+plot(gamma_expt{2}(:,2),gamma_expt{2}(:,1),'r');
+hold on;
+plot(gamma_expt{3}(:,2),gamma_expt{3}(:,1)),'b';
+hold on;
+plot(gamma_emp_expt{2}(:,2),gamma_emp_expt{2}(:,1),'--r');
+hold on;
+plot(gamma_emp_expt{3}(:,2),gamma_emp_expt{3}(:,1),'--b');
+hold on;
+plot([0,0],[-max(abs(gamma1_eq_log)),max(abs(gamma1_eq_log))],'g');
+hold on;
+plot([-max(abs(gamma2_eq_log)),max(abs(gamma2_eq_log))],[0,0],'g');
+
+
+figure; 
+plot(gamma_expt{2}(:,2)./gamma_range',gamma_expt{2}(:,1)./gamma_range','--r*');
+hold on;
+plot(gamma_expt{3}(:,2)./gamma_range',gamma_expt{3}(:,1)./gamma_range','--b.');
+hold on;
+plot(gamma_emp_expt{2}(:,2)./gamma_range',gamma_emp_expt{2}(:,1)./gamma_range','--m*');
+hold on;
+plot(gamma_emp_expt{3}(:,2)./gamma_range',gamma_emp_expt{3}(:,1)./gamma_range','--c.');
+hold on;
+plot([0,0],[-max(abs(gamma1_eq_log)),max(abs(gamma1_eq_log))],'g');
+hold on;
+plot([-max(abs(gamma2_eq_log)),max(abs(gamma2_eq_log))],[0,0],'g');
