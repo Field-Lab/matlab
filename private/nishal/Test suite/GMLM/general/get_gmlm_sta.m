@@ -72,7 +72,7 @@ for ifilt=1:nSU
 u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
 %u_spatial = reshape_vector(WN_uSq{ifilt},masked_frame,indexedframe);
 
-subplot(2,2,ifilt)
+subplot(4,2,ifilt)
 imagesc(u_spatial(x_coord,y_coord));
 colormap gray
 colorbar

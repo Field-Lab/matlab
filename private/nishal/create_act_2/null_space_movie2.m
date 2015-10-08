@@ -68,8 +68,10 @@ stas_new=cell(length(stas),1);
 for icell=1:length(stas)
     st_temp=zeros(size(stas{1},2),size(stas{1},1),1,size(stas{1},4)); % DOUBT .. Could be a reason for things to fail!!!!!
     for itime=1:size(stas{1},4)
-        st_temp(:,:,:,itime)=mean(stas{icell}(:,:,:,end-itime+1),3)'; % DOUBT .. Could be a reason for things to fail!!!!!
+        %st_temp(:,:,:,itime)=mean(repmat(stas{icell}(:,:,3,end-itime+1),[1,1,3,1]),3)'; % DOUBT .. Could be a reason for things to fail!!!!!
+         st_temp(:,:,:,itime)=mean(repmat(stas{icell}(:,:,:,end-itime+1),3)'; 
     end
+    %sprintf('Only blue gun selected!!!!!')
     stas_new{icell}=st_temp;
 end
 stas=stas_new;
@@ -426,7 +428,7 @@ mov_sta_direction = mov_show;
 zk=mov+mov_sta_direction;
 
     while togo==1
-
+close all;
         % projection C
   mov=zk-mov_sta_direction;
     maxClip = (0.48/0.5)*127.5;

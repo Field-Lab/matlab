@@ -46,12 +46,21 @@ fprintf(fid, hdr);
 
 %write frames
 
-   
+   % write BW movie
     for i=1:mov_len
         im=squeeze(mov(:,:,i));
         im = reshape(im,[1, numel(im)]);
         fwrite(fid, repmat(im, [3,1]), 'ubit8');
     end
+    
+    % write blue movie
+%     display(sprintf('Write blue movie'))
+%         for i=1:mov_len
+%         im=squeeze(mov(:,:,i));
+%         im = reshape(im,[1, numel(im)]);
+%         im = [127*ones(2,length(im));im];
+%         fwrite(fid,im, 'ubit8');
+%         end
     
 fclose(fid);
 toc
