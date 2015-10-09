@@ -129,7 +129,7 @@ end
 
 % STIM
 WN_STA             = double(glm_cellinfo.WN_STA);
-[X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
+[X_frame,~]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
 % clear WN_STA
 if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     stimsize.width  = size(fitmovie,1);
@@ -151,6 +151,7 @@ if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
     end
     clear STA U S V
 end
+
 
 % OPTIMIZATION
 % INITIALIZE OPTIMIZATION STRUCTURE FOR MATLAB FMIN SOLVERS

@@ -210,7 +210,24 @@ if exist('changes_cell','var') && length(changes_cell)>=1
         if strcmp(change.type, 'Saccades')
             GLMType.Saccades = true;
         end
-
+        
+        if strcmp(change.type, 'DataPrep')
+            GLMType.DataPrep = true;
+            GLMType.stimfilter_mode = 'rk1'; GLMType.CONVEX = true;
+            GLMType.TonicDrive = true;
+            GLMType.StimFilter = true;
+            GLMType.PostSpikeFilter = true;
+            GLMType.CouplingFilters = false;
+            GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';
+            GLMType.nullpoint  = 'mean';
+            GLMType.map_type   = 'mapPRJ';
+            GLMType.debug      = false;
+            GLMType.Contrast   = false;
+            GLMType.Subunits   = false;
+            GLMType.STA_init   = false;
+            GLMType.timefilter = 'fit';
+        end
+        
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_shiftmean';

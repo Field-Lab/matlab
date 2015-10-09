@@ -1,70 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% AKHeitman 2015-04-02
-
-% Creates structure which dictates GLMType
-% Loads cells 
-% Loads stimuli / basic stimuli processing
-% Loads spike trains / basic spike train processing
-% Requires the organizedspikes structure with spike times relative
-%    to start of each block of stimulus
-% No direct GLM Paramater usage
-% Feeds into glm_execute which is located in glm_core directory
-% glm_execute along with glm_core 
-%    which has no additional code dependencies, no loading of matfiles
-
-% INPUTS
-% exps: an array of which exps to run (1-4)
-% stimtypes: 1 = WN, 2=NSEM
-% celltypes: 1 = ON, 2 = OFF parasols
-% cell_subset: 'all' 'shortlist' or 'debug'
-% glm_settings: optional
-% runoptions: optional
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Wrap_bookeeping Calls %
-%  NSEM_BaseDirectories
-%  GLM_Settings
-%  GLM_fitname
-%  NSEM_secondaryDirectories
-%  loadmoviematfiles
-%  StimulusParams
-
-% Main Call %
-%   glm_execute  
-
-% Subroutines at bottom of function
-%  subR_concat_fitspikes_fromorganizedspikes
-%  subR_createraster
-%  subR_concat_fitmovie_fromblockedcell
-%  subR_visionSTA_to_xymviCoord
-
-% Sample Call and Output to verify that it works
-%{
-exps = 3;
-stimtypes = [1]; % white noise only  (2 is natural scens)
-celltypes = [1]; % only ON Parasol
-cell_subset = 'debug';
-glm_settings{1}.type = 'debug';
-glm_settings{1}.name = 'true';
-runoptions.replace_existing = true;
-glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings,runoptions)
-
-%%% Should have the following minimization sequence  
-### running: WN expC ONPar_2824: debug_fixedSP_rk1_linear_MU_PS_noCP_p8IDp8/standardparams ###
-
-                                Norm of      First-order 
- Iteration        f(x)          step          optimality   CG-iterations
-     0            1297.56                         2e+04                
-     1            1297.56             10          2e+04           4
-     2           -42251.5            2.5       2.56e+03           0
-     3           -45320.3        4.13912       5.15e+03           7
-
-Local minimum possible.
-%}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function glm_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
+function glm_export_wrap(exps,stimtypes,celltypes,cell_subset,glm_settings, runoptions)
 
 % Load core directories and all eligible cells
 BD = NSEM_BaseDirectories;
@@ -81,18 +15,6 @@ GLMType.fitname    = GLM_fitname(GLMType);
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
-
-% Run options, order cells for fitting
-if exist('runoptions','var')
-    if isfield(runoptions,'replace_existing')
-        replace_existing  = true;
-    end
-    if isfield(runoptions,'reverseorder')
-        reverseorder  = true;
-    end
-end
-
-
 
 for i_exp = exps    
     for i_stimtype = stimtypes
@@ -123,9 +45,6 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-        
-        if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
-        display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
                 
         for i_celltype = celltypes            
             % Choose which subset of cells to run
@@ -157,7 +76,6 @@ for i_exp = exps
             for i_cell = 1:length(cellgroup)
                 cid = cellgroup(i_cell);
                 cell_savename = sprintf('%s_%d', celltype,cid);
-                if ~exist(sprintf('%s/%s.mat', Dirs.fittedGLM_savedir,cell_savename)) || (exist('replace_existing','var') && replace_existing)
                     % Create cell information structure
                     glm_cellinfo.cid            = cid;
                     glm_cellinfo.exp_nm         = exp_nm;
@@ -167,7 +85,7 @@ for i_exp = exps
                     glm_cellinfo.d_save         = Dirs.fittedGLM_savedir;
                     glm_cellinfo.computedtstim  = StimulusPars.slv.computedtstim;
                     
-                    % Add WN-STA and slave coordinates to glm_cellinfo
+%                     % Add WN-STA and slave coordinates to glm_cellinfo
                     eval(sprintf('load %s/STAandROI_%s.mat STAandROI', Dirs.WN_STAdir, cell_savename));
                     master_idx         = find(datarun_master.cell_ids == cid);
                     stafit_centercoord = ( datarun_master.vision.sta_fits{master_idx}.mean );
@@ -178,14 +96,14 @@ for i_exp = exps
                     glm_cellinfo.WN_STA = STAandROI.STA;
                     glm_cellinfo.slave_centercoord = center_coord;
                     
-                    % NBCoupling 06-10-2014
-                    if GLMType.CouplingFilters==true
-                        % eval(sprintf('load %s/neighbor_cells.mat', BD.Cell_Selection));
-                        glm_cellinfo.pairs=subR_pick_neighbor_cells(stafit_centercoord, cells_to_pair, datarun_master.vision.sta_fits);
-                    else
-                        glm_cellinfo.pairs=0;
-                    end
-                    % end NBCoupling
+%                     % NBCoupling 06-10-2014
+%                     if GLMType.CouplingFilters==true
+%                         % eval(sprintf('load %s/neighbor_cells.mat', BD.Cell_Selection));
+%                         glm_cellinfo.pairs=subR_pick_neighbor_cells(stafit_centercoord, cells_to_pair, datarun_master.vision.sta_fits);
+%                     else
+%                         glm_cellinfo.pairs=0;
+%                     end
+%                     % end NBCoupling
                     
                     % Load Blocked-Spikes from preprocessing
                     eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir, cell_savename));
@@ -193,40 +111,33 @@ for i_exp = exps
                     % Process spikes for glm_execute with proper subroutines
                     fitspikes_concat.home  = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
                     testspikes_raster.home = subR_createraster(organizedspikes.block, StimulusPars.slv);
-                    
-                    % NBCoupling 2014-04-20
-                    if GLMType.CouplingFilters
-                        n_couplings=length(glm_cellinfo.pairs); % number of cells to couple to
-                        % loading the neighboring spikes to neighborspikes.home
-                        for i_pair=1:n_couplings
-                            glm_cellinfo.pair_savename{i_pair}  = sprintf('%s_%d', celltype,glm_cellinfo.pairs(i_pair));
-                            eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir,  glm_cellinfo.pair_savename{i_pair}));
-                            neighborspikes.home{i_pair} = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
-                            neighborspikes.test{i_pair} = subR_createraster(organizedspikes.block, StimulusPars.slv);
-                            % neighbor_organizedspikes{j}=organizedspikes;
-                        end
-                    else
-                        neighborspikes.home = 0;
-                        neighborspikes.test = 0;
-                    end
-                    % end NBCoupling
+%                     
+%                     % NBCoupling 2014-04-20
+%                     if GLMType.CouplingFilters
+%                         n_couplings=length(glm_cellinfo.pairs); % number of cells to couple to
+%                         % loading the neighboring spikes to neighborspikes.home
+%                         for i_pair=1:n_couplings
+%                             glm_cellinfo.pair_savename{i_pair}  = sprintf('%s_%d', celltype,glm_cellinfo.pairs(i_pair));
+%                             eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', Dirs.organizedspikesdir,  glm_cellinfo.pair_savename{i_pair}));
+%                             neighborspikes.home{i_pair} = subR_concat_fitspikes_fromorganizedspikes(organizedspikes.block, StimulusPars.slv);
+%                             neighborspikes.test{i_pair} = subR_createraster(organizedspikes.block, StimulusPars.slv);
+%                             % neighbor_organizedspikes{j}=organizedspikes;
+%                         end
+%                     else
+%                         neighborspikes.home = 0;
+%                         neighborspikes.test = 0;
+%                     end
+%                     % end NBCoupling
                     
                     % Call appropriate glm_execute
-                        display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
-                        tStart = tic;
-                        if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
-                            [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
-                                fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
-                        elseif GLMType.DataPrep
-                            [spikes, movies] = glm_dataexport(GLMType,fitspikes_concat,fitmovie_concat,...
-                                testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
-                        else
-                            [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
-                                testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
-                        end
-                        duration = toc(tStart);
-                        display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
-                end
+                    display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
+                    tStart = tic;
+                    
+                    glm_dataexport(GLMType,fitspikes_concat,fitmovie_concat,...
+                        testspikes_raster,testmovie,inputstats,glm_cellinfo, BD); % NBCoupling 2015-04-20
+                    
+                    duration = toc(tStart);
+                    display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
             end
         end
     end
