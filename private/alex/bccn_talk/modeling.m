@@ -1010,16 +1010,18 @@ for ndf = 0:4
 %                 compute_corr(my_trial, fr)
                 
                 
-                t = [];p=[];
+                model_corr = [];data_corr=[];
+                model_r2 = [];data_r2=[];
+                model_rms = [];data_rms=[];
                 for k=5:19
                     tmp = my_repeats(5:19,:);
                     tmp(k-4,:) = [];
-%                     t(k-4) = compute_corr(fr,my_repeats(k,:));
-%                     p(k-4) = compute_corr(my_repeats(k,:), mean(tmp));
-% t(k-4) = compute_r2(fr,my_repeats(k,:));
-% p(k-4) = compute_r2(my_repeats(k,:), mean(tmp));
-                                t(k-4) = rms(my_repeats(k,:)-fr);
-                                p(k-4) = rms(my_repeats(k,:)-mean(tmp));
+                    model_corr(k-4) = compute_corr(fr,my_repeats(k,:));
+                    data_corr(k-4) = compute_corr(my_repeats(k,:), mean(tmp));
+                    model_r2(k-4) = compute_r2(fr,my_repeats(k,:));
+                    data_r2(k-4) = compute_r2(my_repeats(k,:), mean(tmp));
+                    model_rms(k-4) = rms(my_repeats(k,:)-fr);
+                    data_rms(k-4) = rms(my_repeats(k,:)-mean(tmp));
                 end
                 
 %                 figure
@@ -1031,9 +1033,13 @@ for ndf = 0:4
 %                 
                 
 %                 hold on
-                if (nanmean(p))>0.3;
-                    mean_corr(cnt) = nanmean(t);
-                    mean_corr_data(cnt) = nanmean(p);
+                if (nanmean(data_corr))>0.3 && (nanmean(data_r2))>0.3 && (nanmean(data_rms))<3.5
+                    mean_corr(cnt) = nanmean(model_corr);
+                    mean_corr_data(cnt) = nanmean(data_corr);
+                    mean_r2(cnt) = nanmean(model_r2);
+                    mean_r2_data(cnt) = nanmean(data_r2);
+                    mean_rms(cnt) = nanmean(model_rms);
+                    mean_rms_data(cnt) = nanmean(data_rms);
 %                     plot(p,t,'x');
                 else
                     mean_corr(cnt) = -100;
@@ -1068,24 +1074,65 @@ for ndf = 0:4
         gg = mean_corr_data>0.3;
         cag(uu, ndf+1) = mean(mean_corr(gg));
         cag_data(uu, ndf+1) = mean(mean_corr_data(gg));
-        ddd(uu, ndf+1) = mean(mean_corr(gg)./mean_corr_data(gg));
-        ddd_std(uu, ndf+1) = std(mean_corr(gg)./mean_corr_data(gg))/sqrt(sum(gg));
+        corr_trend_mean(uu, ndf+1) = mean(mean_corr(gg)./mean_corr_data(gg));
+        corr_trend_std(uu, ndf+1) = std(mean_corr(gg)./mean_corr_data(gg))/sqrt(sum(gg));
+        
+        r2_trend_mean(uu, ndf+1) = mean(mean_r2(gg)./mean_r2_data(gg));
+        r2_trend_std(uu, ndf+1) = std(mean_r2(gg)./mean_r2_data(gg))/sqrt(sum(gg));
+        
+        
+        rms_trend_mean(uu, ndf+1) = mean(mean_rms_data(gg)./mean_rms(gg));
+        rms_trend_std(uu, ndf+1) = std(mean_rms_data(gg)./mean_rms(gg))/sqrt(sum(gg));
+        
+       
         cag_std(uu, ndf+1) = std(mean_corr(gg))/sqrt(sum(gg));
         cag_data_std(uu, ndf+1) = std(mean_corr_data(gg))/sqrt(sum(gg));
     end
 end
 
 figure
+
+subplot(1,3,1)
 for i=1:4
-    plot(ddd(i, end:-1:1))
+    plot(corr_trend_mean(i, end:-1:1))
     hold on
 end
 legend('ONp', 'off p', 'onm', 'off p', 'location', 'best')
 for i=1:4
-errorbar(ddd(i, end:-1:1), ddd_std(i, end:-1:1), '.')
+errorbar(corr_trend_mean(i, end:-1:1), corr_trend_std(i, end:-1:1), '.')
 
 end
-    axis([0 6 0 1])
+axis([0 6 0 1])
+
+subplot(1,3,2)
+for i=1:4
+    plot(r2_trend_mean(i, end:-1:1))
+    hold on
+end
+legend('ONp', 'off p', 'onm', 'off p', 'location', 'best')
+for i=1:4
+errorbar(r2_trend_mean(i, end:-1:1), r2_trend_std(i, end:-1:1), '.')
+
+end
+axis([0 6 0 1])
+
+subplot(1,3,3)
+for i=1:4
+    plot(rms_trend_mean(i, end:-1:1))
+    hold on
+end
+legend('ONp', 'off p', 'onm', 'off p', 'location', 'best')
+for i=1:4
+errorbar(rms_trend_mean(i, end:-1:1), rms_trend_std(i, end:-1:1), '.')
+
+end
+axis([0 6 0 1])
+
+
+
+
+
+
 
 
 figure

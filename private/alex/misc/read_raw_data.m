@@ -1,6 +1,7 @@
 
 %initiate data 
 raw_data_path='/Volumes/Data/6666-66-66-6/data000';
+raw_data_path='/Volumes/Data/2015-09-23-0/data000';
 raw_data_path='/Volumes/Data/2015-03-09-2/data000';
 
 raw_data_path='/Volumes/Data/8888-88-88-8/data002';
@@ -25,6 +26,9 @@ for i=0:100:7200
     all_diffs = [all_diffs; tmp];
     part_d = [];
 end
+
+figure
+plot(all_diffs)
 
 figure
 plot(round(all_diffs(1:end)))
