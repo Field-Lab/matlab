@@ -1,7 +1,5 @@
 function initial=Initialize(input)
 
-
-
 data           = input.tracesInfo.data;
 templates      = input.neuronInfo.templates;
 TfindRange     = input.params.initial.TfindRange;  
@@ -21,6 +19,8 @@ nNeurons = input.neuronInfo.nNeurons;
 lengthFindRange = length(TfindRel);
 lengthSpikes    = sum(I)*nNeurons*lengthFindRange;
 lengthDataVec   = sum(I)*E*T;
+breakRanges = cell(E,1);
+degPols  = cell(E,1);
 for e=1:E
     breakRanges{e}  = [0 input.tracesInfo.breakPoints{e} J];
     
@@ -166,7 +166,9 @@ b  = sparse([ones(lengthSpikes,1);zeros(lengthSpikes,1);ones(size(Asp,1),1);zero
 
 
 c = ones(lengthSpikes,1);
-cvx_begin
+tic
+disp('beginning initial optimization .. ');
+cvx_begin quiet
 variable BetaPol(sizeA)
 variable s(lengthSpikes) 
 if(rho>0)
@@ -176,11 +178,12 @@ else
 end
 Ag*s <= b;
 cvx_end
-
+fprintf('...optimization took %0.0f seconds\n',toc);
+BetaPolE = cell(E,1);
 for e=1:E
     BetaPolE{e}=BetaPol(1+sizeAeCum(e):sizeAeCum(e+1));
 end
-
+GeneralizedSpikes = cell(nNeurons,J); %preallocate
 for n = 1:nNeurons
     for j = 1:J
         for i = 1:I(j)
@@ -189,7 +192,7 @@ for n = 1:nNeurons
         end
     end
 end
-
+Probs = zeros(nNeurons,J); %preallocate
 for j = 1:J
     for n = 1:nNeurons
             Probs(n,j) = nanmean(nansum(GeneralizedSpikes{n,j})); 
@@ -197,16 +200,16 @@ for j = 1:J
 end
 
 
-
+A = zeros(J,length(XjPol{1}*BetaPol));
 for j = 1:J
     A(j,:) = XjPol{j}*BetaPol;
     
 end
-
+AE = cell(E,1);
 for e = 1:E
     AE{e} = A(:,1+(e-1)*T:e*T);
 end
-
+ActionPotentials = cell(nNeurons,J); %preallocate
 
 for j=1:J
     for n=1:nNeurons
@@ -215,7 +218,8 @@ for j=1:J
         ActionPotentials{n,j} = (K0*kron(indn',GeneralizedSpikes{n,j}))';
     end
 end    
-
+Residuals = cell(J,E);
+sigma = zeros(E,J);
 for j = 1:J
     sumActionPotentials = 0;
     
@@ -231,15 +235,17 @@ for j = 1:J
     end
 end
 
- 
-
-[X Xj]        = makeArtifactCovariates(T,J,I);
+[X, Xj] = makeArtifactCovariates(T,J,I);
 [matricesReg] = makeRegularizationMatrices(breakRanges,Tdivide);
-
+Beta = zeros(length(reshape(AE{1}',T*J,1)),E);
+lambdas = cell(E,1);
+Lambdas = cell(E,1);
+LambdasInv = cell(E,1);
 
 for e=1:E
     clear quad  
     Beta(:,e)  = reshape(AE{e}',T*J,1);
+    quad = zeros(length(matricesReg(e).Prods),1); %preallocate
     for l = 1:length(matricesReg(e).Prods)
        quad(l) = trace(Beta(:,e)'*matricesReg(e).Prods{l}*Beta(:,e));
     end

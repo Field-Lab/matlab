@@ -6,8 +6,8 @@ dataPath = '/Volumes/Analysis/2007-09-18-4/data002-nwpca-duplicates/data002/data
 
 %65 5134;
 
-match_list = [9 2296 ;11 2913; 14 2348; 15 2342; 17 3559; 41 1326; 44 4446; 80 413];
-
+% match_list = [9 2296 ;11 2913; 14 2348; 15 2342; 17 3559; 41 1326; 44 4446; 80 413];
+match_list = [11 2913; 17 3559;41 1326; 44 4446];
 cellIds = match_list(:,2);
  
 % Load EI. 
@@ -40,13 +40,16 @@ end
 
 figure
 
+
 [match_n, ~] = size(match_list);
 
 estimates = {};
  stats = [];
 for n = 1: match_n
     
-    subplot(ceil(match_n/2), 2, n)
+    %subplot(ceil(match_n/2), 2, n)
+    figure
+    
     
     ei = datarun.ei.eis{get_cell_indices(datarun,cellIds(n))}; 
 
@@ -54,7 +57,7 @@ for n = 1: match_n
 
     [axon_x, axon_y, ~, ~, ~, ~, res] = weighted_axon_poly_reg(eiAmps);
  
-    res
+    res;
     axon_x = axon_x';
     axon_y = axon_y';
     
@@ -64,7 +67,7 @@ for n = 1: match_n
     
     traced = axons{match_list(n, 1)};
 
-    scatter(elec_x, elec_y, eiAmps+.1, 'filled', 'MarkerFaceColor', 'black');
+    scatter(elec_x, elec_y, 2*(eiAmps+.1), 'filled', 'MarkerFaceColor', 'black');
     hold on;
     plot(axon_x, axon_y, 'r');
     
@@ -73,6 +76,6 @@ for n = 1: match_n
     if n == 1
         legend('Electrode amplitude', 'Estimated', 'Traced');
     end    
-    
+    axis off
 end
 
