@@ -6,8 +6,8 @@
 % moviefile = '/Volumes/Lab/Users/Nora/v2LPF/med_960s/lpf-02-12-0_16'; % 02-12 also exists
 moviefile = '/Volumes/Lab/Users/Nora/v2LPF/short_480s/lpf-02-06-0_16'; % 02-12 also exists
 % moviefile = '/Users/Nora/Desktop/1stix_test.rawMovie';
-frames=10;
-start_frame=1;
+frames=1;
+start_frame=2;
 % Warning: can take awhile to load
 % Roughly 30  seconds to load up in Bertha for a 30 second movie
 % Roughly 90 seconds on Alligator for a 30 second movie

@@ -1,4 +1,4 @@
-clear
+% clear
 
 %% Load data
 datapath = '2015-05-27-11/data001-data005-norefit/data002-from-data001_data002_data003_data004_data005/data002-from-data001_data002_data003_data004_data005';
@@ -47,58 +47,58 @@ clear WN8 WN4 repeats_within_block repeat_starts block_starts
 testblocks = NSEM(1:2:end);
 testmovie_frames_per_block = 20*120;
 testmovie_seconds_per_block = testmovie_frames_per_block/120;
-
-cells = get_cell_indices(datarun_class, 'Off Amacrine');
-n_cells = length(cells);
-%% Load up cell info
-
-res.spikes = zeros(n_cells, testmovie_frames_per_block);
-res.centers = zeros(n_cells, 2);
-
-for i_cell = 1:n_cells
-    
-    disp(i_cell)
-    spikes = datarun.spikes{cells(i_cell)};
-    % Concatenate fit spikes
-%     fitblocks = NSEM(2:2:end);
-%     fitmovie_frames_per_block = 7200;
-%     fitmovie_seconds_per_block = fitmovie_frames_per_block/120;
-%     concat_spikes = [];
-%     start = 0;
-%     for i = 1:length(fitblocks)
-%         block_spikes = spikes(spikes > fitblocks(i) & spikes < fitblocks(i)+fitmovie_seconds_per_block);
-%         concat_spikes = [concat_spikes; block_spikes-fitblocks(i)+start];
-%         start = start + fitmovie_seconds_per_block;
+% 
+% cells = get_cell_indices(datarun_class, 'Off Amacrine');
+% n_cells = length(cells);
+% %% Load up cell info
+% 
+% res.spikes = zeros(n_cells, testmovie_frames_per_block);
+% res.centers = zeros(n_cells, 2);
+% 
+% for i_cell = 1:n_cells
+%     
+%     disp(i_cell)
+%     spikes = datarun.spikes{cells(i_cell)};
+%     % Concatenate fit spikes
+% %     fitblocks = NSEM(2:2:end);
+% %     fitmovie_frames_per_block = 7200;
+% %     fitmovie_seconds_per_block = fitmovie_frames_per_block/120;
+% %     concat_spikes = [];
+% %     start = 0;
+% %     for i = 1:length(fitblocks)
+% %         block_spikes = spikes(spikes > fitblocks(i) & spikes < fitblocks(i)+fitmovie_seconds_per_block);
+% %         concat_spikes = [concat_spikes; block_spikes-fitblocks(i)+start];
+% %         start = start + fitmovie_seconds_per_block;
+% %     end
+% 
+%     spikes_frame = floor(spikes_concat * 120);
+%     for i_frame = 1:testmovie_frames_per_block
+%         res.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame);
 %     end
+% end
 
-    spikes_concat = [];
-    for i = 1:length(testblocks)
-        trial_spikes = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
-        spikes_concat = [spikes_concat; trial_spikes];
+figure; hold on
+slope = zeros(20, 2);
+for i_saccade = 0:19
+    for i_cell = 1:length(cells)
+        spikes = datarun.spikes{cells(i_cell)}; 
+        spikes_concat = [];
+        for i = 1:length(testblocks)
+            trial_spikes = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
+            spikes_concat = [spikes_concat; trial_spikes];
+        end
+        centers = flip(datarun_class.vision.sta_fits{cells(i_cell)}.mean);
+        hold on; subplot(2,1,1); plot(spikes_concat, centers(1)*ones(length(spikes_concat), 1), '.k')
+        title(['Saccade ' num2str(i_saccade)])
+        xlim([i_saccade i_saccade+0.25])
+        hold on; subplot(2,1,2); plot(spikes_concat, centers(2)*ones(length(spikes_concat), 1), '.k')
+        xlim([i_saccade i_saccade+0.25])
     end
-    spikes_frame = floor(spikes_concat * 120);
-    for i_frame = 1:testmovie_frames_per_block
-       res.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame); 
-    end
-
-    res.centers(i_cell,:) = flip(datarun_class.vision.sta_fits{cells(i_cell)}.mean);
-    % center(2) = 40 - center(2);
+    [x,y] = ginput(4);
+    slope(i_saccade+1,1) = (y(1)-y(2))/(x(1) - x(2));
+    slope(i_saccade+1,2) = (y(3)-y(4))/(x(3) - x(4));
 
 end
+% center(2) = 40 - center(2);
 
-%%
-n_images = 20;
-peaks = zeros(n_cells, n_images);
-[y_pos, y_pos_index] = sort(res.centers(:,1));
-for i = 1:n_images
-   image_transition_time = (i-1)*120+1;
-   index = image_transition_time:(image_transition_time+20);
-   for j = 1:n_cells
-       cell = y_pos_index(j);
-       try
-           [~,peaks(j, i)] = max(res.spikes(cell, index));
-       catch
-           peaks(j,i) = 21;
-       end
-   end
-end
+

@@ -1,12 +1,15 @@
-function X=get_rawmovie(moviefile, frames)
+function X=get_rawmovie(moviefile, frames, start_frame)
 % Warning: can take awhile to load
 % Roughly 30  seconds to load up in Bertha for a 30 second movie
 % Roughly 90 seconds on Alligator for a 30 second movie
 
+% start frame is indexed from 0, so if you set start_frame = 0, will start
+% at the beginning of the movie
+
 % sort through the header to find the movie size
 fid = fopen(moviefile,'r');
 t = fscanf(fid,'%s',1);
-if ~isequal(t,'header-size')
+if ~strcmpi(t,'header-size')
     error('no header-size')
 else
     header_size = str2double(fscanf(fid, '%s', 1));
@@ -16,9 +19,9 @@ width = [];
 while ( isempty(height) || isempty(width) )
     t = fscanf(fid,'%s',1);
     switch t
-        case 'height'
+        case {'height', 'HEIGHT'}
             height = str2double(fscanf(fid,'%s',1));
-        case 'width'
+        case {'width', 'WIDTH'}
             width = str2double(fscanf(fid,'%s',1));
         otherwise
             fscanf(fid,'%s',1);
@@ -32,6 +35,9 @@ fread(fid, header_size); % skip header
 if ~exist('X','var')
     X = zeros(frames,width,height,'uint8');
 end
+
+% read to the point we actually want 
+fread(fid,start_frame*width*height*3,'ubit8');
 
 % Loading up the Raw Movie
 for i = 1:frames
