@@ -35,6 +35,7 @@ for cellID = [datarun.cell_types{2}.cell_ids];
 %cell_glm_fit = sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data038/CellType_OFF parasol/CellID_%d.mat',cellID);
 %load(cell_glm_fit);
 %%
+user_STA_depth=30;
 extract_movie_response2;
 
  %% EM like Max Expected Likelihood .. 

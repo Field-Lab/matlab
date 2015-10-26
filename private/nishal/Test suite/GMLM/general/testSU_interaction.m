@@ -16,6 +16,6 @@ else
 end
 
  aa=inp1(idxx);
- % plotio_curve_meancorrected(aa,resp(idxx),pts,colr);
- plotio_curve(aa,resp(idxx),pts,colr);
+  plotio_curve_meancorrected(aa,resp(idxx),pts,colr);
+ %plotio_curve(aa,resp(idxx),pts,colr);
 end

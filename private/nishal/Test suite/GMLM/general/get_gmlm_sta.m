@@ -72,7 +72,7 @@ for ifilt=1:nSU
 u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
 %u_spatial = reshape_vector(WN_uSq{ifilt},masked_frame,indexedframe);
 
-subplot(4,2,ifilt)
+subplot(7,2,ifilt)
 imagesc(u_spatial(x_coord,y_coord));
 colormap gray
 colorbar
@@ -93,7 +93,7 @@ end
 pause(0.3);
 %% make STAs
 ttf=squeeze(ttf);
-figure;
+% figure;
 for isu=1:nSU
     u_st = repmat(u_spatial_log(:,:,isu)',[1,1,3,30]);
     for itime=1:30
@@ -101,14 +101,14 @@ for isu=1:nSU
     end
     stas_true{ista}=u_st;
     
-    for itime=1:30
-    imagesc(stas_true{ista}(:,:,itime));
-    caxis([min(stas_true{ista}(:)),max(stas_true{ista}(:))]);
-    colorbar
-    colormap gray
-    axis image
-    pause(1/120)
-    end
+%     for itime=1:30
+%     imagesc(stas_true{ista}(:,:,itime));
+%     caxis([min(stas_true{ista}(:)),max(stas_true{ista}(:))]);
+%     colorbar
+%     colormap gray
+%     axis image
+%     pause(1/120)
+%     end
     ista=ista+1;
     
   
@@ -123,8 +123,8 @@ for ix=1:sta_dim1
     urand(ix,iy,:)=u_spatial_log(ix,iy,p);
     end
 end
-
-figure;
+% 
+% figure;
 
 for jsu=1:nSU
     u_st = repmat(urand(:,:,jsu)',[1,1,3,30]);
@@ -132,15 +132,15 @@ for jsu=1:nSU
         u_st(:,:,:,end-itime+1) = u_st(:,:,:,end-itime+1)*ttf(itime);
     end
     stas_rand{jsta}=u_st;
-    
-    for itime=1:30
-    imagesc(stas_rand{jsta}(:,:,itime));
-    caxis([min(stas_rand{jsta}(:)),max(stas_rand{jsta}(:))]);
-    colorbar
-    colormap gray
-    axis image
-    pause(1/120)
-    end
+%     
+%     for itime=1:30
+%     imagesc(stas_rand{jsta}(:,:,itime));
+%     caxis([min(stas_rand{jsta}(:)),max(stas_rand{jsta}(:))]);
+%     colorbar
+%     colormap gray
+%     axis image
+%     pause(1/120)
+%     end
     jsta=jsta+1;
 end
 
@@ -149,7 +149,7 @@ if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/%s',destination)))
     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/%s',destination));
 end
 
-save(sprintf('/Volumes/Lab/Users/bhaishahster/%s/Cell_%d.mat',destination,cellID),'fitGMLM','cellID','stas_true','stas_rand');
+save(sprintf('/Volumes/Lab/Users/bhaishahster/%s/Cell_%d.mat',destination,cellID),'fitGMLM','cellID','stas_true','stas_rand','mask','x_coord','y_coord','ttf');
 end
 
 

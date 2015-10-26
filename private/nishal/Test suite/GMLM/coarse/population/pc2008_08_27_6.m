@@ -44,7 +44,7 @@ end
  mov=squeeze(mean(mov,3));
  maskedMovdd= filterMov(mov,ones(size(mov,1),size(mov,2)),squeeze(ttf_avg));
 
-  save('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2008_08_27_6/On_large_type2.mat','cells','maskedMovdd','Y','ttf_log','ttf_avg','totalMaskAccept_log','-v7.3')
+  save('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2008_08_27_6/On_large_type2.mat','cells','maskedMovdd','Y','ttf_log','ttf_avg','totalMaskAccept_log','mov','-v7.3')
 %% Test ASM one cell below ..
 
 

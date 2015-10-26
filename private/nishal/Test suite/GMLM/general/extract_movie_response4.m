@@ -114,7 +114,7 @@ end
         
         % Find the mask using freshly calculated STA
         hhh=figure; 
-        for itime=25%1:STA_depth
+        for itime=26%1:STA_depth
             itime
         subplot(1,2,1);
         imagesc(mean(STA_recalc(:,:,:,itime),3));
