@@ -69,7 +69,7 @@ for icell=1:length(stas)
     st_temp=zeros(size(stas{1},2),size(stas{1},1),1,size(stas{1},4)); % DOUBT .. Could be a reason for things to fail!!!!!
     for itime=1:size(stas{1},4)
         %st_temp(:,:,:,itime)=mean(repmat(stas{icell}(:,:,3,end-itime+1),[1,1,3,1]),3)'; % DOUBT .. Could be a reason for things to fail!!!!!
-         st_temp(:,:,:,itime)=mean(repmat(stas{icell}(:,:,:,end-itime+1),3)'; 
+         st_temp(:,:,:,itime)=mean(stas{icell}(:,:,:,end-itime+1),3)'; 
     end
     %sprintf('Only blue gun selected!!!!!')
     stas_new{icell}=st_temp;

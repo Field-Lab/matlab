@@ -1,3 +1,9 @@
+addpath(genpath('../null_analyse/'));
+addpath(genpath('../null_analyse/analyse_functions'));
+%startup_null_analyse_tenessee
+startup_null_analyse_bertha
+
+
 %% Additivity experiment analysis 
 
 
@@ -60,7 +66,7 @@ end
 
 % Euclidean difference of movies
 %% 
-cellID_select = 5453;
+cellID_select = 51; %5453;
 sta_depth=30;
 
 %% Load experiment response data
@@ -76,7 +82,7 @@ WN_datafile_full = '/Volumes/Analysis/2015-10-06-0/streamed/data014/';
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
-cellTypeId = 1%8,1;
+cellTypeId = 8%8,1;
 InterestingCell_vis_id=cellID_select% datarun.cell_types{cellTypeId}.cell_ids; %[556,1278,1384,407,1516,2150,2401,3361,4066,4683,5611,6106,6005,7246,7562,3946];
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
@@ -93,7 +99,7 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     for idata=1:length(dataRuns)
     Null_datafile = sprintf('/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data0%d-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035',dataRuns(idata));
     neuronPath = [Null_datafile,sprintf('/data0%d-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035.neurons',dataRuns(idata))];
-    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_10_06_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
     end
     
     
@@ -113,8 +119,164 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
 %    hgexport(h,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_06_0/dsu_null_16,17,19,20,22,24,25/CellType_%s/CellID_%d.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number)),s);
 end
 
+%% Difference of stimulus in additivity experiment..
 
-%% fit ASM
+dataRuns = dataRuns_OFF_additivity;
+
+WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
+%WN_mov='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
+imov=14;
+WN_datafile_full = '/Volumes/Analysis/2015-10-06-0/streamed/data014/';
+
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+datarun=load_sta(datarun)
+
+cellTypeId = 2%8,1;
+InterestingCell_vis_id= datarun.cell_types{cellTypeId}.cell_ids; %[556,1278,1384,407,1516,2150,2401,3361,4066,4683,5611,6106,6005,7246,7562,3946];
+cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
+
+condDuration=10;
+nConditions=1;
+
+cond1 =(3);cond2=(4);
+
+cols='rkrkrkrkrkrkkrkrkrkr';
+spkCondColl=cell(length(dataRuns),1);
+normmov1=[];normmov2=[];normmov_diff=[];
+for ref_cell_number=1:length(InterestingCell_vis_id); %11
+  close all
+  cellID=InterestingCell_vis_id(ref_cell_number)
+  stas=datarun.stas.stas(datarun.cell_ids==cellID);
+  
+    st_temp=zeros(size(stas{1},2),size(stas{1},1),1,size(stas{1},4)); % DOUBT .. Could be a reason for things to fail!!!!!
+    for itime=1:size(stas{1},4)
+         st_temp(:,:,:,itime)=mean(stas{1}(:,:,:,end-itime+1),3)'; 
+    end
+    %sprintf('Only blue gun selected!!!!!')
+    stas{1}=st_temp;
+ 
+cell_params.STAlen=14;
+  [new_stas,totalMaskAccept,CellMasks]=clipSTAs(stas,cell_params)
+
+  mov1 = (condMov{cond1}-0.5).*repmat(totalMaskAccept,[1,1,size(condMov{cond1},3)]);
+   mov2 = (condMov{cond2}-0.5).*repmat(totalMaskAccept,[1,1,size(condMov{cond2},3)]);
+    mov1 = mov1-mov2;
+    
+    normmov1(ref_cell_number) = norm(mov1(:));
+    normmov2(ref_cell_number) = norm(mov2(:));
+    normmov_diff(ref_cell_number) = norm(mov1(:)-mov2(:));
+  
+end
+
+figure;
+plot(normmov1,normmov_diff,'.');
+hold on;
+plot([0,max(normmov_diff)],[0,max(normmov_diff)],'g');
+hold on;
+plot([0,max(normmov_diff)],[0,2*max(normmov_diff)],'g');
+xlabel('low contrast WN');
+ylabel('norm of null movie added');
+
+figure;
+plot(normmov2,normmov_diff,'.');
+hold on;
+plot([0,max(normmov_diff)],[0,max(normmov_diff)],'g');
+hold on;
+plot([0,max(normmov_diff)],[0,2*max(normmov_diff)],'g');
+xlabel( 'WN + null');
+ylabel('norm of null movie added');
+
+
+figure;
+plot(normmov1,normmov2,'.');
+hold on;
+plot([0,max(normmov2)],[0,max(normmov2)],'g');
+hold on;
+plot([0,max(normmov2)],[0,2*max(normmov2)],'g');
+xlabel( 'low contrast WN');
+ylabel('WN + null');
+
+%% compare WN v/s WN+null stimuli for a particular cell
+
+
+dataRuns = dataRuns_OFF_additivity;
+
+WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
+%WN_mov='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
+imov=14;
+WN_datafile_full = '/Volumes/Analysis/2015-10-06-0/streamed/data014/';
+
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+datarun=load_sta(datarun)
+
+cellTypeId = 2%8,1;
+InterestingCell_vis_id= 6741%cellID_select; %datarun.cell_types{cellTypeId}.cell_ids; %[556,1278,1384,407,1516,2150,2401,3361,4066,4683,5611,6106,6005,7246,7562,3946];
+cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
+
+condDuration=10;
+nConditions=1;
+
+cond1 =(3);cond2=(4);
+
+cols='rkrkrkrkrkrkkrkrkrkr';
+spkCondColl=cell(length(dataRuns),1);
+normmov1=[];normmov2=[];normmov_diff=[];
+for ref_cell_number=1:length(InterestingCell_vis_id); %11
+  close all
+  cellID=InterestingCell_vis_id(ref_cell_number)
+  stas=datarun.stas.stas(datarun.cell_ids==cellID);
+  
+    st_temp=zeros(size(stas{1},2),size(stas{1},1),1,size(stas{1},4)); % DOUBT .. Could be a reason for things to fail!!!!!
+    for itime=1:size(stas{1},4)
+         st_temp(:,:,:,itime)=mean(stas{1}(:,:,:,end-itime+1),3)'; 
+    end
+    %sprintf('Only blue gun selected!!!!!')
+    stas{1}=st_temp;
+ 
+cell_params.STAlen=14;
+  [new_stas,totalMaskAccept,CellMasks]=clipSTAs(stas,cell_params)
+
+  mov1 = (condMov{cond1}-0.5).*repmat(totalMaskAccept,[1,1,size(condMov{cond1},3)]);
+   mov2 = (condMov{cond2}-0.5).*repmat(totalMaskAccept,[1,1,size(condMov{cond2},3)]);
+    mov1 = mov1-mov2;
+    
+    normmov1(ref_cell_number) = norm(mov1(:));
+    normmov2(ref_cell_number) = norm(mov2(:));
+    normmov_diff(ref_cell_number) = norm(mov1(:)-mov2(:));
+  
+end
+[r,c] = find(totalMaskAccept==1)
+
+figure;
+for itime=100:200%1:size(mov1,3)
+subplot(1,3,1);
+imagesc(mov1(min(r):max(r),min(c):max(c),itime)');
+colormap gray;
+axis image
+caxis([-0.5,0.5]);
+set(gca,'xTick',[]); set(gca,'yTick',[]);
+title('low contrast WN');
+
+subplot(1,3,2);
+imagesc(mov2(min(r):max(r),min(c):max(c),itime)');
+colormap gray;
+axis image
+caxis([-0.5,0.5]);
+set(gca,'xTick',[]); set(gca,'yTick',[]);
+title('WN+ NUll movie')
+
+subplot(1,3,3);
+imagesc(mov2(min(r):max(r),min(c):max(c),itime)' - mov1(min(r):max(r),min(c):max(c),itime)');
+colormap gray;
+axis image
+caxis([-0.5,0.5]);
+set(gca,'xTick',[]); set(gca,'yTick',[]);
+title('Null movie added');
+pause(1/50)
+end
+ %% fit ASM
 WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
 
 movie_xml = 'RGB-8-2-0.48-11111';
