@@ -406,15 +406,16 @@ togo = input('Continue Iterating?');
 end
 
 
-
+%%
 if(solver==15) % Spatial Nulling, WN+Null stimulus 
      togo=1;
+     
+     mov_show = 0.5*mov;
      
 mov_params2=mov_params;
 mov_params2.movie_time=mov_params.movie_time;
 mov_params2.mov_type='bw';
-[mov_show,mov_params2]=generate_movie(mov_params2);
-mov_show=0.5*mov_show;
+[mov,mov_params2]=generate_movie(mov_params2);
 movie_time_show=mov_params2.movie_time;
 
 mov=0.5*mov;
@@ -483,11 +484,12 @@ end
 if(solver==16) % Spatio-Temporal 64x32 or 128x128 [Choose and set during the experiment], WN+Null stimulus 
      togo=1;
      
+     mov_show = 0.5*mov;
+     
 mov_params2=mov_params;
 mov_params2.movie_time=mov_params.movie_time; %-70?
 mov_params2.mov_type='bw';
-[mov_show,mov_params2]=generate_movie(mov_params2);
-mov_show=0.5*mov_show;
+[mov,mov_params2]=generate_movie(mov_params2);
 movie_time_show=mov_params2.movie_time;
 
 mov=0.5*mov;
@@ -558,17 +560,18 @@ mov_modify_new=mov_modify_new;
 end
 
 
-
+%%
 % WN+null with bound on number of iterations
 
 if(solver==17) % Spatial Nulling, WN+Null stimulus 
      togo=1;
-     
+
+     mov_show=0.5*mov;
+
 mov_params2=mov_params;
 mov_params2.movie_time=mov_params.movie_time;
 mov_params2.mov_type='bw';
-[mov_show,mov_params2]=generate_movie(mov_params2);
-mov_show=0.5*mov_show;
+[mov,mov_params2]=generate_movie(mov_params2);
 movie_time_show=mov_params2.movie_time;
 
 mov=0.5*mov;
@@ -663,15 +666,16 @@ togo = iterrr<max_iter & violations>0 % input('Continue Iterating?');
     
 end
 
-
+%%
 if(solver==19) % Spatial Nulling, WN+Null stimulus 
      togo=1;
+     
+     mov_show=0.5*mov;
      
 mov_params2=mov_params;
 mov_params2.movie_time=mov_params.movie_time;
 mov_params2.mov_type='bw';
-[mov_show,mov_params2]=generate_movie(mov_params2);
-mov_show=0.5*mov_show;
+[mov,mov_params2]=generate_movie(mov_params2);
 movie_time_show=mov_params2.movie_time;
 
 mov=0.5*mov;
@@ -708,8 +712,8 @@ togo_clip=1;
 togo_B=0;
 while(togo_clip==1)
 
-[x_k_1,rat] = scale_pixel_variance(x_k_1,mov_show); % Remove? 
-violations_c = 0%sum(abs(x_k_1(:))>maxClip+0.0001)
+%[x_k_1,rat] = scale_pixel_variance(x_k_1,mov_show); % Remove? 
+violations_c = sum(abs(x_k_1(:))>maxClip+0.0001)
 
 x_k_1(x_k_1>maxClip)=maxClip;
 x_k_1(x_k_1<-maxClip)=-maxClip;
@@ -733,6 +737,53 @@ togo = (togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0
     
 mov_orig=mov_show;
 mov_modify_new=mov_modify_new;
+end
+
+
+
+%%
+if(solver==20) % Spatial Nulling, WN+Null stimulus , not variance controlled .. cleaner .. 
+     togo=1;
+mov_show = 0.5*mov;     
+     
+mov_params2=mov_params;
+mov_params2.movie_time=mov_params.movie_time;
+mov_params2.mov_type='bw';
+[mov,mov_params2]=generate_movie(mov_params2);
+movie_time_show=mov_params2.movie_time;
+
+mov=mov.*repmat(totalMaskAccept,[1,1,size(mov,3)]);
+
+%[~,~,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+%mov_sta_direction = getSTAmovie(mov,sta_spatial); % Implement this function
+
+
+    togo=1;
+     iterrr=0;max_iter=100;
+    while togo==1
+        iterrr=iterrr+1;
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = iterrr<max_iter & violations>0 % input('Continue Iterating?');
+    end
+    
+    
+mov_orig=mov_show;
+mov_modify_new=mov_modify_new*0.5+ mov_show;
 end
 
 
