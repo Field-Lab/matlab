@@ -1,6 +1,6 @@
 clear;
 
-addpath(genpath('/home/ggoetz/Research/code/common-chichilnisky-lab/matlab/private/ggoetz'));
+parpool([1 32])
 N_SPIKES_STA = 10000;
 
 % %% data000 - working example
@@ -143,7 +143,7 @@ ndots = 0;
 % Get the STAs
 ncells = length(datarun.cell_ids);
 cells_to_delete = zeros(ncells, 1);
-for k = 1:ncells
+parfor k = 1:ncells
     % Update progress bar - doesn't work with parfor...
     if mod(k, round(ncells/80)) == 0
         fprintf('.');
@@ -281,3 +281,5 @@ staFile.close()
 % frames_a = 3600;
 % frames_b = 3600*2;
 % fo = frames_order_natural_movie(frames_a, frames_b, repeats);
+
+delete(gcp)
