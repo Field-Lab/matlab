@@ -5,8 +5,8 @@
 % currents combine to give new 'safe zone' thresholds. 
 % L Grosberg 9/24/2015
 %% Define electrodes variable
-saveFiles = 1; 
-saveName = 'safeZone_2015-09-23-8';
+saveFiles = 0; 
+saveName = 'safeZone_2015-10-06-x';
 % centerElectrodes = [272 107 79]; % Choose 3 for now
 centerElectrodes = [376 45 304]; % Choose 3 for now
 
@@ -30,72 +30,113 @@ if length(unique(electrodes)) ~= length(electrodes)
     return;
 end
 %% Define array variable
+sz1 = safeZoneThresholds(1); 
+sz2 = safeZoneThresholds(2); 
+radius = norm([sz1 sz2],2); %Distance to corner of quadrant in space.
+angle = atand(sz2/sz1); % Angle of the ray that passes through corner
 
-array = zeros(length(currentCluster),length(currentCluster)*(length(currentCluster)+1)/2); 
-startPat = 1;
-for ii = 1:length(currentCluster)-1
-    sizeOfEye = length(currentCluster)-ii;
-    endPat = startPat + sizeOfEye - 1; 
-    array(ii,startPat:endPat) = 1;
-    array((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = eye(sizeOfEye);
-    startPat = endPat + 1; 
+sz1_start = sz1/2; % x-limit of the fake "quadrant"
+sz2_start = sz2/2; % y-limit of the fake "quadrant"
+
+% Get the angles of the extremal directions defined by fake "quadrant"
+extremeangle1 = atand(sz2/sz1_start);
+extremeangle2 = atand(sz2_start/sz1);
+
+% Define the angles for the sweep (15 points between the extreme angles)
+theta = linspace(extremeangle1, extremeangle2, 16);
+
+% Define the x coordinates and y coordinates corresponding to these pts
+e1 = (radius)*cosd(theta); %x coords
+e2 = (radius)*sind(theta); %y coords
+figure; scatter(e1,e2); 
+line([sz1 sz1],get(gca,'YLim')); 
+line(get(gca,'XLim'),[sz2 sz2]); 
+
+%%
+array = [];
+for a = 1:size(theta,2)
+    array2 = zeros(length(currentCluster),21);
+    startPat = 1;
+    for ii = 1:length(currentCluster)-1
+        sz1 = safeZoneThresholds(ii); 
+        sz2 = safeZoneThresholds(ii+1); 
+        radius = norm([sz1 sz2],2);
+        sizeOfEye = length(currentCluster)-ii;
+        endPat = startPat + sizeOfEye - 1;
+        array2(ii,startPat:endPat) = (radius)*cosd(theta(a));
+        array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = (radius)*sind(theta(a))*eye(sizeOfEye);
+        startPat = endPat + 1;
+        array2
+    end
+    array = [array array2];
 end
-
-array2 = zeros(length(currentCluster),21); 
-startPat = 1;
-for ii = 1:length(currentCluster)-1
-    sizeOfEye = length(currentCluster)-ii;
-    endPat = startPat + sizeOfEye - 1; 
-    array2(ii,startPat:endPat) = 1;
-    array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = 1.1*eye(sizeOfEye);
-    startPat = endPat + 1; 
-end
-
-array = [array array2];
-
-array2 = zeros(length(currentCluster),21); 
-startPat = 1;
-for ii = 1:length(currentCluster)-1
-    sizeOfEye = length(currentCluster)-ii;
-    endPat = startPat + sizeOfEye - 1; 
-    array2(ii,startPat:endPat) = 1;
-    array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = 1.1*1.1*eye(sizeOfEye);
-    startPat = endPat + 1; 
-end
-
-array = [array array2];
-
-array2 = zeros(length(currentCluster),21); 
-startPat = 1;
-for ii = 1:length(currentCluster)-1
-    sizeOfEye = length(currentCluster)-ii;
-    endPat = startPat + sizeOfEye - 1; 
-    array2(ii,startPat:endPat) = 1;
-    array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = eye(sizeOfEye)/1.1;
-    startPat = endPat + 1; 
-end
-
-array = [array array2];
-
-array2 = zeros(length(currentCluster),21); 
-startPat = 1;
-endPat = (length(currentCluster)-1); 
-for ii = 1:length(currentCluster)-1
-    sizeOfEye = length(currentCluster)-ii;
-    endPat = startPat + sizeOfEye - 1; 
-    array2(ii,startPat:endPat) = 1;
-    array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = eye(sizeOfEye)/1.1/1.1;
-    startPat = endPat + 1; 
-end
-
-
-
-array = [array array2];
 array = blkdiag(array,array,array);
-figure; subplot(2,1,1); imagesc(array)
-arrayScaled = array.*repmat(safeZoneThresholds,1,size(array,2));
-subplot(2,1,2);  imagesc(arrayScaled);
-ylabel('electrode'); xlabel('pattern number'); 
+figure; imagesc(array)
+%% 2015-09-23 array variable
+% 
+% array = zeros(length(currentCluster),length(currentCluster)*(length(currentCluster)+1)/2 - length(currentCluster)); 
+% startPat = 1;
+% for ii = 1:length(currentCluster)-1
+%     sizeOfEye = length(currentCluster)-ii;
+%     endPat = startPat + sizeOfEye - 1; 
+%     array(ii,startPat:endPat) = 1;
+%     array((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = eye(sizeOfEye);
+%     startPat = endPat + 1; 
+% end
+% array2 = zeros(length(currentCluster),21); 
+% startPat = 1;
+% for ii = 1:length(currentCluster)-1
+%     sizeOfEye = length(currentCluster)-ii;
+%     endPat = startPat + sizeOfEye - 1; 
+%     array2(ii,startPat:endPat) = 1;
+%     array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = 1.1*eye(sizeOfEye);
+%     startPat = endPat + 1; 
+% end
+% array = [array array2];
+% 
+% array2 = zeros(length(currentCluster),21); 
+% startPat = 1;
+% for ii = 1:length(currentCluster)-1
+%     sizeOfEye = length(currentCluster)-ii;
+%     endPat = startPat + sizeOfEye - 1; 
+%     array2(ii,startPat:endPat) = 1;
+%     array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = 1.1*1.1*eye(sizeOfEye);
+%     startPat = endPat + 1; 
+% end
+% 
+% array = [array array2];
+% 
+% array2 = zeros(length(currentCluster),21); 
+% startPat = 1;
+% for ii = 1:length(currentCluster)-1
+%     sizeOfEye = length(currentCluster)-ii;
+%     endPat = startPat + sizeOfEye - 1; 
+%     array2(ii,startPat:endPat) = 1;
+%     array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = eye(sizeOfEye)/1.1;
+%     startPat = endPat + 1; 
+% end
+% 
+% array = [array array2];
+% 
+% array2 = zeros(length(currentCluster),21); 
+% startPat = 1;
+% endPat = (length(currentCluster)-1); 
+% for ii = 1:length(currentCluster)-1
+%     sizeOfEye = length(currentCluster)-ii;
+%     endPat = startPat + sizeOfEye - 1; 
+%     array2(ii,startPat:endPat) = 1;
+%     array2((ii+1):length(currentCluster), startPat:1:(startPat+sizeOfEye)-1) = eye(sizeOfEye)/1.1/1.1;
+%     startPat = endPat + 1; 
+% end
+% 
+% 
+% 
+% array = [array array2];
+% array = blkdiag(array,array,array);
+% figure; subplot(2,1,1); imagesc(array)
+% arrayScaled = array.*repmat(safeZoneThresholds,1,size(array,2));
+% subplot(2,1,2);  imagesc(arrayScaled);
+% ylabel('electrode'); xlabel('pattern number'); 
 %%
 TimeShiftInMs=0;
 InterPulseLatencyInMs=25;
