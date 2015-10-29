@@ -66,7 +66,7 @@ if flag==0 % find cones automatically
         w_center=[];
 
         keep_looking=true;
-        while keep_looking
+        while keep_looking && length(cones{myInd})<7
             myMax=max(tmp_sta(:));
             myCoord=find(tmp_sta==myMax,1);
             [row, col]=ind2sub(size(tmp_sta),myCoord);

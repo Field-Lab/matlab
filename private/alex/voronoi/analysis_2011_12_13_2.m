@@ -1,20 +1,23 @@
 %% load stuff
-datarun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11');
+
+local_path = '/Users/alexandra/Desktop/datasets/';
+
+datarun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11']);
 datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun);
 datarun = set_polarities(datarun);
 
-datarun1 = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data011-from-d08_11/data011-from-d08_11');
+datarun1 = load_data([local_path, '2011-12-13-2/d08-11-norefit/data011-from-d08_11/data011-from-d08_11']);
 datarun1 = load_params(datarun1,'verbose',1);
 datarun1 = load_sta(datarun1);
 
-vormap = load('/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt');
+vormap = load([local_path, '2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt']);
 figure
 colormap gray
 imagesc(vormap)
 
 
-vorrun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data009-from-d08_11/data009-from-d08_11');
+vorrun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data009-from-d08_11/data009-from-d08_11']);
 vorrun = load_params(vorrun,'verbose',1);
 vorrun = load_sta(vorrun);
 vorrun = load_neurons(vorrun);
@@ -100,7 +103,7 @@ y = mean(cones(center_cones,2));
 tmp = pdist2([x, y], [cones(:,1) cones(:,2)]);
 [~, ic] = sort(tmp);
 ic(isnan(tmp(ic))) = [];
-far_cones = ic(end-3:end)';
+far_cones = ic(end-15:end)';
 
 select_cones = [center_cones; far_cones];
 
@@ -164,9 +167,27 @@ for current_cone=select_cones'
 end
 spikes_tmp = spikes;
 spikes_tmp(spikes<sta_params.length) = [];
-nbins_cone1 = 10;
+nbins_cone1 = 5;
 nbins_cone2 = 6;
 contrast_response_cone(filt_inputs, spikes_tmp-sta_params.length+1, nbins_cone1, nbins_cone2, center_cones, vormap, cones, comb);
+
+%% combination of voronoi and cones
+
+comb2 = comb;
+comb1 = comb(:,:,1);
+comb1(comb1<0.3) = 0;
+comb2(:,:,1) = comb1*1.5;
+comb1 = comb(:,:,3);
+comb1(comb1<0.3) = 0;
+comb2(:,:,3) = comb1*1.5;
+comb1 = comb(:,:,2);
+comb1(comb1<0.3) = 0;
+comb2(:,:,2) = comb1;
+figure
+imagesc(comb2)
+set(gca,'dataaspectratio',[1 1 1])
+axis([290 355 470 515])
+
 
 
 %% 

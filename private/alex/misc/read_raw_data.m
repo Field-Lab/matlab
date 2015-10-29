@@ -1,14 +1,71 @@
 
 %initiate data 
-raw_data_path='/Volumes/Data/6666-66-66-6/data000';
-raw_data_path='/Volumes/Data/2015-09-23-0/data000';
-raw_data_path='/Volumes/Data/2015-03-09-2/data000';
+raw_data_path='/Volumes/Data/2015-04-09-1/data015';
 
-raw_data_path='/Volumes/Data/8888-88-88-8/data002';
+
+raw_data_path='/Volumes/Data/2015-09-23-0/data000';
+raw_data_path='/Volumes/Data/2015-03-09-2/data001';
+
+raw_data_path='/Volumes/Data/8888-88-88-8/data000';
+
+raw_data_path='/Volumes/Data/7777-77-77-7/data002';
+
+raw_data_path='/Volumes/Data/5555-55-55-5/data003';
+
+raw_data_path='/Volumes/Data/6666-66-66-6/data003';
+
+raw_data_path='/Volumes/Data/1111-11-11-1/data005';
 
 rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(raw_data_path);
 samplingrate=20000;
+
 % read 1s of data starting from 0
+all_diffs = [];
+part_d = []
+for j=0:1
+    j
+    m1=rawFile.getData(j*samplingrate, samplingrate);
+    %     data=find(diff(m1(:,1))<-1000)+i*20000;
+    %     alld = [alld; data];
+    part_d = [part_d; m1(:,1)];
+end
+% m1=rawFile.getData(5*samplingrate, samplingrate/2);
+% part_d = [part_d; m1(:,1)];
+figure
+plot(part_d(1:1000))
+tmp = diff(double(part_d));
+% figure;plot(tmp)
+tmp = find(tmp<-1000);
+tmp = tmp/20; % in ms
+tmp = diff((tmp)); % difference between triggers in ms
+figure
+plot(tmp)
+
+hold on
+figure
+plot(diff(time_stamps)*1000)
+
+robust_mean(diff(time_stamps)*1000)
+robust_std(diff(time_stamps)*1000)
+
+figure
+plot(diff(time_stamps(1:100:end))*1000)
+
+line([0 40], [mean(tmp(64:102)), mean(tmp(64:102))], 'color', 'r')
+
+template = tmp;
+figure
+plot(tmp)
+
+hold on
+
+
+
+aa = find(part_d<0);
+bb=diff(aa)
+round(bb(bb>1)/20)
+
+
 all_diffs = [];
 part_d = []
 for i=0:100:7200
@@ -20,7 +77,7 @@ for i=0:100:7200
         part_d = [part_d; m1(:,1)];
     end
     tmp = diff(double(part_d));
-    tmp = find(tmp<-1000);
+    tmp = find(tmp<-500);
     tmp = tmp/20; % in ms
     tmp = diff((tmp));
     all_diffs = [all_diffs; tmp];

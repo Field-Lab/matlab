@@ -101,12 +101,20 @@ path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
 frame=6;
 
+%%%%%%%%%%%%%%%%%%% 2015 %%%%%%%%%%%%%%%%%
+
+date = '2015-10-6-5';
+run = 'data006';
+path2load = '/Volumes/Acquisition/Analysis/2015-10-06-5/data006/data006';
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=6;
+
 %%
 
 %% main body
 
 mapName = ['map_', run];
-cellType=2;
+cellType=5;
 nnd_scale=3;
 
 
