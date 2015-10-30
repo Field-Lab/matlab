@@ -3,7 +3,7 @@ function [mov_buffered,movie_params]=generate_movie(movie_params)
 display('Generating movies');
 
 if(strcmp(movie_params.mov_type,'nsem'))
-
+mov_list=[5,15,23,33,71,88,168,117,224,353,213,254,283,229,219,262,278,273,272,336,378];
 no_mov=movie_params.no_images_per_movie;%10;
 start_image=movie_params.start_image;
 
@@ -15,7 +15,7 @@ icnt=0;
 for imov=start_image:no_mov+start_image-1
     imov
     icnt=icnt+1;
-movv=load(sprintf('/Volumes/Data/stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/movie_chunk_%d',imov));
+movv=load(sprintf('/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian/matfiles/movie_chunk_%d.mat',mov_list(imov)));
 movv=movv.movie;
 movie_log(:,:,(icnt-1)*120+1:icnt*120)=movv;
 end
@@ -25,7 +25,7 @@ var64=movie_params.var64;
 var32=movie_params.var32;
 mov=zeros(var64,var32,movie_time);
 for itime=1:movie_time
-mov(:,:,itime)=(imresize(movie2(:,:,itime),[var64,var32],'bilinear','Antialiasing',true)-movie_params.mean); % Doubt!!
+mov(:,:,itime)=(imresize(movie2(:,:,itime),[var64,var32],'bilinear','Antialiasing',true)-127.5); % Doubt!!
 %mov(:,:,itime)=movie2(var64,var32,itime);
 display('Resizing a snippet');
 end

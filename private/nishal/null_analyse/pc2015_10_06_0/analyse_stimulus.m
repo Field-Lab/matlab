@@ -65,9 +65,7 @@ end
 % Display stimuli with cell locations
 
 % Euclidean difference of movies
-%% 
-cellID_select = 51; %5453;
-sta_depth=30;
+
 
 %% Load experiment response data
 
@@ -276,6 +274,15 @@ set(gca,'xTick',[]); set(gca,'yTick',[]);
 title('Null movie added');
 pause(1/50)
 end
+
+
+
+%% Analyse a cell - fit ASM, difference of rasters, non-linearitiy ..
+
+%% 
+cellID_select = 51; %5453;
+sta_depth=30;
+
  %% fit ASM
 WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
 
@@ -329,14 +336,19 @@ WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data01
 movie_xml = 'RGB-8-2-0.48-11111';
 stim_length=1800;% 
 
-cellIDs = [6741,2176,6961];
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+
+
+cellTypeId = 2%8,1;
+cellIDs= datarun.cell_types{cellTypeId}.cell_ids; % [6741,2176,6961]
 data_nls = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length);
 
 figure;
 for icell=1:3
 subplot(1,3,icell);
 plotyy(data_nls(icell).in/data_nls(icell).inp_sd,data_nls(icell).fr,data_nls(icell).XX/data_nls(icell).inp_sd,data_nls(icell).NN/sum(data_nls(icell).NN));
-title(sprintf('Cell: %d',cellIDs(icell)));
+title(sprintf('Cell: %d, nl: %0.02f',cellIDs(icell), data_nls(icell).NL_fit.nl_idx));
 %xlim([-0.2,0.2]);
 end
 
@@ -354,7 +366,7 @@ datarun=load_params(datarun)
 
 
 cellTypeId = 2%8,1;
-InterestingCell_vis_id= datarun.cell_types{cellTypeId}.cell_ids; %[556,1278,1384,407,1516,2150,2401,3361,4066,4683,5611,6106,6005,7246,7562,3946];
+InterestingCell_vis_id= [6741,2176,6961]%datarun.cell_types{cellTypeId}.cell_ids; %[6741,2176,6961]
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
 spkCondColl=cell(length(dataRuns),1);
@@ -362,6 +374,8 @@ spkCondColl=cell(length(dataRuns),1);
 condDuration=10;
 nConditions=1;
 compareConds = [3,4];
+dist4_from3=[];dist_sd4_from3=[];
+dist3_from4=[];dist_sd3_from4=[];
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
     close all
     cellID=InterestingCell_vis_id(ref_cell_number)
@@ -375,10 +389,11 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
 spks = cell(nConditions,1);
 for idata = compareConds
 spks{idata} = makeSpikeMat(spkCondColl{idata}.spksColl,1/1000,10000);
-end
+end 
 
 convolve=100;
-dist(ref_cell_number) = compare_rasters(spks{compareConds(1)}, spks{compareConds(2)},1/1000,convolve)
+[dist4_from3(ref_cell_number),dist_sd4_from3(ref_cell_number)] = compare_rasters(spks{compareConds(2)}, spks{compareConds(1)},1/1000,convolve)
+[dist3_from4(ref_cell_number),dist_sd3_from4(ref_cell_number)] = compare_rasters(spks{compareConds(1)}, spks{compareConds(2)},1/1000,convolve)
 
 end
 

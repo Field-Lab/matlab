@@ -586,6 +586,7 @@ zk=mov+mov_sta_direction;
 max_iter=20;
 iterrr=0;
     while togo==1
+        close all
 iterrr=iterrr+1
         % projection C
   mov=zk-mov_sta_direction;
@@ -759,7 +760,7 @@ mov=mov.*repmat(totalMaskAccept,[1,1,size(mov,3)]);
 
 
     togo=1;
-     iterrr=0;max_iter=100;
+     iterrr=0;max_iter=20;
     while togo==1
         iterrr=iterrr+1;
     maxClip = (0.48/0.5)*127.5;
@@ -785,6 +786,7 @@ togo = iterrr<max_iter & violations>0 % input('Continue Iterating?');
 mov_orig=mov_show;
 mov_modify_new=mov_modify_new*0.5+ mov_show;
 end
+
 
 
 %% see_movie
