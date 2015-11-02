@@ -1,11 +1,11 @@
-path2data='/Volumes/Analysis/2015-03-09-2/d05-27-norefit/';
+path2data='/Volumes/Analysis/2015-10-06-2/d00-13-norefit/';
 
-name_extension='-from-d05-d27';
+name_extension='-from-data000_data001_data002_data003_data004_data005_data006_data007_data008_data009_data010_data011_data012_data013';
 
 add_extension = '';
 % add_extension='-from-d04_20';
 
-range = [5:27];
+range = [0:13];
 % rename files
 for i=range
    tmp=['00', int2str(i)];
@@ -49,5 +49,6 @@ addpath(genpath('/Users/alexth/test4/matlab/private/alex'))
 % calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d01-29-norefit/')
 % calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
 
-get_wn_movie_names('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp');
+calc_sta_grind('/Volumes/Data/2015-10-06-2/Visual/stimuli.lisp', '/Volumes/Analysis/2015-10-06-2/d00-13-norefit/')
+get_wn_movie_names('/Volumes/Data/2015-10-06-2/Visual/stimuli.lisp');
 

@@ -148,7 +148,8 @@ end
 % analyze stimulus
 params=cell(ndata,22);
 for i=1:ndata
-    if strcmpi(stim_types{i}, 'binary') || strcmpi(stim_types{i}, 'WN repeats') || strcmpi(stim_types{i}, 'movie')
+    if strcmpi(stim_types{i}, 'binary') || strcmpi(stim_types{i}, 'WN repeats')...
+            || strcmpi(stim_types{i}, 'movie') || strcmpi(stim_types{i}, 'Voronoi WN')
         if i==ndata
             tstop=length(my_text);
         else
@@ -179,7 +180,7 @@ end
 my_wn_movie = cell(1,ndata);
 stixel_size = zeros(1,ndata);
 for i=1:ndata
-    if strcmpi(stim_types{i}, 'binary')% include voronoi in future 
+    if strcmpi(stim_types{i}, 'binary') || strcmpi(stim_types{i}, 'Voronoi WN')% include voronoi in future 
         if strcmp(params{i,2}, 'NIL')
             wnm = 'BW-';
         else
@@ -196,7 +197,7 @@ for i=1:ndata
             wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '-' params{i,7} 'x' params{i,8} '.xml'];
         end
         my_wn_movie{i} = cell2mat(wnm);  
-        stixel_size(i) = str2num(params{i,3}{1});
+        stixel_size(i) = str2num(params{i,5}{1});
     end
 end
 
