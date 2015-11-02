@@ -5,7 +5,7 @@
 % java -jar Vision.jar
 %% 
 
-dataRuns = [3,4,17,21,19,23,25,29,27,31];
+dataRuns = [56,3,4,17,21,19,23,25,29,27,31,53,54,55,56];
 
 WN_datafile_full = '/Volumes/Analysis/2015-10-29-2/streamed/data001/data001';
 
@@ -13,13 +13,13 @@ datarun=load_data(WN_datafile_full)
 datarun=load_params(datarun)
 
 cellTypeId = 2%8,1;
-InterestingCell_vis_id=7126%751%datarun.cell_types{cellTypeId}.cell_ids; %[556,1278,1384,407,1516,2150,2401,3361,4066,4683,5611,6106,6005,7246,7562,3946];
+InterestingCell_vis_id=751%datarun.cell_types{cellTypeId}.cell_ids; %[556,1278,1384,407,1516,2150,2401,3361,4066,4683,5611,6106,6005,7246,7562,3946];
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
 condDuration=10;
 nConditions=1;
 
-cols='rkrkrkrkrkrkkrkrkrkr';
+cols='rkrkrkrkrkrkrkrkrkrkrkr';
 spkCondColl=cell(8,1);
 
 for ref_cell_number=1%1:length(InterestingCell_vis_id); %11

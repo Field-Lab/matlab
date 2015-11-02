@@ -331,3 +331,13 @@ mov_idx=1;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 mov_idx=2;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
+
+%% get mask for some sub-units for some cells already fitted with sub-units
+
+cellIDs=[211,303];
+nSUs=[4,4];
+thresh=0.5;
+SUs_select =[1,4];
+stixSz = 8;
+maxFrameNo = 6;
+get_su_mask(destination,cellIDs,nSUs,SUs_select,thresh,stixSz,maxFrameNo)

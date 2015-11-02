@@ -8,7 +8,7 @@ for cellID=cellIDs
    data = load(['/Volumes/Lab/Users/bhaishahster/',folder,sprintf('/Cell_%d.mat',cellID)]);
      nSU=nSUs(icell);
     st = data.fitGMLM_log{nSU}.stas_true;
-    sr = data.fitGMLM_log{nSU}.stas_true;
+    sr = data.fitGMLM_log{nSU}.stas_rand;
    
     for ifilt = 1:nSU
     if(data.fitGMLM_log{nSU}.good_su_idx(ifilt)==1)
