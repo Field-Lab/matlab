@@ -51,4 +51,4 @@ addpath(genpath('/Users/alexth/test4/matlab/private/alex'))
 
 calc_sta_grind('/Volumes/Data/2015-10-06-2/Visual/stimuli.lisp', '/Volumes/Analysis/2015-10-06-2/d00-13-norefit/')
 get_wn_movie_names('/Volumes/Data/2015-10-06-2/Visual/stimuli.lisp');
-
+calc_ei_grind('2015-10-06-2', '/Volumes/Analysis/2015-10-06-2/d00-13-norefit/')
