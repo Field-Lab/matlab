@@ -84,8 +84,13 @@ subplot(2,3,2);
 e=Output.neuronInfo.prefElectrodes{n}(1);
 elec = Output.tracesInfo.recElecs(e);
 sigma  = Output.sigma(e,:);
-plot(abs(elecResp.stimInfo.stimAmps),sigma,...
+try
+    plot(abs(elecResp.stimInfo.stimAmps),sigma,...
     'o-','LineWidth',3); grid on; 
+catch
+     plot(abs(elecResp.stimInfo.stimAmps(1:2:end)),sigma,...
+    'o-','LineWidth',3); grid on; 
+end
 
 xlabel('stimulation amplitude (\muA)'); 
 title(sprintf('Standard deviation of residuals for electrode %0.0f',elec)); 

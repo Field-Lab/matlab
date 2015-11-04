@@ -1,4 +1,8 @@
-%% AKHeitman 2014-04-27
+% AKHeitman 2015-06-29
+% Just a couple changes to ensure negative values.
+
+
+
 % This will be admittedly long and ugly.  But more self contained.
 % GLMPars = GLMParams  or GLMPars = GLMParams(GLMType.specialchange_name)
 % Sensitive to naming changes in GLMParams.
@@ -16,8 +20,16 @@
 %  prep_paramindGP
 %  prep_stimcelldependentGPXV
 
-
-function [fittedGLM] = glm_execute(GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes,troubleshoot)
+%{
+clear; close all
+%load('dbug_glmexecute_constrainPS_debugWNfit.mat')
+load('dbug_glmexecute_constrainPS_fullWNfit.mat')
+domainconstrain_name = 'PS_inhibitorydomainconstrain_post10msec'; 
+[fittedGLM] = glm_execute_domainconstrainPS(domainconstrain_name, GLMType,...
+    fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,...
+    inputstats,glm_cellinfo); 
+%}
+function [fittedGLM] = glm_execute_domainconstrainPS(domainconstrain_name, GLMType,fitspikes,fitmovie,testspikes_raster,testmovie,inputstats,glm_cellinfo,troubleshoot)
 
 
 %% Setup Covariates
@@ -31,14 +43,20 @@ GLMPars           = GLMParams;
 if isfield(GLMType, 'specialchange') && GLMType.specialchange
     GLMPars = GLMParams(GLMType.specialchange_name);
 end
-fittedGLM.GLMPars = GLMPars;
-fittedGLM.GLMType = GLMType;
-if isfield(GLMType, 'debug') && GLMType.debug
-    GLMPars.optimization.tolfun = 1;
+
+% IF RUNNING OFF OF INPUT NL LOAD THOSE COEFFS
+if isfield(glm_cellinfo, 'GLMPars')
+   GLMPars = glm_cellinfo.GLMPars; 
 end
 
 
-% Timing
+
+fittedGLM.GLMPars = GLMPars;
+fittedGLM.GLMType = GLMType;
+if isfield(GLMType, 'debug') && GLMType.debug
+    GLMPars.optimization.tolfun = 1; 
+end
+
 frames = size(fitmovie,3);
 bins   = frames * GLMPars.bins_per_frame;
 t_bin  = glm_cellinfo.computedtstim / GLMPars.bins_per_frame; % USE THIS tstim!! %
@@ -46,7 +64,7 @@ fittedGLM.t_bin = t_bin;
 fittedGLM.bins_per_frame = GLMPars.bins_per_frame;
 
 
-% Make Coupling and Post Spike Filter Bases
+% Perhaps we should combine this! With convolving with spikes !
 bin_size      = t_bin;
 if GLMType.PostSpikeFilter
     basis_params  = GLMPars.spikefilters.ps;
@@ -55,19 +73,9 @@ end
 if GLMType.CouplingFilters
     basis_params  = GLMPars.spikefilters.cp;
     cp_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
-    % Put in PCA for coupling here
-    % load('CP_basis.mat');
-    % cp_basis = waveform; 
-end
-if isfield(GLMType,'Contrast') && GLMType.Contrast
-    basis_params  = GLMPars.spikefilters.C;
-    C_basis      = prep_spikefilterbasisGP(basis_params,bin_size);
-end
-if isfield(GLMType, 'Saccades')
-   basis_params = GLMPars.saccadefilter;
-   sa_basis = prep_spikefilterbasisGP(basis_params, bin_size);
 end
 clear bin_size basis_params
+
 
 % Convolve Spike Times with appropriate basis
 % Think about flushing dt out to the wrapper
@@ -80,82 +88,48 @@ if GLMType.PostSpikeFilter
     basis         = ps_basis';
     PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
 end
-center_coord       = glm_cellinfo.slave_centercoord;
-if isfield(GLMType,'Contrast') && GLMType.Contrast
-    stimsize.width  = size(fitmovie,1);
-    stimsize.height = size(fitmovie,2);
-    ROIcoord        = ROI_coord(GLMPars.spikefilters.C.range, center_coord, stimsize);
-    contrast = imresize(squeeze(mean(mean(double(fitmovie(ROIcoord.xvals,ROIcoord.yvals, :))-0.5))), [bins 1],'nearest');
-    C_bin = zeros(GLMPars.spikefilters.C.filternumber,bins);
-    for i = 1:GLMPars.spikefilters.C.filternumber
-       tmp = conv(contrast, C_basis(:,1), 'full');
-       C_bin(i,:) = tmp(1:bins); 
-    end
-end
-% NBCoupling 05-28-14
 if GLMType.CouplingFilters;
     basis = cp_basis';
-    for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-        %spikes of neighbor neurons NB
-        neighbor_sptimes = neighborspikes.home{j_pair}';
-        neighbor_spbins  = ceil(neighbor_sptimes / t_bin);
-        neighbor_spbins = neighbor_spbins(find(neighbor_spbins < bins) );
-        CP_bin{j_pair}=prep_convolvespikes_basis(neighbor_spbins,basis,bins);
-    end
+    display('figure out coupling here!  CP_bin');
 end
-if isfield(GLMType, 'Saccades')
-   basis = sa_basis';
-   spbins = 1:120:bins;
-   SA_bin = prep_convolvespikes_basis(spbins, basis, bins);
-end
-    % end NBCoupling
 
 if GLMType.TonicDrive
     MU_bin = ones(1,bins);
 end
 
-% PREPARE PARAMETERS
-[paramind] =  prep_paramindGP(GLMType, GLMPars);
-%p_init     =  zeros(paramind.paramcount,1);
-p_init     = .01* ones(paramind.paramcount,1);
-rawfit.init = p_init;
 
 % ORGANIZE STIMULUS COVARIATES
+center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);
 [X_frame,X_bin]    = prep_stimcelldependentGPXV(GLMType, GLMPars, fitmovie, inputstats, center_coord, WN_STA);
-% clear WN_STA
-
-if GLMType.STA_init && ~strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
-    stimsize.width  = size(fitmovie,1);
-    stimsize.height = size(fitmovie,2);
-    ROIcoord        = ROI_coord(GLMPars.stimfilter.ROI_length, center_coord, stimsize);
-    clear stimsize
-    STA = WN_STA(ROIcoord.xvals,ROIcoord.yvals,:);
-    klen = size(STA,1);
-    duration = size(STA, 3);
-    STA = reshape(STA, [klen^2,duration])  - mean(STA(:));
-    [U,S,V]  = svd (STA);
-    imagesc(reshape(U(:,1), [klen, klen]))
-    title('Initial Space Filter')
-    axis image
-    clear X_frame_temp
-    p_init(paramind.space1) = U(:,1);
-    if strcmp(GLMType.stimfilter_mode, 'rk2')
-        p_init(paramind.space2) = U(:,2);
-    end
-    % [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
-    clear STA U S V
-end
+clear WN_STA center_coord
 
 %
 if ~GLMType.CONVEX
     GLMPars.optimization.tolfun = GLMPars.optimization.tolfun - 1;
     fittedGLM.GLMPars = GLMPars;
 end
-%}
-% INITIALIZE OPTIMIZATION STRUCTURE FOR MATLAB FMIN SOLVERS
-if GLMType.CONVEX
+
+%%
+% PREPARE PARAMETERS
+
+[paramind] =  prep_paramindGP(GLMType, GLMPars);
+
+% Super Hack to determine PS filter type
+% AKHeitman 2015-06-29
+if strcmp(domainconstrain_name, 'PS_inhibitorydomainconstrain_post10msec')
+    if strcmp(GLMType.fitname_preconstrainPS(end-14:end), '/standardparams')
+         lowerbound = -Inf(paramind.paramcount,1);
+         upperbound  = Inf(paramind.paramcount,1);
+         upperbound(paramind.PS(4:end)) = 0;
+    end
+    
+    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.lowerbound = lowerbound;
+    fittedGLM.constrained_search.upperbound = upperbound;
+    
     optim_struct = optimset(...
+   'Algorithm','trust-region-reflective',...
    'derivativecheck','off',...
    'diagnostics','off',...  % 
    'display','iter',...  %'iter-detailed',... 
@@ -165,39 +139,117 @@ if GLMType.CONVEX
    'Hessian','on',...
    'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
-   'TolX',10^(-(GLMPars.optimization.tolx))   );
+   'TolX',10^(-(GLMPars.optimization.tolx))   ) ;
 end
-if ~GLMType.CONVEX
+
+if strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain')
+    A = zeros(1,paramind.paramcount);
+    A(paramind.PS) = sum(ps_basis,1);
+    b              = 0;
+    
+    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.linearinequality_matrix = A;
+    fittedGLM.constrained_search.linearinequality_bound  = b;
+    
+    
+    % Try to figure out how to supply the Hessian
+    
+    
+    %%% OLD VERSION IS REALLY SLOW FOR NSEM %%%'
+    % 30 minutes o 3 hours 
+    %{
     optim_struct = optimset(...
-    'derivativecheck','off',...
+   'Algorithm','interior-point',...
+   'derivativecheck','off',...
    'diagnostics','off',...  % 
    'display','iter',...  %'iter-detailed',... 
    'funvalcheck','off',... % don't turn this on for 'raw' condition (edoi).
    'GradObj','on',...
-   'Hessian','off',...
    'largescale','on',...
+   'Hessian','fin-diff-grads',...
+   'SubproblemAlgorithm', 'cg',...
    'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
    'TolFun',10^(-(GLMPars.optimization.tolfun)),...
    'TolX',10^(-(GLMPars.optimization.tolx))   );
+    display('!!!! INTERIOR POINT, FINITE DIFFERENCE OF GRADS!!!')
+    %}
 end
+
+if strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain_COB') 
+    ps_basis_0 = ps_basis; clear ps_basis
+    v        = sum(ps_basis_0,1);
+    v        = v / norm(v) ;
+    orthog_v = null(v);
+    COB      = [v', orthog_v] ;
+    ps_basis = (inv(COB) * ps_basis_0')' ;
+    
+    %%%    
+    basis         = ps_basis';
+    PS_bin        = prep_convolvespikes_basis(home_spbins,basis,bins);
+    
+    
+    lowerbound = -Inf(paramind.paramcount,1);
+    upperbound  = Inf(paramind.paramcount,1);
+    upperbound(paramind.PS(1)) = 0;
+    
+    fittedGLM.constrained_serach.note = 'how the parameter search was limited in fmincon';
+    fittedGLM.constrained_search.lowerbound = lowerbound;
+    fittedGLM.constrained_search.upperbound = upperbound;
+    
+    
+    %%%
+    optim_struct = optimset(...
+   'Algorithm','trust-region-reflective',...
+   'derivativecheck','off',...
+   'diagnostics','off',...  % 
+   'display','iter',...  %'iter-detailed',... 
+   'funvalcheck','off',... % don't turn this on for 'raw' condition (edoi).
+   'GradObj','on',...
+   'largescale','on',...
+   'Hessian','on',...
+   'MaxIter',GLMPars.optimization.maxiter,... % you may want to change this
+   'TolFun',10^(-(GLMPars.optimization.tolfun)),...
+   'TolX',10^(-(GLMPars.optimization.tolx))   ) ;
+end
+
+
+
+
+
+
+
+%p_init    =  zeros(paramind.paramcount,1);  
+p_init     = .01* ones(paramind.paramcount,1);
+if isfield(glm_cellinfo, 'p_init')
+    p_init = glm_cellinfo.p_init;
+    
+    if strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain_COB')
+        p_init_psbase = p_init(paramind.PS);
+        p_init_new    = inv(COB) * p_init_psbase;        
+        p_init(paramind.PS) = p_init_new;
+        display('modulating p init to new basis')
+    end
+    
+end
+
+
+
+
+
+
 
 
 %% Run through optimization .. get out pstart, fstar, eflag, output
 % CONVEXT OPTIMIZATION
 if GLMType.CONVEX
     glm_covariate_vec = NaN(paramind.paramcount , bins );  % make sure it crasheds if not filled out properly
-    % Maybe move this inside of the stimulus preparation %
+    % Maybe move this inside of the stimulus preparation % 
     bpf         = GLMPars.bins_per_frame;
-    
-    if strcmp(GLMType.timefilter,'fit')
-        shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-        if isfield(GLMPars.stimfilter,'frames_negative')
-            shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
-        end
-        X_bin_shift = prep_timeshift(X_bin,shifts);
-    else
-        X_bin_shift = X_bin;
+    shifts      = 0:bpf:(GLMPars.stimfilter.frames-1)*bpf;
+    if isfield(GLMPars.stimfilter,'frames_negative')
+        shifts = -(GLMPars.stimfilter.frames_negative)*bpf:bpf:(GLMPars.stimfilter.frames-1)*bpf;
     end
+    X_bin_shift = prep_timeshift(X_bin,shifts);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if isfield(paramind, 'MU')
@@ -209,61 +261,39 @@ if GLMType.CONVEX
     if isfield(paramind, 'PS')
         glm_covariate_vec( paramind.PS , : ) = PS_bin;
     end
-    % NBCoupling 05-28-14
     if isfield(paramind, 'CP')
-        for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-            glm_covariate_vec( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
-        end
-    end
-    if isfield(paramind, 'SA')
-        glm_covariate_vec(paramind.SA, :) = SA_bin;
-    end
-    if isfield(paramind, 'C')
-        glm_covariate_vec(paramind.C, :) = C_bin;
+        glm_covariate_vec( paramind.CP , : ) = CP_bin;
     end
     
+    if strcmp(domainconstrain_name, 'PS_inhibitorydomainconstrain_post10msec')...
+            || strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain_COB')
+        [pstar fstar eflag output] = fmincon(@(p) ...
+            glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
+            p_init,[],[],[],[],lowerbound,upperbound,[],optim_struct);
+    elseif strcmp(domainconstrain_name,'PS_netinhibitory_domainconstrain')
+         [pstar fstar eflag output] = fmincon(@(p) ...
+            glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
+            p_init,A,b,[],[],[],[],[],optim_struct);
+    end
+    [f grad Hess log_cif] = glm_convex_optimizationfunction(pstar,glm_covariate_vec,home_spbins,t_bin);
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if ~isfield(GLMType, 'postfilter_nonlinearity') || ~GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),p_init,optim_struct);
-    end
-    if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-        [pstar fstar eflag output]     = fminunc(@(p) glm_convex_optimizationfunction_withNL...
-            (p,glm_covariate_vec,home_spbins,t_bin,nonlinearity),p_init,optim_struct);
-        % [f grad Hess log_cif COV_NL]=glm_convex_optimizationfunction_withNL(pstar,glm_covariate_vec,home_spbins,t_bin,nonlinearity);
-    end
+    
+    
+    %{
+    [pstar fstar eflag output] = fminunc(@(p) ...
+        glm_convex_optimizationfunction(p,glm_covariate_vec,home_spbins,t_bin),...
+        p_init,optim_struct);
+    [f grad Hess log_cif] = glm_convex_optimizationfunction(pstar,glm_covariate_vec,home_spbins,t_bin);
+    plot(ps_basis * pstar_con(paramind.PS),'r'); hold on
+    plot(ps_basis * pstar(paramind.PS),'k'); hold on
+    % Before constrains
+    [pstar fstar eflag output] = fminunc(@(p) ...
+        glm_convex_optimizationfunction_constrainPS(p,glm_covariate_vec,home_spbins,t_bin, paramind.PS,ps_basis,PS_balance),...
+        p_init,optim_struct);
+    [f grad Hess log_cif ps_filter] = glm_convex_optimizationfunction_constrainPS(pstar,glm_covariate_vec,home_spbins,t_bin, paramind.PS,ps_basis,PS_balance);
+    %}
 end
 
-
-
-% NONCONVEX OPTMIZATION
-if ~GLMType.CONVEX
-    bpf               = GLMPars.bins_per_frame;
-    frame_shifts      = 0:1:(GLMPars.stimfilter.frames-1);
-    % dnote part that is convex
-    convex_cov = NaN(paramind.convParams , bins );  % convex covariates
-    if isfield(paramind, 'MU')
-        convex_cov( paramind.MU , : ) = MU_bin;
-    end
-    if isfield(paramind, 'PS')
-        convex_cov( paramind.PS , : ) = PS_bin;
-    end
-    % NBCoupling
-    if isfield(paramind, 'CP')
-        for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-            convex_cov( paramind.CP{j_pair} , : ) = CP_bin{j_pair};
-        end
-    end
-    if isfield(paramind, 'SA')
-        convex_cov(paramind.SA, :) = SA_bin;
-    end
-    if isfield(paramind, 'C')
-        convex_cov(paramind.C, :) = C_bin;
-    end
-    filtertype = GLMType.stimfilter_mode;
-    [pstar fstar eflag output] = fminunc(@(p) glm_nonconvex_optimizationfunction...
-        (p,filtertype,paramind,convex_cov,X_frame,frame_shifts, bpf, home_spbins,t_bin),p_init,optim_struct);
-end
 
 fittedGLM.fminunc_output = output;
 
@@ -277,41 +307,26 @@ rawfit.objective_val     = fstar;
 clear linearfilters
 linearfilters.note = 'These terms, convolved with the covariates, make the log of the conditional intensity function';
 if isfield(paramind, 'MU')
-    linearfilters.TonicDrive.Filter      = pstar(paramind.MU);
-    linearfilters.TonicDrive.note        ='no convolution necessary, this term is part of the lcif for every bin';
+        linearfilters.TonicDrive.Filter      = pstar(paramind.MU);
+        linearfilters.TonicDrive.note        ='no convolution necessary, this term is part of the lcif for every bin';
 end
 if isfield(paramind, 'PS')
-    rawfit.ps_basis = ps_basis;
-    linearfilters.PostSpike.Filter     = ps_basis * pstar(paramind.PS);
-    linearfilters.PostSpike.startbin   = 1;
-    linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
+        rawfit.ps_basis = ps_basis;
+        linearfilters.PostSpike.Filter     = ps_basis * pstar(paramind.PS);
+        linearfilters.PostSpike.startbin   = 1;  
+        linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
+        linearfilters.PostSpike.note0       = 'Filter starts at "startbin" bins after the spikebin';
 end
-if isfield(paramind, 'C')
-    rawfit.C_basis = C_basis;
-    linearfilters.Contrast.Filter     = C_basis * pstar(paramind.C);
-    linearfilters.Contrast.startbin   = 1;
-    linearfilters.Contrast.note0       = 'Filter starts at "startbin" bins after the spikebin';
-end
-% NBCoupling 05-28-14
 if isfield(paramind, 'CP')
-    rawfit.cp_basis = cp_basis;
-    for j_pair=1:GLMPars.spikefilters.cp.n_couplings
-        linearfilters.Coupling.Filter{j_pair}     = cp_basis * pstar(paramind.CP{j_pair});
-    end
-    linearfilters.Coupling.startbin   = 1;
-    linearfilters.Coupling.note = 'Filter starts at "startbin" bins after the spikebin';
+        rawfit.cp_basis = cp_basis;
+        error('need to fill in coupling..  Nice way to handle it')
 end
-if isfield(paramind, 'SA')
-    rawfit.sa_basis = sa_basis;
-    linearfilters.Saccades.Filter = sa_basis * pstar(paramind.SA);
-end
-% end NBCoupling
 
 % SAVE ALL FILTERS EXCEPT FOR STIMULUS FILTERS
 center_coord    = glm_cellinfo.slave_centercoord;
 ROI_length      = GLMPars.stimfilter.ROI_length;
 stimsize.width  = size(fitmovie,1);
-stimsize.height = size(fitmovie,2);
+stimsize.height = size(fitmovie,2); 
 ROIcoord        = ROI_coord(ROI_length, center_coord, stimsize);
 rawfit.ROIcoord = ROIcoord;
 clear stimsize center_coord;
@@ -319,7 +334,6 @@ WN_STA           = double(glm_cellinfo.WN_STA);
 [STA_sp,STA_time]= spatialfilterfromSTA(WN_STA,ROIcoord.xvals,ROIcoord.yvals);
 if GLMType.CONVEX
     if strcmp(GLMType.stimfilter_mode, 'fixedSP_rk1_linear')
-        
         timefilter           = pstar(paramind.X);
         stimfilter           = STA_sp * (timefilter');
         stimfilter           = reshape(stimfilter, [ROI_length,ROI_length,length(paramind.X)]);
@@ -344,17 +358,6 @@ if GLMType.CONVEX
         linearfilters.Stimulus.note1              = 'Filter is in [x,y,"frames before current bin"]';
         linearfilters.Stimulus.note2              = 'Recall each bin is housed in a frame (multiple bins per frame';
         linearfilters.Stimulus.note3              = 'frame_shifts describes the transfrom from time index to frames ahead of current bin';
-    end
-    if strcmp(GLMType.timefilter, 'prefilter')
-        stimfilter           = pstar(paramind.X);
-        timefilter            = pre_timefilter;
-        linearfilters.Stimulus.Filter             = stimfilter;
-        linearfilters.Stimulus.Filter_rank        = 1;
-        linearfilters.Stimulus.space_rk1          = reshape(stimfilter, [ROI_length,ROI_length]);
-        linearfilters.Stimulus.pretime            = timefilter;
-        linearfilters.Stimulus.x_coord            = ROIcoord.xvals;
-        linearfilters.Stimulus.y_coord            = ROIcoord.yvals;  
-        linearfilters.Stimulus.frame_shifts       = 0;
     end
 end 
 if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.stimfilter_mode, 'rk2')) 
@@ -398,26 +401,24 @@ if ~GLMType.CONVEX && (strcmp(GLMType.stimfilter_mode, 'rk1') || strcmp(GLMType.
         linearfilters.Stimulus.note1              = 'Filter is in [x,y,"frames before current bin"]';
         linearfilters.Stimulus.note2              = 'Recall each bin is housed in a frame (multiple bins per frame';
         linearfilters.Stimulus.note3              = 'frame_shifts describes the transfrom from time index to frames ahead of current bin';
-
-    
     end  
 end
 
 fittedGLM.rawfit               = rawfit;
 fittedGLM.linearfilters = linearfilters;
-fittedGLM.note = 'in theory, linearfilters and t_bin/ binsperframe is sufficient for xval and simulation';
+fittedGLM.note = 'in theory, linearfilters and t_bin/ binsperframe is sufficient for xval and simulation'; 
 fittedGLM.fit_time = datestr(clock);
 fittedGLM.writingcode = mfilename('fullpath');
 
 %% Evaluate cross-validated fits,  Print and Save
-if isfield(GLMType, 'postfilter_nonlinearity') && GLMType.postfilter_nonlinearity
-    [xvalperformance] = eval_xvalperformance_squared(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
-else
-    [xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats,neighborspikes.test)
-end
-fittedGLM.xvalperformance  = xvalperformance;
- eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
-printname = sprintf('%s/DiagPlots_%s',glm_cellinfo.d_save,fittedGLM.cellinfo.cell_savename);
+[xvalperformance] = eval_xvalperformance(fittedGLM,testspikes_raster,testmovie,inputstats);
+fittedGLM.xvalperformance  = xvalperformance; 
+eval(sprintf('save %s/%s.mat fittedGLM',glm_cellinfo.d_save,glm_cellinfo.cell_savename));
+
+currentdir = pwd;
+cd(glm_cellinfo.d_save)
+printname = sprintf('DiagPlots_%s',fittedGLM.cellinfo.cell_savename);
 printglmfit(fittedGLM,printname)
+cd(currentdir)
 
 end

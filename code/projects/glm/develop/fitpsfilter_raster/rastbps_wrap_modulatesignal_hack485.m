@@ -51,8 +51,8 @@ if ~exist(savedir,'dir'), mkdir(savedir); end
 
 % CRM = CONDITIONALIZED RATE MODEL
 %crm_type = 'base_crm_importPS';
-%crm_type = 'base_crm_findPS_unitlikebasis';
-crm_type = 'base_crm_findPS';
+crm_type = 'base_crm_findPS_unitlikebasis';
+%crm_type = 'base_crm_findPS';
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,7 +174,8 @@ for i_exp = exps
                     ps_filter{i_mod}.filter = opt_params.ps_filter;
                     display(sprintf('%s: Offset=%1.2e, ScaleRate=%1.2e', stimtype,opt_params.offset,opt_params.rate_drive));
                 end
-
+                [uop_bits_perspike uop_logprob_persec crm_bits_perspike crm_logprob_persec opt_params]=...
+                    rastbps_comp_findPS( inp_rast, t_bin, ps_basis); 
                 
                 
                 if i_stimtype == 1 

@@ -1,0 +1,253 @@
+\begin{thebibliography}{10}
+
+\bibitem{Jepson2014b}
+Lauren H. Jepson, Pawel Hottowy, Geoffrey A. Weiner, Władysław Dabrowski,
+  Alan M. Litke, and E.J. Chichilnisky.
+\newblock High-fidelity reproduction of spatiotemporal visual signals for
+  retinal prosthesis.
+\newblock {\em Neuron}, 83(1):87 -- 92, 2014.
+
+\bibitem{Lewicki98}
+M.~S. Lewicki.
+\newblock {A review of methods for spike sorting: the detection and
+  classification of neural action potentials}.
+\newblock {\em Network: Computation in Neural Systems}, 9(4):53--78, 1998.
+
+\bibitem{Brown2004}
+Emery~N. Brown, Robert~E. Kass, and Partha~P. Mitra.
+\newblock {Multiple neural spike train data analysis: state-of-the-art and
+  future challenges}.
+\newblock {\em Nature Neuroscience}, 7(5):456--461, April 2004.
+
+\bibitem{PillowEtal13}
+Jonathan~W. Pillow, Jonathon Shlens, E.~J. Chichilnisky, and Eero~P.
+  Simoncelli.
+\newblock A model-based spike sorting algorithm for removing correlation
+  artifacts in multi-neuron recordings.
+\newblock {\em PLoS ONE}, 8(5):e62123, 05 2013.
+
+\bibitem{EkanadhamEtal14}
+Chaitanya Ekanadham, Daniel Tranchina, and Eero~P. Simoncelli.
+\newblock A unified framework and method for automatic neural spike
+  identification.
+\newblock {\em Journal of Neuroscience Methods}, 222(0):47 -- 55, 2014.
+
+\bibitem{Rey15}
+Hernan~Gonzalo Rey, Carlos Pedreira, and Rodrigo~Quian Quiroga.
+\newblock Past, present and future of spike sorting techniques.
+\newblock {\em Brain Research Bulletin}, 2015.
+\newblock In press.
+
+\bibitem{Jepson2014a}
+Lauren~H. Jepson, Pawel Hottowy, Keith Mathieson, Deborah~E. Gunning, Wladyslaw
+  Dabrowski, Alan~M. Litke, and E.~J. Chichilnisky.
+\newblock Spatially patterned electrical stimulation to enhance resolution of
+  retinal prostheses.
+\newblock {\em J Neurosci.}, 34(14):487--4881, 2014.
+
+\bibitem{Grosberg2014}
+Lauren~E Grosberg, Pawel Hottowy, Lauren~H Jepson, Shinya Ito, Alexander Sher,
+  Wladyslaw Dabrowski, Alan Litke, and EJ~Chichilnisky.
+\newblock Axon activation with epiretinal stimulation in isolated primate
+  retina.
+\newblock The Eye and The Chip. The 8th Biennial World Congress on the
+  Relationship between Neurobiology and Nano-Electronics Focusing on Artificial
+  Vision, 2014.
+
+\bibitem{Grosberg2015}
+Lauren~E Grosberg, Pawel Hottowy, Lauren~H Jepson, Shinya Ito, Frederick
+  Kellison-Linn, Alexander Sher, Wladyslaw Dabrowski, Alan Litke, and
+  EJ~Chichilnisky.
+\newblock Axon activation with focal epiretinal stimulation in primate retina.
+\newblock {\em Investigative Ophthalmology \& Visual Science}, 56(7):780--780,
+  2015.
+
+\bibitem{Fried2005}
+S.~I. Fried, H.~A. Hsueh, and F.~S. Werblin.
+\newblock {A Method for Generating Precise Temporal Patterns of Retinal Spiking
+  Using Prosthetic Stimulation}.
+\newblock {\em Journal of Neurophysiology}, 95(2):970--978, 2005.
+
+\bibitem{Abramian2015}
+Miganoosh Abramian, Nigel~H Lovell, John~W Morley, Gregg~J Suaning, and
+  Socrates Dokos.
+\newblock Activation and inhibition of retinal ganglion cells in response to
+  epiretinal electrical stimulation: a computational modelling study.
+\newblock {\em Journal of neural engineering}, 12(1):016002, 2015.
+
+\bibitem{Lu2012}
+Yiliang Lu, Pengjia Cao, Jingjing Sun, Jing Wang, Liming Li, Qiushi Ren, Yao
+  Chen, and Xinyu Chai.
+\newblock {Using independent component analysis to remove artifacts in visual
+  cortex responses elicited by electrical stimulation of the optic nerve}.
+\newblock {\em Journal of Neural Engineering}, 2012.
+
+\bibitem{Schoenecker2008}
+Matthew~C Schoenecker and Ben~H Bonham.
+\newblock Fast stimulus artifact recovery in a multichannel neural recording
+  system.
+\newblock In {\em Biomedical Circuits and Systems Conference, 2008. BioCAS
+  2008. IEEE}, pages 253--256. IEEE, 2008.
+
+\bibitem{Qiu2015}
+Shuang Qiu, Jing Feng, Rui Xu, Jiapeng Xu, Kun Wang, Feng He, Hongzhi Qi, Xin
+  Zhao, Peng Zhou, Lixin Zhang, and Dong Ming.
+\newblock {A Stimulus Artifact Removal Technique for SEMG Signal Processing
+  During Functional Electrical}.
+\newblock 62(8):1959--1968, 2015.
+
+\bibitem{Hashimoto2002}
+Takao Hashimoto, Christopher~M. Elder, and Jerrold~L. Vitek.
+\newblock {A template subtraction method for stimulus artifact removal in
+  high-frequency deep brain stimulation}.
+\newblock {\em Journal of Neuroscience Methods}, 113:181--186, 2002.
+
+\bibitem{DiSpirito2015}
+H~Dispirito, J~Lachapelle, A~Czarnecki, B~Nugent, Sameer Sonkusale, and
+  J~Wheeler.
+\newblock {A Layered Approach to Artifact Rejection for Improved Neural
+  Recording}.
+\newblock 2015.
+
+\bibitem{Brown2008}
+Edgar~A Brown, James~D Ross, Richard~A Blum, Yoonkey Nam, Bruce~C Wheeler, and
+  Stephen~P Deweerth.
+\newblock {Stimulus-Artifact Elimination in a Multi-Electrode System}.
+\newblock 2(1):10--21, 2008.
+
+\bibitem{Wichmann2011}
+Thomas Wichmann and Annaelle Devergnas.
+\newblock {A novel device to suppress electrical stimulus artifacts in
+  electrophysiological experiments}.
+\newblock {\em Journal of Neuroscience Methods}, 201(1):1--8, 2011.
+
+\bibitem{Wagenaar2002}
+Daniel~a. Wagenaar and Steve~M. Potter.
+\newblock {Real-time multi-channel stimulus artifact suppression by local curve
+  fitting}.
+\newblock {\em Journal of Neuroscience Methods}, 120:113--120, 2002.
+
+\bibitem{Heffer2008}
+Leon~F. Heffer and James~B. Fallon.
+\newblock {A novel stimulus artifact removal technique for high-rate electrical
+  stimulation}.
+\newblock {\em Journal of Neuroscience Methods}, 170:277--284, 2008.
+
+\bibitem{Erez2010}
+Yaara Erez, Hadass Tischler, Anan Moran, and Izhar Bar-gad.
+\newblock {Generalized framework for stimulus artifact removal}.
+\newblock {\em Journal of Neuroscience Methods}, 191(1):45--59, 2010.
+
+\bibitem{Nguyen2013}
+Thi Kim~Thoa Nguyen, Silke Musa, Wolfgang Eberle, Carmen Bartic, and Georges
+  Gielen.
+\newblock {Mixed-signal template-based reduction scheme for stimulus artifact
+  removal in electrical stimulation}.
+\newblock pages 449--458, 2013.
+
+\bibitem{Bakkumi2013}
+Douglas~J. Bakkum, Urs Frey, Milos Radivojevic, Thomas~L. Russell, Jan Muller,
+  Michele Fiscella, Hirokazu Takahashi, and Andreas Hierlemann.
+\newblock Tracking axonal action potential propagation on a high-density
+  microelectrode array across hundreds of sites.
+\newblock {\em Nature Communications}, 4(2181), 2013.
+
+\bibitem{Jepson2013}
+Lauren~H Jepson, Pawel Hottowy, Keith Mathieson, Deborah~E Gunning, Wladyslaw
+  Dabrowski, Alan~M Litke, and EJ~Chichilnisky.
+\newblock Focal electrical stimulation of major ganglion cell types in the
+  primate retina for the design of visual prostheses.
+\newblock {\em The Journal of Neuroscience}, 33(17):7194--7205, 2013.
+
+\bibitem{Field2007}
+GD~Field and EJ~Chichilnisky.
+\newblock Information processing in the primate retina: circuitry and coding.
+\newblock {\em Annu. Rev. Neurosci.}, 30:1--30, 2007.
+
+\bibitem{TibshiraniEtal05}
+Robert Tibshirani, Michael Saunders, Saharon Rosset, Ji~Zhu, and Keith Knight.
+\newblock Sparsity and smoothness via the fused lasso.
+\newblock {\em Journal of the Royal Statistical Society Series B}, pages
+  91--108, 2005.
+
+\bibitem{Gelman2014}
+Andrew Gelman, John~B Carlin, Hal~S Stern, and Donald~B Rubin.
+\newblock {\em Bayesian data analysis}, volume~2.
+\newblock Taylor \& Francis, 2014.
+
+\bibitem{Geman84}
+Stuart Geman and Donald Geman.
+\newblock Stochastic relaxation, gibbs distributions, and the bayesian
+  restoration of images.
+\newblock {\em IEEE Trans. Pattern Anal. Mach. Intell.}, 6(6):721--741,
+  November 1984.
+
+\bibitem{BoydEtal04}
+Stephen Boyd and Lieven Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, New York, NY, USA, 2004.
+
+\bibitem{Rockafellar70}
+R.~Tyrrell Rockafellar.
+\newblock {\em Convex analysis}.
+\newblock Princeton Mathematical Series. Princeton University Press, Princeton,
+  N. J., 1970.
+
+\bibitem{VandenbergheEtal98}
+Lieven Vandenberghe, Stephen Boyd, and Shao po~Wu.
+\newblock Determinant maximization with linear matrix inequality constraints.
+\newblock {\em SIAM Journal on Matrix Analysis and Applications}, 19:499--533,
+  1998.
+
+\bibitem{Boyd2004}
+Stephen Boyd and Lieven Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, New York, NY, USA, 2004.
+
+\bibitem{GrosbergEtal14}
+Lauren~E. Grosberg, Paweł Hottowy, Lauren~H. Jepson, Shinya~Ito abd Frederick
+  Kellison-Linn, Alexander Sher, and Władysław~Dabrowski abd Alan M.
+  Litke~abd E.J.~Chichilnisky.
+\newblock Axon activation with epiretinal stimulation in isolated primate
+  retina.
+\newblock In {\em The eye and the chip}, 2014.
+\newblock Conference Poster.
+
+\bibitem{HosmerEtal97}
+Hosmer W., Hosmer T., Le~Cessei S., and Lemeshow S.
+\newblock A comparison of goodness-of-fit tests for the logistic regression
+  model.
+\newblock {\em Stat Med}, 16(9):965--980, 1997.
+
+\bibitem{Litke2004}
+AM~Litke, N~Bezayiff, EJ~Chichilnisky, W~Cunningham, W~Dabrowski, AA~Grillo,
+  M~Grivich, P~Grybos, P~Hottowy, S~Kachiguine, et~al.
+\newblock What does the eye tell the brain?: Development of a system for the
+  large-scale recording of retinal output activity.
+\newblock {\em IEEE Transactions on Nuclear Science}, 51(4):1434--1440, 2004.
+
+\bibitem{EkanadhamEtal11}
+Chaitanya Ekanadham, Daniel Tranchina, and Eero~P. Simoncelli.
+\newblock A blind sparse deconvolution method for neural spike identification.
+\newblock In John Shawe-Taylor, Richard~S. Zemel, Peter~L. Bartlett, Fernando
+  C.~N. Pereira, and Kilian~Q. Weinberger, editors, {\em NIPS}, pages
+  1440--1448, 2011.
+
+\bibitem{Earl05}
+David~J. Earl and Michael~W. Deem.
+\newblock Parallel tempering: Theory, applications, and new perspectives.
+\newblock {\em Physical Chemistry Chemical Physics}, 7(23):3910--3916, 2005.
+
+\bibitem{Atchade10}
+Y.~F. Atchadé and J.S. Liu.
+\newblock The wang-landau algorithm for monte carlo computation in general
+  state spaces.
+\newblock {\em Statistica Sinica}, 20:209--233, 2010.
+
+\bibitem{HastieEtal01}
+Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
+\newblock {\em The Elements of Statistical Learning}.
+\newblock Springer Series in Statistics. Springer New York Inc., New York, NY,
+  USA, 2001.
+
+\end{thebibliography}
