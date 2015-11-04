@@ -1,24 +1,57 @@
 function  prepped_data = interleaved_data_prep(datarun, block_frames, n_repeats, varargin)
 % This assumes that the odd blocks are repeated rasters and the even blocks
-% are for fitting
+% are for fitting, or that all blocks are repeats
+% 
+% datarun is the datarun struct with neurons loaded (so there is a spikes
+% field)
 %
 % block frames is a vector of the different block lengths,
-%b in order
-% = [1200*3 1200] aka even, fitting blocks first and odd, testing blocks
+% ex = [1200*3 1200] aka even fitting blocks first and odd testing blocks
 % second. Weird order is so that frames(block i) = block_frames(mod(i,2)+1)
+%
+% Output:
+% preppeddata structure, including start_time which has the starts of the
+% blocks and p which are the optional parameters you included
+% It can also include: fitspikes, testspikes, fitmovie, testmovie, etc
+% which depend on which options you choose. They will be in cells and each
+% cell corresponds to a block of data.
 %
 % Optional:
 %
+% cell_spec
 % Setting cell_specification will return the organized spikes for those
 % cells. Details for what cell_specification should be are detailed in the
 % get_cell_indices function
 %
-% Stimulus name:
-% can be the beginning of an XML type specification (ie BW-8-1)
+% datarun_class
+% needed if you use something other than cell id for cell_spec (i.e. a cell type)
+% this should be a datarun with params loaded
+%
+% stimulus_name
+% can be an XML type specification (ie BW-8-1-0.48-11111)
 % Or the filename of a rawmovie
 % Or the path to a folder of mat files
-
-% Should add some output notes
+%
+% seed
+% the fixed seed for white noise repeats
+%
+% variable seed
+% the original variable seed for changing white noise segments. Usually the
+% same as fixed seed.
+%
+% STA_check
+% use the loaded stimulus and the spikes to calculate the STA of the first
+% cell
+%
+% RGN_params_A_M_C
+% Shouldn't need to change these, but they are the parameters of the random
+% nubmer generator for changing the variable seed
+%
+% activity_movie
+% create a movie with the stimulus overlaid with the cell activity
+%
+% testmovie only
+% only load up the test movie (much faster)
 
 tic
 
