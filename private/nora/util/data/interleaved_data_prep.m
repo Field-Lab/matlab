@@ -83,7 +83,7 @@ start_time = triggers(start_trigger);
 prepped_data.start_time = start_time;
 
 %% Find and organize the spikes
-disp(['Trigger finding took' num2str(toc)])
+disp(['Trigger finding took ' num2str(toc) ' seconds.'])
 
 % Organize the cell spikes
 if p.Results.cell_spec
@@ -119,8 +119,7 @@ if p.Results.cell_spec
         end
         title('Checking Cell Repeats')
     end
-    disp('Spike organization took')
-    toc
+    disp(['Spike organization took ' num2str(toc) ' seconds.'])
 end
 
 %% Load up and organize the stimulus
@@ -228,8 +227,7 @@ if p.Results.stimulus_name
     else
         error('Not set up for this movie');
     end
-    disp('Loading the stimulus took')
-    toc
+    disp(['Loading the stimulus took ' num2str(toc) ' seconds.'])
 end
 
 % Do an STA check using some spikes and whatnot
@@ -241,8 +239,7 @@ if p.Results.STA_check && ~testmovie_only
     else
         prepped_data.STA = STA_from_blocks(prepped_data.fitspikes,prepped_data.fitmovie);
     end
-    disp('STA took')
-    toc
+    disp(['STA took '  num2str(toc) ' seconds.'])
 end
 
 if ischar(p.Results.activity_movie)
@@ -261,8 +258,7 @@ if ischar(p.Results.activity_movie)
     end
     figure;
     res_spikes_plot(prepped_data.testmovie, res, p.Results.activity_movie, 'scaling', 4)
-    disp('Making the movie took')
-    toc
+    disp(['Making the movie took ' num2str(toc) '  seconds.'])
 end
     
 end

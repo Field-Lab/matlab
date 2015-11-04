@@ -48,7 +48,7 @@ testblocks = NSEM(1:2:end);
 testmovie_frames_per_block = 20*120;
 testmovie_seconds_per_block = testmovie_frames_per_block/120;
 
-cells = get_cell_indices(datarun_class, 'Off Parasol');
+cells = get_cell_indices(datarun_class, 'Off Amacrine');
 n_cells = length(cells);
 %% Load up cell info
 
@@ -71,21 +71,21 @@ for i_cell = 1:n_cells
 %         start = start + fitmovie_seconds_per_block;
 %     end
 
-    spikes_concat = [];
+    %spikes_concat = [];
     for i = 1:length(testblocks)
-        trial_spikes = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
-        spikes_concat = [spikes_concat; trial_spikes];
+        testspikes{i_cell, i} = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
+        %spikes_concat = [spikes_concat; trial_spikes];
     end
-    spikes_frame = floor(spikes_concat * 120);
-    for i_frame = 1:testmovie_frames_per_block
-       res.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame); 
-    end
+%     spikes_frame = floor(spikes_concat * 120);
+%     for i_frame = 1:testmovie_frames_per_block
+%        res.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame); 
+%     end
 
-    res.centers(i_cell,:) = flip(datarun_class.vision.sta_fits{cells(i_cell)}.mean);
+%     res.centers(i_cell,:) = flip(datarun_class.vision.sta_fits{cells(i_cell)}.mean);
     % center(2) = 40 - center(2);
 
 end
 
 %%
-res_spikes_plot(testmovie, res, '/Users/Nora/Desktop/OFFPar_movie.avi')
+% res_spikes_plot(testmovie, res, '/Users/Nora/Desktop/OFFPar_movie.avi')
 
