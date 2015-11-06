@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta] = compute_jitter_sta(datarun, mdf_file, num_frames, spikes, plotting, cell, num_cells, jitter_x, jitter_y, map, stixel_size, num_colors)
+function [sta] = compute_jitter_sta(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %     mglBltTexture(frametex, [stimulus.x_start+jitterX, stimulus.y_start+jitterY, stimulus.span_width, stimulus.span_height], -1, -1);
 
@@ -76,20 +76,19 @@ if length(spikes) > 5000
 end
 
 %% Compute movie
-movie = zeros(height*stixel_size, width*stixel_size, 600, 3);
-counter = 1;
-% movie = zeros(height, width, duration, 3);
-for iter= 1:600:duration-1
-    for i = 1:600
-        if i + iter - 1 <= (duration - 1)
+movie = zeros(height*stixel_size, width*stixel_size, duration, 3);
+% counter = 1;
+% for iter= 1:600:duration-1
+    for i = 1:duration%600
+        if i  <= (duration - 1)
             true_frame = zeros(height*stixel_size, width*stixel_size);
 
-            F = round(mvi.getFrame(i+iter-1).getBuffer);
+            F = round(mvi.getFrame(i).getBuffer);
             shaped_frame = round(reshape(F(1:3:end),width,height)'-0.5);
             sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
             %     movie(:,:,i,1) = sized_frame;
             sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-            position = [jitter_x(i+iter-1)+1+stixel_size/2, jitter_y(i+iter-1)+1+stixel_size/2];
+            position = [jitter_x(i)+1+stixel_size/2, jitter_y(i)+1+stixel_size/2];
             % x and y might be reversed
             true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
             movie(:,:,i,1) = true_frame;
@@ -97,7 +96,7 @@ for iter= 1:600:duration-1
                 shaped_frame = round(reshape(F(2:3:end),width,height)'-0.5);
                 sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
                 sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                position = [jitter_x(i+iter-1)+1+stixel_size/2, jitter_y(i+iter-1)+1+stixel_size/2];
+                position = [jitter_x(i)+1+stixel_size/2, jitter_y(i)+1+stixel_size/2];
                 % x and y might be reversed
                 true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
                 movie(:,:,i,2) = true_frame;
@@ -105,7 +104,7 @@ for iter= 1:600:duration-1
                 shaped_frame = round(reshape(F(3:3:end),width,height)'-0.5);
                 sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
                 sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                position = [jitter_x(i+iter-1)+1+stixel_size/2, jitter_y(i+iter-1)+1+stixel_size/2];
+                position = [jitter_x(i)+1+stixel_size/2, jitter_y(i)+1+stixel_size/2];
                 % x and y might be reversed
                 true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
                 movie(:,:,i,3) = true_frame;
@@ -119,43 +118,74 @@ for iter= 1:600:duration-1
         
     end
     
-    save(['/Volumes/Lab/Users/crhoades/JitterMovie/2008-04-22-5/data004/chuck_', num2str(counter)],'movie', '-v7.3');
-counter =counter +1;
-end
+%     save(['/Volumes/Lab/Users/crhoades/JitterMovie/2008-04-22-5/data004/chuck_', num2str(counter)],'movie', '-v7.3');
+
 
 
 %% ---------------------- Use spike times to form STA --------------------------
-for i=spikes'
-    % ignore spikes without num_frames preceding it
-    start=find(frame_times>i,1)-num_frames;
-    if(start>000) % don't use the spikes that don't have num_frames before it
-        icnt=icnt+1;
-        if mod(icnt,1000) == 0
-            fprintf('%d out of %d \n', icnt, length(spikes)')
-        end
-        
-        for j=1:num_frames
-            try
-                
-                F = movie(:,:,start+j, :);
-                sta(:,:,j,1) = sta(:,:,j,1) + F(:,:,1,1); % store the three color channels
-                
-                if num_colors == 3
-                    sta(:,:,j,2) = sta(:,:,j,2) +  F(:,:,1,2); % store the three color channels
-                    
-                     sta(:,:,j,3) = sta(:,:,j,3) +  F(:,:,1,3); % store the three color channels
-                    
-                end
-                 catch
-                a = 1;
-            end
-            
-        end
+   
+    
+    spikes_by_frame = nan(length(frame_times)-1,1);
+    for i = 1:length(frame_times)-1
+        spikes_by_frame(i) = sum(spikes >= frame_times(i) & spikes < frame_times(i+1));
     end
-end
-if num_colors ==1
-    sta = sta(:,:,:,1);
-end
+    frameR = nan(height*width*stixel_size*stixel_size, length(frame_times)-1);
+%     frameG = nan(height*width*stixel_size*stixel_size, length(frame_times)-1);
+%     frameB= nan(height*width*stixel_size*stixel_size,length(frame_times)-1);
+    
+    for i = 1:length(frame_times)-1
+        frameR(:, i) = reshape(squeeze(movie(:,:,i,1)), [size(squeeze(movie(:,:,i,1)), 1)*size(squeeze(movie(:,:,i,1)), 2), 1]);
+%         frameG(:,i) = reshape(squeeze(movie(:,:,i,2)), [size(squeeze(movie(:,:,i,2)), 1)*size(squeeze(movie(:,:,i,2)), 2), 1]);
+%         frameB(:, i) = reshape(squeeze(movie(:,:,i,3)), [size(squeeze(movie(:,:,i,3)), 1)*size(squeeze(movie(:,:,i,3)), 2), 1]);
+        
+    end
+    
+%     sta= nan(height,width, 3,num_frames);
+    for i= 1:num_frames
+        subtract= num_frames -i +1;
+        one_frameR = frameR(:,1:end-subtract+1)*spikes_by_frame(subtract:end);
+%         one_frameG = frameG(:,1:end-subtract+1)*spikes_by_frame(subtract:end);
+%         one_frameB = frameB(:,1:end-subtract+1)*spikes_by_frame(subtract:end);
+        
+        sta(:,:,i,1) = reshape(one_frameR, width, height)';
+%         sta{cells}(:,:,2,i) = reshape(one_frameG, width, height)';
+%         sta{cells}(:,:,3,i) = reshape(one_frameB, width, height)';
+        
+    end
+    
+    sta{cells} = sta{cells}/length(spikes);
+    
+% for i=spikes'
+%     % ignore spikes without num_frames preceding it
+%     start=find(frame_times>i,1)-num_frames;
+%     if(start>000) % don't use the spikes that don't have num_frames before it
+%         icnt=icnt+1;
+%         if mod(icnt,1000) == 0
+%             fprintf('%d out of %d \n', icnt, length(spikes)')
+%         end
+%         
+%         for j=1:num_frames
+%             try
+%                 
+%                 F = movie(:,:,start+j, :);
+%                 sta(:,:,j,1) = sta(:,:,j,1) + F(:,:,1,1); % store the three color channels
+%                 
+%                 if num_colors == 3
+%                     sta(:,:,j,2) = sta(:,:,j,2) +  F(:,:,1,2); % store the three color channels
+%                     
+%                      sta(:,:,j,3) = sta(:,:,j,3) +  F(:,:,1,3); % store the three color channels
+%                     
+%                 end
+%                  catch
+%                 a = 1;
+%             end
+%             
+%         end
+%     end
+% end
+% if num_colors ==1
+%     sta = sta(:,:,:,1);
+% end
 
 % % need to rearrange the sta to be in the map order
 % sta_new = zeros(size(map,1)/stixel_size,size(map,2)/stixel_size,num_colors,num_frames);

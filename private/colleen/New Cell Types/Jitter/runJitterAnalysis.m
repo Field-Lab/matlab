@@ -3,18 +3,18 @@
 clear
 close all
 
-dataparam.date='2008-11-12-1';
-dataparam.concatname='data008-mg';
-dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
-fitparam.num_frames = 30
+dataparam.date='2015-09-23-7';
+dataparam.concatname='d19-39/data028-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039';
+dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-20-12-0.48-11111.xml';
+fitparam.num_frames = 30;
 
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
-dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/data008'];
+dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/data028-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039'];
 
 % list specific cell (1), or run for a whole cell type (0)
-select_cells = 0;
+select_cells = 1;
 if select_cells == 1
-    dataparam.cell_specification = [2837] %ON parasol
+    dataparam.cell_specification = [530] %ON parasol
 end
 dataparam.cell_type = {'ON large 1'};
 %% END OF INPUT
@@ -77,14 +77,11 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 cell_indices = get_cell_indices(datarun, dataparam.cell_specification);
 cell_ids=datarun.cell_ids(cell_indices);
 for j = 1:length(cell_indices)
-    stixel_size = 10;
-    stixel_width = 10;
-    stixel_height = 10;
+    stixel_size = 20;
+    stixel_width =20;
+    stixel_height = 20;
     num_frames = 30;
     spikes=  datarun.spikes{cell_indices(j)};
-    plotting= 1;
-    cell = 1;
-    num_cells = 1;
     seed = 11111;
     state = Init_RNG_JavaStyle(seed);
     jitterX = nan(duration,1);
@@ -95,10 +92,10 @@ for j = 1:length(cell_indices)
         jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
     end
     
+    jitterX = zeros(size(jitterX));
+    jitterY = zeros(size(jitterY));
+    num_colors =1;
+    [sta] = compute_jitter_sta(datarun, dataparam.mdf_file, num_frames, spikes, jitterX, jitterY, stixel_size, num_colors);
     
-    map = [];
-    num_colors =1 ;
-    [sta] = compute_jitter_sta(datarun, dataparam.mdf_file, num_frames, spikes, plotting, cell, num_cells, jitterX, jitterY, map, stixel_size, num_colors);
-    
-    save(['/Users/colleen/Desktop/Jitter/2008-04-22-5/data004/Cell ', num2str(cell_ids(j))], 'sta')
+    save(['/Users/colleen/Desktop/Jitter/2015-09-23-7/data028/Cell ', num2str(cell_ids(j))], 'sta')
 end
