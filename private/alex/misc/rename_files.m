@@ -49,6 +49,6 @@ addpath(genpath('/Users/alexth/test4/matlab/private/alex'))
 % calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d01-29-norefit/')
 % calc_sta_grind('/Volumes/Data/2015-08-17-5/Visual/stimuli.lisp', '/Volumes/Analysis/2015-08-17-5/d24-48-norefit/')
 
-calc_sta_grind('/Volumes/Data/2015-10-06-2/Visual/stimuli.lisp', '/Volumes/Analysis/2015-10-06-2/d00-13-norefit/')
+calc_sta_grind('/Volumes/Data/2015-10-29-1/Visual/stimuli.lisp', '/Volumes/Analysis/2015-10-29-1/d00-12-norefit/')
 get_wn_movie_names('/Volumes/Data/2015-10-06-2/Visual/stimuli.lisp');
-calc_ei_grind('2015-10-06-2', '/Volumes/Analysis/2015-10-06-2/d00-13-norefit/')
+calc_ei_grind('2015-10-29-1', '/Volumes/Analysis/2015-10-29-1/d00-12-norefit/')
