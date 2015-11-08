@@ -126,6 +126,7 @@ if ~isempty(myCluster)
         
         % make clustered cones positive
         myMap=-myMap;
+        myMap(abs(myMap)<0.1)=0;
     end
 end
 

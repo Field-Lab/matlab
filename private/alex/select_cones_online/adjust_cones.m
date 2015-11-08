@@ -33,7 +33,7 @@ end
 myPlot=subplot('position',[0.6 0.05 0.35 0.35]);
 set(gca,'DataAspectRatio',[1 1 1])
 hold on
-mycolors='rbkgmcykkkkkk';
+mycolors='rbkgmcykkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk';
 
 pp=1;
 col=mycolors(1);

@@ -6,7 +6,6 @@ global myCells datarun cones cellType cell_indices coord_tform ctr rad fit_angle
 global stim STAplotPosition RFfitsPlotPosition deleted_cells_list
 cones={}; myCells=[]; deleted_cells_list=[];
 
-%%
 %*********** 2008 *********
 
 date = '2008-08-27-5';
@@ -101,20 +100,52 @@ path2load = fullfile(server_path(), [date, '/streamed/',run,'/',run]);
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
 frame=6;
 
-%%%%%%%%%%%%%%%%%%% 2015 %%%%%%%%%%%%%%%%%
+date = '2015-03-09-2';
+run = 'data034';
+path2load = ['/Volumes/Acquisition/Analysis/',date, '/',run,'/',run];
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=5;
 
-date = '2015-10-6-5';
-run = 'data006';
-path2load = '/Volumes/Acquisition/Analysis/2015-10-06-5/data006/data006';
+
+
+date = '2015-10-06-2';
+run = 'data001';
+path2load = ['/Volumes/Acquisition/Analysis/',date, '/',run,'/',run];
 path2save=fullfile(server_path(), date, '/stimuli/maps/');
 frame=6;
 
-%%
+date = '2015-10-06-2';
+run = 'data004';
+path2load = ['/Volumes/Acquisition/Analysis/',date, '/',run,'/',run];
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=6;
+
+date = '2015-10-06-2';
+run = 'data011';
+path2load = ['/Volumes/Acquisition/Analysis/',date, '/',run,'/',run];
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=6;
+
+
+
+date = '2015-10-06-5';
+run = 'data006';
+path2load = ['/Volumes/Acquisition/Analysis/',date, '/',run,'/',run];
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=6;
+
+
+date = '2015-10-29-1';
+run = 'data001';
+path2load = ['/Volumes/Acquisition/Analysis/',date, '/',run,'/',run];
+path2save=fullfile(server_path(), date, '/stimuli/maps/');
+frame=6;
+
 
 %% main body
 
 mapName = ['map_', run];
-cellType=5;
+cellType=4;
 nnd_scale=3;
 
 
@@ -205,6 +236,9 @@ hTemplate(3) = uicontrol('Style','radiobutton','String','Template',...
 set(hTemplate(1),'SelectedObject',hTemplate(2)); 
 set(hTemplate(1),'Visible','on');
 
+
+figure
+plot(stim.coord(end:-1:1,1),stim.coord(:,2),'x')
 
 
 

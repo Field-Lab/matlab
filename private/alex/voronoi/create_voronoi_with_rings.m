@@ -14,30 +14,31 @@
 % check for missing cones! ask Nishal
 
 
-datarun = load_data('/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11');
+datarun = load_data('/Volumes/Acquisition/Analysis/2015-10-06-5/data006/data006');
 datarun = load_params(datarun,'verbose',1);
-datarun = load_cones_ath(datarun, 'd08-11-norefit_d08-bayes-msf_10.00');
+% datarun = load_cones_ath(datarun, 'd08-11-norefit_d08-bayes-msf_10.00');
 
 % datarun = load_sta(datarun);
 % datarun = set_polarities(datarun);
 % datarun = load_neurons(datarun);
 
+datarun.cones.centers = stim.coord;
 figure
 plot(datarun.cones.centers(:,1), datarun.cones.centers(:,2), '*')
 axis ij
-x = round(datarun.cones.centers(:,1)*2);
-y = round(datarun.cones.centers(:,2)*2);
-linind = sub2ind([600,600],y, x);
+x = round(datarun.cones.centers(:,1));
+y = round(datarun.cones.centers(:,2));
+linind = sub2ind([320,320],y, x);
 ncones = size(datarun.cones.centers,1);
 
 
 
-sidesize = 7; % side of the square, or diameter of the circle. Should be odd.
-ringsize = 11;
+sidesize = 3; % side of the square, or diameter of the circle. Should be odd.
+ringsize = 0;
 shape = 'round'; % options are 'square','cross', 'round'
 
 
-full_map = zeros(600);
+full_map = zeros(320);
 full_map(linind) = 1:ncones;
 
 % figure the shifts of linear indices
@@ -72,7 +73,7 @@ plot(x,y,'.r')
 % set(gca, 'dataaspectratio',[1 1 1])
 
 % make rings (as a separate map) - map 1;
-full_map = zeros(600);
+full_map = zeros(320);
 full_map(linind) = 1:ncones;
 [rr cc] = meshgrid(1:ringsize+1);
 rad = (ringsize+1)/2;
@@ -82,7 +83,7 @@ ring_map = conv2(full_map,a,'same');
 
 % make rings (as a separate map) - map 2;
 
-full_map = zeros(600);
+full_map = zeros(320);
 full_map(linind) = 2:ncones+1;
 [rr cc] = meshgrid(1:ringsize+1);
 rad = (ringsize+1)/2;
@@ -128,7 +129,7 @@ tmp_map = final_map;
 for i = 1:length(x)
     my_val = final_map(y(i),x(i))+ncones;
     [a, b] = find(final_map==my_val);
-    lins = sub2ind([600,600],a, b);
+    lins = sub2ind([320,320],a, b);
     
     my_nums = a<=y(i)&b<=x(i);
     tmp_map(lins(my_nums)) = my_val;
@@ -149,21 +150,23 @@ figure
 imagesc(final_map)
 set(gca, 'dataaspectratio',[1 1 1])
 
+
+% final_map = main_map; % if rings are 0
 %% save stuff
-my_info.datarun = '/Volumes/Analysis/2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11';
-my_info.cone_map = 'd08-11-norefit_d08-bayes-msf_10.00';
+my_info.datarun = '/Volumes/Analysis/2015-10-06-2/data004/data004';
+my_info.cone_map = 'manual_s_cones_map004_NOrings_small';
 my_info.sidesize = sidesize; 
 my_info.ringsize = ringsize;
 my_info.shape = shape;
 my_info.segments = 4; % set the number of segments! (currently 1 or 4)
 
-my_dir = '/Volumes/Analysis/2011-12-13-2/maps/';
+my_dir = '/Volumes/Analysis/2015-10-06-2/maps/data004_no_rings_small/';
 
 mkdir(my_dir);
-dlmwrite([my_dir 'map-0002.txt'], final_map, 'delimiter', '\t', 'newline', 'pc');
+dlmwrite([my_dir 'map-NOrings-small-004.txt'], final_map, 'delimiter', '\t', 'newline', 'pc');
 save([my_dir '/info'],'my_info')
 
 % check
-final_map = load('/Volumes/Analysis/2011-12-13-2/maps/map-0002.txt');
+final_map = load('/Volumes/Analysis/2015-10-06-2/maps/data004_rings/map-rings-004.txt');
 figure; imagesc(final_map);
-load('/Volumes/Analysis/2011-12-13-2/maps/info.mat')
+load('/Volumes/Analysis/2015-10-06-2/maps/info.mat')

@@ -19,9 +19,10 @@ size_cone1_bin = floor(size(inputs,2)/nbins_cone1);
 size_cone2_bin = floor(size(inputs,2)/nbins_cone2);
 
 % on cell
-% colors = [0.5 0.5 0.5; 1 0.5 0; 0.5 0 1;  1 1 0;0 1 0;  0 0 1;  1 0 0; 0 0.6 0; 1 0 1; 0 1 1; 0.6 0.65 0];
+colors = [0.5 0.5 0.5; 1 0.5 0; 0.5 0 1;  1 1 0;0 1 0;  0 0 1;  1 0 0; 0 0.6 0; 1 0 1; 0 1 1; 0.6 0.65 0; ...
+    0.8 0.8 0; 0.8 0 0.8; 0 0.8 0.8; 0 0.3 0.8; 1 1 0.3; 0.9 0.3 0.8; 0.1 0.1 0.3; 0.8 0.8 0.8; 0.1 0.1 0.1];
 % off cell
-colors = [0.5 0.5 0.5;   1 1 0;0 1 0;  0 0 1;  1 0 0; 1 0 1; 0 1 1; 0.6 0.65 0];
+% colors = [0.5 0.5 0.5;   1 1 0;0 1 0;  0 0 1;  1 0 0; 1 0 1; 0 1 1; 0.6 0.65 0];
     
 for cone1 = 1:length(center_cones)
     
@@ -101,16 +102,16 @@ for cone1 = 1:length(center_cones)
 %     
     
     % color cones
-    colored_cones = zeros(size(comb));  
+    colored_cones = zeros([size(comb), 3]);  
     for cone2 = 1:length(center_cones)
         [a, b] = find(map==center_cones(cone2));        
         if cone1 ~= cone2            
             for j = 1:length(a)
-                colored_cones(a(j),b(j),:) = colors(cone2,:);
+                colored_cones(a(j),b(j), :) = colors(cone2,:);
             end
         else % ref cone
             for j = 1:length(a)
-                colored_cones(a(j),b(j),:) = [1 1 1];
+                colored_cones(a(j),b(j),:) = 1;
             end
         end
     end
@@ -135,11 +136,11 @@ for cone1 = 1:length(center_cones)
 
     
     drawnow
-    path2save = ['/Users/alexandra/Desktop/ERM2015/off/', int2str(datarunID)];
+    path2save = ['/Volumes/Analysis/2015-10-29-1/data005/on_p_0.02_10bins/', int2str(datarunID)];
     if ~isdir(path2save)
         mkdir(path2save);
     end
-    saveas(gcf,[path2save,'/off_', int2str(center_cones(cone1)), '.svg'])
+    saveas(gcf,[path2save,'/on_', int2str(center_cones(cone1)), '.tiff'])
 end
 
 
