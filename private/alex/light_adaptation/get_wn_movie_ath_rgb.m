@@ -13,7 +13,7 @@ mdf_file=['/Volumes/Analysis/stimuli/white-noise-xml/', movie_name];
 [~,height,width,duration,refresh] = get_movie_ath(mdf_file,triggers, 1,2);
 mvi=load_movie(mdf_file, triggers);
 
-duration = 30;
+% duration = 30;
 inputs=zeros(height*width,3,duration-1);
 cnt=1;
 for j=0:duration-1

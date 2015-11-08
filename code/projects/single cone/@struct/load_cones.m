@@ -46,7 +46,7 @@ elseif ischar(ind)
     end
 end
  
-[datarun extras] = import_single_cone_data(datarun, datarun.names.cones, varargin{:});
+[datarun extras] = import_single_cone_data(datarun, ['/Volumes/Acquisition/Analysis/2015-10-29-1/cone_data/',cone_data{1}], varargin{:});
  
 % PHL: I don't really see the point of keeping the extras separate.  Move the
 % things I care about into datarun

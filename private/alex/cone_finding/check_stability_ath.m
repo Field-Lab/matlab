@@ -1,21 +1,21 @@
 %% Stability check / Show cone maps for RGC selection
 clear
 
-piece = '2013-10-10-5';
-runA = 'data002';
+piece = '2015-10-29-1';
+runA = 'data001';
 runB = 'data004';
 conesA = {};
 conesB = {};
 
 
-datarunA = load_data(['/Volumes/Analysis/' piece '/streamed/' runA '/' runA]);
+datarunA = load_data(['/Volumes/Acquisition/Analysis/' piece '/' runA '/' runA]);
 datarunA = load_sta(datarunA, 'load_sta', []);
 datarunA = load_params(datarunA);
 datarunA = load_cones(datarunA, conesA{:},1);
 datarunA = make_mosaic_struct(datarunA);
 datarunA = get_sta_fits_from_vision(datarunA);
 
-datarunB = load_data(['/Volumes/Analysis/' piece '/streamed/' runB '/' runB]);
+datarunB = load_data(['/Volumes/Acquisition/Analysis/' piece '/' runB '/' runB]);
 datarunB = load_sta(datarunB, 'load_sta', []);
 datarunB = load_params(datarunB);
 datarunB = load_cones(datarunB, conesB{:});
@@ -47,6 +47,10 @@ offM=[721 2809 3005 3183 4758 5090];
 plot_rf_summaries(datarunA, offM, 'scale',1,'clear', false, 'label', true, 'label_color', 'y', 'plot_fits', true, 'fit_color', 'y')
 plot_rf_summaries(datarunB, {4}, 'scale',1,'clear', false, 'label', true, 'label_color', 'b', 'plot_fits', true, 'fit_color', 'b')
 
+figure
+plot(datarunA.cones.centers(:,1),datarunA.cones.centers(:,2), 'x');
+hold on
+plot(datarunB.cones.centers(:,1),datarunB.cones.centers(:,2), 'r+');
 
 %overlay_cone_mosaics(datarunA, datarunB, 'scale1', [2 2], 'scale2', [3 3]);
 

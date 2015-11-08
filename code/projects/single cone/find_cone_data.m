@@ -8,7 +8,7 @@ function cone_data = find_cone_data(piece, run, path2data)
 %
 
 % files = dir(single_cone_path());
-files = dir(path2data); 
+files = dir([path2data, 'cone_data/']); 
 
  
 cone_data = {};
@@ -17,8 +17,9 @@ for i = 1:length(files)
     if (~file.isdir), continue; end
     
     if ~isempty(strfind(file.name, [piece '_' run])) || ...
-       ~isempty(strfind(file.name, [piece '_streamed_' run])) ...
-       ~isempty(strfind(file.name, [piece '_Streamed_' run]))
+       ~isempty(strfind(file.name, [piece '_streamed_' run])) || ...
+       ~isempty(strfind(file.name, [piece '_Streamed_' run])) || ...
+       ~isempty(strfind(file.name, run))
             cone_data{end+1} = file.name;
     end 
 end

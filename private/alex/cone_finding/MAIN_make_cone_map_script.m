@@ -2,23 +2,23 @@ clear
 
 %% Input parameters
 
-piece = '2014-09-10-1';
+piece = '2015-10-29-1';
 run = 'data001';
 online = false;  % look in online folder (/Volumes/Acquisition/date)
 streamed = true;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
 
-magic_number = 140
+magic_number = 20
 inclusion_radius = 1.5
 
 %% load data
-
-path2data = find_data(piece, run, streamed, online);
+'/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004'
+path2data = '/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004';
 datarun = load_data(path2data);
 datarun = load_params(datarun,struct('verbose',1));  
 datarun = load_sta(datarun,'load_sta',[]);
 datarun = set_polarities(datarun);
-
-datarun = load_cones_ath(datarun,magic_number);
+datarun = load_cones(datarun, {});
+% datarun = load_cones_ath(datarun,magic_number);
 datarun = make_mosaic_struct(datarun);
 
 
@@ -41,15 +41,18 @@ cone_map = index_masks(masks, num2cell(indexes));
 
 %% Spaced out % for use
 min_neighbor_dist = 1.5;
-max_self_dist     = 3.5;
+max_self_dist     = 2;
 spaced = space_voronoi_masks(datarun, min_neighbor_dist, max_self_dist);
 cone_map = index_masks(spaced, num2cell(indexes));
 
 figure
 imagesc(cone_map)
 
-%dlmwrite('/snle/acquisition/maps/2011-07-05-2_f01_voronoicones/map-0000.txt', cone_map, 'delimiter', '\t', 'newline', 'pc')
+dlmwrite('/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data004.txt', cone_map, 'delimiter', '\t', 'newline', 'pc')
+a = dlmread('/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data004.txt')
 
+figure;
+imagesc(a)
 
 %% Visualize % for use - not necessary
 figure; imagesc(cone_map); hold on; voronoi(datarun.cones.centers(:,1) .* datarun.cones.mosaic.voronoi_masks_scale, datarun.cones.centers(:,2) .* datarun.cones.mosaic.voronoi_masks_scale); axis equal tight
