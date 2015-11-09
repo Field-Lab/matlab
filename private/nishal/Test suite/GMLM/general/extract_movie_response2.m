@@ -149,7 +149,7 @@ end
      
  mov=squeeze(mean(mov,3));
  maskedMovdd= filterMov(mov,totalMaskAccept2,squeeze(ttf));
- %maskedMov2dd=[maskedMovdd;ones(1,size(maskedMovdd,2))];
+ maskedMovdd2=[maskedMovdd;ones(1,size(maskedMovdd,2))];
  totalMaskAccept = totalMaskAccept2;
  
  clear mov

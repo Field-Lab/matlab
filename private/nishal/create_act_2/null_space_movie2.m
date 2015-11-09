@@ -406,6 +406,8 @@ togo = input('Continue Iterating?');
 end
 
 
+
+
 %%
 if(solver==15) % Spatial Nulling, WN+Null stimulus 
      togo=1;
@@ -788,6 +790,31 @@ mov_modify_new=mov_modify_new*0.5+ mov_show;
 end
 
 
+if(solver==21) % Dykstra's Alternating Projections, Spatial, GPU - be on smokestack
+     togo=1;
+   %  mov=gpuArray(mov);mov_orig = gpuArray(mov_orig);
+    while togo==1
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new]=null_project_spatial_gpu(stas,mov,cell_params,matlab_cell_ids);
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001)
+% distance = norm(mov_orig(:)-mov_modify_new(:))
+z_k_half=2*mov_modify_new - mov;
+
+x_k_1=z_k_half;
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+
+mov=mov + x_k_1 - mov_modify_new;
+
+% Need to change post processing!!
+togo = violations>0 % input('Continue Iterating?');
+    end
+   
+    %mov_modify_new = gather(mov_modify_new);mov_orig=gather(mov_orig);
+end
 
 %% see_movie
 % see_movie2

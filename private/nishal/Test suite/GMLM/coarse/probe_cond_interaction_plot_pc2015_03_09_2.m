@@ -50,10 +50,12 @@ fitGMLM = fitGMLM_log{nSU};
 %% 
  mask=logical(mask);
 K=zeros(sum(mask(:)),nSU);
+B = ones(nSU,1);
 for isu=1:nSU
 K(:,isu) = fitGMLM.Linear.filter{isu}(1:end-1);
+B(isu) = exp(fitGMLM.Linear.filter{isu}(end));
 end
-B = ones(nSU,1);
+
 
 figure;
 [B_use,h]= plotSU_withcells(K,logical(mask),logical(mask(:)),B);
@@ -160,7 +162,7 @@ title('STA of stimuli chosen for analysis')
 
 
  
- %% 
+ %% compute output non-linearity to ASM.
  
  figure;
  for nSU=1:5

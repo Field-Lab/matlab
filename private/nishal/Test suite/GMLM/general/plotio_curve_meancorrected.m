@@ -1,4 +1,4 @@
-function plotio_curve_meancorrected(aa,resp,pts,colr)
+function sd = plotio_curve_meancorrected(aa,resp,pts,colr)
 bin=[];
 
  for iprc=100/pts:100/pts:100
@@ -21,5 +21,9 @@ varaa=[varaa;sqrt(var(aa(tms))/numel(aa(tms)))];
 
  errorbar(meanaa,meanR,varaa,colr)
 %plot(meanaa,meanR,colr)
- 
+
+%% fit gaussian 
+fitres = fit(meanaa,meanR, 'scale*normcdf(x,mu,sigma)','StartPoint',[1, max(meanR), 1.5], 'Lower', [0.1 0.1 0.1], 'Upper', [15 15 15]);
+%[fitres1, gof] = fit(aa,resp, 'scale*normcdf(x,mu,sigma)', 'StartPoint', [fitres.mu, fitres.scale, fitres.sigma], 'Lower', [0.1 0.1 0.1], 'Upper', [15 15 15]);
+sd = fitres.sigma;
 end

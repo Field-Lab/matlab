@@ -14,10 +14,10 @@ cond_str{1}='Original';
 cond_str{2}='Null ';
 
 
-dataRuns_OFF_additivity = [16,17,19,20,22,24,25];
-dataRuns_ON_additivity = [16,18,19,21,23,24,26];
-movies_OFF_addivitiy =[1,2,5,6,10,13,14];
-movies_ON_additivity = [1,4,5,8,12,13,16];
+dataRuns_OFF_additivity = [3,4,6,7,9,11,13];
+dataRuns_ON_additivity = [3,5,6,8,10,12,13];
+movies_OFF_addivitiy =[1,2,5,6,10,14,13];
+movies_ON_additivity = [1,4,5,8,12,16,13];
 %% Stimulus difference non triviality
 
 % Load stimuli 
@@ -30,7 +30,7 @@ rawMovFrames=1200/(4);
 icnt=0;
 % make pixel histogram
 for imov=movies_OFF_addivitiy
-    [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-06-0/Visual/null/%d.rawMovie',imov),rawMovFrames,1);
+    [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-29-2/Visual/%d.rawMovie',imov),rawMovFrames,1);
     subtract_movies{3}=mean(stim,1);
     subtract_movies{3}=mean(stim,1)*0+127.5;
     movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
@@ -280,7 +280,7 @@ end
 %% Analyse a cell - fit ASM, difference of rasters, non-linearitiy ..
 
 %% 
-WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
@@ -290,27 +290,42 @@ cellID_select= datarun.cell_types{cellTypeId}.cell_ids; % 51 ? [6741,2176,6961]
 
 
  %% fit ASM
-WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002'
 
 movie_xml = 'RGB-8-2-0.48-11111';
 stim_length=1800;% 
-cellID_list = [cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
+cellID_list = 198%[cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
 nSU_list= [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
-destination= 'pc2015_10_06_0_analysis_fits/SUs'
+destination= 'pc2015_10_29_2_analysis_fits/SUs_data002'
 sta_depth=30; % CAREFUL TO CHANGE IT TO LONG .. FOR SLOWER CELLS
 
 [~] = get_gmlm_sta2(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth)
 save(['/Volumes/Lab/Users/bhaishahster/',destination,'/sus.mat'],'stas_t','stas_r');
 
 
+
+ %% fit ASM
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001'
+
+movie_xml = 'RGB-8-2-0.48-11111';
+stim_length=1800;% 
+cellID_list = 198%[cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
+nSU_list= [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
+destination= 'pc2015_10_29_2_analysis_fits/SUs_data001_quad2'
+sta_depth=30; % CAREFUL TO CHANGE IT TO LONG .. FOR SLOWER CELLS
+
+[~] = get_gmlm_sta3(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth)
+save(['/Volumes/Lab/Users/bhaishahster/',destination,'/sus.mat'],'stas_t','stas_r');
+
+
 %% Predict response  and compare with real response! 
 
 % select cell
-cellID = 7145%cellID_select(1);
+cellID = 198%cellID_select(1);
 
 % set up stuff for reading real responses
 dataRuns = dataRuns_OFF_additivity;
-WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
+WN_datafile ='/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001'
 
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
@@ -320,63 +335,110 @@ nConditions=1;
 cols='rkrkrkrkrkrkkrkrkrkr';
 spkCondColl=cell(length(dataRuns),1);
 
-for idata=1:length(dataRuns)
-    Null_datafile = sprintf('/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data0%d-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035',dataRuns(idata));
-    neuronPath = [Null_datafile,sprintf('/data0%d-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035.neurons',dataRuns(idata))];
-    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_10_06_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
-end
+    for idata=1:length(dataRuns)
+    Null_datafile = sprintf('/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data0%02d',dataRuns(idata));
+    neuronPath = [Null_datafile,sprintf('/data0%02d.neurons',dataRuns(idata))];
+    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+    end
 
 % predict response
-convolve=150;
-len = 12000;
-binSz=1/1200;
-pred1=cell(2,1);
-icnt=0;
-clear('ss');
+%%
 
-nSU=1;        
+destination = 'pc2015_10_29_2_analysis_fits/SUs_data001';
+cellData001 = load(['/Volumes/Lab/Users/bhaishahster/',destination,sprintf('/Cell_%d.mat',cellID)]);
+
+nSU=5;        
+destination = 'pc2015_10_29_2_analysis_fits/SUs_data001_quad2';
 cellData = load(['/Volumes/Lab/Users/bhaishahster/',destination,sprintf('/Cell_%d.mat',cellID)])
 fitGMLM = cellData.fitGMLM_log{nSU};
     
-for icond=[3,4]%[1,2,3,4,5];
+scale_tf=1;
+
+pred1=cell(2,1);
+clear('ss');
+icnt=0;
+for icond=[1,2]%[1,2,3,4,5];
 icnt=icnt+1;
-    realResp = makeSpikeMat(spkCondColl{icond}.spksColl,1/120,1272);
+    realResp = makeSpikeMat(spkCondColl{icond}.spksColl,1/120,1200);
 fr= mean(realResp,1)/(1/120);
 
 
-movd = condMov{icond}-0.5;
+movd = (condMov{icond}-0.5);  % *2 if it is a low contrast movie!
+movd_masked = movd(repmat(cellData.mask>0,[1,1,size(movd,3)]));
+movd=movd*0.4804*2/sqrt(var(movd_masked(:)));
  maskedMov= filterMov(movd,cellData.mask,squeeze(cellData.ttf));
  maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
  R2_pl = [];
 
-nTrials=30;
- [pred1{icnt},lam]= predictGMLM_bias_lr(fitGMLM,maskedMov,nTrials,1);
+nTrials=100;
+ %[pred1{icnt},lam]= predictGMLM_bias(fitGMLM,maskedMov,nTrials,1);
+  [pred1{icnt},lam]= predictGMLM_gamma2(fitGMLM,maskedMov2,nTrials,2,1);
  pred1{icnt} = pred1{icnt}';
  ss(icnt)=spkCondColl{icond};
+end
+%close all;
+
+h=figure('Color','w','PaperSize',[10,7],'PaperPosition',[0 0 42 7]);
+hh=plot_record_prediction(ss,pred1);
+xlim([8,10]);
+
+%% Explore time course
+icond=2;
+    realResp = makeSpikeMat(spkCondColl{icond}.spksColl,1/120,1200);
+fr= mean(realResp,1)/(1/120);
+
+pred1=cell(2,1);
+clear('ss');
+
+icnt=0;
+
+for nSU=15%1:10
+    fitGMLM = fitGMLM_log{nSU};%cellData.fitGMLM_log{nSU};
+for scale_tf = 0%[1:10:60];%[0.5:0.1:1]
+    icnt=icnt+1;
+movd = (condMov{icond}-0.5);  % *2 if it is a low contrast movie!
+movd_masked = movd(repmat(cellData.mask>0,[1,1,size(movd,3)]));
+movd=movd*0.4804/sqrt(var(movd_masked(:)));
+ maskedMov= filterMov(movd,cellData.mask,transform_tf(squeeze(cellData.ttf),scale_tf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+ 
+nTrials=30;
+ %[pred1{icnt},lam]= predictGMLM_bias(fitGMLM,maskedMov,nTrials,1);
+ %[pred1{icnt},lam]= predictGMLM_gamma2(fitGMLM,maskedMov2,nTrials,2,1);
+  [pred1{icnt},lam]= predictGMLM_gamma_opnl(fitGMLM,maskedMov2,nTrials,1);
+  
+ pred1{icnt} = pred1{icnt}';
+ ss(icnt)=spkCondColl{icond};
+end
 end
 
 h=figure('Color','w','PaperSize',[10,7],'PaperPosition',[0 0 42 7]);
 hh=plot_record_prediction(ss,pred1);
-    
-
+%xlim([3,6]);
+%%
+% have meanR, lam
+meanRe= mean(realResp,1);
 %% Compute non-linearity of cell in an LNP model
 sta_depth = 30;
-WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
+WN_datafile_cellID ='/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001'
+WN_datafile ='/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002'
 movie_xml = 'RGB-8-2-0.48-11111';
 stim_length=1800;% 
 
-datarun=load_data(WN_datafile)
+datarun=load_data(WN_datafile_cellID)
 datarun=load_params(datarun)
 
-
+tic;
 cellTypeId = 2%8,1;
 cellIDs= datarun.cell_types{cellTypeId}.cell_ids; % [6741,2176,6961]
 data_nls = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length);
+save(['/Volumes/Lab/Users/bhaishahster/',destination,'/data_nls2.mat'],'data_nls');
+toc;
 
 figure;
 for icell=1:3
 subplot(1,3,icell);
-plotyy(data_nls(icell).in,data_nls(icell).fr,data_nls(icell).XX,data_nls(icell).NN/sum(data_nls(icell).NN));
+plotyy(data_nls(icell).in,datadata_nls(icell).fr,data_nls(icell).XX,data_nls(icell).NN/sum(data_nls(icell).NN));
 title(sprintf('Cell: %d, nl: %0.02f',cellIDs(icell), data_nls(icell).NL_fit.nl_idx));
 %xlim([-0.2,0.2]);
 end
@@ -385,10 +447,7 @@ end
 
 dataRuns = dataRuns_OFF_additivity;
 
-WN_datafile = '/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035/data014-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035';
-%WN_mov='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-11111.xml';
-imov=14;
-WN_datafile_full = '/Volumes/Analysis/2015-10-06-0/streamed/data014/';
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
 
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
@@ -402,7 +461,7 @@ spkCondColl=cell(length(dataRuns),1);
 
 condDuration=10;
 nConditions=1;
-compareConds = [3,4];
+compareConds = [3,6];
 dist4_from3=[];dist_sd4_from3=[];
 dist3_from4=[];dist_sd3_from4=[];
 for ref_cell_number=1:length(InterestingCell_vis_id); %11
@@ -410,10 +469,11 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     cellID=InterestingCell_vis_id(ref_cell_number)
         
     for idata=1:length(dataRuns)
-    Null_datafile = sprintf('/Volumes/Analysis/2015-10-06-0/d14_35-norefit/data0%d-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035',dataRuns(idata));
-    neuronPath = [Null_datafile,sprintf('/data0%d-from-data014_data016_data017_data018_data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035.neurons',dataRuns(idata))];
+    Null_datafile = sprintf('/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data0%02d',dataRuns(idata));
+    neuronPath = [Null_datafile,sprintf('/data0%02d.neurons',dataRuns(idata))];
     [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
     end
+
     
 spks = cell(nConditions,1);
 for idata = compareConds
@@ -450,7 +510,7 @@ set(gca,'xTick',[]);set(gca,'yTick',[]);
 title(sprintf('%d:',icell));
 end
 
-goodCells = [1,2,3,4,6,7,8,9,10,12,13,14,17,20,21,28]
+goodCells = 1:length(InterestingCell_vis_id);%[1,2,3,4,6,7,8,9,10,12,13,14,17,20,21,28]
 nlidx=[];
 dist =[];
 for icell=goodCells
@@ -475,3 +535,32 @@ plot(dist,nlidx,'.')
 xlabel('Distance- prediction of resp to wn+null from wn');
 ylabel('Non-linearity index');
 
+%% make conditional interaction plots
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002';
+movie_xml = 'RGB-8-2-0.48-11111';
+stim_length=1800;
+cellID=49;
+userSTA_depth=30;
+destination = 'pc2015_10_29_2_analysis_fits/SUs_data002';
+ASM_link =['/Volumes/Lab/Users/bhaishahster/',destination,sprintf('/Cell_%d.mat',cellID)];
+nSU=4;
+
+sus=[1,2];
+suP=[1,2,3,4];
+u1=[1,2];
+u2=[3,4];
+upossible=[3,4];
+[sd,dist,su_ass]  = probe_cond_interaction_fcn_pairs(WN_datafile,movie_xml,stim_length,cellID,userSTA_depth,ASM_link,nSU)
+
+
+%% compute output NL
+
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
+movie_xml = 'RGB-8-2-0.48-11111';
+stim_length=1800;
+cellID=198;
+userSTA_depth=30;
+destination = 'pc2015_10_29_2_analysis_fits/SUs_data001_quad2';
+ASM_link =['/Volumes/Lab/Users/bhaishahster/',destination,sprintf('/Cell_%d.mat',cellID)];
+
+fitGMLM_log = compute_op_NL_WN(WN_datafile,movie_xml,stim_length,cellID,userSTA_depth,ASM_link)

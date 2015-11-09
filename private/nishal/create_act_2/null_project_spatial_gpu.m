@@ -1,4 +1,4 @@
-function [mov_orig,mov_new,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cellids_datarun)
+function [mov_orig,mov_new,stas_sp_current]=null_project_spatial_gpu(stas,mov,cell_params,matlab_cellids_datarun)
 ncells=length(stas);
 stas_sp_current=cell(length(stas),1);
 % Choose best frame
@@ -123,28 +123,30 @@ if(rank(A)<min(size(A)))
     display('Spatial STA matrix not well conditioned. Check selected cells.')
 end
 
+A = gpuArray(A);
 [u,s,v]=svd(A,'econ');
 Ainv=v*(s^-1)*u';
 
+ mov=gpuArray(mov);
 % Null each frame of movie
 mov_new=0*mov;
-parfor iframe=1:size(mov,3)
+
+for iframe=1:size(mov,3)
     
-    %     if(mod(iframe,100)==1)
-    %         iframe
-    %     end
+%         if(mod(iframe,100)==1)
+%             iframe
+%         end
     
     % mov_fr=mov(:,:,iframe);
     % mov_fr=mov_fr(:);
     % mov_null=mov_fr-A'*(A'\(A\(A*mov_fr)));
     % mov_new(:,:,iframe)=reshape(mov_null,[Filt_dim1,Filt_dim2]);
-    
     mov_new(:,:,iframe)=proj_frame_spatial(A,mov(:,:,iframe),Ainv);
-    
 end
 
-mov_orig=mov;
 
+mov_orig=mov;
+mov_orig = gather(mov_orig);mov_new = gather(mov_new);
 %[proj,maxChange,averageChange]=computePixelChange(mov_new,mov_orig,A,Ainv,CellMasks_sp)
 toc;
 

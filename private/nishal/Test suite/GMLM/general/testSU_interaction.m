@@ -1,5 +1,5 @@
 
-function testSU_interaction(u1,u2,mask,mov,Y_C,jcell,probe,thperc,pts,type,colr)
+function sd =testSU_interaction(u1,u2,mask,mov,Y_C,jcell,probe,thperc,pts,type,colr)
 
 
 up1 = zeros(sum(mask),1);up1(u1)=1;
@@ -16,6 +16,6 @@ else
 end
 
  aa=inp1(idxx);
-  plotio_curve_meancorrected(aa,resp(idxx),pts,colr);
+  sd = plotio_curve_meancorrected(aa,resp(idxx),pts,colr);
  %plotio_curve(aa,resp(idxx),pts,colr);
 end

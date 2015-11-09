@@ -50,13 +50,10 @@ dataa(iiicell).ttf = ttf;
 % fit the input - firing rate curve and get the slopes at origin and tip
 frnz = dataa(iiicell).fr >0; 
 f=fit(dataa(iiicell).in(frnz),log(dataa(iiicell).fr(frnz)),'poly2');
-dataa(iiicell).NL_fit.f = f;
-g = @(x) exp(dataa(iiicell).NL_fit.f(x));
+g = @(x) exp(f(x));
 %  subplot(1,2,2);
  plot(in,fr,in,g(in)); pause(0.1);
-
- dataa(iiicell).NL_fit.g=g;
-
+dataa(iiicell).NL_fit.g=g;
 meanin = mean(input);
 dataa(iiicell).meaninp = meanin;
 dataa(iiicell).NL_fit.g0 = g(meanin) * (2*f.p1*meanin + f.p2);

@@ -1,6 +1,6 @@
 figure;
 
-for itime=1:100:movie_time
+for itime=1:100:1000
     subplot(2,2,1);
     imagesc(mov_orig(:,:,itime));
     axis image

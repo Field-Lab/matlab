@@ -1,7 +1,7 @@
 function [B_use,h]=plotSU_withcells(K,mask,total_mask_log,Bwt)
 K2=gather(K);
-s1=40; %40,64
-s2 = 40;  %40,32
+s1=size(mask,1); %40,64
+s2 = size(mask,2);  %40,32
 mm = reshape(1:s1*s2,[s1,s2]);
 
 iidx = mm(mask);
@@ -15,9 +15,10 @@ B_use{icell} = B{1};
 end
 cols = distinguishable_colors(ncell+10); cols = cols(5:end,:);
 
-h=figure('Color','w');
+h=[];
+%h=figure('Color','w');
 for isu=1:size(K2,2)
-    subplot(3,2,isu);
+    subplot(1,2,isu);
     u=zeros(s1*s2,1);
     u(iidx) = K2(:,isu);
     xx = reshape(u,[s1,s2])';
