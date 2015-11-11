@@ -20,8 +20,12 @@ if(exist('fitmovie_color','var')~=1) % variable fit movie_color does not exist
     
 disp('Loading Stimulus Movies')
 [temp_fitmovie,height,width,dur,ref] = get_movie(xml_file, datarun.triggers, fitframes/StimulusPars.refreshrate);
+
+temp_fitmovie = temp_fitmovie(:,:,1,:);
+
 temp_fitmovie=permute(temp_fitmovie,[2 1 3 4]);
-fitmovie_color=zeros(width,height,3,fitframes);
+temp_fitmovie = repelem(temp_fitmovie,1,1,3,1);
+
 
 try
     StimulusPars.height = str2double(stim_description(dashes(5)+1:dashes(5)+2)); 
@@ -31,10 +35,12 @@ catch
     StimulusPars.width = width;
 end
 
-
-for i=1:fitframes
-    fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/StimulusPars.refreshrate));
-end
+temp_fitmovie = temp_fitmovie(:,:,1,:);
+fitmovie_color = repelem(temp_fitmovie,1,1,1,StimulusPars.refreshrate);
+% 
+% for i=1:fitframes
+%     fitmovie_color(:,:,:,i)=temp_fitmovie(:,:,:,ceil(i/StimulusPars.refreshrate));
+% end
 
 clear temp_fitmovie i 
 end
@@ -99,16 +105,16 @@ end
 
 % Calculate STA
         STA_depth=user_STA_depth;
+      
        
-        mov = fitmovie_color-0.5;
-        dim1=size(mov,1);
-        dim2=size(mov,2);
-        iisp = 1:size(mov,4);
+        dim1=size(fitmovie_color,1);
+        dim2=size(fitmovie_color,2);
+        iisp = 1:size(fitmovie_color,4);
         iisp = iisp(spksGen~=0 & iisp' > STA_depth+1);
         
-        STA_recalc = zeros(dim1,dim2,3,STA_depth);
+        STA_recalc = zeros(dim1,dim2,1,STA_depth);
         for ilen=1:length(iisp)
-        STA_recalc = STA_recalc + mov(:,:,:,iisp(ilen)-(STA_depth-1):iisp(ilen));
+        STA_recalc = STA_recalc + fitmovie_color(:,:,:,iisp(ilen)-(STA_depth-1):iisp(ilen))-0.5;
         end
         STA_recalc =STA_recalc/numel(iisp);
         
@@ -129,7 +135,7 @@ end
         pause(0.1); 
         end
             
-      ttf=squeeze(mean(mean(mean(STA_recalc.*repmat(totalMaskAccept2,[1,1,3,STA_depth]),3),1),2));
+      ttf=squeeze(mean(mean(mean(STA_recalc.*repmat(totalMaskAccept2,[1,1,1,STA_depth]),3),1),2));
       %tf=tf/max(abs(tf));
       %idx=1:length(tf);
       ttf=1000*ttf(end:-1:1);
@@ -147,13 +153,15 @@ end
         y_coord = [max(min(c)-3,1):min(max(c)+3,size(totalMaskAccept2,2))];
     
      
- mov=squeeze(mean(mov,3));
- maskedMovdd= filterMov(mov,totalMaskAccept2,squeeze(ttf));
- maskedMovdd2=[maskedMovdd;ones(1,size(maskedMovdd,2))];
- totalMaskAccept = totalMaskAccept2;
-% totalMaskAccept = 0*totalMaskAccept2;
-% totalMaskAccept(x_coord,y_coord)=1;
+% fitmovie_color=squeeze(mean(fitmovie_color,3));
 
+ %totalMaskAccept = totalMaskAccept2;
+totalMaskAccept = 0*totalMaskAccept2;
+totalMaskAccept(x_coord,y_coord)=1;
+
+ maskedMovdd= filterMov(squeeze(fitmovie_color),totalMaskAccept,squeeze(ttf));
+ maskedMovdd2=[maskedMovdd;ones(1,size(maskedMovdd,2))];
+ 
  clear mov
 % [fitGMLM,output] = fitGMLM_afterSTC_simplified(binnedResponses,maskedMov,7,4);
 %  

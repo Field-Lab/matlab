@@ -141,7 +141,7 @@ write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 mov_idx=6;
 write_movie_idx(destination_mat,movies{mov_idx},mov_idx,mov_params.stixel);
 
-%% Iterated Spatiao-Temporal nulling (high contrast) - has interval parameter - remember to carefully decide the scaling (not stretching) when doing Iterated methods.
+%% Iterated Spatio-Temporal nulling (high contrast) - has interval parameter - remember to carefully decide the scaling (not stretching) when doing Iterated methods.
 cell_params=struct();
 cell_params.type_name_inp='ON Parasol';%'userCellList';
 cell_params.cell_list=[];

@@ -20,7 +20,7 @@ icell=icell+1;
 %load(cell_glm_fit);
 %%
 
-extract_movie_response2;
+extract_movie_response5;
 
  %% EM like Max Expected Likelihood .. 
  interval=1;
@@ -132,7 +132,7 @@ if(~isdir(sprintf('/Volumes/Lab/Users/bhaishahster/%s',destination)))
     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/%s',destination));
 end
 
-save(sprintf('/Volumes/Lab/Users/bhaishahster/%s/Cell_%d.mat',destination,cellID),'fitGMLM_log','cellID','mask','x_coord','y_coord','ttf');
+save(sprintf('/Volumes/Lab/Users/bhaishahster/%s/Cell_%d.mat',destination,cellID),'fitGMLM_log','cellID','mask','x_coord','y_coord','ttf','-v7.3');
 end
 
 
