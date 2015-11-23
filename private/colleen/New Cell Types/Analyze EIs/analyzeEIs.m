@@ -40,7 +40,7 @@ datarun=load_data(datarun,opt);
 
 % list specific cell (1), or run for a whole cell type (0)
 
-dataparam.cell_types = {'ON parasol nc0', 'ON midget nc1', 'ON large 1', 'ON large 2'};
+dataparam.cell_types = {'ON parasol nc0', 'ON midget nc1', 'ON large 1', 'ON large 2 nc1'};
 
 
 for cell_type = 1:length(dataparam.cell_types)
