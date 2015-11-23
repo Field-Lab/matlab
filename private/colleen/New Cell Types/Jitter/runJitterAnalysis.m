@@ -4,12 +4,12 @@ clear
 close all
 
 dataparam.date='2015-09-23-7';
-dataparam.concatname='d19-39/data028-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039';
+dataparam.concatname='d19-39/data029-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039';
 dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-20-12-0.48-11111.xml';
 fitparam.num_frames = 30;
 
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
-dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/data028-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039'];
+dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/data029-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039'];
 
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;

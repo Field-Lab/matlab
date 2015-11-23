@@ -14,7 +14,7 @@ function elec_handles = plot_ei_(ei, position, frame_number, varargin)
 %
 
 
-% SET UP OPTIONAL ARGUMENTS
+% SET UP OPTIONAL ARGUMENTSp
 p = inputParser;
 p.addParamValue('plot_axes',gca);%
 p.addParamValue('cutoff', 0.03);%
@@ -217,6 +217,10 @@ end
 
 if ~isempty(params.stack_outline)
     plot(params.stack_outline(:,1), params.stack_outline(:,2));
+end
+
+if ~exist('elec_handles', 'var')
+    elec_handles = [];
 end
 
 if nargout < 1; clear elec_handles; end

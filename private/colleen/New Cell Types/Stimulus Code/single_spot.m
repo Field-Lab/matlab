@@ -2,14 +2,14 @@
 
 clear
 %% ------------------------------ INPUTS -----------------------------------
-cells = {876};
+cells = {876}; %from vision
 file_name = '2006-06-06-0/data000-mg/data000/data000';
-mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-1-0.48-11111.xml';
+
+% where to save
 file_path = ['/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code/2006-06-06-0/data000/'];
-screen_width = 640; % in pixels % vertical size
-screen_height = 320; % hortizontal size
-stixels_ref = 16;
-stixels_focal = 1; % must be a factor of stixels_ref
+screen_width = 640; % in pixels 
+screen_height = 320; 
+stixels_ref = 16; % stixel size of white noise run
 %% ------------------------------- Load Data ------------------------------------------
 
 if ~exist(file_path)
@@ -26,8 +26,7 @@ datarun=load_data(datarun,opt);
 myMap = zeros(screen_height, screen_width); % pixesl on the screen
 [cell_numbers, cell_type, cell_type_number] = get_cell_indices(datarun, cells{1});
 sta = datarun.stas.stas{cell_numbers};
-%     sig_stixels = significant_stixels(sta);
-sig_stixels = significant_stixels(sta)
+sig_stixels = significant_stixels(sta);
 
 % find peak frame
 time_course = time_course_from_sta(sta, sig_stixels);
@@ -39,15 +38,12 @@ the_fit = datarun.stas.fits{cell_numbers};
 ctr = the_fit.mean;
 rad = the_fit.sd;
 [X,Y] = drawEllipse_upsampled([ctr rad the_fit.angle]);
-%         Y = screen_height/stixels_ref - Y;
-%         figure;
-%                 plot(X,Y,'Color','k');
+
 axis([0 screen_width/stixels_ref 0 screen_height/stixels_ref])
 
 X_large =  round(screen_width*X/(screen_width/stixels_ref));
 Y_large =  round(screen_height*Y/(screen_height/stixels_ref));
-%        ellipse_t = fit_ellipse( X_large,Y_large)
-%        myMap([Y_large; X_large]') = 1;
+
 for i = 1:length(X_large)
     myMap(Y_large(i),X_large(i)) = 1;
 end
@@ -61,7 +57,7 @@ axis equal
 
 %% ------------------------------- Write the mask to a file ---------------------------------
 dlmwrite([file_path,num2str(cells{1}), '.txt'], myMap_filled, 'delimiter', '\t', 'newline', 'pc'); % if this errors which save path
-savedMap = dlmread(file_path);
+savedMap = dlmread([file_path,num2str(cells{1}), '.txt']);
 
 %% ------------------------------- Display mask ----------------------------------------------
 figure

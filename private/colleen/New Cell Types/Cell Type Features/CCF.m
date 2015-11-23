@@ -3,15 +3,15 @@ close all
 clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-run_opts.date='2009-04-13-7/'; % one slash at the end
-run_opts.concatname='data000-cr'; % Name (or modified name) of run, no slashes
+run_opts.date='2011-01-11-1/'; % one slash at the end
+run_opts.concatname='data000-nwpca'; % Name (or modified name) of run, no slashes
 
 % Sometimes the data has two versions of the concate name
 % run_opts.file_name = [run_opts.date, '/', 'data000-nwpca', '/',  'data000/data000'];
 run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',  run_opts.concatname];
 
 % Full path to movie xml
-run_opts.movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-2-0.48-64x48.xml';
+run_opts.movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-80x60.xml';
 
 
 run_opts.save_location_root = '/Users/colleen/Desktop/Large Cell CCF/';
@@ -28,7 +28,8 @@ params.padding = 7;
 % Cell specification can be one cell type or multiple in a cell array.
 % Use the same spelling/capitalization as the vision params file
 % OFF large-2 in vision = OFF large 2
-cell_specification = {'ON large type 1', 'ON large type 2', 'ON large type 3'};
+cell_specification = {'ON parasol'};
+
 
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -55,7 +56,9 @@ cmap = hsv(size(cell_specification,2));
 count_leg = 1;
 for type = 1:size(cell_specification,2)
     %     To figure out how many cells are in the cell type
-    [cell_indices, cell_type_name] = get_cell_indices(datarun, cell_specification{type});
+%     [cell_indices, cell_type_name] = get_cell_indices(datarun, cell_specification{type});
+        [cell_indices, cell_type_name] = get_cell_indices(datarun, [4772,4774]);
+
     cell_ids=datarun.cell_ids(cell_indices);
     
     

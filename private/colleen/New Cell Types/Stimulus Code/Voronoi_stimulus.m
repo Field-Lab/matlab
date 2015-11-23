@@ -43,7 +43,7 @@ file_path = ['/Users/colleen/matlab/private/colleen/New Cell Types/Stimulus Code
 screen_width = 320; % in pixels % vertical size
 screen_height = 320; % hortizontal size
 stixels_ref = 20;
-stixels_focal = 10; % must be a factor of stixels_ref
+stixels_focal = 20; % must be a factor of stixels_ref
 %% ------------------------------- Load Data ------------------------------------------
 
 datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];

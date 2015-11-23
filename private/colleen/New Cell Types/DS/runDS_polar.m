@@ -18,8 +18,8 @@ clear
 %%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load the Data for the DS run
-run_opt.data_set = '2015-08-17-1';
-run_opt.data_run = 'd01-29-norefit/data027';
+run_opt.data_set = '2015-11-09-7';
+run_opt.data_run = 'data008-from-data009concate';
 location = 'Data';
 
 interval = 5; % number of seconds each stimulus was displayed for 
@@ -27,68 +27,72 @@ interval = 5; % number of seconds each stimulus was displayed for
 % Where to save the data
 filepath= ['/Users/colleen/Desktop/DS/', run_opt.data_set, '/', run_opt.data_run, '/'];
 
-% You can give the cells as all of them (datarun{2}.cell_ids) or give
+% You can give the cells as all of them (datarun.cell_ids) or give
 % specific vision ids
 % Find the cell to run by mapping a large cell EI from a white noise run
-cells = 6323%'all'; % 'all' or give a vector of vision cell ids
+cells = [80];%'all'; % 'all' or give a vector of vision cell ids
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% datarun{1}.names.rrs_params_path=['/Volumes/Lab/Projects/spikesorting/mvision/outputsSpectral/', run_opt.data_set, '/', run_opt.data_run, '/', 'data036', '.params'];
 
-datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data027', '.params'];
+% datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data008-from-data009concate', '.params'];
 % datarun{1}.names.rrs_sta_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data022', '.sta'];
+% datarun.names.rrs_neurons_path=['/Volumes/Lab/Projects/spikesorting/mvision/outputsSpectral/', run_opt.data_set, '/', run_opt.data_run, '/', 'data036', '.neurons'];
 
-datarun{2}.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data027', '.neurons'];
-datarun{2}.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', run_opt.data_run(end-1:end)];
+datarun.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', 'data008-from-data009concate', '.neurons'];
+datarun.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', '08'];%run_opt.data_run(end-1:end)];
 
 
 % datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.params'];
 % datarun{1}.names.rrs_sta_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.sta'];
 % 
-% datarun{2}.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.neurons'];
-% datarun{2}.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', run_opt.data_run(end-1:end)];
-opt=struct('verbose',1,'load_sta', 1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
+% datarun.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.neurons'];
+% datarun.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', run_opt.data_run(end-1:end)];
+opt=struct('verbose',1,'load_sta', 1,'load_params',0,'load_neurons',1,'load_obvius_sta_fits',true);
 
+% datarun{1}=load_data(datarun{1},opt);
 datarun=load_data(datarun,opt);
-datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
+
+% datarun=map_cell_types(datarun, struct('map',[1 2],'verbose',true));
 
 % If the trigger interval in LabView is set long enought (~6 seconds for 5
 % second stimuli), then this trigger_iti_thr should be fine.
-datarun{2}=load_stim(datarun{2},'correction_incomplet_run', 0, 'trigger_iti_thr', 0.1); % manually set threshold until got right number of triggers
+datarun=load_stim(datarun,'correction_incomplet_run', 0, 'trigger_iti_thr', 0.01); % manually set threshold until got right number of triggers
 
 if strcmp(cells, 'all')
-    cells = datarun{2}.cell_ids;
+    cells = datarun.cell_ids;
 end
 
 
-spatial_tested = fliplr(datarun{2}.stimulus.params.SPATIAL_PERIOD);
-temporal_tested = fliplr(datarun{2}.stimulus.params.TEMPORAL_PERIOD);
+spatial_tested = fliplr(datarun.stimulus.params.SPATIAL_PERIOD);
+temporal_tested = fliplr(datarun.stimulus.params.TEMPORAL_PERIOD);
 
 
 % get spikes per bin
 
 % These triggers depend on the Labview trigger. 7.5 seconds prevents
 % triggers from being missed on the large spatial scales
-tr=datarun{2}.stimulus.triggers; % all start triggers
+tr=datarun.stimulus.triggers; % all start triggers
 
 for x = 1:length(cells)
         fprintf('.');
     cell_to_run = cells(x);
-    cell_indices1=get_cell_indices(datarun{1}, [cell_to_run]);
-    cell_indices2=get_cell_indices(datarun{2},[cell_to_run]);
+%     cell_indices1=get_cell_indices(datarun{1}, [cell_to_run]);
+    cell_indices2=get_cell_indices(datarun,[cell_to_run]);
     
     % Get spikes times for the specified cell   
-    n = datarun{2}.spikes{cell_indices2(1)}';
+    n = datarun.spikes{cell_indices2(1)}';
     psth_r = [];
-    for z = 1:size(tr,2) % skip the first 12 trials due to contrast adapation
-        ind = find(tr(z) == datarun{2}.triggers);
-        spatial = datarun{2}.stimulus.trials(z).SPATIAL_PERIOD;
-        temporal = datarun{2}.stimulus.trials(z).TEMPORAL_PERIOD;
-        direction = datarun{2}.stimulus.trials(z).DIRECTION;
-        rgb = datarun{2}.stimulus.trials(z).RGB;
+    for z = 1:size(tr,2)-1 % skip the first 12 trials due to contrast adapation
+        ind = find(tr(z) == datarun.triggers);
+        spatial = datarun.stimulus.trials(z).SPATIAL_PERIOD;
+        temporal = datarun.stimulus.trials(z).TEMPORAL_PERIOD;
+        direction = datarun.stimulus.trials(z).DIRECTION;
+        rgb = datarun.stimulus.trials(z).RGB;
            
         num_triggers = interval/(temporal/120); % Number of times a band passed over one spot
-        sub_spacing= datarun{2}.triggers(ind:ind+num_triggers) - datarun{2}.triggers(ind); % How to divide by the trial into the timing of the bands
+        sub_spacing= datarun.triggers(ind:ind+num_triggers) - datarun.triggers(ind); % How to divide by the trial into the timing of the bands
         start = 0;
         stop = temporal/120;
         
@@ -122,10 +126,10 @@ for x = 1:length(cells)
     % Organize the data into [direction, spatial, temporal, number of spikes in
     % 5 second trial]
     by_trial = zeros(size(tr,2),4);
-    for i = 1:size(tr,2)
-        by_trial(i,1) = datarun{2}.stimulus.trials(i).DIRECTION;
-        by_trial(i,2) = datarun{2}.stimulus.trials(i).SPATIAL_PERIOD;
-        by_trial(i,3) = datarun{2}.stimulus.trials(i).TEMPORAL_PERIOD;
+    for i = 1:size(tr,2)-1
+        by_trial(i,1) = datarun.stimulus.trials(i).DIRECTION;
+        by_trial(i,2) = datarun.stimulus.trials(i).SPATIAL_PERIOD;
+        by_trial(i,3) = datarun.stimulus.trials(i).TEMPORAL_PERIOD;
         by_trial(i,4) = size(psth_mat{i},1); % number of spikes in that 5 seconds regardless of timing
         
     end
@@ -140,28 +144,65 @@ for x = 1:length(cells)
     
                  D = unique(by_trial,'rows');
     placement = 1;
-    for t = 1:length(temporal_tested)
+    for t = 2%1:length(temporal_tested)
         spat64 = find(by_trial(:,3) == temporal_tested(t));
 
-        for s = 1:length(spatial_tested)
+        for s = 2%1:length(spatial_tested)
             spac = find(by_trial(:,2) == spatial_tested(s));
             C = intersect(spat64, spac);
                 
                 subplot(length(temporal_tested),length(spatial_tested),placement)
-                h = polar(deg2rad(by_trial(C,1)), by_trial(C,4), 'b.');
-                set( findobj(h, 'Type', 'line'),'MarkerSize',20);
-                hold on
-                hHiddenText = findall(gca,'type','text');
-                Angles = 0 : 30 : 330;
-                hObjToDelete = zeros( length(Angles)-4, 1 );
-                k = 0;
-                for ang = Angles
-                    k  =k+1;
-                    hObj = findall(hHiddenText,'string',num2str(ang));
-                    hObjToDelete(k) = hObj;
-                    
+                angles = unique(by_trial(C,1));
+                to_plot = [];
+                error_u = [];
+                error_l = [];
+
+                for ang = 1:length(angles)
+                    indicies = find(by_trial(:,1) == angles(ang));
+                    just_one_angle = intersect(C, indicies);
+                    to_plot(ang,:) = [angles(ang) mean(by_trial(just_one_angle,4))];
+                    error_u(ang, :) = [angles(ang) mean(by_trial(just_one_angle,4))+std(by_trial(just_one_angle,4))];
+                    error_l(ang, :) = [angles(ang) mean(by_trial(just_one_angle,4)) - std(by_trial(just_one_angle,4))];
+
                 end
-                delete( hObjToDelete(hObjToDelete~=0) );
+                to_plot = [to_plot; to_plot(1,:)];
+                error_u = [error_u; error_u(1,:)];
+                error_l = [error_l; error_l(1,:)];
+                error_l(error_l < 0) = 0;
+%                 h = polar(deg2rad(error_u(:,1)), error_u(:,2), 'r.-');
+                hold on
+%                 g = polar(deg2rad(error_l(:,1)), error_l(:,2), 'r.-');
+
+                j = polar(deg2rad(to_plot(:,1)), to_plot(:,2), 'k-');
+
+% polarwitherrorbar(deg2rad(to_plot(1,:)),to_plot(2,:),error_b)
+%                 h = polar(deg2rad(by_trial(C,1)), by_trial(C,4), 'b.');
+%                 set( findobj(h, 'Type', 'line'),'MarkerSize',15);
+%                 set( findobj(g, 'Type', 'line'),'MarkerSize',15);
+%                 set( findobj(j, 'Type', 'line'),'MarkerSize',15);
+
+                hold on
+%                 hHiddenText = findall(gca,'type','text');
+%                 Angles = 0 : 30 : 330;
+%                 hObjToDelete = zeros( length(Angles)-4, 1 );
+%                 k = 0;
+%                 for ang = Angles
+%                     k  =k+1;
+%                     hObj = findall(hHiddenText,'string',num2str(ang));
+%                     hObjToDelete(k) = hObj;
+%                     
+%                 end
+%                 delete( hObjToDelete(hObjToDelete~=0) );
+
+
+% say your labels have the following strings..
+hHiddenText = findall(gca,'type','text');
+rho_labels = {'  10' '  20' '  30', '  40', '  50'};
+for r=1:length(rho_labels)
+    delete(findall(hHiddenText, 'string', rho_labels{r}))
+end
+
+
 
             title({['Temporal = ', num2str(temporal_tested(t))]; ['Spatial = ', num2str(spatial_tested(s))]})
             placement = placement + 1;
