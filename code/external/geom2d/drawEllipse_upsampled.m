@@ -1,4 +1,4 @@
-function varargout = drawEllipse(varargin)
+function varargout = drawEllipse_upsampled(varargin)
 %DRAWELLIPSE draw an ellipse on the current axis
 %
 %   drawEllipse(XC, YC, A, B);
@@ -81,7 +81,7 @@ if nargout<2
     % compute position of points to draw each ellipse
     h = zeros(length(x0), 1);
     for i=1:length(x0)
-        t = linspace(0, 2*pi, 121);
+        t = linspace(0, 2*pi, 1000);
         cot = cos(theta(i));
         sit = sin(theta(i));
         xt = x0(i) + a(i)*cos(t)*cot - b(i)*sin(t)*sit;
