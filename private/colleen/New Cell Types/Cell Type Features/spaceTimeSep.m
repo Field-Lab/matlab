@@ -5,15 +5,15 @@ clear all
 clc
 tic
 
-dataparam.date='2015-08-17-1';
-dataparam.concatname='d01-29-norefit';
+dataparam.date='2007-03-27-0';
+dataparam.concatname='d00_02_04_05_08_09_10_11_12';
 
 % dataparam.file_name = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
-dataparam.file_name = [dataparam.date, '/',dataparam.concatname, '/data018/data018'];
+dataparam.file_name = [dataparam.date, '/',dataparam.concatname, '/data002-from-data000_data002_data004_data005_data008_data009_data010_data011_data012/data002-from-data000_data002_data004_data005_data008_data009_data010_data011_data012'];
 
 % dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-20-1-0.48-22222.xml';
 
-dataparam.cell_type = { 'ON midget', 'ON parasol', 'ON large 1', 'ON large 2'};
+dataparam.cell_type = {'ON parasol clean',  'ON midget clean', 'ON large 1', 'ON large 2'};
 cmap = hsv(length(dataparam.cell_type));
 fitparam.num_frames = 30;
         fitparam.pad_factor = 5;
@@ -21,7 +21,7 @@ fitparam.num_frames = 30;
 %% END OF INPUT
 dataparam.folder = dataparam.concatname;
 % file path to save data and pictures
-dataparam.filepath=['/Users/colleen/Desktop/SpaceTimeSep/',dataparam.date,'/',dataparam.concatname,'/data007/'];
+dataparam.filepath=['/Users/colleen/Desktop/SpaceTimeSep/',dataparam.date,'/',dataparam.concatname,'/data008/'];
 if ~exist([dataparam.filepath],'dir')
     mkdir([dataparam.filepath]);
 end
@@ -83,7 +83,7 @@ for type = 1:size(dataparam.cell_type,2)
         
         scale = [1 1];
         aspect_ratio = 1;
-        fit = datarun.stas.fits{cell_indices(rgc)};
+        fit = datarun.vision.sta_fits{cell_indices(rgc)};
         
         xdiff = fit.sd(1) / 2 * fitparam.pad_factor;
         ydiff = fit.sd(2) / 2 * fitparam.pad_factor;
@@ -121,9 +121,9 @@ for type = 1:size(dataparam.cell_type,2)
         %         set(gca,'ylim', [0 0.75])
         %     end
         %     title([ 'cell id ' num2str(cell_ids(rgc))])
-        if type ==1
-        figure; plot(diag(D), 'o-')
-        end
+%         if type ==1
+%         figure; plot(diag(D), 'o-')
+%         end
         parameter1(type,rgc) = D(1,1)/D(2,2);
         parameter2(type,rgc) = D(1,1)/D(3,3);
         parameter3(type,rgc) = D(1,1)/sum(D(:));
