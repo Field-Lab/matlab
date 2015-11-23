@@ -17,19 +17,23 @@ clear
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-date = '2015-04-14-2';
+date = '2015-11-09-7';
 
 % Data that contains all the neurons
-referenceRawDataFilePath = ['/Volumes/Data/' date, '/data008/'];
+referenceRawDataFilePath = ['/Volumes/Data/' date, '/data011/'];
 
 % File that contains all the neurons or params (saved from Cell Finder or computed by
 % Grind)
-referenceNeuronFilePath = ['/Volumes/Analysis/', date, '/data008-cr/data008.neurons'];
-referenceParamsFilePath = ['/Volumes/Analysis/', date, '/data008-cr/data008.params'];
+% referenceNeuronFilePath = ['/Volumes/Analysis/', date, '/data011/data011_allneurons/data011_allneurons_manual/data011_allneurons_manual.neurons'];
+% referenceParamsFilePath = ['/Volumes/Analysis/', date, '/data011/data011_allneurons/data011_allneurons_manual/data011_allneurons_manual.params'];
+
+referenceNeuronFilePath = ['/Volumes/Analysis/', date, '/data011/data012_test.neurons'];
+referenceParamsFilePath = ['/Volumes/Analysis/', date, '/data011/data012_test.neurons'];
+
 
 % Location where a new neurons file containing a subset of the neurons will
 % be located
-newNeuronFilePath = ['/Volumes/Analysis/', date, '/data008-cr/data008-cr.neurons'];
+newNeuronFilePath = ['/Volumes/Analysis/', date, '/data011/data011_allneurons/data011_allneurons_manual_new/data011_allneurons_manual_new.neurons'];
 
 % Set specify_cell to 1 if you want to list cell ids. If you want to get a
 % whole class of cells (say all ON Parasols) then set specify_cells to 0
@@ -40,22 +44,9 @@ cell_type = {'OFF parasol'};
 
 % if specify_cell = 0, list cell ids here (these are Vision IDs)
 toKeep = [
-    1561
-    2302
-    3486
-    5391
-    7156
-    7157
-    396
-    2242
-    3035
-    3361
-    4853
-    6076
-    6993
-    7486
-    7487
-    7488
+    1451
+    1448
+    7382
     ];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
