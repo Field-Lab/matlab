@@ -24,7 +24,7 @@ staruns=['data008'; 'data014'; 'data018'; 'data022'; 'data026']; % long WN runs 
 stacoarseruns=['data000'; 'data011'; 'data015'; 'data019'; 'data023']; % coarse long WN runs for STA
 
 wnruns=['data010';'data013'; 'data017'; 'data021'; 'data025']; % WN repeats
-cell_specification = [62 965 2734 3845 6047 6663 6890] ;
+cell_specification = [47 201 663] ;
 num_repeats = 20;
 movie_length = 30000; % in ms
 wn_length = 30000; % in ms
