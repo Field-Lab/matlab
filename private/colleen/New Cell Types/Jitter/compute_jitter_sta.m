@@ -46,7 +46,7 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
     triggers, 1,2);
 
-% duration = 4000;
+% duration = 1000;
 [mvi] = load_movie(mdf_file, triggers);
 % mvi = squeeze(mvi(:,:,1,:));
 % Compute the time each stimulus frame occurred
@@ -60,26 +60,16 @@ for i = 1: length(triggers)
     temp = linspace(triggers(i),triggers(i)+ (frames_per_trigger-1)*refresh/1000,frames_per_trigger)';
     frame_times(i*frames_per_trigger-(frames_per_trigger-1):i*frames_per_trigger) = temp;
 end
-% frame_times = frame_times(1:4000); % in ms
 
-
-% height = height/num_cells; % assume movie file has the STA stacked vertically
 % initialize STA
 sta=zeros(height*stixel_size,width*stixel_size,num_frames, 3); %height, width, frames back
-% sta=zeros(height,width,num_frames, 3); %height, width, frames back
 
 tic
 icnt=0;
-% spikes = spikes(1:10000); % only use for testing parasols
-% spikes = spikes(1:4199);
-if length(spikes) > 5000
-    spikes = spikes(1:5000);
-end
+
 
 %% Compute movie
 movie = zeros(height*stixel_size, width*stixel_size, duration, 3);
-% counter = 1;
-% for iter= 1:600:duration-1
 for i = 1:duration%600
     if i  <= (duration - 1)
         true_frame = zeros(height*stixel_size, width*stixel_size);
@@ -131,145 +121,36 @@ for i = 1:length(frame_times)-1
     spikes_by_frame(i) = sum(spikes >= frame_times(i) & spikes < frame_times(i+1));
 end
 
-sta = nan(size(movie,1)*size(movie,2), num_frames);
-frameR(:, i) = nan(size(movie,1)*size(movie,2), size(movie,3));
-for i = 1:size(movie,3)
-    frameR(:, i) = reshape(squeeze(movie(:,:,i,1)), [size(squeeze(movie(:,:,i,1)), 1)*size(squeeze(movie(:,:,i,1)), 2), 1]);   
-end
+sta =zeros(size(movie,1),size(movie,2), num_frames);
+% frameR = nan(size(movie,1)*size(movie,2), size(movie,3));
+% for i = 1:size(movie,3)
+%     frameR(:, i) = reshape(squeeze(movie(:,:,i,1)), [size(squeeze(movie(:,:,i,1)), 1)*size(squeeze(movie(:,:,i,1)), 2), 1]);   
+% end
 
 for i =1:length(spikes_by_frame)
     if spikes_by_frame(i) == 0
-        break;
+    else
+        if i <= num_frames
+        else
+            for t = 1:num_frames
+                subtract = num_frames - t +1;
+                sta(:,:,subtract) = sta(:,:,subtract) + movie(:,:,i-t,1) * spikes_by_frame(i);
+
+            end
+        end
     end
     
-    for t = 1:num_frames
-        sta(:,t-i) = sta(:,t-i) + frameR(:,i-t) * spikes_by_frame(i);
-    end
 end
-    
-length_segment = 30;
-counter = 1;
-for t = 1:length_segment:(length(frame_times)-1);
-    frameR = nan(height*width*stixel_size*stixel_size, length_segment);
-    %     frameG = nan(height*width*stixel_size*stixel_size, length(frame_times)-1);
-    %     frameB= nan(height*width*stixel_size*stixel_size,length(frame_times)-1);
-    
-    for i = 1:t+length_segment-1
-        frameR(:, i) = reshape(squeeze(movie(:,:,i,1)), [size(squeeze(movie(:,:,i,1)), 1)*size(squeeze(movie(:,:,i,1)), 2), 1]);
-        %         frameG(:,i) = reshape(squeeze(movie(:,:,i,2)), [size(squeeze(movie(:,:,i,2)), 1)*size(squeeze(movie(:,:,i,2)), 2), 1]);
-        %         frameB(:, i) = reshape(squeeze(movie(:,:,i,3)), [size(squeeze(movie(:,:,i,3)), 1)*size(squeeze(movie(:,:,i,3)), 2), 1]);
-        
-    end
-    
-    %     sta= nan(height,width, 3,num_frames);
-    for i= 1:num_frames
-        subtract= num_frames -i +1;
-        one_frameR = frameR(:,1)*spikes_by_frame(i);
-        %         one_frameG = frameG(:,1:end-subtract+1)*spikes_by_frame(subtract:end);
-        %         one_frameB = frameB(:,1:end-subtract+1)*spikes_by_frame(subtract:end);
-        sta{counter}(:,:,i,1) = reshape(one_frameR, width*stixel_size, height*stixel_size)';
-%         sta(:,:,i,1) = reshape(one_frameR, width*stixel_size, height*stixel_size)';
-        %         sta{cells}(:,:,2,i) = reshape(one_frameG, width, height)';
-        %         sta{cells}(:,:,3,i) = reshape(one_frameB, width, height)';
-        
-        counter = counter +1;
-        
-    end
-    
+sta_reshape = nan(size(movie,1), size(movie,2), num_frames);
+for i = 1:num_frames
+    sta_reshape(:,:,i) = reshape(sta(:,i), size(movie,1), size(movie,2));
 end
 
-    %     sta = sta{cells}/length(spikes);
-    
-    % for i=spikes'
-    %     % ignore spikes without num_frames preceding it
-    %     start=find(frame_times>i,1)-num_frames;
-    %     if(start>000) % don't use the spikes that don't have num_frames before it
-    %         icnt=icnt+1;
-    %         if mod(icnt,1000) == 0
-    %             fprintf('%d out of %d \n', icnt, length(spikes)')
-    %         end
-    %
-    %         for j=1:num_frames
-    %             try
-    %
-    %                 F = movie(:,:,start+j, :);
-    %                 sta(:,:,j,1) = sta(:,:,j,1) + F(:,:,1,1); % store the three color channels
-    %
-    %                 if num_colors == 3
-    %                     sta(:,:,j,2) = sta(:,:,j,2) +  F(:,:,1,2); % store the three color channels
-    %
-    %                      sta(:,:,j,3) = sta(:,:,j,3) +  F(:,:,1,3); % store the three color channels
-    %
-    %                 end
-    %                  catch
-    %                 a = 1;
-    %             end
-    %
-    %         end
-    %     end
-    % end
-    % if num_colors ==1
-    %     sta = sta(:,:,:,1);
-    % end
-    
-    % % need to rearrange the sta to be in the map order
-    % sta_new = zeros(size(map,1)/stixel_size,size(map,2)/stixel_size,num_colors,num_frames);
-    % map_x = map(:,1:stixel_size:end);
-    % map_stix = map_x(1:stixel_size:end,:);
-    % % sta = permute(sta, [2,1,3,4]); % so that single indexing goes vertically
-    % for i = 1:height*width
-    %     [x,y] = find(map_stix == i);
-    %     down_index = floor((i-1)/width)
-    %     across_index = mod(i-1,width)
-    %     sta_new(x,y, :,:) = sta(down_index+1,across_index+1,:,:);
-    % end
-    % sta=sta/icnt;
-    % figure;
-    % for i =27%:30
-    % imagesc(sta(:,:,i,1))
-    % axis equal
-    % pause(0.5)
-    % end
-    
-    % for i = 24:30
-    %     if num_colors == 3
-    %         figure; imagesc(sta_new(:,:,2,i))
-    %     else
-    %         figure; imagesc(sta_new(:,:,1,i))
-    %     end
-    %
-    % end
-    
-    
-    % image(offset_y+1: offset_y+height, offset_x+1:offset_x+width, :,:) = sta;
-    
-    % sta = image;
-    % find best STA frame
-    % [junk,start_index] = max(sum(reshape(sta_new.^2,[],size(sta_new,4)),1));
-    %
-    % % normalize STA color
-    % % sta = norm_image(sta);
-    % close al
-    % %% ------------------ Compute the timecourse --------------------------
-    % [sig_stixels] = significant_stixels(sta_new);
-    %
-    % [timecourse, params] = time_course_from_sta(sta_new, [18,24])%sig_stixels);
-    %
-    %
-    % if plotting == 1
-    %     h = plot_time_course_(timecourse, 'colors', ['rgb']', 'foa', 0)
-    %     title('TimeCourse from MATLAB STA')
-    %     % Show the best frame of the STA
-    %     figure
-    %     imagesc(squeeze(norm_image(sta_new(:,:,:, start_index))));
-    %     title(['STA Frame: ' num2str(start_index)]);
-    % end
-    
-    
-    
-    
-    
-    
+
+figure;
+imagesc(sta_reshape(:,:,28))
+axis equal
+
     
     
     
