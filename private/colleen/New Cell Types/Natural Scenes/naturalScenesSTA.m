@@ -44,7 +44,7 @@ for id = 1:length(cell_ids)
         movie_frames = NSEMmovie.fitmovie.movie_byblock;
         icnt = 0;
         
-        
+        % movie frames are downsampled!! FIX THIS
         % average movie
         movie = zeros(80,40,size(movie_frames{1}.matrix,3));
         for block = 1:size(movie_frames,2)
