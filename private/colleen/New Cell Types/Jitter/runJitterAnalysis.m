@@ -83,14 +83,14 @@ for j = 1:length(cell_indices)
     num_frames = 30;
     spikes=  datarun.spikes{cell_indices(j)};
     seed = 11111;
-    state = Init_RNG_JavaStyle(seed);
+%     state = Init_RNG_JavaStyle(seed);
     jitterX = nan(duration,1);
     jitterY = nan(duration,1);
-    
-    for i = 1:duration
-        jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
-        jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
-    end
+%     
+%     for i = 1:duration
+%         jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
+%         jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
+%     end
     
     jitterX = zeros(size(jitterX));
     jitterY = zeros(size(jitterY));

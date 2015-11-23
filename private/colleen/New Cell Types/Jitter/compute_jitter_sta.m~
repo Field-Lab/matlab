@@ -121,13 +121,13 @@ for i = 1:length(frame_times)-1
     spikes_by_frame(i) = sum(spikes >= frame_times(i) & spikes < frame_times(i+1));
 end
 
-sta =zeros(size(movie,1),size(movie,2), num_frames, num_colors);
+sta =zeros(size(movie,1),size(movie,2), num_frames, 3);
 % frameR = nan(size(movie,1)*size(movie,2), size(movie,3));
 % for i = 1:size(movie,3)
 %     frameR(:, i) = reshape(squeeze(movie(:,:,i,1)), [size(squeeze(movie(:,:,i,1)), 1)*size(squeeze(movie(:,:,i,1)), 2), 1]);   
 % end
 
-for i =1:length(spikes_by_frame)
+for i =1:size(movie,3)
     if mod(i,1000) == 0
         fprintf('%d out of %d \n', i, length(spikes_by_frame))
     end
