@@ -5,7 +5,7 @@ close all
 
 dataparam.date='2015-09-23-7';
 dataparam.concatname='d19-39/data029-from-data019_data020_data021_data022_data023_data024_data025_data026_data027_data028_data029_data030_data031_data032_data033_data034_data035_data036_data037_data038_data039';
-dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-20-12-0.48-11111.xml';
+dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-20-2-0.48-11111.xml';
 fitparam.num_frames = 30;
 
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
@@ -16,7 +16,7 @@ select_cells = 1;
 if select_cells == 1
     dataparam.cell_specification = [530] %ON parasol
 end
-dataparam.cell_type = {'ON large 1'};
+dataparam.cell_type = {'ON parasol'};
 %% END OF INPUT
 % dataparam.folder = dataparam.cell_type{1};
 % file path to save data and pictures
@@ -78,9 +78,9 @@ cell_indices = get_cell_indices(datarun, dataparam.cell_specification);
 cell_ids=datarun.cell_ids(cell_indices);
 for j = 1:length(cell_indices)
     stixel_size = 20;
-    stixel_width =20;
-    stixel_height = 20;
-    num_frames = 30;
+        stixel_width = 20;
+            stixel_height = 20;
+    num_frames = 15;
     spikes=  datarun.spikes{cell_indices(j)};
     seed = 11111;
     state = Init_RNG_JavaStyle(seed);
@@ -91,10 +91,11 @@ for j = 1:length(cell_indices)
         jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
         jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
     end
-    
-    jitterX = zeros(size(jitterX));
-    jitterY = zeros(size(jitterY));
-    num_colors =1;
+    save ('jitterX', 'jitterX');
+     save ('jitterY', 'jitterY');
+%     jitterX = zeros(size(jitterX));
+%     jitterY = zeros(size(jitterY));
+    num_colors =3;
     [sta] = compute_jitter_sta(datarun, dataparam.mdf_file, num_frames, spikes, jitterX, jitterY, stixel_size, num_colors);
     
     save(['/Users/colleen/Desktop/Jitter/2015-09-23-7/data028/Cell ', num2str(cell_ids(j))], 'sta')
