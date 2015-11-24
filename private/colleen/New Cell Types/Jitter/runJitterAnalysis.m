@@ -83,9 +83,10 @@ for j = 1:length(cell_indices)
     num_frames = 15;
     spikes=  datarun.spikes{cell_indices(j)};
     seed = 11111;
-    state = Init_RNG_JavaStyle(seed);
+%     state = Init_RNG_JavaStyle(seed);
     jitterX = nan(duration,1);
     jitterY = nan(duration,1);
+
     
     for i = 1:duration
         jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
@@ -93,9 +94,12 @@ for j = 1:length(cell_indices)
     end
     save ('jitterX', 'jitterX');
      save ('jitterY', 'jitterY');
-%     jitterX = zeros(size(jitterX));
-%     jitterY = zeros(size(jitterY));
+
     num_colors =3;
+
+
+    
+
     [sta] = compute_jitter_sta(datarun, dataparam.mdf_file, num_frames, spikes, jitterX, jitterY, stixel_size, num_colors);
     
     save(['/Users/colleen/Desktop/Jitter/2015-09-23-7/data028/Cell ', num2str(cell_ids(j))], 'sta')
