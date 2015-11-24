@@ -46,7 +46,6 @@ triggers=datarun.triggers; %onsets of the stimulus presentation
 [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
     triggers, 1,2);
 
-duration = 3000;
 [mvi] = load_movie(mdf_file, triggers);
 % mvi = squeeze(mvi(:,:,1,:));
 % Compute the time each stimulus frame occurred
@@ -74,52 +73,73 @@ end
 
 
 %% Compute movie
-movie = zeros(height*stixel_size, width*stixel_size, duration, 3);
+movie = zeros(height*stixel_size, width*stixel_size, num_colors,duration);
 counter = 0;
-for i = (num_frames+1):duration%600
-    if mod(i,1000) == 0 
-        fprintf('%d out of %d \n', i, duration);
-    end
-    if i < length(spikes_by_frame)
-        if sum(spikes_by_frame(i-num_frames:i-1))~=0
-            if i  <= (duration - 1)
-                true_frame = zeros(height*stixel_size, width*stixel_size);
-                
-                F = round(mvi.getFrame(i).getBuffer);
-                shaped_frame = round(reshape(F(1:3:end),width,height)'-0.5);
-                sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
-                movie(:,:,i,1) = sized_frame;
-                sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                position = [jitter_x(i)+1+stixel_size/2, jitter_y(i)+1+stixel_size/2];
-                %         x and y might be reversed
-                true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
-                movie(:,:,i,1) = true_frame;
-                if num_colors == 3
-                    shaped_frame = round(reshape(F(2:3:end),width,height)'-0.5);
+sta =zeros(size(movie,1),size(movie,2),num_colors, num_frames);
+
+segment = ceil(duration/10000);
+
+start_points = floor(linspace(1,duration, segment+1))%1:segment:duration;
+
+% end_points = linspace(segment,length(start_points)*segment,length(start_points));
+% end_points(end) = duration;
+for j = 1:length(start_points)-1
+    for i = 1:start_points(j+1)-1 - start_points(j)
+        if mod(i,1000) == 0
+            fprintf('%d out of %d \n', i, duration);
+        end
+        if start_points(j)-1 + i < length(spikes_by_frame) && start_points(j)-1 + i - num_frames>0
+            if sum(spikes_by_frame(start_points(j) + i-1-num_frames:start_points(j) + i-2))~=0
+                if i  <= (duration - 1)
+                    true_frame = zeros(height*stixel_size, width*stixel_size);
+                    F = round(mvi.getFrame(start_points(j)-1 + i).getBuffer);
+                    shaped_frame = round(reshape(F(1:3:end),width,height)'-0.5);
                     sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
+                    movie(:,:,1,i) = sized_frame;
                     sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                    % x and y might be reversed
+                    position = [jitter_x(start_points(j)-1 + i)+1+stixel_size/2, jitter_y(start_points(j) -1 + i)+1+stixel_size/2];
+                    %         x and y might be reversed
                     true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
-                    movie(:,:,i,2) =true_frame;
-                    
-                    shaped_frame = round(reshape(F(3:3:end),width,height)'-0.5);
-                    sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
-                    sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                    % x and y might be reversed
-                    true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
-                    movie(:,:,i,3) = true_frame;
+                    movie(:,:,1,i) = true_frame;
+                    if num_colors == 3
+                        shaped_frame = round(reshape(F(2:3:end),width,height)'-0.5);
+                        sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
+                        sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
+                        % x and y might be reversed
+                        true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
+                        movie(:,:,2,i) =true_frame;
+                        
+                        shaped_frame = round(reshape(F(3:3:end),width,height)'-0.5);
+                        sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
+                        sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
+                        % x and y might be reversed
+                        true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
+                        movie(:,:,3,i) = true_frame;
+                    end
                 else
-                    movie(:,:,i,2) = true_frame;
-                    movie(:,:,i,3) = true_frame;
+                    continue
                 end
             else
-                continue
+                counter = counter +1;
             end
-        else
-            counter = counter +1;
+            
+            
+        end
+        if start_points(j) -1+ i <= length(spikes_by_frame)
+            if spikes_by_frame(start_points(j) -1+ i)  == 0
+            else
+                if i <= num_frames
+                else
+                    for t = 1:num_frames
+                        subtract = num_frames - t +1;
+                        sta(:,:, :,subtract) = sta(:,:, :, subtract) + movie(:,:,:,i-t) * spikes_by_frame(start_points(j)-1 + i);
+                    end
+                end
+            end
         end
         
     end
+    
 end
 
 %     save(['/Volumes/Lab/Users/crhoades/JitterMovie/2008-04-22-5/data004/chuck_', num2str(counter)],'movie', '-v7.3');
@@ -130,52 +150,32 @@ end
 
 
 
-sta =zeros(size(movie,1),size(movie,2), num_frames, num_colors);
-% frameR = nan(size(movie,1)*size(movie,2), size(movie,3));
-% for i = 1:size(movie,3)
-%     frameR(:, i) = reshape(squeeze(movie(:,:,i,1)), [size(squeeze(movie(:,:,i,1)), 1)*size(squeeze(movie(:,:,i,1)), 2), 1]);   
-% end
-
-for i =1:length(spikes_by_frame)
-    if mod(i,1000) == 0
-        fprintf('%d out of %d \n', i, length(spikes_by_frame));
-
-    end
-    
-    if spikes_by_frame(i) == 0
-    else
-        if i <= num_frames
-        else
-            for t = 1:num_frames
-                subtract = num_frames - t +1;
-
-                sta(:,:,subtract, :) = sta(:,:,subtract, :) + movie(:,:,i-t,:) * spikes_by_frame(i);
 
 
-            end
-        end
-    end
-    
-end
-% sta_reshape = nan(size(movie,1), size(movie,2), num_frames);
-% for i = 1:num_frames
-%     sta_reshape(:,:,i) = reshape(sta(:,i), size(movie,1), size(movie,2));
-% end
 
 
 figure;
-imagesc(sta(:,:,num_frames-3,2))
+for i = 1:num_frames
+    if size(sta,3) == 3
+        imagesc(sta(:,:,2,i))
+    else
+        imagesc(sta(:,:,1,i))
+    end
+    pause(0.25)
+end
+
+
 axis equal
-sta = permute(sta,[1,2,4,3]);
+% sta = permute(sta,[1,2,4,3]);
 sig_stixels = significant_stixels(sta);
 rf = rf_from_sta(sta, 'sig_stixels', sig_stixels);
 figure;
 imagesc(norm_image(rf));
-axes equal
-    
-    
-    
-    
-    
-    
-    
+axis equal
+
+
+
+
+
+
+
