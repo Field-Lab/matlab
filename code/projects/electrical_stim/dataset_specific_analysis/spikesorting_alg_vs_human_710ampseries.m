@@ -64,8 +64,8 @@ for p=1:size(OutputAll,2)
             if (thresholdHum < 4) && (thresholdHum > 0)
             distantRS_curve{aa} = curveHum; 
             distantRS_params(aa,:) = paramsHum; 
-            if aa>80 && aa<84
-                disp([alg_output.path 'p' ...
+            if ismember(aa,[78])
+                disp([num2str(aa) ': ' alg_output.path 'p' ...
                     num2str(alg_output.stimInfo.patternNo) ' n' ...
                     num2str(alg_output.neuronInfo.neuronIds)]); 
             end
@@ -73,12 +73,19 @@ for p=1:size(OutputAll,2)
             end
         else
             % neighboring electrode
-            neighborRS(p) = 1; 
+            neighborRS(p) = 1;
+            
             if (thresholdHum < 4) && (thresholdHum > 0)
-            neighborRS_curve{bb} = curveHum; 
-            neighborRS_params(bb,:) = paramsHum; 
-            bb = bb + 1; 
+                if ismember(bb,[7 19])
+                    disp([alg_output.path 'p' ...
+                        num2str(alg_output.stimInfo.patternNo) ' n' ...
+                        num2str(alg_output.neuronInfo.neuronIds)]);
+                end
+                neighborRS_curve{bb} = curveHum;
+                neighborRS_params(bb,:) = paramsHum;
+                bb = bb + 1;
             end
+
         end
     else
         % At least one recording electrode is the same as the stimulating
@@ -96,12 +103,12 @@ for p=1:size(OutputAll,2)
 %         end
     end
     if (thresholdHum > 5) || (thresholdHum < 0)
-         thresh_hum(p) = 50; 
+         thresh_hum(p) = 5; 
     else
         thresh_hum(p) = thresholdHum;
     end
     if (thresholdAlg > 5) || (thresholdAlg < 0)
-        thresh_alg(p) = 50;
+        thresh_alg(p) = 5;
     else
         thresh_alg(p) = thresholdAlg;
     end
@@ -136,8 +143,8 @@ figure; hist(proj,x)
 figure; hist(proj,x); ylim([0 28]); xlim([-3 3]);
 %%
 
-ratios = thresh_alg./thresh_hum; 
-figure; hist(ratios,[0:.2:5])
+% ratios = thresh_alg./thresh_hum; 
+% figure; hist(ratios,[0:.2:5])
 
 % Same stimulating and recording electrode
 same_alg_vals = thresh_alg(find(sameRS)); 
@@ -294,9 +301,11 @@ title('distant rec & stim');
 
 figure; 
 for bb = [1:31 33:size(neighborRS_curve,2)]
+    
     curve = neighborRS_curve{bb};
     hold on;
     plot(curve(1,:),curve(2,:),'Color',bcolors(bb,:));
+    disp(num2str(bb));  
 end
 title('neighbor rec & stim');
 
@@ -323,7 +332,7 @@ for aa = [1:80 84:size(distantRS_curve,2)]
     end
 end
 title('distant rec & stim'); 
-
+%%
 bcolors = winter(round(1.3*size(neighborRS_curve,2))); 
 
 for bb = [1:31 33:size(neighborRS_curve,2)]
@@ -389,7 +398,11 @@ for bb = [1:31 33 35:size(neighborRS_curve,2)]
     catch
         disp(['missed one at bb = ' num2str(bb)])
     end
-     thresholds_neighborRS(bb) = curve(1,idx);
+    try
+        thresholds_neighborRS(bb) = curve(1,idx);
+    catch
+        thresholds_neighborRS(bb) = 0;
+    end
 end
 xlim([0.4 1.6]);
 xlabel('stimulation amplitude (normalized \muA)'); 
@@ -407,7 +420,11 @@ for cc = 1:size(sameRS_curve,2)
     catch
         disp(['missed one at cc = ' num2str(cc)])
     end
-    thresholds_sameRS(cc) = curve(1,idx);
+    try
+        thresholds_sameRS(cc) = curve(1,idx);
+    catch
+        thresholds_sameRS(cc) = 0;
+    end
 end
 title('same rec & stim'); 
 xlim([0.4 1.6]);
@@ -441,3 +458,72 @@ types = [cellstr(repmat('same',length(sameRS_sigma),1)); ...
     cellstr(repmat('distant',length(distantRS_sigma),1))];
 figure; boxplot([sameRS_coeffVar; neighborRS_coeffVar; distantRS_coeffVar],types) ;
 title('Coefficients of variation')
+figure; boxplot([thresh_sameRS; thresh_neighborRS; thresh_distantRS],types) ;
+title('Thresholds ')
+%% Compare thresholds
+figure; 
+h1 = histogram(thresh_sameRS);
+hold on
+h2 = histogram(thresh_neighborRS);
+h3 = histogram(thresh_distantRS);
+h1.Normalization ='probability';
+h1.BinWidth = 0.25;
+h2.Normalization ='probability';
+h2.BinWidth = 0.25;
+h3.Normalization = 'probability';
+h3.BinWidth = 0.25;
+legend('Same','Neighbor', 'Distant'); 
+xlabel('activation threshold (\muA)'); 
+ylabel('probability')
+%%
+figure; 
+h1 = histogram([thresh_sameRS; thresh_neighborRS]);
+hold on
+h3 = histogram(thresh_distantRS);
+h1.Normalization ='probability';
+h1.BinWidth = 0.25;
+h3.Normalization = 'probability';
+h3.BinWidth = 0.25;
+xlabel('activation threshold (\muA)'); 
+ylabel('probability')
+legend('Somatic','Axonal'); 
+
+
+figure; 
+h1 = histfit([thresh_sameRS; thresh_neighborRS],10,'kernel');
+h1(1).FaceAlpha = 0.5;
+h1(1).FaceColor = [0.6 0 0.051]; 
+h1(2).Color = h1(1).FaceColor;
+hold on; 
+h2 = histfit(thresh_distantRS,10,'kernel');
+h2(1).FaceAlpha = 0.5;
+h2(1).FaceColor = [0 0.6 0.549]; 
+h2(2).Color = h2(1).FaceColor;
+xlabel('activation threshold (\muA)'); 
+ylabel('probability')
+legend([h1(2) h2(2)],'Somatic','Axonal'); 
+%%
+
+figure; 
+h1 = histogram([sameRS_coeffVar; neighborRS_coeffVar]);
+hold on
+h3 = histogram(distantRS_coeffVar);
+h1.Normalization ='probability';
+h1.BinWidth = 0.02;
+h3.Normalization = 'probability';
+h3.BinWidth = 0.02;
+xlabel('coefficient of variation'); 
+ylabel('probability')
+legend('Somatic','Axonal'); 
+
+figure; 
+h1 = histfit([sameRS_coeffVar; neighborRS_coeffVar],19,'kernel');
+h1(1).FaceAlpha = 0.5;
+h1(1).FaceColor = [0.6 0 0.051]; 
+h1(2).Color = h1(1).FaceColor;
+hold on; 
+h2 = histfit(distantRS_coeffVar,13,'kernel');
+h2(1).FaceAlpha = 0.5;
+h2(1).FaceColor = [0 0.6 0.549]; 
+h2(2).Color = h2(1).FaceColor;
+

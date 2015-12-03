@@ -19,8 +19,8 @@ if ~strcmp(WritePathBase(end),filesep)
 end
 
 % Appends this number to 'data ---'
-fileNos = inputdlg('enter the number corresponding to datarun (1,2,...)'); %[10];
-fileNos = str2double(fileNos); 
+fileNos = inputdlg('enter space separated numbers corresponding to datarun (1,2,...)','runs to preprocess'); %[10];
+fileNos = str2num(fileNos{:});  %#ok<ST2NM>
 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds

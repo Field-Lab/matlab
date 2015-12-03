@@ -19,9 +19,9 @@ movieInt = 0;
 %% filling elecRespInfo with details for creation of elecResp
 
 % Experiment specific inputs
-elecRespInfo.experimentName = '2015-09-23-3';
-elecRespInfo.dataPath       = '/Volumes/Analysis/2015-09-23-3/data001/';  %Location of raw data chunks
-elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-09-23-3/data005/';  %Location of vision output files
+% elecRespInfo.experimentName = '2015-09-23-3';
+% elecRespInfo.dataPath       = '/Volumes/Analysis/2015-09-23-3/data001/';  %Location of raw data chunks
+% elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-09-23-3/data005/';  %Location of vision output files
 
 % elecRespInfo.experimentName = '2015-09-18-0';
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2015-09-18-0/data001/';  %Location of raw data chunks
@@ -33,9 +33,9 @@ elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-09-23-3/data005/';  %Locat
 
 
 
-% elecRespInfo.experimentName = '2015-04-14-0';
-% elecRespInfo.dataPath       = '/Volumes/Analysis/2015-04-14-0/data002/';  %Location of raw data chunks
-% elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-04-14-0/data005/';  %Location of vision output files
+elecRespInfo.experimentName = '2015-10-06-3';
+elecRespInfo.dataPath       = '/Volumes/Analysis/2015-10-06-3/data001-data002/';  %Location of raw data chunks
+elecRespInfo.analysisPath   = '/Volumes/Analysis/2015-10-06-3/data000/';  %Location of vision output files
 
 % elecRespInfo.experimentName = '2014-11-24-2';
 % elecRespInfo.dataPath       = '/Volumes/Analysis/2014-11-24-2/data006/';  %Location of raw data chunks
