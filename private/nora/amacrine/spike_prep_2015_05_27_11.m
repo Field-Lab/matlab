@@ -96,8 +96,8 @@ for i_cell = 1%:length(cells)
         end
     end
 
-    [STA, center2] = STA_Test(concat_spikes, double(fitmovie), true); 
-    fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'WN_STA', squeeze(STA), 'neighborspikes', nspikes);
+    [STA, center_STA] = STA_Test(concat_spikes, double(fitmovie), true); 
+    fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'WN_STA', squeeze(STA), 'neighborspikes', 0);
     
     glm_predict(fittedGLM{i_cell}, testmovie, 'testspikes', tspikes, 'neighborspikes', ntspikes)
     

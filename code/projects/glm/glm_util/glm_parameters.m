@@ -3,21 +3,21 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-% GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
-GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
+GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
+% GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
 GLMT.CouplingFilters = false;
 
 % Use this to do a quick check that things are right
-GLMT.debug      = false;
+GLMT.debug      = true;
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
 GLMT.TonicDrive = true; % background firing
 GLMT.StimFilter = true;
-GLMT.PostSpikeFilter = true;
+GLMT.PostSpikeFilter = false;
 GLMT.nullpoint  = 'mean';
 GLMT.map_type   = 'mapPRJ';
 GLMT.specialchange = false;
@@ -43,7 +43,7 @@ GLMP.timenotes_3    = 'true tstim only matters for binning the spike times when 
 GLMP.stimfilter.fixedSP_type = 'WNSTA';
 
 
-GLMP.stimfilter.ROI_length = 19;  % This is the SIZE of the spatial filter in pixels
+GLMP.stimfilter.ROI_length = 15;  % This is the SIZE of the spatial filter in pixels
 GLMP.stimfilter.frames = 60;  % This is the number of frames in the temporal filter
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';

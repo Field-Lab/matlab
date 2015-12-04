@@ -96,6 +96,7 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             if strcmp(change.name, 'rk1')
                 GLMType.stimfilter_mode = 'rk1'; 
                 GLMType.CONVEX = false;
+                GLMType.STA_init   = true;
             end
             if strcmp(change.name,'fixedSP-ConductanceBased')
                 GLMType.stimfilter_mode = 'fixedSP-ConductanceBased';
@@ -124,6 +125,9 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                 GLMType.postfilter_nonlinearity_type =  'piece_linear_aboutzero';
                 GLMType.DoubleOpt = true;
                 GLMType.DoubleOpt_Manual = true;
+            end
+            if strcmp(change.name, 'rect_quad')
+                GLMType.postfilter_nonlinearity_type = 'rectified_quadratic';
             end
          end
         
