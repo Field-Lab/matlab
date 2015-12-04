@@ -1,4 +1,4 @@
-function printglmfit(fittedGLM,printname)
+function printglmfit(fittedGLM,printname,optional_note)
 
 info    = fittedGLM.cellinfo;
 GLMType = fittedGLM.GLMType;
@@ -29,7 +29,13 @@ c = 0;
 text(-.1, 1-0.1*c,sprintf('%s: %s %d: %s-Fit',info.exp_nm, info.celltype,info.cid, GLMType.fit_type))
 c = c + 1.5;
 text(-.1, 1-0.1*c,sprintf('Cross Validated Performance, in Bits Per spike %1.3e',performance.logprob_glm_bpspike))
- c = c + 2;
+% AKH 2015-07-15 added room for an extra note
+if exist('optional_note','var')
+    c = c + 1.5;
+    text(-.1, 1-0.1*c,sprintf('%s',optional_note),'interpreter','none');
+end
+
+ c = c + 1.5;
 text(-.1, 1-0.1*c,sprintf('Fit Type: %s',GLMType.fitname), 'interpreter','none')
 c = c + 1.5;
 if GLMType.TonicDrive
@@ -78,9 +84,11 @@ end
 if GLMType.CouplingFilters
     subplot(5,4,[8,12])
     set(gca, 'fontsize', 10);
-    plot(time_msec, oneline, 'k-'); hold on
+    
     bins    = [1:length(CP{1})];
     time_msec = 1000*dt*bins ;
+    oneline = ones(1,length(time_msec));
+    plot(time_msec, oneline, 'k-'); hold on
     for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
         plot(time_msec, exp(CP{pair}));
     end

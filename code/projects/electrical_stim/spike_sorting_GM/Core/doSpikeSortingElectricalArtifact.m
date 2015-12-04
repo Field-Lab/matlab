@@ -71,12 +71,12 @@ for n=1:nNeurons
     indn(n)=1;
     
     for t=1:length(TfindRel0)
-
+        
         indt       = zeros(1,length(TfindRel0));
         indt(t)    = 1;
         indnt      = kron(indn,indt);
         Kn{n}(:,t) = K*indnt';
-        end
+    end
 end
 
 
@@ -120,18 +120,18 @@ Gibbs = GibbsSamplerSpikesArtifact(Gibbs);
 
 %%
 %Do heuristics
-[Gibbs Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
-[Gibbs Log] = HResampleBadLogRegression(input,Gibbs,Log);
-[Gibbs Log] = HResampleIfLackOfSpiking(Gibbs,input,Log,[1:nNeurons]);
-[Gibbs Log] = HResampleAboveActivation(Gibbs,input,Log);
-[Gibbs Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
+[Gibbs, Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
+[Gibbs, Log] = HResampleBadLogRegression(input,Gibbs,Log);
+[Gibbs, Log] = HResampleIfLackOfSpiking(Gibbs,input,Log,[1:nNeurons]);
+[Gibbs, Log] = HResampleAboveActivation(Gibbs,input,Log);
+[Gibbs, Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
 %Save solution before executing Heuristics
 GibbsNoDelete = Gibbs;
 
-[Gibbs Log] = HDeleteSpikesAndResample(GibbsNoDelete,input,Log);
-[Gibbs Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
-[Gibbs Log] = HaddSpikesResample(Gibbs,input,Log);
-[Gibbs Log] = HResampleAboveActivation(Gibbs,input,Log);
+[Gibbs, Log] = HDeleteSpikesAndResample(GibbsNoDelete,input,Log);
+[Gibbs, Log] = HdeleteSpikesBeginning(input,Gibbs,Log,1);
+[Gibbs, Log] = HaddSpikesResample(Gibbs,input,Log);
+[Gibbs, Log] = HResampleAboveActivation(Gibbs,input,Log);
 
 
 end

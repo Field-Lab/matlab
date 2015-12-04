@@ -1,4 +1,4 @@
-function Output = SpikeSortingCompact(pathToAnalysisData,patternNo,neuronIds,varargin)
+function Output = SpikeSortingCompact(pathToAnalysisData,patternNo,neuronIds,pathToEi,varargin)
 %SpikeSortingCompact does spike as shown in the examples (ExampleSeveralPatterns.m, ExampleSeveralNeurons.m)
 %but allows to modify key parameters in the input. This function can be easily extended to allow more
 %optional parameters (see below to see how optional parameters are modeled)
@@ -6,8 +6,10 @@ function Output = SpikeSortingCompact(pathToAnalysisData,patternNo,neuronIds,var
 % authomatically using the AlingTemplates function
 % input:    -pathToAnalysisData: path to ElecResp files and movie folders
 %           -neuronIds: vector with Ids of neurons for which spike sorting is needed
+%           -pathToEi: full path to the dataxxx.ei file
 % optional: -recElecs: Electrodes that will be used for spike sorting. If no value is specified
-%                      then electrodes from ElecResp.cells.GoodElecs will be used
+%                      then electrodes from the electrode with the largest
+%                      EI signal will be used for each neuron
 %            -findAxon: logical, if zero no Axon breakpoints will be included (default =0)
 %            -cleanData: if 1, the first trial of each movie will not be included. (defaul =1)
 %            -collapseTrials: if 1, movies corresponding to same stimulus will be collapsed into one (default =1)
@@ -18,6 +20,9 @@ function Output = SpikeSortingCompact(pathToAnalysisData,patternNo,neuronIds,var
 %If more optional parameters want to be used, notice it is important to figure out at which part of the code they have to be defined
 % For example, degPolRule is defined after the default specification given in fillDefaultValues
 % 
+% 2015-07-13 LG edit: templates are generated directly from .ei files
+% rather than taken from elecResp files (which do not necessarily exist).
+
 cvx_solver Mosek
 options = struct('recElecs',[],'findAxon',0,'cleanData',1,'collapseTrials',1,'Trange',[1 40],'degPolRule',[]);
 
@@ -41,28 +46,21 @@ if(~isempty(varargin))
     end
 end
 
-
-
 input.tracesInfo.Trange        =    options.Trange;                                                                                       
-         
+
 if(isempty(options.recElecs))
-[templates, recElecs] = makeTemplatesFromElecResp(pathToAnalysisData,...
-    patternNo,neuronIds,1); %This function will output one electrode per neuron
+    [templates, recElecs] = makeTemplatesFromEi(pathToEi,neuronIds); %This function will output one electrode per neuron
 else
     recElecs = options.recElecs;
-    [templates, recElecs] = makeTemplatesFromElecResp(pathToAnalysisData,...
-    patternNo,neuronIds,1,recElecs);
-
+    [templates, recElecs] = makeTemplatesFromEi(pathToEi,neuronIds,recElecs);
 end
-
+fprintf('recording electrode for n%0.0f is %0.0f\n',neuronIds,recElecs);
 templates = AlignTemplates(templates);
 prefElectrodes = PreferredElectrodes(templates); % Looks for the template with the maximum signal for each neuron
 input.neuronInfo.prefElectrodes =   prefElectrodes; %Define preferred electrodes
 input.tracesInfo.recElecs      =    recElecs; %define recording electrodes
 input.neuronInfo.neuronIds     =    neuronIds; %define neuron Ids
 input.neuronInfo.templates     =    templates; %define templates
-
-
 
 
 %Now Set defaults for how to load data. Should we collapse trials? should we
@@ -99,13 +97,15 @@ end
 %finds initial values for the artifact and rest of variables (via convex
 %relaxation with cvx-Mosek)
 initial = Initialize(input);
-
+toc
+disp('finished initialize');
 %The Core of the algorithm: spike sorting via gibbs sampler + heuristics.
 %solutions are stored in Gibbs Structure
-[Gibbs GibbsNoDelete initial input Log] = doSpikeSortingElectricalArtifact(input,initial);
- 
+[Gibbs, ~, ~, input, Log] = doSpikeSortingElectricalArtifact(input,initial);
+toc
+disp('finished doSpikeSortingElectricalArtifact');
 %Creates the output structures
 Output = OutputResults(input,Gibbs,Log);
-    
+   
     
 

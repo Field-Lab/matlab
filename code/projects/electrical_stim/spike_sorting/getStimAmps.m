@@ -1,4 +1,4 @@
-function [amps channelsWithStim stimAmpVectors channelsConnected elecCurrentStep currentRangesUsed] = getStimAmps(dataPath, patternNumber, movieNumber,varargin)
+function [amps, channelsWithStim, stimAmpVectors, channelsConnected, elecCurrentStep, currentRangesUsed] = getStimAmps(dataPath, patternNumber, movieNumber,varargin)
 
 % arguments
 %   dataPath: path from current directory to pattern definitions file
