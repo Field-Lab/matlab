@@ -6,9 +6,19 @@ close all
 clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[~, txt] = xlsread('/Users/colleen/Documents/Large Cell Data.xlsx', 'All large cell pieces');
+%[~, txt] = xlsread('/Users/colleen/Documents/Large Cell Data.xlsx', 'All large cell pieces');
+txt = {'2005-01-21-3' 'data'	'000';
+'2007-01-23-5' 	'data'	'001';
+'2007-05-01-2' 	'data'	'000';
+'2007-08-21-4' 	'data'	'000';
+'2009-04-13-1' 	'data'	'005';
+'2008-04-08-2' 	'data'	'003';
+'2005-05-24-1' 'data' '000';
+'2005-07-26-0' 'data' '000';
+'2005-04-26-2' 'data' '002';
 
-for j= 2:size(txt,1)
+};
+for j= 7:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});

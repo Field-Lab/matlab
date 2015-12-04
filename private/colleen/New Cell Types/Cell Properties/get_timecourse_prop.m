@@ -46,9 +46,9 @@ else
     time = -(run_opts.num_frames-run_opts.frames_past_zero-1)*run_opts.refresh:run_opts.refresh:run_opts.refresh + run_opts.frames_past_zero - 1;
     
     
-    [peak , peak_ind] = max(tc(:,color_index));
+    [peak , peak_ind] = max(abs(tc(:,color_index)));
     t_p = abs(peak_ind*run_opts.refresh + time(1)- run_opts.refresh);
-    amp = peak;
+    amp = tc(peak_ind,color_index);
     
     [t_ind,t0] = crossing(tc(:,color_index));
     
@@ -63,8 +63,12 @@ else
         t_zc = abs(t0*run_opts.refresh + time(1)- run_opts.refresh);
     end
     
-    
+    if amp > 0
     [trough , trough_ind] = min(tc(:,color_index));
+    else
+        [trough , trough_ind] = max(tc(:,color_index));
+    end
+    
     t_t = abs(trough_ind*run_opts.refresh + time(1)- run_opts.refresh);
     
     bi_ind = abs(amp)/abs(trough);
