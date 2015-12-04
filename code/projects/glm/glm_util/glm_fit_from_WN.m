@@ -194,7 +194,8 @@ for i_cell = 1:length(cells)
     end
     
     % Check that everything is working, and automatically find the center
-    [STA, center] = STA_Test(fitspikes, fitmovie, center_verification);
+
+    [STA, ~] = STA_Test(fitspikes, fitmovie, center_verification, 1/monitor_refresh);
     
     % Execute and save GLM
     tic

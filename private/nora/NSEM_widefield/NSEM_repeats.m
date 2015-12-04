@@ -155,3 +155,60 @@ figure; plot(loc(:,2), NSEM_Corr_half/15000, '.', 'MarkerSize', 10)
 hold on; plot([5.5*8*20 5.5*8*20], [-0.2 0.7], 'LineWidth', 2)
 xlim([0 2000])
 ylim([-0.25 0.75])
+
+%%
+clear
+% datarun 1 = class, 2 = full_rep, 3 = left third, 4 = left two thirds
+datarun{1} = load_data('/Volumes/Analysis/2015-11-09-1/data009-data013/data009/data009');
+datarun{2} = load_data('/Volumes/Analysis/2015-11-09-1/data009-data013/data012/data012');
+datarun{3} = load_data('/Volumes/Analysis/2015-11-09-1/data009-data013/data013/data013');
+
+datarun{1} = load_params(datarun{1});
+for i = 1:3
+    datarun{i} = load_neurons(datarun{i});
+end
+
+%%
+figure; 
+plot_rf_fit(datarun{1}, 'Off Parasol')
+hold on; plot_rf_fit(datarun{1}, 67, 'fill', true)
+hold on; plot_rf_fit(datarun{1}, 4998, 'fill', true)
+
+
+%%
+cid = get_cell_indices(datarun{1}, 'Off Parasol');
+% MSE = zeros(length(cid), 1);
+clear NSEM_Corr_half
+loc = zeros(length(cid), 2);
+for i_cell = 2%1:length(cid)
+    disp(cid(i_cell))
+    for i_run = 2:3
+        spikes_concat = [];
+        spikes = datarun{i_run}.spikes{cid(i_cell)};
+        trial_starts = datarun{i_run}.triggers([true; diff(datarun{i_run}.triggers)>0.9]);
+        for i_trial = 1:length(trial_starts)
+            spikes_concat = [spikes_concat; spikes( (spikes>trial_starts(i_trial)) & (spikes<(trial_starts(i_trial) + 15)) ) - trial_starts(i_trial)];
+        end
+        spikes_concat = sort(spikes_concat);
+        PSTH_temp = zeros(15000,1);
+        PSTH_temp(ceil(spikes_concat*1000)) = 1;
+        PSTH{i_run} = conv(PSTH_temp, gausswin(500), 'same');
+    end
+    plot(PSTH{2})
+    hold on; plot(PSTH{3}); hold off;
+    disp(err(PSTH{2}, PSTH{3}))
+     %pause();
+    disp(i_cell)
+    %NSEM_Corr_vert(i_cell) = corr(PSTH{2}, PSTH{3});
+    NSEM_Corr_half(i_cell) = err(PSTH{2}, PSTH{3});
+    loc(i_cell, :) = 5.5*8*datarun{1}.vision.sta_fits{cid(i_cell)}.mean;
+end
+
+
+%%
+% figure; plot(loc(:,2), NSEM_Corr_vert, '.')
+% hold on; plot([20 20], [-0.2 1.3])
+figure; plot(loc(:,2), NSEM_Corr_half/15000, '.', 'MarkerSize', 10)
+hold on; plot([5.5*8*20 5.5*8*20], [-0.2 0.7], 'LineWidth', 2)
+xlim([0 2000])
+ylim([-0.25 0.75])

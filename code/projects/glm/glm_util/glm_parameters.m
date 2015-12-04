@@ -3,8 +3,8 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
-% GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
+%GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true;
+ GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; 
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false;
 
 % Coupling on or off?
@@ -17,7 +17,7 @@ GLMT.debug      = true;
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
 GLMT.TonicDrive = true; % background firing
 GLMT.StimFilter = true;
-GLMT.PostSpikeFilter = false;
+GLMT.PostSpikeFilter = true;
 GLMT.nullpoint  = 'mean';
 GLMT.map_type   = 'mapPRJ';
 GLMT.specialchange = false;

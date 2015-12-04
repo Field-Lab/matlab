@@ -51,7 +51,7 @@ for yy = y:-1:1
     end
 end
 
-if fig
+if 1
     figure(fig);
     for aa =1:length(plot_axes)
         plot_axes{aa} = subplot('Position',plot_axes{aa});

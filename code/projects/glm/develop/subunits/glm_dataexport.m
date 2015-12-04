@@ -165,8 +165,8 @@ test_movie = test_movie';
  tempFilt = V(:,1);
  clear STA U S V
  
-fit_batch = length(train_movie);
-test_batch = length(test_movie);
+fit_batch = length(test_movie)/2;
+test_batch = length(test_movie)/2;
 
 
 disp('Saving files')

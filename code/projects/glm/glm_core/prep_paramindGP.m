@@ -33,7 +33,7 @@ if isfield(GLMType, 'Saccades')
 	numParams = numParams + GLMPars.saccadefilter.filternumber;
 end
 
-if GLMType.Contrast
+if isfield('GLMType','Contrast')
     Cstart = numParams + 1;  Cend = numParams + GLMPars.spikefilters.C.filternumber;
 	paramind.C = [Cstart  : Cend];
 	numParams = numParams + GLMPars.spikefilters.C.filternumber;

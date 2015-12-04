@@ -4,7 +4,7 @@
 % start at here.
 % moviefile='/Volumes/Data/Stimuli/movies/eye-movement/NSbrownian_code/newrawmovie/NSbrownian_3000_A_025.rawMovie';
 % moviefile = '/Volumes/Lab/Users/Nora/v2LPF/med_960s/lpf-02-12-0_16'; % 02-12 also exists
-moviefile = '/Volumes/Lab/Users/Nora/new_stim_nora/mask_NSEM/mask_movie_876/movie_876.rawMovie'; % 02-12 also exists
+moviefile = '/Volumes/Lab/Users/Nora/new_stim_nora/mask_NSEM/mask_movie_182_11_stix1/movie_182.rawMovie'; % 02-12 also exists
 % moviefile = '/Users/Nora/Desktop/1stix_test.rawMovie';
 frames=240;
 start_frame=1;

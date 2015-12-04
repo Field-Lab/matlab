@@ -28,9 +28,9 @@ function  prepped_data = interleaved_data_prep(datarun, block_frames, n_repeats,
 % this should be a datarun with params loaded
 %
 % stimulus_name
-% can be an XML type specification (ie BW-8-1-0.48-11111)
+% can be an XML type specification (ie BW-8-1-0.48-11111) currently only
+% works for BW, NOT RGB
 % Or the filename of a rawmovie
-% Or the path to a folder of mat files
 %
 % seed
 % the fixed seed for white noise repeats
@@ -248,7 +248,7 @@ if p.Results.stimulus_name
         % Arbitrary other rawMovie
     elseif strcmp(p.Results.stimulus_name(end-8:end), '.rawMovie')
         % get beginning of movie for the raster
-        prepped_data.testmovie = get_rawmovie(p.Results.stimulus_name(end-8:end), block_frames(2), 0);
+        prepped_data.testmovie = get_rawmovie(p.Results.stimulus_name, block_frames(2), 0);
         offset = block_frames(2);
         % get the rest of the movie in blocks
         if ~testmovie_only
