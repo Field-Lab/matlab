@@ -7,21 +7,22 @@
 system = questdlg('Stim system?','stim system','stim512','stim64','stim512');  %stim512 or stim64
 %system = 'stim64';
 
-rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
-if ~strcmp(rawDataDir(end),filesep)
-    rawDataDir = [rawDataDir filesep];
-end
-
+% rawDataDir = uigetdir('/Volumes/Data', 'Select raw data directory'); 
+% if ~strcmp(rawDataDir(end),filesep)
+%     rawDataDir = [rawDataDir filesep];
+% end
+rawDataDir = '/Volumes/Data/2015-11-09-3/';
+disp(rawDataDir); 
 % Points to the directory of the output.
-WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
-if ~strcmp(WritePathBase(end),filesep)
-    WritePathBase = [WritePathBase filesep];
-end
-
+% WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
+% if ~strcmp(WritePathBase(end),filesep)
+%     WritePathBase = [WritePathBase filesep];
+% end
+WritePathBase = '/Volumes/Analysis/2015-11-09-3/';
 % Appends this number to 'data ---'
-fileNos = inputdlg('enter the number corresponding to datarun (1,2,...)'); %[10];
-fileNos = str2double(fileNos); 
-
+% fileNos = inputdlg('enter the number corresponding to datarun (1,2,...)'); %[10];
+% fileNos = str2double(fileNos); 
+fileNos = [5 7:12]; 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds
 traceLength = 100; %changed from 70 on 2010-03-10
@@ -49,7 +50,7 @@ for i = fileNos
     
     rawDataPath = [rawDataDir 'data' FileName];
     WritePath = [WritePathBase 'data' FileName];
-    
+    disp(['analyzing ' rawDataPath]);
     % Determine if WritePath exists, if not then make it.
     if ~exist(WritePath, 'file')
         mkdir(WritePath)

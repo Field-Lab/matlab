@@ -13,9 +13,9 @@ clear all;
 % 3   |   4
 
 %% Define inputs
-include_single_elecs = true;
+include_single_elecs = false;
 both_polarity_combs = true;
-quadrant = 2; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
+quadrant = 1; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
 elec_spacing = 60;
 same_polarity = false; % Set to true to use only negative pairs. 
 use_ratios = false;
@@ -23,7 +23,7 @@ scale_factor = 2; %Set scale factor to determine 2-elec ratio to use. A positive
 pairOrientation = 'horizontal'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 delayInMs = 7.5; %interval between pulses
 saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
-saveName = 'axon512_quad2'; %Descriptive name for the stimulus files 
+saveName = 'axon512_quad1_horizontal'; %Descriptive name for the stimulus files 
 
 %%
 if elec_spacing == 60
