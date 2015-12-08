@@ -251,9 +251,12 @@ for i = 1:length(elecResp.cells.goodElecs)
         channelsToUse = [channelsToUse elecResp.cells.goodElecs(i)]; %#ok<AGROW>
     end
 end
-elecResp.cells.all = findNeuronsAboveThresh(elecResp.names.rrs_ei_path,...
-    elecResp.names.rrs_params_path, channelsToUse, 10);
-
+try
+    elecResp.cells.all = findNeuronsAboveThresh(elecResp.names.rrs_ei_path,...
+        elecResp.names.rrs_params_path, channelsToUse, 10);
+catch
+    elecResp.cells.all = [];
+end
 
 % check if specified neurons exist in params file
 datarun.names.rrs_params_path = elecResp.names.rrs_params_path;
