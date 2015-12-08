@@ -1,4 +1,4 @@
-%%
+%% USED TO MAKE FIG 1
 clear 
 cell_type = 'Off Parasol';
 Corr_NS = [];
@@ -27,7 +27,7 @@ datarun{3} = load_data('/Volumes/Analysis/2015-10-29-2/data045-data048/data046/d
 datarun{1} = load_params(datarun{1});
 datarun{1} = load_sta(datarun{1});
 cids = get_cell_ids(datarun{1}, cell_type);
-cids = [cids get_cell_ids(datarun{1}, 'Off Parasol New Class')];
+% cids = [cids get_cell_ids(datarun{1}, 'Off Parasol New Class')];
 [NSEM_Corr,locations, avg_profile, PSTHs] = wide_field(datarun, cell_type,stim_end, cids);
 %[NSEM_Corr_AC,locations_AC, PSTHs_AC] = wide_field(datarun, 'On Large', get_cell_ids(datarun{1}, 'On Large'));
 datarun{1}.default_sta_fits = 'vision';
@@ -69,42 +69,95 @@ set(gca, 'XTick', [0 1500])
 set(gca, 'XTickLabel', [0 15])
 
 %%
+
+cidx = [79, 95, 86];
 h = figure;
 hold on
 set(h, 'Position', [100 100 600 200]);
-for i = [43]% 29 4]
-   plot(PSTHs{i,1}{2},'k')
-   plot(PSTHs{i,1}{3},'Color', default_colors(2,:))
+for i = 1:15
+   plot(i*100*[1 1],[0 200], 'Color', 0.8*[1 1 1], 'LineWidth', 2) 
 end
-xlim([500 1000])
-set(gca, 'XTick', [500 1000]);
+for i = [cidx(1)]% 29 4]
+   plot(PSTHs{i,1}{2},'k', 'LineWidth', 2)
+   plot(PSTHs{i,1}{3},'Color', default_colors(2,:), 'LineWidth', 2)
+end
+xlim([0 500])
+set(gca, 'XTick', [0 500]);
 set(gca, 'XTickLabel', [0 5])
+set(gca, 'YTick', [0 100])
 ylim([0 150])
 
 h = figure;
 hold on
 set(h, 'Position', [100 100 600 200]);
-for i = [29]
-   plot(PSTHs{i,1}{2},'k')
-   plot(PSTHs{i,1}{3},'Color', default_colors(1,:))
+for i = 1:15
+   plot(i*100*[1 1],[0 200], 'Color', 0.8*[1 1 1], 'LineWidth', 2) 
 end
+for i = cidx(2)
+   plot(PSTHs{i,1}{2},'k', 'LineWidth', 2)
+   plot(PSTHs{i,1}{3},'Color', default_colors(1,:), 'LineWidth', 2)
+end
+
 xlim([500 1000])
 set(gca, 'XTick', [500 1000]);
 set(gca, 'XTickLabel', [0 5])
+set(gca, 'YTick', [0 100])
 ylim([0 150])
-
 
 h = figure;
 hold on
 set(h, 'Position', [100 100 600 200]);
-for i = [4]
-   plot(PSTHs{i,1}{2},'k')
-   plot(PSTHs{i,1}{3},'Color', default_colors(5,:))
+for i = 1:15
+   plot(i*100*[1 1],[0 200], 'Color', 0.8*[1 1 1], 'LineWidth', 2) 
 end
-xlim([500 1000])
-set(gca, 'XTick', [500 1000]);
+for i = cidx(3)
+   plot(PSTHs{i,1}{2},'k', 'LineWidth', 2)
+   plot(PSTHs{i,1}{3},'Color', default_colors(5,:), 'LineWidth', 2)
+end
+xlim([1000 1500])
+set(gca, 'XTick', [1000 1500]);
 set(gca, 'XTickLabel', [0 5])
+set(gca, 'YTick', [0 100])
 ylim([0 150])
+
+cids_examples = cids(cidx);
+
+% Stimulus images
+figure; 
+load('/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian/matfiles/movie_chunk_1.mat');
+temp = movie(:,:,1)';
+imagesc(flipud(temp))
+hold on
+datarun = load_data('/Volumes/Analysis/2015-10-29-2/data045-data048/data048/data048');
+datarun = load_params(datarun);
+cids = get_cell_ids(datarun, cell_type);
+cids = [cids get_cell_ids(datarun, 'Off Parasol New Class')];
+plot_rf_fit(datarun, cids, 'scale', 4, 'fill', true, 'fill_color', [1 1 1], 'edge', false);
+plot_rf_fit(datarun, [cids_examples(2)], 'scale', 4, 'fill', true, 'fill_color', default_colors(1,:), 'edge', false);
+plot_rf_fit(datarun, [cids_examples(1)], 'scale', 4, 'fill', true, 'fill_color', default_colors(2,:), 'edge', false);
+plot_rf_fit(datarun, [cids_examples(3)], 'scale', 4, 'fill', true, 'fill_color', default_colors(5,:), 'edge', false);
+colormap gray
+axis image
+axis off
+
+%hold on
+%plot(325+avg_rf/5, 4*(1:200)/5, 'k', 'LineWidth', 2)
+
+figure; 
+load('/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian/matfiles/movie_chunk_1.mat');
+temp(81:end,:) = 64;
+imagesc(flipud(temp))
+hold on
+cids = get_cell_ids(datarun, cell_type);
+cids = [cids get_cell_ids(datarun, 'Off Parasol New Class')];
+plot_rf_fit(datarun, cids, 'scale', 4, 'fill', true, 'fill_color', [1 1 1], 'edge', false);
+plot_rf_fit(datarun, [cids_examples(2)], 'scale', 4, 'fill', true, 'fill_color', default_colors(1,:), 'edge', false);
+plot_rf_fit(datarun, [cids_examples(1)], 'scale', 4, 'fill', true, 'fill_color', default_colors(2,:), 'edge', false);
+plot_rf_fit(datarun, [cids_examples(3)], 'scale', 4, 'fill', true, 'fill_color', default_colors(5,:), 'edge', false);
+colormap gray
+axis image
+axis off
+
 
 
 %{

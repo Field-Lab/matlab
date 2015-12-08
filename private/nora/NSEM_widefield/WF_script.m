@@ -1,8 +1,10 @@
-%% SECTION TITLE
+%% UAED TO MAKE FIG 2
 clear
 Corr_NS = [];
 Loc = [];
 Color_idx = [];
+modu=[];
+no_modu= [];
 default_colors = get(gca,'ColorOrder');
 
 
@@ -21,6 +23,7 @@ for cell_type = {'On Parasol', 'Off Parasol'}
     Loc = [Loc ; locations];
     Color_idx = [Color_idx; 1*ones(length(locations),1)];
 
+
     
     %%
     clear datarun NSEM_Corr locations stim_end
@@ -33,6 +36,7 @@ for cell_type = {'On Parasol', 'Off Parasol'}
     Corr_NS = [Corr_NS; NSEM_Corr(:,3)];
     Loc = [Loc ; locations];
     Color_idx = [Color_idx; 2*ones(length(locations),1)];
+
 
     
     %%
@@ -49,6 +53,7 @@ for cell_type = {'On Parasol', 'Off Parasol'}
     Loc = [Loc ; locations];
     Color_idx = [Color_idx; 3*ones(length(locations),1)];
 
+
     
     %%
     clear datarun NSEM_Corr locations stim_end
@@ -62,68 +67,38 @@ for cell_type = {'On Parasol', 'Off Parasol'}
     Corr_NS = [Corr_NS; NSEM_Corr(:,3); NSEM_Corr(:,4)];
     Loc = [Loc ; locations];
     Color_idx = [Color_idx; 4*ones(length(locations),1)];
+
     
     
 end
 
 %%
-figure; plot(Loc, Corr_NS,'.', 'Color', 0.4*[1 1 1])
+cutoff = 7;
+figure;  hold on;
+%fill([prof1(:,2)-(95/8); prof1(:,2)-(95/8)]+4,0.01+[prof1(:,1)/10000; zeros(200,1)], 0.2+[0.7 0.7 0.7],'EdgeColor', 0.2+[0.7 0.7 0.7])
+x = prof1(:,2)-(95/8)+4;
+offset = 0.028;
+y = offset+prof1(:,1)/10000;
+plot(x(x>-1.5),y(x>-1.5), 'Color', [0.7 0.7 0.7]-0.2)
+plot(x(x>-1.5), zeros(length(x(x>-1.5)))+offset, 'Color', [0.7 0.7 0.7]-0.3);
+plot(Loc(Loc>-cutoff), Corr_NS(Loc>-cutoff),'.', 'Color', 0.3*[1 1 1])
 avg_rf = mean([prof1(:,1), prof2(:,1), -prof3(:,1),-prof4(:,1)],1);
 hold on;
-plot(prof1(:,2)-(95/8),-0.025+prof1(:,1)/4000, 'k', 'LineWidth', 1)
-plot(prof1(:,2)-(95/8),-0.025*ones(200,1), 'k', 'LineWidth', 1)
-%plot([0 0], [-0.1 0.1])
-plot([-15 20], [0 0], 'k', 'LineWidth', 1)
+%plot(prof1(:,2)-(95/8),prof1(:,1)/4000, 'k', 'LineWidth', 1)
+%plot(prof1(:,2)-(95/8),ones(200,1), 'k', 'LineWidth', 1)
 
-[x, y, error, bincount, binedge] = curve_from_binning(Loc, Corr_NS, 'num_bins',12);
+plot([0 0], [-0.1 0.1], 'Color', 0.5*[1 1 1], 'LineWidth', 2)
+% plot([-11 15], [0 0], 'k', 'LineWidth', 1)
+
+[x, y, error, bincount, binedge] = curve_from_binning(Loc(Loc>-cutoff), Corr_NS(Loc>-cutoff), 'num_bins',8);
 plot(x,y,'k', 'LineWidth', 2)
 
 
-ylim([-0.04 0.08])
-set(gca, 'YTick', [0 0.05])
-
-
-
-avg_rf = prof1(:,1);
-%% Stimulus images
-figure; 
-load('/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian/matfiles/movie_chunk_1.mat');
-temp = movie(:,:,1)';
-imagesc(temp)
-hold on
-datarun = load_data('/Volumes/Analysis/2015-10-29-2/data045-data048/data048/data048');
-datarun = load_params(datarun);
-cids = get_cell_ids(datarun, cell_type);
-cids = [cids get_cell_ids(datarun, 'Off Parasol New Class')];
-plot_rf_fit(datarun, cids, 'scale', 4, 'fill', true, 'fill_color', [1 1 1], 'edge', false);
-plot_rf_fit(datarun, [3320, 2329, 242], 'scale', 4, 'fill', true, 'fill_color', default_colors(1,:), 'edge', false);
-plot_rf_fit(datarun, [2329], 'scale', 4, 'fill', true, 'fill_color', default_colors(2,:), 'edge', false);
-plot_rf_fit(datarun, [242], 'scale', 4, 'fill', true, 'fill_color', default_colors(5,:), 'edge', false);
-colormap gray
-axis image
-axis off
-
-%hold on
-%plot(325+avg_rf/5, 4*(1:200)/5, 'k', 'LineWidth', 2)
-
-figure; 
-load('/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian/matfiles/movie_chunk_1.mat');
-temp(81:end,:) = 64;
-imagesc(temp)
-hold on
-cids = get_cell_ids(datarun, cell_type);
-cids = [cids get_cell_ids(datarun, 'Off Parasol New Class')];
-plot_rf_fit(datarun, cids, 'scale', 4, 'fill', true, 'fill_color', [1 1 1], 'edge', false);
-plot_rf_fit(datarun, [3320], 'scale', 4, 'fill', true, 'fill_color', default_colors(1,:), 'edge', false);
-plot_rf_fit(datarun, [2329], 'scale', 4, 'fill', true, 'fill_color', default_colors(2,:), 'edge', false);
-plot_rf_fit(datarun, [242], 'scale', 4, 'fill', true, 'fill_color', default_colors(5,:), 'edge', false);
-colormap gray
-axis image
-axis off
-
-%hold on
-%plot(325+avg_rf/5, 4*(1:200)/5, 'k', 'LineWidth', 2)
-
+%ylim([-0.04 0.08])
+set(gca, 'YTick', [0 0.03])
+set(gca, 'XTick', [-5 0 5])
+xlim([-7.5 7.5])
+ylim([-0.001 0.039])
 
 %% other not as good data
 % try
