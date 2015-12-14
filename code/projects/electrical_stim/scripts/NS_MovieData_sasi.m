@@ -34,7 +34,7 @@ params = p.Results;
 
 if isempty(params.fullPath)
     %filename_movie = ['movie' FileName];
-    filename_movie = strrep(FileName,'data','movie');
+    filename_movie = strrep(FileName,'data','Electrical/Output/movie');
 else
     filename_movie = params.fullPath;
 end

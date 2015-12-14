@@ -43,8 +43,8 @@ oldpath = pwd;
 % Generates the full filenames for movie and pattern.
 %filename_movie=['movie' FileName] %#ok<NOPRT>
 %SPfilename=['pattern' FileName] %#ok<NOPRT>
-filename_movie=strrep(FileName,'data','movie'); %#ok<NOPRT>
-SPfilename=strrep(FileName,'data','pattern'); %#ok<NOPRT>
+filename_movie=strrep(FileName,'data','Electrical/Output/movie'); %#ok<NOPRT>
+SPfilename=strrep(FileName,'data','Electrical/Output/pattern'); %#ok<NOPRT>
 % tmp_moviepath = '/Volumes/Data/Auxiliary/2014-04-15-4/electrical/' ; %lg temp mod for data processing 5/20/14 ---- delete!
 % tmp_moviepath = '/Volumes/Analysis/2012-09-24-0/stim_files/'; %lg/nishal temp mod for data processing ---- delete!
 % cd(tmp_moviepath); 

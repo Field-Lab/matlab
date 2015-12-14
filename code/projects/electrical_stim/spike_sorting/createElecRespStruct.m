@@ -56,11 +56,15 @@ if elecRespInfo.autoMovie
     end
     
     for i = 1:length(files)
+		%disp('hi sasi'); 
+		%disp(files(i).name); 
         if strfind(files(i).name, patternNoString) == 1
             mIndices = strfind(files(i).name, 'm');
             movieNos = [movieNos str2double(files(i).name(mIndices(end)+1:end))]; %#ok<AGROW>
         end
     end
+	disp('hi sasi')
+	disp(movieNos)
     
     if ~isfield(elecRespInfo, 'autoType') || strcmp(elecRespInfo.autoType, 'all')
     elseif strcmp(elecRespInfo.autoType, 'odds')
