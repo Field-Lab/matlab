@@ -54,8 +54,8 @@ episolon = 0.0001;
     filename = ['/Volumes/Lab/Users/crhoades/Cell Properties/', run_opts.file_name{t}];
     classes= {'OFF Parasol', 'ON Parasol', 'ON Midget', 'OFF Midget', 'ON Large 1', 'ON Large 2', 'ON Large 3', 'ON Large 4', 'OFF Large 1', 'OFF Large 2', 'OFF Large 3', 'OFF Large 4'};
     classes= {'OFF Parasol', 'ON Parasol',  'ON Large 1', 'ON Large 2', 'ON Large 3', 'ON Large 4', 'OFF Large 1', 'OFF Large 2', 'OFF Large 3', 'OFF Large 4'};
-    classes = {'ON Parasol', 'ON large 1', 'ON large 2','OFF Parasol', 'OFF large 1', 'OFF large 2', 'ON LBC', 'ON Large 3', 'ON Large 4'};
-    classes = {'ON Parasol', 'ON large 1', 'ON large 2','OFF Parasol', 'OFF large 1', 'OFF large 2', 'ON large 3', 'ON large 4', 'ON LBC'};
+%     classes = {'ON Parasol', 'ON large 1', 'ON large 2'};
+    classes = {'ON Parasol', 'ON large 1', 'ON large 2','OFF Parasol', 'ON large 3', 'ON LBC'};
 
     D = dir(filename);
     colors = [];
@@ -69,8 +69,14 @@ episolon = 0.0001;
             
             file_path{c} = [filename, '/', D(match(c,:)).name, '/', 'output.mat'];
             output = load(file_path{c});
+            try
             new_data = [c*ones(size(cell2mat(struct2cell(output.output.parameters)'),1),1), cell2mat(struct2cell(output.output.parameters)')];
-            new_data = [new_data(:,1:end-3)]; % remove acf
+            catch
+                output.output.parameters.pca1 = nan(length(output.output.parameters.fr));
+                output.output.parameters.pca2 = nan(length(output.output.parameters.fr));
+                new_data = [c*ones(size(cell2mat(struct2cell(output.output.parameters)'),1),1), cell2mat(struct2cell(output.output.parameters)')];
+            end
+            new_data = [new_data]; % remove acf
             if c == 1
                 ref_on_parasol = new_data;
                     new_data(:,7) = 1;
@@ -85,10 +91,10 @@ episolon = 0.0001;
                 data = [data; new_data];
             end
             
-            if c == 2 || c == 3 ||c ==7 ||c ==8 ||c ==9
+            if c == 2 || c == 3 ||c ==5||c ==6||c ==7 ||c ==8 ||c ==9
                 real_ind = boolean(floor(sum(~isnan(ref_on_parasol),2)/size(ref_on_parasol,2)));
-                new_data(:,2:end) = new_data(:,2:end)./repmat(mean(ref_on_parasol(real_ind, 2:end)), size(new_data,1),1);
-                mean_amp = mean(ref_on_parasol(real_ind, 8));
+                new_data(:,2:8) = new_data(:,2:8)./repmat(median(ref_on_parasol(real_ind, 2:8)), size(new_data,1),1);
+                mean_amp = median(ref_on_parasol(real_ind, 8));
                 if mean_amp < 0 
                     new_data(:,7) = -1;
                 else
@@ -98,10 +104,10 @@ episolon = 0.0001;
 
                 data = [data; new_data];
 
-            elseif c == 5 ||c ==6
+            elseif c == 10 
                 real_ind = boolean(floor(sum(~isnan(ref_off_parasol),2)/size(ref_off_parasol,2)));
-                new_data(:,2:end) = new_data(:,2:end)./repmat(mean(ref_off_parasol(real_ind, 2:end)), size(new_data,1),1);
-                 mean_amp = mean(ref_off_parasol(real_ind, 8));
+                new_data(:,2:8) = new_data(:,2:8)./repmat(median(ref_off_parasol(real_ind, 2:8)), size(new_data,1),1);
+                 mean_amp = median(ref_off_parasol(real_ind, 8));
                 if mean_amp < 0 
                    new_data(:,7) = -1;
                 else
@@ -131,11 +137,20 @@ data_rows = boolean(floor(sum(~isnan(data_large),2)/size(data_large,2)));
 norm_data = data_large;%[data_large(:,1:2), norm_data];
 
 
-[COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(norm_data(:,3:end-2), 'NumComponents',3);
+[COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(norm_data(:,3:end), 'NumComponents',3);
 
+
+% xdata = data_large(:,3:4);
+% group = data_large(:,2);
+% svmStruct = svmtrain(xdata, group, 'ShowPlot', true)
+% [b,dev,stats] = glmfit(data_large(:,3:4),data_large(:,2)-2,'binomial','link','identity')
+% % [idx, z] = mnrfit(norm_data(:,3:end), norm_data(:,2));
+% y_fit = glmval(b,data_large(:,3:4), 'identity');
+% figure
+% plot(data_large(:,3:4), data_large(:,2)-2, 'o', data_large(:,3:4)-2, y_fit, 'o')
 test = SCORE;
 % idx = kmeans(norm_data(:,2:end),length(unique(norm_data(:,1))));
-idx = kmeans(norm_data,length(unique(norm_data(:,1))));
+% idx = kmeans(norm_data,length(unique(norm_data(:,1))));
 % idx = kmeans(test,4);
 
 figure
@@ -144,6 +159,8 @@ title('PC 1,2, and 3')
 
 figure;
 % subplot(3,1,1)
+set(gcf, 'Position', [10 10 1120 840])
+
 h = gscatter(test(:,1), test(:,2),norm_data(:,1:2));
 
 S = unique(norm_data(:,1:2), 'rows');
@@ -151,15 +168,17 @@ unique_dates = unique(norm_data(:,1));
 
 unique_classes = unique(norm_data(:,2));
 markers = {'+','o','*','.','square', 'hexagram','diamond','^','v','>','<','pentagram','x'};
-colors = hsv(size(unique(S(:,1)),1));
+% colors = hsv(size(unique(S(:,1)),1));
+colors = hsv(length(unique_classes));
+
 l= findobj(gcf,'tag','legend'); 
 set(l,'location','best');
 for n = 1:length(h)
-   set(h(n), 'Marker', markers{unique_classes == S(n,2)})
+   set(h(n), 'Marker', markers{unique_dates == S(n,1)})
       set(h(n), 'MarkerSize', 9);
 
-   set(h(n), 'MarkerFaceColor', colors(unique_dates == S(n,1), :))
-      set(h(n), 'MarkerEdgeColor', colors(unique_dates == S(n,1), :))
+   set(h(n), 'MarkerFaceColor', colors(unique_classes == S(n,2), :))
+      set(h(n), 'MarkerEdgeColor', colors(unique_classes == S(n,2), :))
 LegendString{n} = [[run_opts.date{S(n,1)}, ' ', run_opts.dataname{S(n,1)}(1:7)] ' , ' classes{S(n,2)}];
 end
 set(l, 'String', LegendString)
@@ -167,30 +186,33 @@ title('PC 1 and 2')
 
 
 figure;
+set(gcf, 'Position', [10 10 1120 840])
 % subplot(3,1,1)
 h= gscatter(test(:,1), test(:,3),norm_data(:,1:2));
 
 l= findobj(gcf,'tag','legend'); 
 set(l,'location','best');
 for n = 1:length(h)
-   set(h(n), 'Marker', markers{unique_classes == S(n,2)})
+   set(h(n), 'Marker', markers{unique_dates == S(n,1)})
          set(h(n), 'MarkerSize', 9);
-   set(h(n), 'MarkerFaceColor', colors(unique_dates == S(n,1), :))
-      set(h(n), 'MarkerEdgeColor', colors(unique_dates == S(n,1), :))
+   set(h(n), 'MarkerFaceColor', colors(unique_classes == S(n,2), :))
+      set(h(n), 'MarkerEdgeColor', colors(unique_classes == S(n,2), :))
 LegendString{n} = [run_opts.date{S(n,1)} ' , ' classes{S(n,2)}];
 end
 set(l, 'String', LegendString)
 title('PC 1 and 3')
 figure;
+set(gcf, 'Position', [10 10 1120 840])
+
 % subplot(3,1,1)
 h = gscatter(test(:,2), test(:,3),norm_data(:,1:2));
 
 l= findobj(gcf,'tag','legend'); 
 set(l,'location','best');
 for n = 1:length(h)
-   set(h(n), 'Marker', markers{unique_classes == S(n,2)})
-   set(h(n), 'MarkerFaceColor', colors(unique_dates == S(n,1), :))
-      set(h(n), 'MarkerEdgeColor', colors(unique_dates == S(n,1), :))       
+   set(h(n), 'Marker', markers{unique_dates == S(n,1)})
+   set(h(n), 'MarkerFaceColor', colors(unique_classes == S(n,2), :))
+      set(h(n), 'MarkerEdgeColor', colors(unique_classes == S(n,2), :))       
       set(h(n), 'MarkerSize', 9);
 
 LegendString{n} = [run_opts.date{S(n,1)} ' , ' classes{S(n,2)}];
@@ -214,15 +236,19 @@ title('PC 2 and 3')
 % 
 
 figure;
-gscatter(data_large(:,3), data_large(:,8),data_large(:,2))
+set(gcf, 'Position', [10 10 1120 840])
+data_rows = boolean(floor(sum(~isnan(data_large),2)/size(data_large,2)));
+data_large(data_large(:,2) > 2, 2) = 3;
+
+gscatter(data_large(data_rows,3), data_large(data_rows,4),data_large(data_rows,2))
 xlabel('RF Size (relative to parasols')
-ylabel('Biphasic index (relative to parasols')
+ylabel('zc (relative to parasols')
 set(l,'location','best');
+
 % % % set(l, 'String', {classes{unique(norm_data(:,1))}})
-data_large(data_large(:,2) == 2, 2) = 1;
-data_large(data_large(:,2) == 3, 2) = 2;
-data_large(data_large(:,2) == 5, 2) = 3;
-data_large(data_large(:,2) == 6, 2) = 4;
-data_to_save = [data_large(:,1:2) test];
-csvwrite(['/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Cell Properties/', 'othertypestest'], data_to_save);
+% data_large(data_large(:,2) == 3, 2) = 2;
+% data_large(data_large(:,2) == 5, 2) = 3;
+% data_large(data_large(:,2) == 6, 2) = 4;
+% data_to_save = [data_large(:,1:2) test];
+% csvwrite(['/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Cell Properties/', 'othertypestest'], data_to_save);
 
