@@ -10,7 +10,7 @@ location = 'Data';
 interval = 2; % number of seconds each stimulus was displayed for
 num_of_trials = 25;
 
-cell_type = 'OFF parasol';
+cell_type = 'ON parasol';
 
 % Where to save the data
 filepath= ['/Users/colleen/Desktop/Light Steps/', run_opt.data_set, '/', run_opt.data_run, '/'];
@@ -18,7 +18,9 @@ filepath= ['/Users/colleen/Desktop/Light Steps/', run_opt.data_set, '/', run_opt
 % You can give the cells as all of them (datarun.cell_ids) or give
 % specific vision ids
 % Find the cell to run by mapping a large cell EI from a white noise run
-cells = [335 1639 6366]; % 'all' or give a vector of vision cell ids
+% cells = [335 1639 6366]; % 'all' or give a vector of vision cell ids
+cells = [151 4534 5911]; % 'all' or give a vector of vision cell ids
+
 steps = [0.5, 1,2, 4,8];
 map_order = [151 1639 335 4534 6366 5911];
 map_order = kron(map_order, ones(1, length(steps)))';
