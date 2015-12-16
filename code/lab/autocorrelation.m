@@ -67,9 +67,18 @@ norm.end_value = smoothed(end);
 [val, ind] = max(smoothed);
 norm.peak = val;
 norm.peak_time = bins(ind); % seconds
-twentyfive_percent = 0.25*val;
-crossing_ind = crossing([-1; smoothed - twentyfive_percent]);
+fifty_percent = 0.5*val;
+crossing_ind = crossing([-1; smoothed - fifty_percent]);
 norm.rise = bins(crossing_ind(1));
 
+norm.slope_up = (norm.peak - smoothed(crossing_ind(1)))./(norm.peak_time - bins(crossing_ind(1)));
+norm.slope_down = (norm.end_value - norm.peak)./(bins(end) - norm.peak_time);
+
+if norm.slope_up > 10
+    norm.slope_up = 10;
+end
+if norm.slope_down < -5
+    norm.slope_down = -5;
+end
 
 end
