@@ -41,7 +41,7 @@ cone_map = index_masks(masks, num2cell(indexes));
 
 %% Spaced out % for use
 min_neighbor_dist = 1.5;
-max_self_dist     = 2;
+max_self_dist     = 4;
 spaced = space_voronoi_masks(datarun, min_neighbor_dist, max_self_dist);
 cone_map = index_masks(spaced, num2cell(indexes));
 

@@ -9,7 +9,7 @@ imagesc(a)
 set(gca,'dataaspectratio', [1 1 1])
 axis off
 
-
+local_path = '/Volumes/Data/';
 vormap = load([local_path, '2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt']);
 
 vormap(vormap>0) = 1;
@@ -68,6 +68,8 @@ axis([290 355 470 515]+1)
 
 
 %% ID 168
+vormap = load([ '/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt']);
+
 datarunID = 168;
 
 visionID = datarun.cell_ids(datarunID);
@@ -83,7 +85,7 @@ tmp = pdist2([x, y], [cones(:,1) cones(:,2)]);
 ic(isnan(tmp(ic))) = [];
 far_cones = ic(end-15:end)';
 
-select_cones = [center_cones; far_cones];
+select_cones = [center_cones];%; far_cones];
 
 
 sta = squeeze(datarun.stas.stas{datarunID});
@@ -116,9 +118,66 @@ spikes_tmp = spikes;
 spikes_tmp(spikes<sta_params.length) = [];
 
 
-nbins_cone1 = 4;
-nbins_cone2 = 4;
-contrast_response_erm(filt_inputs, spikes_tmp-sta_params.length+1, nbins_cone1, nbins_cone2, center_cones, vormap, cones, comb, datarunID);
+nbins_cone1 = 8;
+nbins_cone2 = 8;
+contrast_response_ej_talk(filt_inputs, spikes_tmp-sta_params.length+1, nbins_cone1, nbins_cone2, center_cones, vormap, cones, comb, datarunID);
+
+%% ID 162
+vormap = load([ '/Volumes/Data/2011-12-13-2/Visual/2011-12-13-2_f04_vorcones/map-0000.txt']);
+
+datarunID = 162;
+
+visionID = datarun.cell_ids(datarunID);
+raw_sta = squeeze(vorrun.stas.stas{datarunID});
+[full_sta, cones] = expand_voronoi_sta(raw_sta, vormap);
+
+center_cones = find(raw_sta(:,27)<-0.08);
+
+x = mean(cones(center_cones,1));
+y = mean(cones(center_cones,2));
+tmp = pdist2([x, y], [cones(:,1) cones(:,2)]);
+[~, ic] = sort(tmp);
+ic(isnan(tmp(ic))) = [];
+far_cones = ic(end-15:end)';
+
+select_cones = [center_cones];%; far_cones];
+
+
+sta = squeeze(datarun.stas.stas{datarunID});
+sta1 = squeeze(datarun1.stas.stas{datarunID});
+sta_snippet = -imresize(double(sta(:,:,4)), 2, 'nearest');
+sta1_snippet = -imresize(double(sta1(:,:,4)), 2, 'nearest');
+voronoi_regions = full_sta(:,:,27);
+voronoi_regions = voronoi_regions/(min(voronoi_regions(:))*1.5);
+comb = zeros(600,600,3);
+comb(:,:,1) = sta_snippet/max(sta_snippet(:));
+comb(:,:,3) = sta1_snippet/max(sta1_snippet(:));
+comb(:,:,2) = voronoi_regions;
+
+sta_params.length = 15;
+sta_params.offset = 0;
+fraction = 0.9;
+
+spikes=ceil((vorrun.spikes{datarunID}-vorrun.triggers(1))*1000/(refresh)); % spikes in frames
+spikes(spikes<sta_params.length-sta_params.offset)=[];
+
+[unbiased_sta, gensig_bins, nonlinearity]=unbiased_STA(inputs(select_cones,1:50000), spikes, fraction, sta_params);
+
+filt_inputs = zeros(length(select_cones), size(inputs,2)-sta_params.length+1);
+cnt = 1;
+for current_cone=select_cones'
+    filt_inputs(cnt,:)=conv(inputs(current_cone,:), unbiased_sta(cnt,:),'valid');
+    cnt=cnt+1;
+end
+spikes_tmp = spikes;
+spikes_tmp(spikes<sta_params.length) = [];
+
+
+nbins_cone1 = 8;
+nbins_cone2 = 8;
+contrast_response_ej_talk(filt_inputs, spikes_tmp-sta_params.length+1, nbins_cone1, nbins_cone2, center_cones, vormap, cones, comb, datarunID);
+
+
 
 
 %% ID 271
@@ -137,7 +196,7 @@ tmp = pdist2([x, y], [cones(:,1) cones(:,2)]);
 ic(isnan(tmp(ic))) = [];
 far_cones = ic(end-15:end)';
 
-select_cones = [center_cones; far_cones];
+select_cones = [center_cones];%; far_cones];
 
 
 sta = squeeze(datarun.stas.stas{datarunID});
@@ -169,10 +228,11 @@ end
 spikes_tmp = spikes;
 spikes_tmp(spikes<sta_params.length) = [];
 
-nbins_cone1 = 4;
-nbins_cone2 = 4;
+nbins_cone1 = 5;
+nbins_cone2 = 5;
 contrast_response_erm(filt_inputs, spikes_tmp-sta_params.length+1, nbins_cone1, nbins_cone2, center_cones, vormap, cones, comb, datarunID);
 
+contrast_response_ej_talk(filt_inputs, spikes_tmp-sta_params.length+1, nbins_cone1, nbins_cone2, center_cones, vormap, cones, comb, datarunID);
 
 
 %% all off

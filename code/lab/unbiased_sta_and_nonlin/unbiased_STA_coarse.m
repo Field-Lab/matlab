@@ -15,7 +15,7 @@ function [mean_unbiased_sta, gensig_bins, mean_nonlinearity, stix_sign]=unbiased
 
 
 %parameters
-bin_nonl = 100; % number of bins for nonlinearity
+bin_nonl = 20; % number of bins for nonlinearity
 
 spikes(spikes>size(inputs,2)) = []; 
 spikes(spikes<sta_params.length) = [];
@@ -132,6 +132,7 @@ for k=2:length(mean_nonlinearity)
         mean_nonlinearity(k) = mean_nonlinearity(k-1);
     end
 end
+
 
 % figure
 % for i=1:n_stixels

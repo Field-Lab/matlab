@@ -19,10 +19,10 @@ size_cone1_bin = floor(size(inputs,2)/nbins_cone1);
 size_cone2_bin = floor(size(inputs,2)/nbins_cone2);
 
 % on cell
-colors = [0.5 0.5 0.5; 1 0.5 0; 0.5 0 1;  1 1 0;0 1 0;  0 0 1;  1 0 0; 0 0.6 0; 1 0 1; 0 1 1; 0.6 0.65 0; ...
-    0.8 0.8 0; 0.8 0 0.8; 0 0.8 0.8; 0 0.3 0.8; 1 1 0.3; 0.9 0.3 0.8; 0.1 0.1 0.3; 0.8 0.8 0.8; 0.1 0.1 0.1];
+% colors = [0.5 0.5 0.5; 1 0.5 0; 0.5 0 1;  1 1 0;0 1 0;  0 0 1;  1 0 0; 0 0.6 0; 1 0 1; 0 1 1; 0.6 0.65 0; ...
+%     0.8 0.8 0; 0.8 0 0.8; 0 0.8 0.8; 0 0.3 0.8; 1 1 0.3; 0.9 0.3 0.8; 0.1 0.1 0.3; 0.8 0.8 0.8; 0.1 0.1 0.1];
 % off cell
-% colors = [0.5 0.5 0.5;   1 1 0;0 1 0;  0 0 1;  1 0 0; 1 0 1; 0 1 1; 0.6 0.65 0];
+colors = [0.5 0.5 0.5;   1 1 0;0 1 0;  0 0 1;  1 0 0; 1 0 1; 0 1 1; 0.6 0.65 0];
     
 for cone1 = 1:length(center_cones)
     
@@ -102,7 +102,8 @@ for cone1 = 1:length(center_cones)
 %     
     
     % color cones
-    colored_cones = zeros([size(comb), 3]);  
+%     colored_cones = zeros([size(comb), 3]);  
+    colored_cones = zeros([size(comb)]);  
     for cone2 = 1:length(center_cones)
         [a, b] = find(map==center_cones(cone2));        
         if cone1 ~= cone2            
@@ -136,11 +137,11 @@ for cone1 = 1:length(center_cones)
 
     
     drawnow
-    path2save = ['/Volumes/Analysis/2015-10-29-1/data005/on_p_0.02_10bins/', int2str(datarunID)];
+    path2save = ['/Users/alexth/Desktop/for_talk/', int2str(datarunID)];
     if ~isdir(path2save)
         mkdir(path2save);
     end
-    saveas(gcf,[path2save,'/on_', int2str(center_cones(cone1)), '.tiff'])
+    saveas(gcf,[path2save,'/off_', int2str(center_cones(cone1)), '.tiff'])
 end
 
 

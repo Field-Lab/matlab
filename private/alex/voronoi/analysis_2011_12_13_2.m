@@ -1,6 +1,6 @@
 %% load stuff
 
-local_path = '/Users/alexandra/Desktop/datasets/';
+local_path = '/Volumes/Analysis/';
 
 datarun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11']);
 datarun = load_params(datarun,'verbose',1);
