@@ -9,7 +9,7 @@ clc
 [~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
 % txt = {'
 % };
-for j= 5
+for j= 1:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
@@ -75,7 +75,7 @@ for j= 5
             acf_slope_down = zeros(length(cell_ids),1);
             norm= cell(length(cell_ids),1);
             cell_counter  = 0;
-            for i = 1:length(cell_ids)
+            parfor i = 1:length(cell_ids)
                 try
                     [rf(i), t_zc(i), t_p(i), t_t(i), bi_ind(i), fr(i), amp(i)] = get_timecourse_prop(datarun, cell_ids(i), run_opts);
 
@@ -86,7 +86,7 @@ for j= 5
                 end
                 try
                     [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
-                    [times, width(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)}, 10000)
+                    [width(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)});
                     cell_counter = cell_counter +1;
                    
                     acf_mean(i) = norm{i}.mean;
@@ -161,17 +161,17 @@ for j= 5
     catch
         disp([run_opts.date, run_opts.concatname]);
     end
-    [COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(pca_data', 'NumComponents',2);
-    counter = 1;
-    for iter = 1:size(datarun.cell_types,2)
-        load([run_opts.filepath,'/',  datarun.cell_types{iter}.name, '/', 'output.mat']);
-        cell_ids = get_cell_ids(datarun, datarun.cell_types{iter}.name);
-
-        output.parameters.pca1 = SCORE(counter:counter +count(iter) -1,1);
-        output.parameters.pca2 = SCORE(counter:counter +count(iter) -1,2);
-        save([run_opts.filepath,'/', datarun.cell_types{iter}.name, '/', 'output.mat'], 'output');
-        counter = counter + count(iter);
-    end
+%     [COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(pca_data', 'NumComponents',2);
+%     counter = 1;
+%     for iter = 1:size(datarun.cell_types,2)
+%         load([run_opts.filepath,'/',  datarun.cell_types{iter}.name, '/', 'output.mat']);
+%         cell_ids = get_cell_ids(datarun, datarun.cell_types{iter}.name);
+% 
+%         output.parameters.pca1 = SCORE(counter:counter +count(iter) -1,1);
+%         output.parameters.pca2 = SCORE(counter:counter +count(iter) -1,2);
+%         save([run_opts.filepath,'/', datarun.cell_types{iter}.name, '/', 'output.mat'], 'output');
+%         counter = counter + count(iter);
+%     end
     
     clear datarun
 end

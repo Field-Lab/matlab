@@ -1,4 +1,4 @@
-function [times, width] = inter_spike_interval(spikes, num_bins)
+function [width] = inter_spike_interval(spikes)
 
 times= nan(length(spikes)-1,1);
 for i = 1:length(spikes)-1
