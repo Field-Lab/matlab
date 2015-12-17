@@ -1,15 +1,15 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% clear
-% close all
-% clc
+clear
+close all
+clc
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Test Large Cell Data.xlsx');
+[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
 % txt = {'
 % };
-for j= 2:size(txt,1)-1
+for j= 5
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
@@ -39,10 +39,10 @@ for j= 2:size(txt,1)-1
     try
         datarun=load_data(datarun,opt);
         
-        run_opts.refresh = datarun.stimulus.interval/120*1000;
+       run_opts.refresh = datarun.stimulus.interval/120*1000;
         % cell_indices = get_cell_indices(datarun,run_opts.cell_specification);
         pca_data = [];
-        parfor iter = 1:size(datarun.cell_types,2)
+        for iter = 1:size(datarun.cell_types,2)
             clear probabilities;
             run_opts.cell_specification = datarun.cell_types{iter}.name;
             run_opts.save_folder = [run_opts.date, '/', run_opts.concatname, '/', run_opts.cell_specification,  '/'];
@@ -70,12 +70,23 @@ for j= 2:size(txt,1)-1
             acf_peak=zeros(length(cell_ids),1);
             acf_peak_time=zeros(length(cell_ids),1);
             acf_rise=zeros(length(cell_ids),1);
+            acf_slope_up = zeros(length(cell_ids),1);
+            acf_slope_down = zeros(length(cell_ids),1);
             norm= cell(length(cell_ids),1);
             cell_counter  = 0;
             for i = 1:length(cell_ids)
                 try
                     [rf(i), t_zc(i), t_p(i), t_t(i), bi_ind(i), fr(i), amp(i)] = get_timecourse_prop(datarun, cell_ids(i), run_opts);
+
+
+
+                catch
+                    disp([num2str(iter) '/' num2str(i)])
+                end
+                try
                     [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
+                    [times] = inter_spike_interval(datarun.spikes{cell_indices(i)}, 10000)
+                    cell_counter = cell_counter +1;
                     acf_mean(i) = norm{i}.mean;
                     acf_var(i) = norm{i}.var;
                     acf_sd(i) = norm{i}.sd;
@@ -83,18 +94,36 @@ for j= 2:size(txt,1)-1
                     acf_peak(i) = norm{i}.peak;
                     acf_peak_time(i) = norm{i}.peak_time;
                     acf_rise(i) = norm{i}.rise;
-                    cell_counter = cell_counter +1;
-
-
+                    acf_slope_up(i) = norm{i}.slope_up;
+                    acf_slope_down(i) = norm{i}.slope_down;
                 catch
-                    disp([num2str(iter) '/' num2str(i)])
+                    probabilities{i} = nan(1,101);
+                    bins{i} = nan(1,101);
+                    cell_counter = cell_counter +1;
+                    acf_mean(i) = nan;
+                    acf_var(i) = nan;
+                    acf_sd(i) = nan;
+                    acf_end_val(i) = nan;
+                    acf_peak(i) = nan;
+                    acf_peak_time(i) = nan;
+                    acf_rise(i) = nan;
+                    acf_slope_up(i) =nan;
+                    acf_slope_down(i) =nan;
+
+
                 end
+                
             end
             count(iter) = cell_counter;
-            test = cell2mat(probabilities);
-            test2 = reshape(test, length(bins{1}), length(test)/length(bins{1}));
+            try
+                test = cell2mat(probabilities);
+                test2 = reshape(test, length(bins{1}), length(test)/length(bins{1}));
+
+                pca_data = [pca_data, test2];
+            catch
+                disp('pca catch')
+            end
             
-            pca_data = [pca_data, test2];
             output.date = run_opts.date;
             output.concatname = run_opts.concatname;
             % if sum(strcmp(run_opts.cell_specification, {'ON parasol', 'ON midget', 'OFF midget', 'OFF parasol', 'OFF large 1','OFF large 2', 'OFF large 3', 'OFF large 4' ,'ON large 1', 'ON large 2', 'ON large 3', 'ON large 4'})) ~=1;
@@ -118,6 +147,10 @@ for j= 2:size(txt,1)-1
             output.parameters.acf_peak =acf_peak;
             output.parameters.acf_peak_time =acf_peak_time;
             output.parameters.acf_rise =acf_rise;
+            output.parameters.acf_slope_up =acf_slope_up;
+            output.parameters.acf_slope_down =acf_slope_down;
+
+
             % end
             save([run_opts.filepath,'/', run_opts.cell_specification, '/', 'output.mat'], 'output');
         end
