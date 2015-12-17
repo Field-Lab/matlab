@@ -6,10 +6,10 @@ close all
 clc
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Test Large Cell Data.xlsx');
+[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
 % txt = {'
 % };
-for j= 8
+for j= 5
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
@@ -74,7 +74,7 @@ for j= 8
             acf_slope_down = zeros(length(cell_ids),1);
             norm= cell(length(cell_ids),1);
             cell_counter  = 0;
-            parfor i = 1:length(cell_ids)
+            for i = 1:length(cell_ids)
                 try
                     [rf(i), t_zc(i), t_p(i), t_t(i), bi_ind(i), fr(i), amp(i)] = get_timecourse_prop(datarun, cell_ids(i), run_opts);
 
@@ -85,6 +85,7 @@ for j= 8
                 end
                 try
                     [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
+                    [times] = inter_spike_interval(datarun.spikes{cell_indices(i)}, 10000)
                     cell_counter = cell_counter +1;
                     acf_mean(i) = norm{i}.mean;
                     acf_var(i) = norm{i}.var;
