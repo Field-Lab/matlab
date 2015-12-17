@@ -1,5 +1,5 @@
 
-function [stas_true,stas_rand] = get_gmlm_sta2(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth)
+function [stas_true,stas_rand] = get_gmlm_sta2(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth,contrast_factor)
 
 
 %% Load stimuli
@@ -20,7 +20,7 @@ icell=icell+1;
 %load(cell_glm_fit);
 %%
 
-extract_movie_response5;
+extract_movie_response2;
 
  %% EM like Max Expected Likelihood .. 
  interval=1;

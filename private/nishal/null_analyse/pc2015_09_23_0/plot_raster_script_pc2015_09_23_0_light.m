@@ -1,5 +1,5 @@
 
-function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_08_17_2_light(cellID,nConditions,condDuration,cond_str,neuronPath)
+function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath)
 % 
 % neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full,Null_datafile2,InterestingCell_vis_id);
 % ref_cells=neuronPairsRefVsNew(:,2);
@@ -30,7 +30,7 @@ for iTrial=1:nTrials
 
 TTLstart=TTL((iTrial-1)*TTLperCondperTrial*nConditions+1);
 TTLend=TTLstart+condDuration*nConditions*20000;%TTL((iTrial)*TTLperTrial+1);
-(TTLstart-TTLstartOld)/20000
+(TTLstart-TTLstartOld)/20000;
 spkColl{iTrial}=(spks((spks>=TTLstart)&(spks<=TTLend))'-TTLstart);
 
 
@@ -38,7 +38,7 @@ for icond=1:nConditions
     
 TTLstart=TTL(((iTrial-1)*nConditions+icond-1)*TTLperCondperTrial+1);
 TTLend=TTLstart+condDuration*20000;%TTL((iTrial)*TTLperTrial+1);
-(TTLstart-TTLstartOld)/20000
+(TTLstart-TTLstartOld)/20000;
 spkCondColl(icond).spksColl{iTrial}=(spks((spks>=TTLstart)&(spks<=TTLend))'-TTLstart);
 if(isempty(spkCondColl(icond).spksColl{iTrial}))
     

@@ -50,7 +50,7 @@ ssf = repelem(strongestFrame,model.gridSzX/szstr,model.gridSzX/szstr,3);
 h=figure;
 imagesc( repelem(sum(model.totalConeMap3D,3)==0,1,1,3).*ssf*30 + model.totalConeMap3D);
 axis image
-title('STA 30 min');
+title('STA 30 scale');
 set(gca,'xTick',[]);
 set(gca,'yTick',[]);
 print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/STA30.pdf'));
@@ -58,7 +58,7 @@ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN
 h=figure;
 imagesc( repelem(sum(model.totalConeMap3D,3)==0,1,1,3).*ssf*20 + model.totalConeMap3D);
 axis image
-title('STA 20 min');
+title('STA 20 scale');
 set(gca,'xTick',[]);
 set(gca,'yTick',[]);
 print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/STA20.pdf'));
@@ -83,13 +83,15 @@ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN
  fval_log = zeros(50,1);
  for ifit = 1:50
      ifit
+     close all
  [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,filteredStimDim,nSU,interval); 
  
  fitGMLM_log{ifit} = fitGMLM;
  fval_log(ifit) = f_val;
  
  end
- %save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU),'fitGMLM_log','fval_log','model','mask2');
+ fitGMLM1{nSU} = fitGMLM_log;
+ save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU),'fitGMLM_log','fval_log','model','mask2');
  end
   
 
@@ -110,8 +112,8 @@ szz =[1,1;
     4,4;
     4,4];
 
-for nSU=1:15
- fitGMLM = fitGMLM1{nSU};   
+for nSU=4%1:8
+ fitGMLM{1} =fitGMLM1{7};   
 sta_dim1 = size(mask2,1);
 sta_dim2 = size(mask2,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
@@ -119,19 +121,31 @@ masked_frame = indexedframe(logical(mask2));
 
 h=figure;
 for ifilt=1:nSU
-subplot(szz(nSU,1),szz(nSU,2),ifilt)
-u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+%subplot(szz(nSU,1),szz(nSU,2),ifilt)
+subplot(1,nSU,ifilt);
+u_spatial = reshape_vector(fitGMLM{1}.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
 
-strongestFrame = u_spatial;
+strongestFrame = -1*u_spatial/max(abs(u_spatial(:)))+0.5;
 szstr = size(strongestFrame,1);
 ssf = repelem(strongestFrame,model.gridSzX/szstr,model.gridSzX/szstr,3);
-mag = repelem(sum(model.totalConeMap3D,3)==0,1,1,3).*ssf*2 + model.totalConeMap3D*2;
-mag = mag(1:ceil(max(model.conesX))+40,1:ceil(max(model.conesY))+40,:);
-imagesc(mag);
+mmask = sum(model.totalConeMap3D,3)==0;
+xx = repelem(mmask,1,1,3).*ssf; 
+aa = model.totalConeMap3D;  aa(repelem(sum(aa,3),1,1,3)<0.5)=aa(repelem(sum(aa,3)<0.5,1,1,3))+0.5;aa =(aa-0.5)/max(aa(:)-0.5) + 0.5;
+mxt = ((aa(repelem(sum(aa,3)~=1.5,1,1,3))));mx= max(mxt(:));
+xx(repelem(sum(aa,3)~=1.5,1,1,3))= mxt;
+xx = xx(1:ceil(max(model.conesX))+40,1:ceil(max(model.conesY))+40,:);
+
+% mag = repelem(sum(model.totalConeMap3D,3)==0,1,1,3).*ssf + model.totalConeMap3D*2;
+% mag = mag(1:ceil(max(model.conesX))+40,1:ceil(max(model.conesY))+40,:);
+
+imagesc(xx);
 axis image
 set(gca,'xTick',[]);
 set(gca,'yTick',[]);
+
 title(sprintf('SU # %d',ifilt));
+%caxis([-max(mag(:)),max(mag(:))]);
+%caxis([0,max(aa(:))])
 end
 
 %print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/Exp_ASM_MEL_EM_filters SU%d.pdf',nSU));
@@ -143,7 +157,7 @@ title('SU to ganglion Weight distribution');
 
 fitSUwt = [];
 for isu=1:nSU
-    fitSUwt = [fitSUwt ; norm(fitGMLM.Linear.filter{isu})];
+    fitSUwt = [fitSUwt ; norm(fitGMLM{1}.Linear.filter{isu})];
 end
 
 figure;
@@ -154,7 +168,7 @@ title('Extracted SU magnitudes');
 % radar chart 
 dot_filter_su=zeros(nSU,model.nSU);
 for ifilter = 1:nSU
-    u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilter}(1:length(masked_frame)),masked_frame,indexedframe);
+    u_spatial = reshape_vector(fitGMLM{1}.Linear.filter{ifilter}(1:length(masked_frame)),masked_frame,indexedframe);
     strongestFrame = u_spatial;
     szstr = size(strongestFrame,1);
     ssf = repelem(strongestFrame,model.gridSzX/szstr,model.gridSzX/szstr,1);
@@ -172,12 +186,12 @@ end
 
 ratioFilters=[];
 maxMag = [];
-for nSU = 1:15
+for nSU = 1:8
 fitGMLM  = fitGMLM1{nSU};
 
 filterMag = [];
 for ifilter=1:nSU
-filterMag = [filterMag;norm(fitGMLM.Linear.filter{ifilter})];
+filterMag = [filterMag;norm(fitGMLM{1}.Linear.filter{ifilter})];
 end
 
 maxMag(nSU) = max(filterMag);
@@ -186,13 +200,13 @@ ratioFilters(nSU) = min(filterMag)/max(filterMag);
 end
 
 figure;
-plot(1:15,ratioFilters,'-*');
+plot(1:8,ratioFilters,'-*');
 ylim([0,1]);
 title('Min/Max filter magnitude v/s nSU extracted');
 
 
 figure;
-plot(1:15,maxMag,'-*');
+plot(1:8,maxMag,'-*');
 %ylim([0,1]);
 title('Max filter magnitude v/s nSU extracted');
 
@@ -236,7 +250,7 @@ mask2 = logical(ones(size(movie2,1),size(movie2,2)));
 maskedMov_null= filterMov(movie2,mask2,squeeze(model.ttf));
 
 
-for nSU=4%1:15
+for nSU=1:15
     
     load(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU))
     
@@ -335,7 +349,7 @@ mask2 = logical(ones(size(movie2,1),size(movie2,2)));
 maskedMov_null= filterMov(movie2,mask2,squeeze(model.ttf));
 
 
-for nSU=1:15
+for nSU=1:8
     nSU
     load(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU))
     
@@ -436,5 +450,49 @@ plot(x5/120,y5+50*0,'r');
 set(gca,'yTick',[]);
 xlabel('Time(s)');
 xlim([2,12]);
+
+
+%% long null stimulus .. 
+
+% generate response to long null stimulus
+
+movieLen=120*60*30;
+stas{1}=zeros(size(STA,1),size(STA,2),3,size(STA,3));
+stas{1}(:,:,1,:)=STA;
+stas{1}(:,:,2,:)=STA;
+stas{1}(:,:,3,:)=STA;
+cell_params.STAlen=14;
+[new_stas,mask,CellMasks]=clipSTAs(stas,cell_params)
+Filtdim1=size(STA,1);Filtdim2=size(STA,2);Filtlen=30;
+
+
+% null_compute_subUnit_test
+model_spatial_nulling
+
+
+nTrials=1;
+dt=1/120;
+[respOrig,~] = generateResp_LNLN(model,mov_orig2,dt,nTrials);
+[respNull,~] = generateResp_LNLN(model,mov_new2,dt,nTrials);
+
+movie = mov_orig2; response = respOrig;
+model_GMLM_fit;
+fitGMLM_log_orig =  fitGMLM1;
+
+
+nSU=3; 
+mask2 = logical(ones(size(movie,1),size(movie,2)));
+initialData.initialFilters = 2*(rand(sum(double(mask2(:)))*nSU,1)-0.5);
+initialData.initalbias = 2*(rand(nSU,1)-0.5);
+
+% analyze with different training length
+movie = mov_orig2; response = respOrig;
+[fitGMLM_log_ori,mse_data_ori] = model_GMLM_fit_diff_data_len(movie,response,model,nSU,initialData,mask2,P_mat);
+
+% analyze with different training length
+movie = mov_new2; response = respNull;
+[fitGMLM_log_null,mse_data_null] = model_GMLM_fit_diff_data_len(movie,response,model,nSU,initialData,mask2,P_mat);
+
+
 
 

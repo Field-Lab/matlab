@@ -34,7 +34,7 @@ axis image
 end
 suptitle({'Correlated STA'});
 
-%%
+%% Conditional response curves!
 
 ifit=8;
 load(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2008_05_13_3/Off_type1_fit_%d.mat',ifit));

@@ -1,4 +1,4 @@
-function dataa  = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length)
+function dataa  = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length,contrast_factor)
 datarun=load_data(WN_datafile);
 datarun=load_params(datarun);
 datarun=load_neurons(datarun);
@@ -12,8 +12,12 @@ user_STA_depth = sta_depth;
 extract_movie_response2;
 
 usta = maskedMovdd*spksGen/sum(spksGen);
-input = (usta'*maskedMovdd)'; input =input - mean(input); input = input/sqrt(var(input));
-output = spksGen;
+
+input = (usta'*maskedMovdd)';
+ainput= mean(input); binput = sqrt(var(input)); 
+input =input - ainput; input = input/binput;
+
+dt=1/120;output = spksGen/dt;
 
 
 thrr=[];
@@ -46,6 +50,11 @@ dataa(iiicell).inp_sd = sqrt(var(input));
 dataa(iiicell).mask  =  totalMaskAccept; 
 dataa(iiicell).STA = STA_recalc;
 dataa(iiicell).ttf = ttf;
+dataa(iiicell).usta = usta;
+dataa(iiicell).dt=dt;
+dataa(iiicell).ainput=ainput;
+dataa(iiicell).binput = binput;
+dataa(iiicell).lnp = 'lambda = g((usta.maskedMovdd - ainput)/binput) * dt';
 
 % fit the input - firing rate curve and get the slopes at origin and tip
 frnz = dataa(iiicell).fr >0; 

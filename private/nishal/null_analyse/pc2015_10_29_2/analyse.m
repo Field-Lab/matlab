@@ -23,7 +23,7 @@ rawMovFrames=1200/(4);
 figure;
 icnt=0;
 % make pixel histogram
-for imov=[16,18,19,21,23,24,26]
+for imov=movies_ON_additivity
     [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-06-0/Visual/null/%d.rawMovie',imov),rawMovFrames,1);
     subtract_movies{3}=mean(stim,1);
     subtract_movies{3}=mean(stim,1)*0+127.5;
@@ -99,7 +99,7 @@ end
 
 %% additivity experiment -  OFF
 
-dataRuns =dataRuns_OFF_additivity;
+dataRuns =dataRuns_ON_additivity;
 
 WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
 
@@ -107,7 +107,7 @@ WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
 datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
-cellTypeId = 2
+cellTypeId = 1
 InterestingCell_vis_id=datarun.cell_types{cellTypeId}.cell_ids; 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 

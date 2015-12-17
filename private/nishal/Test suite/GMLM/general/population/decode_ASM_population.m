@@ -15,8 +15,13 @@ dt=1/120;
 Tker =gpuArray(zeros(T,T));
 for itime=1:T
 for jtime = max(itime-29,1):itime
-    Tker(itime,jtime) = 1000*ttf((itime-jtime)+1);
+    Tker(itime,jtime) = ttf((itime-jtime)+1)/norm(ttf);
 end
+
+% % make it circulant matrix
+% if(itime<30)
+% Tker(itime,end-30+itime:end) = ttf(end:-1:end-30+itime)/norm(ttf);
+% end
 end
 TTker = Tker'*Tker;
 %% initialize
@@ -45,11 +50,11 @@ plot(2*idx/T,sqrt(scale_spec)*abs(fft([ttf;zeros(T-length(ttf),1)])),'LineWidth'
 xlabel('freq (* pi)');
 %% iterate
 togo = true;
-epsi = 10^-3;
-
+epsi = 10^-5;
+K=gather(K);B=gather(B);
 while togo
 % minimize likelihood
-X_kp1 = minL_Decode(K,B,Y,rho,Z_k,u_k,X_k,dt,scale_cells);
+[X_kp1,f_total] = minL_Decode(K,B,Y,rho,Z_k,u_k,X_k,dt,scale_cells);
 
 % project on feasible set
 % close all;
@@ -58,18 +63,22 @@ X_kp1 = minL_Decode(K,B,Y,rho,Z_k,u_k,X_k,dt,scale_cells);
 
 
 % another way to incorporate kernels.
-Z_kp1 = gpuArray(zeros(d,T));
+tic;
+Z_kp1 = gpuArray(zeros(d,T)); u_k = gpuArray(u_k);X_kp1 = gpuArray(X_kp1);
 for idim=1:d
 Z_kp1(idim,:) = (rho*Tker*((lambda*eye(T,T) + rho*TTker)\(Tker'*(X_kp1(idim,:)+u_k(idim,:))')))';
 end
-
+toc;
 % update u_k
 u_k = u_k + X_kp1 - Z_kp1;
 
 X_k = X_kp1;
 Z_k = Z_kp1;
 
-norm(X_k(:) - Z_k(:))
+u_k = gather(u_k);
+Z_k = gather(Z_k);
+X_k = gather(X_k);
+[f_total,norm(X_k(:) - Z_k(:))]
 
 if(norm(X_k(:) - Z_k(:)) <epsi)
     togo=false;
@@ -84,7 +93,7 @@ Xerr = Xdecode - X_ref;
 errMap =zeros(d,1);
 
 for idim=1:d
-errMap(idim)  = R_2_value(XXdecode(idim,:)',X_ref(idim,:)');
+errMap(idim)  = R_2_value(Xdecode(idim,:)',X_ref(idim,:)');
 end
 
 mm = reshape(1:1600,[40,40]);

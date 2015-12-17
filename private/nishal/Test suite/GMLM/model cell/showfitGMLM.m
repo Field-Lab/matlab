@@ -1,4 +1,22 @@
-function filter_matrix = showfitGMLM(fitGMLM2,text,mask)
+function filter_matrix = showfitGMLM(fitGMLM2,text,mask,varargin)
+
+
+p = inputParser;
+
+% specify list of optional parameters
+p.addParamValue('proj', eye(numel(mask(:))));
+p.addParamValue('preproj', eye(numel(fitGMLM2.Linear.filter{1})));
+
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+% assign variables from parsing.
+proj = params.proj;
+preproj = params.preproj;
 
 nFilters = length(fitGMLM2.Linear.filter);
 
@@ -12,14 +30,16 @@ filter_matrix = zeros(length(masked_frame),nFilters);
 figure;
 for ifilt=1:nFilters
 subplot(2,2,ifilt)
-u_spatial = reshape_vector(fitGMLM2.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);
+xx = preproj*(fitGMLM2.Linear.filter{ifilt});
+u_spatial = reshape_vector(xx(1:length(masked_frame)),masked_frame,indexedframe);
+u_spatial = reshape(proj*u_spatial(:),[size(u_spatial,1),size(u_spatial,2)]);
 imagesc((u_spatial));
 %caxis([-0.3,0.3]);
 colormap gray
 colorbar
-title(sprintf('%s : %d',text,ifilt));
+title(sprintf('%d',ifilt));
 
-filter_matrix (:,ifilt) = fitGMLM2.Linear.filter{ifilt}(1:length(masked_frame));
+filter_matrix (:,ifilt) =xx(1:length(masked_frame));
 end
-
+suptitle(sprintf('%s',text));
 end

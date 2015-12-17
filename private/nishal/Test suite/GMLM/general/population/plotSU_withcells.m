@@ -18,7 +18,7 @@ cols = distinguishable_colors(ncell+10); cols = cols(5:end,:);
 h=[];
 %h=figure('Color','w');
 for isu=1:size(K2,2)
-    subplot(1,2,isu);
+    subplot(9,2,isu);
     u=zeros(s1*s2,1);
     u(iidx) = K2(:,isu);
     xx = reshape(u,[s1,s2])';

@@ -10,7 +10,7 @@ cellsChoose([25,26,31,23])=1;
 cellsChoose=logical(cellsChoose);
 mask = sum(total_mask_log(:,cellsChoose),2)~=0;
 
-%% 
+%% *
 path = '/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2008_05_13_3/'
 load([path,'/Off_type1.mat']);
 binnedSpikeResponses_coll = Y;
@@ -57,9 +57,9 @@ end
         
 rho=1;
 lambda=0.1;
-Xref = maskedMovdd(mask,1:10000);
+Xref = maskedMovdd(mask,1:1000);
 %[Xdecode,errMap] = decode_ASM_population3D(fitASM_pop,binnedSpikeResponses_coll(cellsChoose,1:100),mask,ttf,rho,lambda,1000*maskedMovdd(mask,1:100),B_use)
-[Xdecode,errMap] = decode_ASM_population(fitASM_pop,binnedSpikeResponses_coll(cellsChoose,1:10000),mask,ttf,rho,lambda,Xref,B_use)
+[Xdecode,errMap] = decode_ASM_population(fitASM_pop,binnedSpikeResponses_coll(cellsChoose,1:1000),mask,ttf,rho,lambda,Xref,B_use)
  
 
 

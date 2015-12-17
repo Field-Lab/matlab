@@ -22,7 +22,7 @@ coneSpacing = 30; % in grid units
 coneLocSd = 1.5; 
 coneLatticeOrientation = pi/3; % in radians
 coneWindowSz = 4; % actually, its half of cone window.
-coneGaussSd = 1; % the cone gaussian input profile
+coneGaussSd = 2; % the cone gaussian input profile
 % parameters for cone weights?
 
 
@@ -145,7 +145,8 @@ end
 connectionMat = connectionMat';
 connectionMat = cone_to_SU_Wt.*connectionMat;
 
-cols = distinguishable_colors(nSU+1,{'b'});
+cols = distinguishable_colors(nSU,[0.2,0.2,0.2]);
+cols = cols(randperm(size(cols,1)),:);
 % Make totalConeMap3D 
 totalConeMap3D = zeros(gridSzX,gridSzY,3);
 
@@ -154,11 +155,11 @@ for isu = 1:nSU
     listC(coneidx==isu)
     for icone = listC(coneidx==isu)
         for idim=1:3
-    totalConeMap3D(:,:,idim) = totalConeMap3D(:,:,idim) + cone_data{icone}.coneMap*cols(isu,idim);
+    totalConeMap3D(:,:,idim) = totalConeMap3D(:,:,idim) + double(cone_data{icone}.coneMap>0.2)*cols(isu,idim);
         end
     end
 end
-totalConeMap3D = totalConeMap3D*10;
+%totalConeMap3D = totalConeMap3D*10;
 
 figure;
 imagesc(totalConeMap3D);

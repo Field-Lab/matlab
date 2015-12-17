@@ -22,9 +22,9 @@ maskedMov=zeros(sum(CellMasks{1}(:)),size(filtMov,3));
 
 %%
 %time_c(15:end)=0;
-
-figure;
-plot(time_c);
+% 
+% figure;
+% plot(time_c);
 
 mov=maskedMov;
 Filtlen=length(time_c);

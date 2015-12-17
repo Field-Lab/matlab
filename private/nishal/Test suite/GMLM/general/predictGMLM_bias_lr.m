@@ -24,7 +24,8 @@ end
 lam=lam+mu;
 l2=repmat(lam,[binFrame,1]);
 lam=l2(:);
-lam=lam*(interval/(120*binFrame));
+lam=lam*(interval/(120*binFrame)); 
+
 predictedResponse = zeros(nTrials,length(lam));
 
 for itrial=1:nTrials

@@ -1,7 +1,7 @@
-function [fitGLM,f_val] = fitGMLM_EM_power2(binnedResponses,mov,filteredStimDim2,nFrontEnds2,interval,gamma)
+function [fitGLM,f_val_log,f_val_test_log,su_compare_log ] = fitGMLM_EM_power2(binnedResponses,mov,filteredStimDim2,nFrontEnds2,interval,gamma,varargin)
 
 %% Works only for gaussian stimuli and no bias inside exponential 
- 
+
 %% Data
 global_vars_GMLM_afterSTC
  binnedResponses_global=binnedResponses; 
@@ -10,13 +10,38 @@ global_vars_GMLM_afterSTC
  
 mov_filtered=mov;
 
+%% parse input
+ p =inputParser;
+% specify list of optional parameters
+%initialFilters = (2/nFrontEnds)*(rand(filteredStimDim*nFrontEnds,1)-0.5);
+initialFilt = 2*(rand(filteredStimDim*nFrontEnds,1)-0.5);
+p.addParamValue('initialFilters',initialFilt);
+
+testStruct_def.test=0;
+p.addParamValue('testStruct',testStruct_def);
+
+comp_true_SU_str.compare=0;
+p.addParamValue('compare_true_SU',comp_true_SU_str);
+
+% resolve user input and default values
+p.parse(varargin{:});
+
+% get params struct
+params = p.Results;
+
+% assign variables from parsing.
+initialFilters = params.initialFilters;
+testStruct = params.testStruct;
+compare_true_SU=params.compare_true_SU;
+
 
 %% Initialization.
 %  Random initialization
-initialFilters = (2/nFrontEnds)*(rand(filteredStimDim*nFrontEnds,1)-0.5);
-initialFilters = 2*(rand(filteredStimDim*nFrontEnds,1)-0.5);
- % Add bias in initial filter
-% initialFilters=[initialFilters;0];
+% initialFilters = (2/nFrontEnds)*(rand(filteredStimDim*nFrontEnds,1)-0.5);
+% initialFilters = 2*(rand(filteredStimDim*nFrontEnds,1)-0.5);
+ 
+% Add bias in initial filter
+%%%%%% initialFilters=[initialFilters;0];
  
 
 % Extract filters 
@@ -46,12 +71,20 @@ kx = gpuArray(zeros(nFrontEnds,mov_len));
 kkx = gpuArray(zeros(nFrontEnds,mov_len));
 binnedResponses_global = gpuArray(binnedResponses_global);
 
-f_val_log=gpuArray([]); icnt=0;
+f_val_log=gpuArray([]); icnt=0;f_val_test_log=[];su_compare_log=[];
 iter=0;
 while(togo==1 & iter<=max_iter)
 iter=iter+1;
 %    kx=cell(nFrontEnds,1);
 %kkx = cell(nFrontEnds,1);
+
+if(testStruct.test~=0)
+f_val_test_log = [f_val_test_log;test_data(testStruct,filters,gamma,interval,mu)];
+end
+
+if(compare_true_SU.compare~=0)
+su_compare_log = [su_compare_log;compare_SU(filters,compare_true_SU)];
+end
 
     kkx= filters*mov_filtered;
     kx = (kkx.*(kkx>0)).^gamma;
@@ -94,6 +127,7 @@ lam=lam+mu;
 likelihood = (sum(-lam*(interval/120)) + sum(y_tsp.*log(lam(tsp))))/size(mov_filtered,2);
 f_val_prev=f_val;
 f_val=-likelihood;
+
 icnt=icnt+1; f_val_log(icnt,1)=f_val;
 if((abs(f_val-f_val_prev)/abs(f_val))<tol)
 togo=0;
@@ -122,6 +156,13 @@ filters = filters.*su_mask;
 kkx= filters*mov_filtered;
 kx = (kkx.*(kkx>0)).^gamma;
 
+if(testStruct.test~=0)
+f_val_test_log = [f_val_test_log;test_data(testStruct,filters,gamma,interval,mu)];
+end
+
+if(compare_true_SU.compare~=0)
+su_compare_log = [su_compare_log;compare_SU(filters,compare_true_SU)];
+end
 % normalize
 tsp = find(binnedResponses_global~=0);
 y_tsp = binnedResponses_global(binnedResponses_global~=0)';
@@ -186,3 +227,36 @@ fitGLM.data_act.lam=gather(lam);
 %  plot(f_val_log);
 %  title('Objective v/s iterations');
 end
+
+function f_val = test_data(testStruct,filters,gamma,interval,mu)
+
+binnedResponses  =testStruct.binnedResponses;
+mov_filtered = testStruct.mov;
+
+
+
+    kkx= filters*mov_filtered;
+    kx = (kkx.*(kkx>0)).^gamma;
+    tsp = find(binnedResponses~=0);
+
+lam=sum(kx,1);
+lam=lam+mu;
+
+y_tsp =binnedResponses(binnedResponses~=0)';
+likelihood = (sum(-lam*(interval/120)) + sum(y_tsp.*log(lam(tsp))))/size(mov_filtered,2);
+
+f_val=-likelihood;
+end
+
+function dist = compare_SU(filters,comp_true_SU_str)
+filters= filters';
+su = comp_true_SU_str.su; su=su';
+proj = comp_true_SU_str.proj;
+
+filters = proj*filters;
+su = proj*su;
+max_correlation = max(abs(corr(gather(filters),gather(su))),[],2);
+dist = sum(max_correlation);
+
+end
+

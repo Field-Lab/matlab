@@ -285,23 +285,39 @@ datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 
 
-cellTypeId = 2%OFF:2 .. 
+cellTypeId = 1%OFF:2 .. ON:1.. 
 cellID_select= datarun.cell_types{cellTypeId}.cell_ids; % 51 ? [6741,2176,6961]
 
 
  %% fit ASM
-WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002'
+ % ON
+cellTypeId = 1%OFF:2 .. ON:1.. 
+cellID_select= datarun.cell_types{cellTypeId}.cell_ids; % 51 ? [6741,2176,6961]
 
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002'
 movie_xml = 'RGB-8-2-0.48-11111';
 stim_length=1800;% 
-cellID_list = 198%[cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
+cellID_list = [cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
 nSU_list= [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
-destination= 'pc2015_10_29_2_analysis_fits/SUs_data002'
+destination= 'pc2015_10_29_2_analysis_fits/SUs_data002/ON Parasol2'
 sta_depth=30; % CAREFUL TO CHANGE IT TO LONG .. FOR SLOWER CELLS
+contrast_factor=0.5;
+[~] = get_gmlm_sta2(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth,contrast_factor)
 
-[~] = get_gmlm_sta2(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth)
+% OFF
+cellTypeId = 2%OFF:2 .. ON:1.. 
+cellID_select= datarun.cell_types{cellTypeId}.cell_ids; % 51 ? [6741,2176,6961]
+
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002'
+movie_xml = 'RGB-8-2-0.48-11111';
+stim_length=1800;% 
+cellID_list = [cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
+nSU_list= [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
+destination= 'pc2015_10_29_2_analysis_fits/SUs_data002/OFF Parasol2'
+sta_depth=30; % CAREFUL TO CHANGE IT TO LONG .. FOR SLOWER CELLS
+contrast_factor=0.5;
+[~] = get_gmlm_sta2(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth,contrast_factor)
 save(['/Volumes/Lab/Users/bhaishahster/',destination,'/sus.mat'],'stas_t','stas_r');
-
 
 
  %% fit ASM
@@ -316,6 +332,7 @@ sta_depth=30; % CAREFUL TO CHANGE IT TO LONG .. FOR SLOWER CELLS
 
 [~] = get_gmlm_sta3(WN_datafile,movie_xml,stim_length,cellID_list,nSU_list,destination,sta_depth)
 save(['/Volumes/Lab/Users/bhaishahster/',destination,'/sus.mat'],'stas_t','stas_r');
+
 
 
 %% Predict response  and compare with real response! 
@@ -422,26 +439,74 @@ meanRe= mean(realResp,1);
 sta_depth = 30;
 WN_datafile_cellID ='/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001'
 WN_datafile ='/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002'
-movie_xml = 'RGB-8-2-0.48-11111';
-stim_length=1800;% 
+movie_xml = 'RGB-8-2-0.48-11111'; contrast_factor=0.5;
+stim_length=900;% 
 
 datarun=load_data(WN_datafile_cellID)
 datarun=load_params(datarun)
 
 tic;
-cellTypeId = 2%8,1;
-cellIDs= datarun.cell_types{cellTypeId}.cell_ids; % [6741,2176,6961]
-data_nls = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length);
-save(['/Volumes/Lab/Users/bhaishahster/',destination,'/data_nls2.mat'],'data_nls');
+cellTypeId = 1%8,1;
+destination = 'pc2015_10_29_2_analysis_fits/lnp_data002'
+cellIDs = datarun.cell_types{cellTypeId}.cell_ids; 
+data_nls = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length,contrast_factor);
+save(['/Volumes/Lab/Users/bhaishahster/',destination,'/data_nls2_ON.mat'],'data_nls');
 toc;
 
+tic;
+cellTypeId = 2%8,1;
+destination = 'pc2015_10_29_2_analysis_fits/lnp_data002'
+cellIDs = datarun.cell_types{cellTypeId}.cell_ids; 
+data_nls = compute_nl_for_lnp(WN_datafile,cellIDs,sta_depth,movie_xml,stim_length,contrast_factor);
+save(['/Volumes/Lab/Users/bhaishahster/',destination,'/data_nls2_OFF.mat'],'data_nls');
+toc;
+
+iidx = 1:length(datarun.cell_types{1}.cell_ids);
+mcellid=[];
+for icell=[2477,511,5867,4726,6437,7636,6978,5566]
+mcellid = [mcellid;iidx(datarun.cell_types{1}.cell_ids == icell)];
+end
+
 figure;
-for icell=1:3
-subplot(1,3,icell);
-plotyy(data_nls(icell).in,datadata_nls(icell).fr,data_nls(icell).XX,data_nls(icell).NN/sum(data_nls(icell).NN));
-title(sprintf('Cell: %d, nl: %0.02f',cellIDs(icell), data_nls(icell).NL_fit.nl_idx));
+for icell=mcellid'
+%plotyy(data_nls(icell).in,data_nls(icell).fr,data_nls(icell).XX,data_nls(icell).NN/(sum(data_nls(icell).NN)));
+plot(data_nls(icell).XX,data_nls(icell).NN/(sum(data_nls(icell).NN)));
+hold on;
+plot(data_nls(icell).in,data_nls(icell).fr/100);
+hold on;
+%title(sprintf('Cell: %d, nl: %0.02f',cellIDs(icell), data_nls(icell).NL_fit.nl_idx));
+%title(sprintf('Cell: %d',cellIDs(icell)));
 %xlim([-0.2,0.2]);
 end
+
+
+figure;icnt=0;
+for icell=mcellid'
+    icnt=icnt+1;
+subplot(1,3,icnt);
+xx=data_nls(icell).NN;
+plotyy(data_nls(icell).in,data_nls(icell).fr,data_nls(icell).XX,xx/(sum(xx)));
+%title(sprintf('Cell: %d, nl: %0.02f',cellIDs(icell), data_nls(icell).NL_fit.nl_idx));
+%title(sprintf('Cell: %d',cellIDs(icell)));
+%xlim([-0.2,0.2]);
+end
+
+% plotNL for different movies 
+% have condMov ready
+data = data_nls(54);
+figure;
+for icond=1:6
+icell=1;
+mov = condMov{icond}-0.5; % make sure it's between -0.5 to 0.5
+maskedMovdd= filterMov(mov,data.mask,squeeze(data.ttf));
+input = (data.usta'*maskedMovdd - data.ainput) / data.binput;
+subplot(3,2,icond);
+hist(input,20);
+hold on;
+plot(data.in,data.fr,'r');
+xlim([-10,10]);
+end
+
 
 %% Raster difference metric.
 
@@ -555,12 +620,22 @@ upossible=[3,4];
 
 %% compute output NL
 
-WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
+
+
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data002/data002';
+
+datarun=load_data(WN_datafile)
+datarun=load_params(datarun)
+datarun=load_sta(datarun)
+cellTypeId = 2;
+InterestingCell_vis_id= datarun.cell_types{cellTypeId}.cell_ids; 
+
 movie_xml = 'RGB-8-2-0.48-11111';
 stim_length=1800;
-cellID=198;
+cellIDs=InterestingCell_vis_id;
 userSTA_depth=30;
-destination = 'pc2015_10_29_2_analysis_fits/SUs_data001_quad2';
-ASM_link =['/Volumes/Lab/Users/bhaishahster/',destination,sprintf('/Cell_%d.mat',cellID)];
+destination = 'pc2015_10_29_2_analysis_fits/SUs_data002/OFF Parasol2';
+contrast_factor=0.5;
+save_location = 'pc2015_10_29_2_analysis_fits/SUs_data002/OFF Parasol_opnl';
 
-fitGMLM_log = compute_op_NL_WN(WN_datafile,movie_xml,stim_length,cellID,userSTA_depth,ASM_link)
+ compute_op_NL_WN(WN_datafile,movie_xml,stim_length,cellIDs,userSTA_depth,destination,contrast_factor,save_location);

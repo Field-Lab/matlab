@@ -101,6 +101,10 @@ end
         STA_depth=user_STA_depth;
        
         mov = fitmovie_color-0.5;
+        if(exist('contrast_factor','var'))
+        mov=mov*contrast_factor;
+        end
+        
         dim1=size(mov,1);
         dim2=size(mov,2);
         iisp = 1:size(mov,4);

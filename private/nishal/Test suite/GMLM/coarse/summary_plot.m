@@ -549,8 +549,8 @@ sta_dim1 = size(mask,1);
 sta_dim2 = size(mask,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
 masked_frame = indexedframe(logical(mask));
-x_coord =x_coord;
-y_coord = y_coord;
+x_coord =x_coord(6:end-4);
+y_coord = y_coord(5:end-5);
 
 u_spatial_log = zeros(40,40,nSU);
 ifit=1%1:50
@@ -564,7 +564,7 @@ W=zeros(length(masked_frame),nSU);
     W=W_log{ifit};    
     end
     
-    subplot(3,2,1);
+    subplot(1,nSU+1,1);
     xxsta =-repelem(sta(x_coord,y_coord),20,20);
 %     xxsta = xxsta - mean(mean(xxsta((abs(xxsta)<0.2*max(abs(xxsta(:)))))));
     B = bwboundaries(abs(xxsta)>0.2*max(abs(xxsta(:))));
@@ -583,7 +583,7 @@ W=zeros(length(masked_frame),nSU);
     axis image
     
 for ifilt=1:nSU
-subplot(3,2,ifilt+1);
+subplot(1,nSU+1,ifilt+1);
 
 if(ifgmlm==1)
 u_spatial = reshape_vector(fitGMLM.Linear.filter{ifilt}(1:length(masked_frame)),masked_frame,indexedframe);

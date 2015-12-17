@@ -1,5 +1,5 @@
 
-function [sd,dist,su_assignment] = probe_cond_interaction_fcn_pairs (WN_datafile,movie_xml,stim_length,cellID,user_STA_depth,ASM_link,nSU)
+function [sd,dist,su_assignment,sd_self] = probe_cond_interaction_fcn_pairs (WN_datafile,movie_xml,stim_length,cellID,user_STA_depth,ASM_link,nSU)
 %% Load data
 
 
@@ -59,7 +59,7 @@ xxc = repelem(xc,size(mask2,1),1);
 xxxr = xxr(mask2>0);
 xxxc = xxc(mask2>0);
 
-sd=zeros(sum(mask2(:)),sum(mask2(:)));dist = sd;
+sd=zeros(sum(mask2(:)),sum(mask2(:)));dist = sd;sd_self=zeros(sum(mask2(:)),sum(mask2(:)));
 for ipix = 1:sum(mask2(:))
     for jpix=1:sum(mask2(:))
         if(ipix==jpix)
@@ -118,7 +118,7 @@ title('STA of stimuli chosen for analysis')
  
  subplot(1,2,2);
  usu1 = u1;usu2=[];jcell=1;
- sd(ipix,ipix) = testSU_interaction(usu1,usu2,mask(:),mov,Y_C,jcell,probe,thperc,pts,type,'b')
+ sd_self(ipix,jpix) = testSU_interaction(usu1,usu2,mask(:),mov,Y_C,jcell,probe,thperc,pts,type,'b')
  hold on;
 
  
