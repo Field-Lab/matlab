@@ -20,10 +20,10 @@ close all
 
 %     '2013-05-28-9';      'data000';
 
-[~, txt] = xlsread('/Users/colleen/Documents/Test Large Cell Data.xlsx');
+[~, txt] = xlsread('/Users/colleen/Documents/Large Cell Data ARVO.xlsx');
     data= [];
 
-for t= 1:11%size(txt,1)
+for t= 1:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date{t}=strtrim(txt{t,1}); % one slash at the end
     temp1 = strtrim(txt{t,2});
@@ -55,7 +55,7 @@ episolon = 0.0001;
     classes= {'OFF Parasol', 'ON Parasol', 'ON Midget', 'OFF Midget', 'ON Large 1', 'ON Large 2', 'ON Large 3', 'ON Large 4', 'OFF Large 1', 'OFF Large 2', 'OFF Large 3', 'OFF Large 4'};
     classes= {'OFF Parasol', 'ON Parasol',  'ON Large 1', 'ON Large 2', 'ON Large 3', 'ON Large 4', 'OFF Large 1', 'OFF Large 2', 'OFF Large 3', 'OFF Large 4'};
 %     classes = {'ON Parasol', 'ON large 1', 'ON large 2'};
-    classes = {'ON Parasol', 'ON large 1', 'ON large 2','OFF Parasol', 'ON large 3', 'ON LBC'};
+    classes = {'ON Parasol', 'ON large 1', 'ON large 2', 'OFF parasol', 'OFF large 1', 'OFF large 2'};
 
     D = dir(filename);
     colors = [];
@@ -82,39 +82,39 @@ episolon = 0.0001;
                     new_data(:,7) = 1;
                 new_data = [repmat(t, size(new_data,1),1), new_data];
 
-                data = [data; new_data];
+                data = [data; new_data(:, 1:9)];
             elseif c == 4
                 ref_off_parasol = new_data;
                     new_data(:,7) = -1;
                 new_data = [repmat(t, size(new_data,1),1), new_data];
 
-                data = [data; new_data];
+                data = [data; new_data(:, 1:9)];
             end
             
-            if c == 2 || c == 3 ||c ==5||c ==6||c ==7 ||c ==8 ||c ==9
+            if c == 2 || c == 3 
                 real_ind = boolean(floor(sum(~isnan(ref_on_parasol),2)/size(ref_on_parasol,2)));
                 new_data(:,2:8) = new_data(:,2:8)./repmat(median(ref_on_parasol(real_ind, 2:8)), size(new_data,1),1);
                 mean_amp = median(ref_on_parasol(real_ind, 8));
                 if mean_amp < 0 
-                    new_data(:,7) = -1;
+                    new_data(:,8) = -1;
                 else
-                    new_data(:,7) = 1;
+                    new_data(:,8) = 1;
                 end
                 new_data = [repmat(t, size(new_data,1),1), new_data];
 
-                data = [data; new_data];
+                data = [data; new_data(:, 1:9)];
 
-            elseif c == 10 
+            elseif c == 5|| c == 6 
                 real_ind = boolean(floor(sum(~isnan(ref_off_parasol),2)/size(ref_off_parasol,2)));
                 new_data(:,2:8) = new_data(:,2:8)./repmat(median(ref_off_parasol(real_ind, 2:8)), size(new_data,1),1);
                  mean_amp = median(ref_off_parasol(real_ind, 8));
                 if mean_amp < 0 
-                   new_data(:,7) = -1;
+                   new_data(:,8) = -1;
                 else
-                    new_data(:,7) = 1;
+                    new_data(:,8) = 1;
                 end
                 new_data = [repmat(t, size(new_data,1),1), new_data];
-                data = [data; new_data];
+                data = [data; new_data(:, 1:9)];
 
             end
             
@@ -133,7 +133,11 @@ end
 
 data_large = data(data(:,2) == 2 | data(:,2) == 3 | data(:,2) == 5 | data(:,2) == 6 | data(:,2) == 7| data(:,2) == 8 | data(:,2) == 9, :);
 data_rows = boolean(floor(sum(~isnan(data_large),2)/size(data_large,2)));
+% data_large(:, 3:end) = data_large(:,3:end)./repmat(max(abs(data_large(data_rows,3:end))), size(data_large,1),1);
 % norm_data = data_large(:,3:end)./(repmat(std(data_large(data_rows,3:end)), size(data_large,1),1)+episolon);
+% data_large(data_large(:,18)<-5, 18) = -5;
+% data_large(data_large(:,17)>5, 17) = 5;
+
 norm_data = data_large;%[data_large(:,1:2), norm_data];
 
 
@@ -167,12 +171,11 @@ S = unique(norm_data(:,1:2), 'rows');
 unique_dates = unique(norm_data(:,1));
 
 unique_classes = unique(norm_data(:,2));
-markers = {'+','o','*','.','square', 'hexagram','diamond','^','v','>','<','pentagram','x'};
+markers = {'+','o','*','square', 'hexagram','diamond','^','v','>','<','pentagram','x','+','o','*','square', 'hexagram','diamond','^','v','>','<','pentagram','x'};
 % colors = hsv(size(unique(S(:,1)),1));
 colors = hsv(length(unique_classes));
 
 l= findobj(gcf,'tag','legend'); 
-set(l,'location','best');
 for n = 1:length(h)
    set(h(n), 'Marker', markers{unique_dates == S(n,1)})
       set(h(n), 'MarkerSize', 9);
@@ -183,6 +186,12 @@ LegendString{n} = [[run_opts.date{S(n,1)}, ' ', run_opts.dataname{S(n,1)}(1:7)] 
 end
 set(l, 'String', LegendString)
 title('PC 1 and 2')
+xlabel('PC 1')
+ylabel('PC 2')
+xaxis = get(gca, 'xlim');
+set(gca, 'xlim', [xaxis(1), xaxis(2)+2])
+
+set(l,'location','southeast');
 
 
 figure;
@@ -191,7 +200,6 @@ set(gcf, 'Position', [10 10 1120 840])
 h= gscatter(test(:,1), test(:,3),norm_data(:,1:2));
 
 l= findobj(gcf,'tag','legend'); 
-set(l,'location','best');
 for n = 1:length(h)
    set(h(n), 'Marker', markers{unique_dates == S(n,1)})
          set(h(n), 'MarkerSize', 9);
@@ -201,6 +209,15 @@ LegendString{n} = [run_opts.date{S(n,1)} ' , ' classes{S(n,2)}];
 end
 set(l, 'String', LegendString)
 title('PC 1 and 3')
+xlabel('PC 1')
+ylabel('PC 3')
+xaxis = get(gca, 'xlim');
+set(gca, 'xlim', [xaxis(1), xaxis(2)+2])
+set(l,'location','southeast');
+
+set(l,'location','southeast');
+
+
 figure;
 set(gcf, 'Position', [10 10 1120 840])
 
@@ -208,7 +225,6 @@ set(gcf, 'Position', [10 10 1120 840])
 h = gscatter(test(:,2), test(:,3),norm_data(:,1:2));
 
 l= findobj(gcf,'tag','legend'); 
-set(l,'location','best');
 for n = 1:length(h)
    set(h(n), 'Marker', markers{unique_dates == S(n,1)})
    set(h(n), 'MarkerFaceColor', colors(unique_classes == S(n,2), :))
@@ -219,6 +235,13 @@ LegendString{n} = [run_opts.date{S(n,1)} ' , ' classes{S(n,2)}];
 end
 set(l, 'String', LegendString)
 title('PC 2 and 3')
+
+xlabel('PC 2')
+ylabel('PC 3')
+xaxis = get(gca, 'xlim');
+set(gca, 'xlim', [xaxis(1), xaxis(2)+2])
+set(l,'location','southeast');
+
 % figure;
 % 
 %      gscatter(1:size(idx,1)',idx,norm_data(:,1))
@@ -234,16 +257,16 @@ title('PC 2 and 3')
 % l= findobj(gcf,'tag','legend'); 
 % set(l,'location','northwest');
 % 
-
-figure;
-set(gcf, 'Position', [10 10 1120 840])
-data_rows = boolean(floor(sum(~isnan(data_large),2)/size(data_large,2)));
-data_large(data_large(:,2) > 2, 2) = 3;
-
-gscatter(data_large(data_rows,3), data_large(data_rows,4),data_large(data_rows,2))
-xlabel('RF Size (relative to parasols')
-ylabel('zc (relative to parasols')
-set(l,'location','best');
+% 
+% figure;
+% set(gcf, 'Position', [10 10 1120 840])
+% data_rows = boolean(floor(sum(~isnan(data_large),2)/size(data_large,2)));
+% data_large(data_large(:,2) > 2, 2) = 3;
+% 
+% gscatter(data_large(data_rows,3), data_large(data_rows,4),data_large(data_rows,2))
+% xlabel('RF Size (relative to parasols')
+% ylabel('zc (relative to parasols')
+% set(l,'location','best');
 
 % % % set(l, 'String', {classes{unique(norm_data(:,1))}})
 % data_large(data_large(:,2) == 3, 2) = 2;
