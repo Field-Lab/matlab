@@ -63,6 +63,7 @@ for j= 5
             bi_ind = zeros(length(cell_ids),1);
             fr = zeros(length(cell_ids),1);
             amp = zeros(length(cell_ids),1);
+            width = zeros(length(cell_ids),1);
             acf_mean=zeros(length(cell_ids),1);
             acf_var=zeros(length(cell_ids),1);
             acf_sd=zeros(length(cell_ids),1);
@@ -85,8 +86,9 @@ for j= 5
                 end
                 try
                     [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
-                    [times] = inter_spike_interval(datarun.spikes{cell_indices(i)}, 10000)
+                    [times, width(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)}, 10000)
                     cell_counter = cell_counter +1;
+                   
                     acf_mean(i) = norm{i}.mean;
                     acf_var(i) = norm{i}.var;
                     acf_sd(i) = norm{i}.sd;
@@ -100,6 +102,7 @@ for j= 5
                     probabilities{i} = nan(1,101);
                     bins{i} = nan(1,101);
                     cell_counter = cell_counter +1;
+                    width(i) =  nan;
                     acf_mean(i) = nan;
                     acf_var(i) = nan;
                     acf_sd(i) = nan;
@@ -140,6 +143,7 @@ for j= 5
             output.parameters.bi_ind = bi_ind;
             output.parameters.fr = fr;
             output.parameters.amp = amp;
+            output.parameters.width = width;
             output.parameters.acf_mean =acf_mean;
             output.parameters.acf_var =acf_var;
             output.parameters.acf_sd =acf_sd;
