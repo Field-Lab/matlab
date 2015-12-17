@@ -82,13 +82,13 @@ episolon = 0.0001;
                     new_data(:,7) = 1;
                 new_data = [repmat(t, size(new_data,1),1), new_data];
 
-                data = [data; new_data(:, 1:9)];
+                data = [data; new_data(:, 1:10)];
             elseif c == 4
                 ref_off_parasol = new_data;
                     new_data(:,7) = -1;
                 new_data = [repmat(t, size(new_data,1),1), new_data];
 
-                data = [data; new_data(:, 1:9)];
+                data = [data; new_data(:, 1:10)];
             end
             
             if c == 2 || c == 3 
@@ -102,7 +102,7 @@ episolon = 0.0001;
                 end
                 new_data = [repmat(t, size(new_data,1),1), new_data];
 
-                data = [data; new_data(:, 1:9)];
+                data = [data; new_data(:, 1:10)];
 
             elseif c == 5|| c == 6 
                 real_ind = boolean(floor(sum(~isnan(ref_off_parasol),2)/size(ref_off_parasol,2)));
@@ -114,7 +114,7 @@ episolon = 0.0001;
                     new_data(:,8) = 1;
                 end
                 new_data = [repmat(t, size(new_data,1),1), new_data];
-                data = [data; new_data(:, 1:9)];
+                data = [data; new_data(:, 1:10)];
 
             end
             
