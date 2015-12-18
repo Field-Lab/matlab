@@ -374,6 +374,13 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     conda_mean = [conda_mean,sqrt(mean(PSTH_reca(0.25*end:end)))];
     condb_mean = [condb_mean,sqrt(mean(PSTH_reca(0.25*end:end)))];
      
+    event_tol=0.09;
+    thr=0.4;
+    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol);
+    s=hgexport('readstyle','event');
+   % hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+   % save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+    
     
 
 end
@@ -388,6 +395,6 @@ data(cellTypeId).conda_mean =conda_mean;
 data(cellTypeId).condb_mean =condb_mean;
 data(cellTypeId).cellIDs = InterestingCell_vis_id;
 
-figure;
- histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
- 	save('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_5.mat','data','conda','condb');
+% figure;
+%  histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+  	save('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_5_event.mat','data','conda','condb');

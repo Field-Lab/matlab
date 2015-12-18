@@ -816,6 +816,112 @@ togo = violations>0 % input('Continue Iterating?');
     %mov_modify_new = gather(mov_modify_new);mov_orig=gather(mov_orig);
 end
 
+%% 
+if(solver==22) % Spatial Nulling, Dykstra's alternating projections, contrast controlled nulling!
+     togo=1;
+     mov_show=mov;
+
+    while togo==1
+close all;
+        % projection C
+
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new,stas_sp_current]=null_project_spatial(stas,mov,cell_params,matlab_cell_ids);
+
+
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+
+% Update after projection C
+z_k_half=2*mov_modify_new - mov;
+
+% Projection D
+x_k_1=z_k_half;
+togo_clip=1;
+togo_B=0;
+while(togo_clip==1)
+
+[x_k_1,rat] = scale_pixel_variance(x_k_1,mov_show); % Remove? 
+violations_c = sum(abs(x_k_1(:))>maxClip+0.0001)
+
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+if(violations_c~=0)
+togo_clip=1;
+togo_B=1;
+else
+togo_clip=0;    
+end
+end
+
+% Update after projection D
+mov=mov + x_k_1 - mov_modify_new;
+
+
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001);
+[~,rat] = scale_pixel_variance(mov_modify_new,mov_show); % Remove?
+% Need to change post processing!!
+togo = (togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0.999) % input('Continue Iterating?');
+    end
+    
+mov_orig=mov_show;
+mov_modify_new=mov_modify_new;
+end
+
+%% 
+if(solver==23) % Spatial Nulling on GPU, Dykstra's alternating projections, contrast controlled nulling!
+     togo=1;
+     mov_show=mov;
+
+    while togo==1
+close all;
+        % projection C
+
+    maxClip = (0.48/0.5)*127.5;
+[~,mov_modify_new,stas_sp_current]=null_project_spatial_gpu(stas,mov,cell_params,matlab_cell_ids);
+
+
+figure;
+hist(mov_modify_new(:),50);
+xlim([-200,200]);
+
+% Update after projection C
+z_k_half=2*mov_modify_new - mov;
+
+% Projection D
+x_k_1=z_k_half;
+togo_clip=1;
+togo_B=0;
+while(togo_clip==1)
+
+[x_k_1,rat] = scale_pixel_variance(x_k_1,mov_show); % Remove? 
+violations_c = sum(abs(x_k_1(:))>maxClip+0.0001)
+
+x_k_1(x_k_1>maxClip)=maxClip;
+x_k_1(x_k_1<-maxClip)=-maxClip;
+if(violations_c~=0)
+togo_clip=1;
+togo_B=1;
+else
+togo_clip=0;    
+end
+end
+
+% Update after projection D
+mov=mov + x_k_1 - mov_modify_new;
+
+
+violations = sum(abs(mov_modify_new(:))>maxClip+0.0001);
+[~,rat] = scale_pixel_variance(mov_modify_new,mov_show); % Remove?
+% Need to change post processing!!
+togo = (togo_B==1) |( violations>0 & max(abs(rat(:)))>1.001 & min(abs(rat(:)))<0.999) % input('Continue Iterating?');
+    end
+    
+mov_orig=mov_show;
+mov_modify_new=mov_modify_new;
+end
+
 %% see_movie
 % see_movie2
 %% Correct means ,etc ?? Movie correction left ? 
