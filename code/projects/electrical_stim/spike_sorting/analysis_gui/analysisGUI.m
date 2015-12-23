@@ -43,7 +43,6 @@ main = generateAnalysisGuiLayout(funH);
 %% initialization tasks
 
 set(main.gui, 'Visible', 'on')
-set(main.gui, 'units', 'normalized', 'position', [0.05 0.15 0.9 0.8])
 
 elecResp.dummyField = [];
 
@@ -1099,4 +1098,4 @@ set(main.gui, 'KeyPressFcn', @(h_obj, evt)keyCheck(h_obj, evt));
             set(main.excludeSpikeTracesCheckBox, 'Visible', 'off', 'enable', 'off');
         end
     end
-nd
+end

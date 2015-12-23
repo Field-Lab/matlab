@@ -13,8 +13,24 @@ main.editTextFont = 'Courier';
 main.smallFontSize = 9;
 main.bootstrapReps = 100; %should be changeable by gui
 
+
+%get screen size
+set(0,'units','pixels');
+ss = get(0,'screensize');
+sw = ss(3);
+sh = ss(4);
+
+%get conversion denominator (based on mac values)
+gabsw = 1200;
+gabsh = 900; 
+
+%Gui structure - examples
+%h.fig = figure('position', [.3*sw, .15*sh, .5*sw, .65*sh]); %screen size on right-sided display is 1600 by 1200
+%h.panelOne = uipanel('Title','Electrode Order','FontSize',header_font,'Position',[.05,.7,.45,.3]); 
+
 %% constructs gui components
 
+%{
 if strcmp('/', filesep) %mac
     main.gui = figure('Visible', 'off', 'Position',[75 75 1200 900],...
         'Name', 'Electrical Stimulation Analysis Main', 'Resize', 'off', 'Toolbar', 'none', 'Menubar', 'none');
@@ -22,9 +38,13 @@ else
     main.gui = figure('Visible', 'off', 'Position',[50 40 1200 730],...
         'Name', 'Electrical Stimulation Analysis Main', 'Resize', 'off', 'Toolbar', 'none', 'Menubar', 'none');
 end
+%}
+main.gui = figure('Visible', 'off', 'Position',[.05*sw, 0.0*sh, .9*sw, .95*sh],...
+    'Name', 'Electrical Stimulation Analysis Main', 'Resize', 'off', 'Toolbar', 'none', 'Menubar', 'none');
     
 
 %% top left panel (settings) %%%%%%%%%%%%%%%%%%%
+%{
 if strcmp('/', filesep) %mac
     main.topLeftPanel = uipanel(main.gui, 'Units', 'pixels', 'Position', [10 700 460 190],...
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
@@ -34,6 +54,10 @@ else %pc
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
         'BorderWidth', 0, 'Title', 'settings');
 end
+%}
+main.topLeftPanel = uipanel(main.gui, 'Units', 'Normalized', 'Position', [10/gabsw 615/gabsh 480/gabsw 270/gabsh],...
+    'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
+    'BorderWidth', 0, 'Title', 'settings');
 
 % button group
 main.modeButtons = uibuttongroup('Parent', main.topLeftPanel, 'Units', 'pixels',...
@@ -142,6 +166,7 @@ main.dataDisplayType = uicontrol(main.topLeftPanel, 'Style', 'popupmenu',...
     'Value', 2, 'Position', [150 80 200 25], 'BackgroundColor', [1 1 1], 'FontSize', 9);
 
 %% top right panel (information) %%%%%%%%%%%%%%%%%%%
+%{
 if strcmp('/', filesep)
     main.topRightPanel = uipanel(main.gui, 'Units', 'pixels', 'Position', [480 700 710 190],...
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
@@ -151,6 +176,10 @@ else
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
         'BorderWidth', 0, 'Title', 'information');
 end
+%}
+main.topRightPanel = uipanel(main.gui, 'Units', 'Normalized', 'Position', [500/gabsw 615/gabsh 710/gabsw 270/gabsh],...
+    'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
+    'BorderWidth', 0, 'Title', 'information');
 
 % static text: left static
 
@@ -211,6 +240,7 @@ main.text.analysisType  = uicontrol(main.topRightPanel, 'Style', 'text', 'Positi
 
 
 %% mid left panel (actions) %%%%%%%%%%%%%%%%%%%
+%{
 if strcmp('/', filesep)
     main.midLeftPanel = uipanel(main.gui, 'Units', 'pixels', 'Position', [10 445 400 245],...
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
@@ -220,6 +250,10 @@ else
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
         'BorderWidth', 0, 'Title', 'actions');
 end
+%}
+main.midLeftPanel = uipanel(main.gui, 'Units', 'Normalized', 'Position', [10/gabsw 305/gabsh 400/gabsw 305/gabsh],...
+    'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
+    'BorderWidth', 0, 'Title', 'actions');
 
 %static text
 main.reanalyizeStaticText = uicontrol(main.midLeftPanel, 'Style', 'text', 'Position', [10 210 75 15], 'String', '(re)analyze: ',...
@@ -280,6 +314,7 @@ main.lockLatenciesButton = uicontrol(main.midLeftPanel,  'Style', 'pushbutton',.
 
 
 %% mid mid panel (data plots) %%%%%%%%%%%%%%%%%%%
+%{
 if strcmp('/', filesep)
     main.midMidPanel = uipanel(main.gui, 'Units', 'pixels', 'Position', [420 445 600 245],...
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
@@ -289,6 +324,10 @@ else
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
         'BorderWidth', 0);
 end
+%}
+main.midMidPanel = uipanel(main.gui, 'Units', 'Normalized', 'Position', [420/gabsw 305/gabsh 600/gabsw 305/gabsh],...
+    'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
+    'BorderWidth', 0);
 
 main.lockAxisCheckBox = uicontrol(main.midMidPanel,  'Style', 'checkbox', 'String', 'lock y-axis',...
     'Position', [20 225 100 20], 'BackgroundColor', [1 1 1], 'FontSize', main.smallFontSize); %active/visible in analyze mode
@@ -301,6 +340,7 @@ main.a1 = axes('Parent', main.midMidPanel, 'Units', 'pixels', 'Position', [25 25
 main.a2 = axes('Parent', main.midMidPanel, 'Units', 'pixels', 'Position', [315 25 260 195]);
 
 %% mid right panel (legend) %%%%%%%%%%%%%%%%%%%
+%{
 if strcmp('/', filesep) %mac
     main.midRightPanel = uipanel(main.gui, 'Units', 'pixels', 'Position', [1030 445 160 245],...
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
@@ -310,6 +350,10 @@ else %pc
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
         'BorderWidth', 0);
 end
+%}
+main.midRightPanel = uipanel(main.gui, 'Units', 'Normalized', 'Position', [1030/gabsw 305/gabsh 160/gabsw 265/gabsh],...
+    'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
+    'BorderWidth', 0);
 
 
 main.markFlaggedCheckBox = uicontrol(main.midRightPanel, 'Style', 'checkbox', 'Units', 'pixels',...
@@ -349,6 +393,7 @@ main.eiRefreshCheckbox = uicontrol(main.midRightPanel, 'Style', 'checkbox', 'Uni
 
 %% bottom panel (eis) %%%%%%%%%%%%%%%%%%%
 
+%{
 if strcmp('/', filesep) %mac
     main.bottomPanel = uipanel(main.gui, 'Units', 'pixels', 'Position', [10 10 1180 425],...
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
@@ -358,6 +403,11 @@ else
         'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
         'BorderWidth', 0);
 end
+%}
+main.bottomPanel = uipanel(main.gui, 'Units', 'Normalized', 'Position', [10/gabsw 10/gabsh 1180/gabsw 300/gabsh],...
+    'BackgroundColor', 'white', 'Fontsize', 10, 'BorderType', 'line', 'HighlightColor', 'black',...
+    'BorderWidth', 0);
+
 %axes and associated pushbuttons
 
 
