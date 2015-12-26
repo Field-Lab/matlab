@@ -87,7 +87,8 @@ if analysisMode
    
     
     % updates information panel
-    slashIndex = strfind(elecResp.names.rrs_ei_path, '/');
+    %slashIndex = strfind(elecResp.names.rrs_ei_path, '/');
+    slashIndex = strfind(elecResp.names.rrs_ei_path, filesep);
     
     slashIndex = slashIndex(end);
     eiDataset = elecResp.names.rrs_ei_path(slashIndex+1:end);
