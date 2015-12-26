@@ -6,7 +6,7 @@ function playMovie512arrayAfterStimPattern(pathToAnalysisData, patternNo,saveMov
 
 
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-fname = fullfile(fileparts(mfilename('fullpath')),'../resources/array_matrix_id510'); 
+fname = fullfile(fileparts(mfilename('fullpath')),'../../resources/array_matrix_id510'); 
 h = load(fname); 
 electrodeMatrix = h.array_matrix_id510; clear h; 
 
