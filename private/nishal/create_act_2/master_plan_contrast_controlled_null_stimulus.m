@@ -27,7 +27,7 @@ movies=cell(20,1);
 % 'solver' .. 1 for LSQR, 2 for CRAIG, 3 for Fourier 
 
 
-%% Iterated - contrast controlled Spatial nulling (high contrast) - short
+%% Iterated - contrast controlled Spatial nulling  - short
 % has interval parameter - remember to carefully decide the scaling (not stretching) when doing Iterated methods.
 cell_params=struct();
 cell_params.type_name_inp='OFF Parasol';%'userCellList';
