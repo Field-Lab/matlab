@@ -134,12 +134,14 @@ end
 
 
 function pth = infer_file_spec(pth)
-splitpath = split(pth, '/');
+%splitpath = split(pth, '/'); %this function non longer exists in MATLAB? Plus not windows-friendly
+splitpath = strsplit(pth, filesep);
 
 % If no filespec was given, assume it matches the directory
 if length(splitpath) == 2
     splitpath{end+1} = splitpath{end};
-    pth = join(splitpath, '/');
+    %pth = join(splitpath, '/');%this function non longer exists in MATLAB? Plus not windows-friendly
+    pth = strjoin(splitpath, filesep);
 end
 
 

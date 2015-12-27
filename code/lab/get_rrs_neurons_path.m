@@ -11,7 +11,8 @@ if all({'cell_file', 'experiment'}, @(field) isfield(datarun.names, field) && ~i
     splitfname = split(datarun.names.cell_file, '.');
     ext = splitfname{end};
     if strcmp(ext, 'neurons')
-        pth = [server_path datarun.names.experiment '/' datarun.names.cell_file];
+        %pth = [server_path datarun.names.experiment '/' datarun.names.cell_file]; %gotta make this windows friendly!
+        pth = [server_path datarun.names.experiment filesep datarun.names.cell_file];
         return;
     end
 end
