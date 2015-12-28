@@ -1,11 +1,34 @@
 function makeThresholdBasedLinEiMaps(dataPath, thrVec, varargin)
-%function makeThresholdBasedLinEiMaps(dataPath, thrVec, [savePath])
+%function makeThresholdBasedLinEiMaps(dataPath, thrVec, [savePath], [soma or axon filter], [soma threshold filter if axon filter is specfied])
 %Generate preparation surveys based on neuron main recording electrode thresholds, specified in second argument. 
 %First argument contains Grind analysis output of visual stim
 %Optional third argument is savePath, which gives base name to save image at (threshold value will be added)
+%*you can put in a blank string to turn this off
+%Optional fourth argument specifies whether to filter based on axonal threshold or soma threshold, or both.
+%0 (default) means filter based on soma, 1 means filter based on axon. 2 sets a filter on the soma threshold
 %Example: makeThresholdBasedEiMaps('/Volumes/Analysis/2015-11-09-10/data001/', [-20 -35 -50])
+%Example: makeThresholdBasedEiMaps('/Volumes/Analysis/2015-11-09-10/data001/', [-20 -35 -50], '/Volumes/Analysis/2015-11-09-10/picture',1)
+%Example: makeThresholdBasedEiMaps('/Volumes/Analysis/2015-11-09-10/data001/', [-20 -35 -50], '',1)
+%Example: makeThresholdBasedEiMaps('/Volumes/Analysis/2015-11-09-10/data001/', [-20 -35 -50], '',2,-50)
 %December 2015, Sasi Madugula
-%*This function is very messy because I've copied from surveyPrepartion.m and simply commented out the irrelevant bits
+%*This function code is very messy because I've copied from surveyPrepartion.m and simply commented out the irrelevant bits
+
+%parse varargin
+if length(varargin) == 1 
+    savStr = varargin{1}; 
+    savFlg = 1; 
+    filterFlg = 0;
+elseif length(varargin) == 2;
+    if isempty(varargin{1}); savFlg = 0; else; savStr = varargin{1}; savFlg = 1; end
+    filterFlg = varargin{2};
+elseif length(varargin) == 3
+    if isempty(varargin{1}); savFlg = 0; else; savStr = varargin{1}; savFlg = 1; end
+    filterFlg = 2;
+    somaThr = varargin{3};
+else
+    filterFlg = 0;
+    savFlg = 0;
+end
 
 
 %Make datarun variable
@@ -22,7 +45,15 @@ datarun  = load_ei(datarun, 'all');
 
 %loop over thresholds
 for thr = thrVec
-    [cellIdsToCheck, cellIndices, electrodes] = getLargeAmpSpikes(datarun, thr); 
+    if filterFlg
+	if filterFlg == 1
+	    [cellIdsToCheck, cellIndices, electrodes] = getLargeAmpSpikesAxon(datarun, thr); 
+	else
+	    [cellIdsToCheck, cellIndices, electrodes] = getLargeAmpSpikesAxon(datarun, thr, somaThr); 
+	end
+    else
+	[cellIdsToCheck, cellIndices, electrodes] = getLargeAmpSpikes(datarun, thr); 
+    end
 
     % Determine firing rate stability of these cells
     %*Lauren had this info in Data table, not sure what to do with it but will generate anyways. Might want to filter based on it
@@ -146,8 +177,8 @@ for thr = thrVec
     %     text(double(COMy),double(COMx),num2str(cellID)); 
     end
     axis image; axis off; 
-    if length(varargin) == 1 %if save option was specified --Sasi
-	saveas(gcf, [varargin{1} '_' num2str(abs(thr))], 'jpg')
+    if savFlg %if save option was specified --Sasi
+	saveas(gcf, [savStr '_' num2str(abs(thr))], 'jpg')
     end
     %hold on; scatter(xc,yc,5,'black','filled'); 
      
