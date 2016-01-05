@@ -6,7 +6,8 @@ close all
 clc
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
+[~, txt,array_size] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
+array_size = cell2mat(array_size(:,4));
 % txt = {'
 % };
 for j= 1:size(txt,1)
@@ -34,12 +35,13 @@ for j= 1:size(txt,1)
     datarun.names.rrs_neurons_path=['/Volumes/Analysis/', run_opts.file_name, '.neurons'];
     datarun.names.rrs_params_path=['/Volumes/Analysis/', run_opts.file_name, '.params'];
     datarun.names.rrs_sta_path = ['/Volumes/Analysis/', run_opts.file_name, '.sta'];
+    datarun.names.rrs_ei_path = ['/Volumes/Analysis/', run_opts.file_name, '.ei'];
+    
     opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',1);
     opt.load_sta_params.save_rf = 1; % Necessary to get the sta to load correctly
     try
         datarun=load_data(datarun,opt);
-        
-       run_opts.refresh = datarun.stimulus.interval/120*1000;
+        run_opts.refresh = datarun.stimulus.interval/120*1000;
         % cell_indices = get_cell_indices(datarun,run_opts.cell_specification);
         pca_data = [];
         for iter = 1:size(datarun.cell_types,2)
@@ -48,14 +50,14 @@ for j= 1:size(txt,1)
             run_opts.save_folder = [run_opts.date, '/', run_opts.concatname, '/', run_opts.cell_specification,  '/'];
             
             if ~exist([run_opts.filepath,'/', run_opts.cell_specification]);
-
+                
                 mkdir([run_opts.filepath,'/', run_opts.cell_specification]);
             end
             
             cell_ids = get_cell_ids(datarun, run_opts.cell_specification);
             cell_indices = get_cell_indices(datarun, run_opts.cell_specification);
-
- 
+            
+            
             rf = zeros(length(cell_ids),1);
             t_zc= zeros(length(cell_ids),1);
             t_p = zeros(length(cell_ids),1);
@@ -73,59 +75,71 @@ for j= 1:size(txt,1)
             acf_rise=zeros(length(cell_ids),1);
             acf_slope_up = zeros(length(cell_ids),1);
             acf_slope_down = zeros(length(cell_ids),1);
+            maximum= zeros(length(cell_ids),1);
+            minimum= zeros(length(cell_ids),1);
+            minimum_ind= zeros(length(cell_ids),1);
+            maximum_ind= zeros(length(cell_ids),1);
+            zc= zeros(length(cell_ids),1);
+            bi_ind= zeros(length(cell_ids),1);
+            lobe1= zeros(length(cell_ids),1);
+            lobe2= zeros(length(cell_ids),1);
+            ratio_to_neighbors= zeros(length(cell_ids),1);
+            
             norm= cell(length(cell_ids),1);
             cell_counter  = 0;
-            parfor i = 1:length(cell_ids)
+            for i = 1:length(cell_ids)
+                
                 try
                     [rf(i), t_zc(i), t_p(i), t_t(i), bi_ind(i), fr(i), amp(i)] = get_timecourse_prop(datarun, cell_ids(i), run_opts);
-
-
-
+                    [maximum(i), minimum(i), minimum_ind(i),  maximum_ind(i), zc(i), bi_ind(i), lobe1(i), lobe2(i), ratio_to_neighbors(i)] = ei_properties(datarun, cell_ids(i), array_size(j));
+                    
+                    
                 catch
                     disp([num2str(iter) '/' num2str(i)])
                 end
-                try
-                    [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
-                    [width(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)});
-                    cell_counter = cell_counter +1;
-                   
-                    acf_mean(i) = norm{i}.mean;
-                    acf_var(i) = norm{i}.var;
-                    acf_sd(i) = norm{i}.sd;
-                    acf_end_val(i) = norm{i}.end_value;
-                    acf_peak(i) = norm{i}.peak;
-                    acf_peak_time(i) = norm{i}.peak_time;
-                    acf_rise(i) = norm{i}.rise;
-                    acf_slope_up(i) = norm{i}.slope_up;
-                    acf_slope_down(i) = norm{i}.slope_down;
-                catch
-                    probabilities{i} = nan(1,101);
-                    bins{i} = nan(1,101);
-                    cell_counter = cell_counter +1;
-                    width(i) =  nan;
-                    acf_mean(i) = nan;
-                    acf_var(i) = nan;
-                    acf_sd(i) = nan;
-                    acf_end_val(i) = nan;
-                    acf_peak(i) = nan;
-                    acf_peak_time(i) = nan;
-                    acf_rise(i) = nan;
-                    acf_slope_up(i) =nan;
-                    acf_slope_down(i) =nan;
-
-
-                end
+                %                 try
+                
+                %                     [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
+                %                     [width(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)});
+                %                     cell_counter = cell_counter +1;
+                %
+                %                     acf_mean(i) = norm{i}.mean;
+                %                     acf_var(i) = norm{i}.var;
+                %                     acf_sd(i) = norm{i}.sd;
+                %                     acf_end_val(i) = norm{i}.end_value;
+                %                     acf_peak(i) = norm{i}.peak;
+                %                     acf_peak_time(i) = norm{i}.peak_time;
+                %                     acf_rise(i) = norm{i}.rise;
+                %                     acf_slope_up(i) = norm{i}.slope_up;
+                %                     acf_slope_down(i) = norm{i}.slope_down;
+                %                 catch
+                probabilities{i} = nan(1,101);
+                bins{i} = nan(1,101);
+                cell_counter = cell_counter +1;
+                width(i) =  nan;
+                acf_mean(i) = nan;
+                acf_var(i) = nan;
+                acf_sd(i) = nan;
+                acf_end_val(i) = nan;
+                acf_peak(i) = nan;
+                acf_peak_time(i) = nan;
+                acf_rise(i) = nan;
+                acf_slope_up(i) =nan;
+                acf_slope_down(i) =nan;
+                
+                
+                %                 end
                 
             end
             count(iter) = cell_counter;
-            try
-                test = cell2mat(probabilities);
-                test2 = reshape(test, length(bins{1}), length(test)/length(bins{1}));
-
-                pca_data = [pca_data, test2];
-            catch
-                disp('pca catch')
-            end
+            %             try
+            %                 test = cell2mat(probabilities);
+            %                 test2 = reshape(test, length(bins{1}), length(test)/length(bins{1}));
+            %
+            %                 pca_data = [pca_data, test2];
+            %             catch
+            %                 disp('pca catch')
+            %             end
             
             output.date = run_opts.date;
             output.concatname = run_opts.concatname;
@@ -153,25 +167,33 @@ for j= 1:size(txt,1)
             output.parameters.acf_rise =acf_rise;
             output.parameters.acf_slope_up =acf_slope_up;
             output.parameters.acf_slope_down =acf_slope_down;
-
-
+            output.parameters.maximum = maximum;
+            output.parameters.minimum =minimum;
+            output.parameters.minimum_ind = minimum_ind;
+            output.parameters.maximum_ind = maximum_ind;
+            output.parameters.zc = zc;
+            output.parameters.bi_ind = bi_ind;
+            output.parameters.lobe1 = lobe1;
+            output.parameters.lobe2 = lobe2;
+            output.parameters.ratio_to_neighbors = ratio_to_neighbors;
+            
             % end
             save([run_opts.filepath,'/', run_opts.cell_specification, '/', 'output.mat'], 'output');
         end
     catch
         disp([run_opts.date, run_opts.concatname]);
     end
-%     [COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(pca_data', 'NumComponents',2);
-%     counter = 1;
-%     for iter = 1:size(datarun.cell_types,2)
-%         load([run_opts.filepath,'/',  datarun.cell_types{iter}.name, '/', 'output.mat']);
-%         cell_ids = get_cell_ids(datarun, datarun.cell_types{iter}.name);
-% 
-%         output.parameters.pca1 = SCORE(counter:counter +count(iter) -1,1);
-%         output.parameters.pca2 = SCORE(counter:counter +count(iter) -1,2);
-%         save([run_opts.filepath,'/', datarun.cell_types{iter}.name, '/', 'output.mat'], 'output');
-%         counter = counter + count(iter);
-%     end
+    %     [COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(pca_data', 'NumComponents',2);
+    %     counter = 1;
+    %     for iter = 1:size(datarun.cell_types,2)
+    %         load([run_opts.filepath,'/',  datarun.cell_types{iter}.name, '/', 'output.mat']);
+    %         cell_ids = get_cell_ids(datarun, datarun.cell_types{iter}.name);
+    %
+    %         output.parameters.pca1 = SCORE(counter:counter +count(iter) -1,1);
+    %         output.parameters.pca2 = SCORE(counter:counter +count(iter) -1,2);
+    %         save([run_opts.filepath,'/', datarun.cell_types{iter}.name, '/', 'output.mat'], 'output');
+    %         counter = counter + count(iter);
+    %     end
     
     clear datarun
 end
