@@ -6,10 +6,10 @@ close all
 clc
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
+[~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Test Large Cell Data.xlsx');
 % txt = {'
 % };
-for j= 1:size(txt,1)
+for j= 11%1:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
@@ -42,7 +42,7 @@ for j= 1:size(txt,1)
        run_opts.refresh = datarun.stimulus.interval/120*1000;
         % cell_indices = get_cell_indices(datarun,run_opts.cell_specification);
         pca_data = [];
-        for iter = 1:size(datarun.cell_types,2)
+        for iter = 2%1:size(datarun.cell_types,2)
             clear probabilities;
             run_opts.cell_specification = datarun.cell_types{iter}.name;
             run_opts.save_folder = [run_opts.date, '/', run_opts.concatname, '/', run_opts.cell_specification,  '/'];
@@ -63,7 +63,8 @@ for j= 1:size(txt,1)
             bi_ind = zeros(length(cell_ids),1);
             fr = zeros(length(cell_ids),1);
             amp = zeros(length(cell_ids),1);
-            width = zeros(length(cell_ids),1);
+%             width = zeros(length(cell_ids),1);
+%             isi_max = zeros(length(cell_ids),1);
             acf_mean=zeros(length(cell_ids),1);
             acf_var=zeros(length(cell_ids),1);
             acf_sd=zeros(length(cell_ids),1);
@@ -86,7 +87,8 @@ for j= 1:size(txt,1)
                 end
                 try
                     [probabilities{i}, bins{i}, norm{i}] = autocorrelation(datarun.spikes{cell_indices(i)},0.001, 0.1, datarun.duration);
-                    [width(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)});
+%                     [width(i), isi_max(i)] = inter_spike_interval(datarun.spikes{cell_indices(i)});
+                                  
                     cell_counter = cell_counter +1;
                    
                     acf_mean(i) = norm{i}.mean;
@@ -102,7 +104,8 @@ for j= 1:size(txt,1)
                     probabilities{i} = nan(1,101);
                     bins{i} = nan(1,101);
                     cell_counter = cell_counter +1;
-                    width(i) =  nan;
+%                     width(i) =  nan;
+%                     isi_max(i) = nan;
                     acf_mean(i) = nan;
                     acf_var(i) = nan;
                     acf_sd(i) = nan;
@@ -143,7 +146,8 @@ for j= 1:size(txt,1)
             output.parameters.bi_ind = bi_ind;
             output.parameters.fr = fr;
             output.parameters.amp = amp;
-            output.parameters.width = width;
+%             output.parameters.width = width;
+%             output.parameters.isi_max = isi_max;
             output.parameters.acf_mean =acf_mean;
             output.parameters.acf_var =acf_var;
             output.parameters.acf_sd =acf_sd;
