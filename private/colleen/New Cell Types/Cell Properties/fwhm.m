@@ -10,14 +10,18 @@ function width = fwhm(x,y)
 % Rev 1.2, April 2006 (Patrick Egan)
 
 
-y = y / max(y);
+y = y / max(abs(y));
 N = length(y);
-lev50 = 0.5;
-if y(1) < lev50                  % find index of center (max or min) of pulse
+% if abs(min(y)) < abs(max(y))
+
+% if y(1) < lev50                  % find index of center (max or min) of pulse
+ if abs(min(y)) < abs(max(y))
+         lev50 = 0.5;
     [garbage,centerindex]=max(y);
     Pol = +1;
 
-else
+ else
+        lev50 = -0.5;
     [garbage,centerindex]=min(y);
     Pol = -1;
 end

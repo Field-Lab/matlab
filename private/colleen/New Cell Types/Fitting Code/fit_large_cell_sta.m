@@ -1,20 +1,20 @@
 clear
 close all
 
-dataparam.date='2006-06-06-2';
-dataparam.concatname='data003-nwpca';
+dataparam.date='2015-12-18-2/streamed';
+dataparam.concatname='data002';
 
 % Wrong Movie Information
 dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/wrongMovie/wrongMovie'];
 % dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/', 'wrongMovie/wrongMovie'];
 
-dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-22222.xml';
+dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111.xml';
 
 % Right Movie Information
-% dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
-dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname, '/','data003'];
+dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
+% dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname, '/','data003'];
 %
-dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/BW-16-4-0.48-33333.xml';
+dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-22222.xml';
 
 
 
@@ -32,21 +32,21 @@ fitparam.initial_n_two_filters = 8;
 fitparam.independent_fit = 0;
 fitparam.num_frames = 30; % both have to be run with the name number of frames
 % how many stixels per STA on average can be actually noise
-fitparam.false_stixels =0.5;
+fitparam.false_stixels =0.25;
 
 
-dataparam.cell_type = {'ON large 1'};
+dataparam.cell_type = {'ON parasol'};
 
 
 
 
 
 % list specific cell (1), or run for a whole cell type (0)
-select_cells = 0;
-dataparam.cell_specification = [5716]; %can be anything if select_cells =0
+select_cells = 1;
+dataparam.cell_specification = [168 1201 2356 3256 5417 6648]; %can be anything if select_cells =0
 
 
-dataparam.filepath=['/Users/colleen/Desktop/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
+dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
 
 %% END OF INPUT
 dataparam.folder = dataparam.cell_type{1};
@@ -69,7 +69,7 @@ datarun2.names.rrs_sta_path = ['/Volumes/Analysis/', dataparam.file_name_right, 
 %% Load Data1
 opt=struct('verbose',1,'load_params',0,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',0);
 opt.load_sta_params.save_rf = 1; % has to be set to one to load the data you need from vision
-opt.load_sta_params.frames =1:6;% have to input as a vector list of frames, not the number of frames total, counting backwards
+opt.load_sta_params.frames =1:30;% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
 
 %% Load Data2
