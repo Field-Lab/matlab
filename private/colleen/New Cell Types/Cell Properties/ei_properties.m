@@ -1,6 +1,6 @@
 function [maximum, minimum, minimum_ind,  maximum_ind, zc, bi_ind, lobe1, lobe2, ratio_to_neighbors]= ei_properties(datarun, cell, array_size)
 
-% % cell_list = [63 337 482 586 633 785];
+% cell_list = [80 108 348 392 468 498 589];
 % for i = 1:length(cell_list)
 %     cell= cell_list(i);
 if array_size == 512
@@ -29,7 +29,7 @@ else
 cell_id = get_cell_indices(datarun, cell);
 
 waveforms = datarun.ei.eis{cell_id};
-[~,ind] = max(waveforms(:));
+[~,ind] = max(abs(waveforms(:)));
 [max_electrode,~] = ind2sub(size(waveforms),ind);
 
 % positions = datarun.ei.position;
@@ -45,9 +45,10 @@ end
 
 sel_wfs = waveforms(neighbor_ids, :);
 avg_height_neigh = mean(max(abs(sel_wfs')));
-% figure; plot(sel_wfs')
-% hold on
-% plot(waveforms(max_electrode,:), 'linewidth', 2)
+
+figure; plot(sel_wfs')
+hold on
+plot(waveforms(max_electrode,:), 'linewidth', 2)
 
 
 max_waveform = waveforms(max_electrode, :);
