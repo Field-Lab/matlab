@@ -15,7 +15,7 @@ dataRuns_OFF_additivity = [14,15,17,18,20,22];
 dataRuns_ON_additivity = [14,16,17,19,21,23];
 movies_OFF_addivitiy =[1,2,9,6,10,14];
 movies_ON_additivity = [1,4,9,8,12,16];
-a
+
 WN_datafile = '/Volumes/Analysis/2015-11-09-1/d14_36-norefit/data009/data009';
 WN_datafile_streamed = '/Volumes/Analysis/2015-11-09-1/streamed/data009/data009';
 location = '/Volumes/Analysis/2015-11-09-1/d14_36-norefit';
@@ -81,11 +81,30 @@ WN_datafile = '/Volumes/Analysis/2015-11-09-8/d15_61-norefit/data007/data007';
 WN_datafile_streamed = '/Volumes/Analysis/2015-11-09-8/streamed/data007/data007';
 location ='/Volumes/Analysis/2015-11-09-8/d15_61-norefit';
 
+%% pc2015-12-18-2
+
+% Condition strings
+nConditions=8;
+condDuration=1200/4;
+cond_str=cell(nConditions,1);
+cond_str{1}='Original';
+cond_str{2}='Null ';
+
+interestingConditions=[1,2,3,4,5,6,7,8];
+
+dataRuns_OFF_additivity = [23,24,26,27,29,31,34,35];
+dataRuns_ON_additivity = [23,25,26,28,30,32,34,36];
+movies_OFF_addivitiy =[1,2,3,4,14,18,5,6];
+movies_ON_additivity = [1,8,3,10,16,20,5,12];
+
+WN_datafile = '/Volumes/Analysis/2015-12-18-2/d22_37-norefit/data015/data015';
+WN_datafile_streamed = '/Volumes/Analysis/2015-12-18-2/streamed/data015/data015';
+location = '/Volumes/Analysis/2015-12-18-2/d22_37-norefit';
 %%
 
 
-dataRuns =dataRuns_OFF_additivity;
-cellTypeId = 2;
+dataRuns =dataRuns_ON_additivity;
+cellTypeId = 1;
 
 datarun_s=load_data(WN_datafile_streamed);
 datarun_s=load_params(datarun_s);
@@ -114,7 +133,9 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     for idata=1:length(dataRuns)
     Null_datafile = sprintf('%s/data0%02d',location,dataRuns(idata));
     neuronPath = [Null_datafile,sprintf('/data0%02d.neurons',dataRuns(idata))];
-    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+   % [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_12_18_2_light_photons(cellID,nConditions,condDuration,cond_str,neuronPath);
+    
     end
     
     
@@ -210,27 +231,117 @@ data(cellTypeId).cellIDs = InterestingCell_vis_id;
 
 figure;
  histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
- 
+ %% strcture in rasters
+
+ figure;
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_11_09_8/d_add/PSTH_cond3_4.mat');
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_11_09_1/d_add/PSTH_cond3_4.mat');
+ hold on; 
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
+ hold on; 
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_7/d_add/PSTH_cond3_4.mat');
+ hold on; 
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot([0,0.015],[0,0.015],'g');axis square;set(gca,'xTick',[]);set(gca,'yTick',[]);
  %% plot histogram
  load('/Volumes/Lab/Users/bhaishahster/analyse_2015_11_09_8/d_add/PSTH_cond3_4.mat');
+ % histogram
  figure;
  histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
  title('pc 2015 11 09 8')
  
-  load('/Volumes/Lab/Users/bhaishahster/analyse_2015_11_09_1/d_add/PSTH_cond3_4.mat');
+ % scatter
+ figure;
+ plot(data(1).conda_var(data(1).cells_select== 1),data(1).condb_var(data(1).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot([0,max(data(2).conda_var)],[0,max(data(2).conda_var)],'g');axis square;set(gca,'xTick',[]);set(gca,'yTick',[]);
+ title('pc 2015 11 09 8')
+
+ % mosaic
+ WN_datafile = '/Volumes/Analysis/2015-11-09-8/d15_61-norefit/data007/data007';
+ cellIDs = data(1).cellIDs(data(1).cells_select==1);
+ structu = data(1).condba_rat(data(1).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ 
+ cellIDs = data(2).cellIDs(data(2).cells_select==1);
+ structu = data(2).condba_rat(data(2).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ 
+ %%
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_11_09_1/d_add/PSTH_cond3_4.mat');
  figure;
  histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
  title('pc 2015 11 09 1')
- 
-load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
  figure;
- histogram(data(1).condba_rat(data(1).cells_select==    1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
- title('pc 2015 10 29 2')
+ plot(data(1).conda_var(data(1).cells_select== 1),data(1).condb_var(data(1).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot([0,max(data(2).conda_var)],[0,max(data(2).conda_var)],'g');axis square;set(gca,'xTick',[]);set(gca,'yTick',[]);
+ title('pc 2015 11 09 1')
  
-  load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_7/d_add/PSTH_cond3_4.mat');
+   % mosaic
+WN_datafile = '/Volumes/Analysis/2015-11-09-1/d14_36-norefit/data009/data009';
+cellIDs = data(1).cellIDs(data(1).cells_select==1);
+ structu = data(1).condba_rat(data(1).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ 
+ cellIDs = data(2).cellIDs(data(2).cells_select==1);
+ structu = data(2).condba_rat(data(2).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ %%
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
+ figure;
+ histogram(data(1).condba_rat(data(1).cells_select== 1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+ title('pc 2015 10 29 2')
+ figure;
+ plot(data(1).conda_var(data(1).cells_select== 1),data(1).condb_var(data(1).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot([0,max(data(2).conda_var)],[0,max(data(2).conda_var)],'g');axis square;set(gca,'xTick',[]);set(gca,'yTick',[]);
+ title('pc 2015 10 29 2')
+  
+  % mosaic
+ WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
+cellIDs = data(1).cellIDs(data(1).cells_select==1);
+ structu = data(1).condba_rat(data(1).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ 
+ cellIDs = data(2).cellIDs(data(2).cells_select==1);
+ structu = data(2).condba_rat(data(2).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ 
+%%  
+  
+ load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_7/d_add/PSTH_cond3_4.mat');
  figure;
  histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
  title('pc 2015 10 29 7')
+ figure;
+ plot(data(1).conda_var(data(1).cells_select== 1),data(1).condb_var(data(1).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot(data(2).conda_var(data(2).cells_select== 1),data(2).condb_var(data(2).cells_select== 1),'.','MarkerSize',10);
+ hold on;
+ plot([0,max(data(2).conda_var)],[0,max(data(2).conda_var)],'g');axis square;set(gca,'xTick',[]);set(gca,'yTick',[]);
+ title('pc 2015 10 29 7')
+ 
+ 
+  % mosaic
+WN_datafile ='/Volumes/Analysis/2015-10-29-7/d12_41-norefit/data012/data012';
+cellIDs = data(1).cellIDs(data(1).cells_select==1);
+ structu = data(1).condba_rat(data(1).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
+ 
+ cellIDs = data(2).cellIDs(data(2).cells_select==1);
+ structu = data(2).condba_rat(data(2).cells_select==1);
+ plot_RF_struct_rast(WN_datafile,cellIDs,structu);
  
  %%
   load('/Volumes/Lab/Users/bhaishahster/analyse_2015_11_09_8/d_add/PSTH_cond3_4.mat');
@@ -382,7 +493,7 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
    % save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
     
     
-
+     
 end
 
 condba_rat = condb_var./conda_var;
