@@ -6,13 +6,26 @@ function [maximum, minimum, minimum_ind,  maximum_ind, zc, bi_ind, lobe1, lobe2,
 if array_size == 512
 datarun = load_ei(datarun, cell, 'array_type', 512);
     [xc,yc] = getElectrodeCoords512(); 
+    cell_id = get_cell_indices(datarun, cell);
+
+waveforms = datarun.ei.eis{cell_id};
+[~,ind] = max(waveforms(:));
+[max_electrode,~] = ind2sub(size(waveforms),ind);
+
+% positions = datarun.ei.position;
+
+
+difference = repmat([xc(max_electrode), yc(max_electrode)], size(yc,2),1) - [xc', yc'];
+distance = [[1:size(difference,1)]', sqrt(difference(:,1).^2 + difference(:,2).^2)];
+sorted_distance= sortrows(distance, 2);
+index = sorted_distance(:,2) > 0 & sorted_distance(:,2) < 70;
+neighbor_ids = sorted_distance(index,1);
 
 else
     datarun = load_ei(datarun, cell, 'array_type', 519);
     [xc,yc] = getElectrodeCoords519(); 
-
-end
-
+    xc = xc';
+    yc = yc';
 cell_id = get_cell_indices(datarun, cell);
 
 waveforms = datarun.ei.eis{cell_id};
@@ -25,7 +38,9 @@ waveforms = datarun.ei.eis{cell_id};
 difference = repmat([xc(max_electrode), yc(max_electrode)], size(yc,2),1) - [xc', yc'];
 distance = [[1:size(difference,1)]', sqrt(difference(:,1).^2 + difference(:,2).^2)];
 sorted_distance= sortrows(distance, 2);
-neighbor_ids = sorted_distance(2:7,1);
+index = sorted_distance(:,2) > 0 & sorted_distance(:,2) < 45;
+neighbor_ids = sorted_distance(index,1);
+end
 
 
 sel_wfs = waveforms(neighbor_ids, :);
@@ -54,13 +69,19 @@ max_waveform = waveforms(max_electrode, :);
     [~,zc] = crossing(max_waveform);
     index = zc > minimum_ind & zc < maximum_ind;
     if sum(index) > 0 && sum(index) < 2
+        try
         zc= zc(index);
         lobe1 = fwhm(1:round(zc)+1, [max_waveform(1:round(zc)), max_waveform(round(zc))*2]);
         lobe2 = fwhm(round(zc)-1:size(max_waveform,2), [max_waveform(round(zc))*2, max_waveform(round(zc):size(max_waveform,2))]);
-    else
+        catch
+            zc = nan;
+            lobe1 = nan;
+            lobe2 = nan;
+        end
+        else
         zc = nan;
         lobe1 = nan;
         lobe2 = nan;
     end
-    ratio_to_neighbors = maximum/avg_height_neigh;
+    ratio_to_neighbors = abs(maximum)/abs(avg_height_neigh);
 % end

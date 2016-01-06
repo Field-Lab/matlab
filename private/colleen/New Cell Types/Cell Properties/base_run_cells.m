@@ -11,7 +11,7 @@ clc
 array_size = cell2mat(array_size(:,4));
 % txt = {'
 % };
-for j= 11%1:size(txt,1)
+for j= 19%1:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
@@ -45,7 +45,7 @@ for j= 11%1:size(txt,1)
         run_opts.refresh = datarun.stimulus.interval/120*1000;
         % cell_indices = get_cell_indices(datarun,run_opts.cell_specification);
         pca_data = [];
-        for iter = 2%1:size(datarun.cell_types,2)
+        for iter = 1:size(datarun.cell_types,2)
             clear probabilities;
             run_opts.cell_specification = datarun.cell_types{iter}.name;
             run_opts.save_folder = [run_opts.date, '/', run_opts.concatname, '/', run_opts.cell_specification,  '/'];
