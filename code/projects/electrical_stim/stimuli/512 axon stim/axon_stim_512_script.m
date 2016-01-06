@@ -15,6 +15,7 @@ clear all;
 %% Define inputs
 include_single_elecs = false;
 both_polarity_combs = true;
+<<<<<<< HEAD
 quadrant = 3; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
 elec_spacing = 60;
 same_polarity = false; % Set to true to use only negative pairs. 
@@ -24,6 +25,17 @@ pairOrientation = 'downright'; %horizontal, downleft, downright, vertical (horiz
 delayInMs = 7.5; %interval between pulses
 saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
 saveName = 'axon512_quad3_neg2to1'; %Descriptive name for the stimulus files 
+=======
+quadrant = 34; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
+elec_spacing = 60;
+same_polarity = false; % Set to true to use only negative pairs. 
+use_ratios = true;
+scale_factor =   0.5; %Set scale factor to determine 2-elec ratio to use. A positive value gives
+pairOrientation = 'downright'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
+delayInMs = 7.5; %interval between pulses
+saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
+saveName = 'axon512_quad34_neg2to1'; %Descriptive name for the stimulus files 
+>>>>>>> a4f74650b44b27b048099ccb7d351c6ef860acbe
 
 %%
 if elec_spacing == 60
@@ -228,7 +240,7 @@ if elec_spacing == 60
     end
     
     if both_polarity_combs
-%         keyboard; 
+
         for ii = 1:32
             pInd = find(elec_1==pattern_order1(ii) & stim_type==2);
             if ~isempty(pInd)
@@ -533,6 +545,7 @@ if use_ratios
     figure; subplot(1,2,1); imagesc(array); title('opp polarity pairs')
     if scale_factor<0
         array(find(array == 1)) = -scale_factor;
+        array(find(array == -1)) = 1;
     else
         array(find(array == -1)) = -scale_factor; 
     end
