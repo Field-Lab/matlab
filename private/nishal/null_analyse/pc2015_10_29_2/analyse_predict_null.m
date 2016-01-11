@@ -28,7 +28,9 @@ rawMovFrames=1200/(4);
 icnt=0;
 % make pixel histogram
 for imov=movies_OFF_addivitiy
-    [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-29-2/Visual/%d.rawMovie',imov),rawMovFrames,1);
+    %[stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-29-2/Visual/%d.rawMovie',imov),rawMovFrames,1);
+    [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_from_01/%d.rawMovie',imov),rawMovFrames,1);
+    
     subtract_movies{3}=mean(stim,1);
     subtract_movies{3}=mean(stim,1)*0+127.5;
     movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
