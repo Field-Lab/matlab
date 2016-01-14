@@ -67,22 +67,28 @@ for i_cell = 1:length(cid)
         i_ex_cell = i_ex_cell + 1;
         PSTH_ex_cells{i_ex_cell} = PSTH;
     end
-   %if loc(i_cell) < -3
-        
+%    if loc(i_cell) < -3
+%         
 %         f = figure(1);
 %         set(f, 'Position', [100 100 600 200]);
 %         plot(PSTH{3})
-%         title('CLICK FOR MOD')
-%         x = waitforbuttonpress;
-%         if ~x %if click
-%             modu = [modu loc(i_cell)];
-%             close(f)
-%             disp('mod')
-%         elseif x % if hit enter
-%             no_modu = [no_modu loc(i_cell)];
-%             close(f)
-%             disp('no mod')
+%         hold on
+%         for i = 1:15
+%             plot([i i]*100, [0 100], 'k')
 %         end
+%         hold off
+%         ylim([0 max(PSTH{3})]);
+%         title(loc(i_cell))
+%         pause()
+% %         if ~x %if click
+% %             modu = [modu loc(i_cell)];
+% %             close(f)
+% %             disp('mod')
+% %         elseif x % if hit enter
+% %             no_modu = [no_modu loc(i_cell)];
+% %             close(f)
+% %             disp('no mod')
+% %         end
 %     end
 %    modu = 0;
 %    no_modu = 0;
