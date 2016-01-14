@@ -1,4 +1,4 @@
-function buf = stavect2visbuf(stavect, width, height)
+function buf = stavect2visbuf(stavect, width, height, RGB)
 % Transform Matlab STA vector into Vision STA buffer format vector
 % 
 % Normal Matlab STA format is Y-X-C-T in separate dimensions.  Vision 
@@ -17,9 +17,15 @@ function buf = stavect2visbuf(stavect, width, height)
 %
 % 2013-06 phli
 %
+if RGB == 1
+    multipler = 3;
+else
+    multipler = 1;
+end
 
-ind = 1:size(stavect,1);
+stavect_shaped = reshape(stavect, height*width*multipler, []);
+ind = 1:size(stavect_shaped,1);
 ind = reshape(ind, height, width, []);
 ind = permute(ind, [3 2 1]);
 ind = reshape(ind, [], 1);
-buf = stavect(ind,:);
+buf = stavect_shaped(ind,:);

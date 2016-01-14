@@ -1,4 +1,4 @@
-function plot_ccf(datarun, cell_IDs, varargin)
+function [time, ccf] = plot_ccf(datarun, cell_IDs, varargin)
 % MY_FUNCTION     This function gets the ACF (if one cell ID given) or CCF (if 2 cell IDs
 %                      given) and plots the correlogram
 %                 correlation functions are calculated using compute_ccf
@@ -44,11 +44,15 @@ function plot_ccf(datarun, cell_IDs, varargin)
 
 p = inputParser;
 
-p.keepUnmatched = true;
+% p.keepUnmatched = true;
 
 % specify list of optional parameters
 p.addParamValue('verbose', false);
 p.addParamValue('fig_or_axes', []);
+p.addParamValue('offset', 100e-3);
+p.addParamValue('dt', 100e-3/63);
+p.addParamValue('shuffle', 'none');
+p.addParamValue('trial', 10);
 
 %p.addParamValue('options', struct('offset',100e-3,'scale','ms','shuffle','none'), @isstruct) %passed to compute_ccf
 
@@ -57,8 +61,8 @@ p.parse(varargin{:});
 
 % get params struct
 params = p.Results;
-options = p.Unmatched;
-
+% options = p.Unmatched;
+options = params;
 % generate structs to pass on
 
 

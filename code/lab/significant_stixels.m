@@ -57,7 +57,9 @@ function [sig_stixels, params, rf_strength_out] = significant_stixels(sta, varar
 %
 %
 % 2008-10 gauthier    
-%
+% 2014-02-27 Colleen Rhoades: Changed transformation of distribution to
+% (n-1)*(s_hat^2)/(s_true^2) from n*(s_hat^2)/(s_true^2) for a chi-squared
+% distribution with n-1 degrees of freedom
 
 
 % SET UP OPTIONAL ARGUMENTS
@@ -215,13 +217,13 @@ if size(sta,4) > 1
             % transform to normal distribution
             
             % the distribution of standard deviation values with 1/n normalization (s_hat) has the following property:
-            %   n*(s_hat^2)/(s_true^2)  =  chi square with n-1 degrees of freedom
+            %   (n-1*)(s_hat^2)/(s_true^2)  =  chi square with n-1 degrees of freedom
             %       where n is the number of samples and s_true is the true standard deviation
             % here s_true is 1 (by the normalization above), and n = size(sta,4)
             % thus the following code converts the measured standard deviation values to a chi square distribution,
             % these values are further transformed to p values (chi2cdf), and then normal values (norminv)
             n = size(sta,4);
-            rf = norminv(chi2cdf( n*reshape(rf,[],1).^2 ,n-1));
+            rf = norminv(chi2cdf((n-1)*reshape(rf,[],1).^2 ,n-1));
             
             % set Inf to a reasonable value
             rf(rf==Inf) = 5.5;
@@ -413,7 +415,7 @@ switch params.select
         
         
 end
-
+params.noise_sigmas = noise_sigmas;
 
 % ensure sparse!
 sig_stixels = sparse(sig_stixels);
