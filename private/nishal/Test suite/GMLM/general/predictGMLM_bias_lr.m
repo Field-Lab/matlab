@@ -1,5 +1,5 @@
 
-function [predictedResponse,lam] = predictGMLM_bias_lr(fitGMLM,maskedMov,nTrials,interval)
+function [predictedResponse,lam,kx] = predictGMLM_bias_lr(fitGMLM,maskedMov,nTrials,interval)
 
 
 filters = fitGMLM.Linear.filter;
