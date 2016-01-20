@@ -30,7 +30,7 @@ filepath= ['/Volumes/Lab/Users/crhoades/DS/', run_opt.data_set, '/', run_opt.dat
 % You can give the cells as all of them (datarun.cell_ids) or give
 % specific vision ids
 % Find the cell to run by mapping a large cell EI from a white noise run
-cells = [366 1023 2208 3413 3892 4402];%'all'; % 'all' or give a vector of vision cell ids
+cells = [2764];%'all'; % 'all' or give a vector of vision cell ids
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,7 +77,8 @@ catch
         datarun.stimulus.trials(i).TEMPORAL_PERIOD = datarun.stimulus.trials(i).temporal_period;
         
     end
-    
+        spatial_tested = fliplr(datarun.stimulus.params.SPATIAL_PERIOD);
+    temporal_tested = fliplr(datarun.stimulus.params.TEMPORAL_PERIOD);
 end
 
 
@@ -85,7 +86,22 @@ end
 
 % These triggers depend on the Labview trigger. 7.5 seconds prevents
 % triggers from being missed on the large spatial scales
-tr=datarun.stimulus.triggers; % all start triggers
+tr=datarun.triggers; % all start triggers
+trigger_marks=[];
+counter = 1;
+while counter< length(datarun.triggers)-1
+    trigger_marks = [trigger_marks datarun.triggers(counter)];
+    while datarun.triggers(counter+1) - datarun.triggers(counter) < 2;
+        counter = counter+1;
+        if counter> length(datarun.triggers)-1
+            break;
+        end
+    end
+    counter = counter+1;
+end
+
+    
+tr = trigger_marks;
 
 for x = 1:length(cells)
     fprintf('.');
@@ -106,7 +122,7 @@ for x = 1:length(cells)
         num_triggers = interval/(temporal/120); % Number of times a band passed over one spot
         sub_spacing= datarun.triggers(ind:ind+num_triggers) - datarun.triggers(ind); % How to divide by the trial into the timing of the bands
         start = 0;
-        stop = temporal/120;
+        stop_time = temporal/120;
         
         
         
@@ -115,10 +131,11 @@ for x = 1:length(cells)
             h=n-tr(z)-sub_spacing(i); % align the spike times
             stop = sub_spacing(i+1) - sub_spacing(i);
             hh=find(h>=start & h<=stop); % Find spikes for each grating that passed over the spot
-            psth_r=[psth_r; (h(hh)*1000)', repmat(length(sub_spacing)-i,[length(hh),1]);];
+            psth_r=[psth_r; (h(hh))', repmat(length(sub_spacing)-i,[length(hh),1]);];
             
             
         end
+%         rasterplot(psth_r(:,1)+ (psth_r(:,2)-1)*stop_time,interval/stop_time ,stop_time)
         psth_mat{z} = psth_r; % Put all the psths from all the temporal, spatial and direction combinations into a cell array
         %                if rgb(1) == 0.48
         %                    psth_mat{z} = [];
@@ -156,10 +173,10 @@ for x = 1:length(cells)
     
     D = unique(by_trial,'rows');
     placement = 1;
-    for t = 2%1:length(temporal_tested)
+    for t = 1:length(temporal_tested)
         spat64 = find(by_trial(:,3) == temporal_tested(t));
         
-        for s = 2%1:length(spatial_tested)
+        for s = 1:length(spatial_tested)
             spac = find(by_trial(:,2) == spatial_tested(s));
             C = intersect(spat64, spac);
             
@@ -187,25 +204,29 @@ for x = 1:length(cells)
             
             j = polar(deg2rad(to_plot(:,1)), to_plot(:,2), 'k-');
             
-            % polarwitherrorbar(deg2rad(to_plot(1,:)),to_plot(2,:),error_b)
+            
+%             polarwitherrorbar(deg2rad(to_plot(1,:)),to_plot(2,:),error_b)
             %                 h = polar(deg2rad(by_trial(C,1)), by_trial(C,4), 'b.');
             %                 set( findobj(h, 'Type', 'line'),'MarkerSize',15);
             %                 set( findobj(g, 'Type', 'line'),'MarkerSize',15);
             %                 set( findobj(j, 'Type', 'line'),'MarkerSize',15);
             
             hold on
-            %                 hHiddenText = findall(gca,'type','text');
-            %                 Angles = 0 : 30 : 330;
-            %                 hObjToDelete = zeros( length(Angles)-4, 1 );
-            %                 k = 0;
-            %                 for ang = Angles
-            %                     k  =k+1;
-            %                     hObj = findall(hHiddenText,'string',num2str(ang));
-            %                     hObjToDelete(k) = hObj;
-            %
-            %                 end
-            %                 delete( hObjToDelete(hObjToDelete~=0) );
-            
+                        k = polar(deg2rad(error_u(:,1)), error_u(:,2), 'r-');
+                        l = polar(deg2rad(error_l(:,1)), error_l(:,2), 'r-');
+
+%                             hHiddenText = findall(gca,'type','text');
+%                             Angles = 0 : 45 : 315;
+%                             hObjToDelete = zeros( length(Angles)-4, 1 );
+%                             k = 0;
+%                             for ang = Angles
+%                                 k  =k+1;
+%                                 hObj = findall(hHiddenText,'string',num2str(ang));
+%                                 hObjToDelete(k) = hObj;
+%             
+%                             end
+%                             delete( hObjToDelete(hObjToDelete~=0) );
+%             
             
             % say your labels have the following strings..
             hHiddenText = findall(gca,'type','text');
@@ -213,7 +234,8 @@ for x = 1:length(cells)
             for r=1:length(rho_labels)
                 delete(findall(hHiddenText, 'string', rho_labels{r}))
             end
-            
+             axis equal
+%              axis square
             
             
             title({['Temporal = ', num2str(temporal_tested(t))]; ['Spatial = ', num2str(spatial_tested(s))]})
@@ -253,5 +275,5 @@ for x = 1:length(cells)
     
     %     export_fig([filepath, 'Cell_',num2str(cell_to_run)], '-pdf')
     print(fig,'-dpdf',[filepath, 'Cell_',num2str(cell_to_run)]);
-    close(gcf);
+%     close(gcf);
 end
