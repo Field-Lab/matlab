@@ -27,11 +27,22 @@ if GLMType.CouplingFilters
     end
 end
 % end NBCoupling
-
-if GLMType.contrast
-    paramind.C = (numParams + 1);%:(numParams+100);
-    numParams = numParams + 1;%00;
+if isfield(GLMType, 'Saccades')
+	SAstart = numParams + 1;  SAend = numParams + GLMPars.saccadefilter.filternumber;
+	paramind.SA = [SAstart  : SAend];
+	numParams = numParams + GLMPars.saccadefilter.filternumber;
 end
+
+if isfield('GLMType','Contrast')
+    Cstart = numParams + 1;  Cend = numParams + GLMPars.spikefilters.C.filternumber;
+	paramind.C = [Cstart  : Cend];
+	numParams = numParams + GLMPars.spikefilters.C.filternumber;
+end
+
+% if GLMType.Subunits
+%     paramind.SU = (numParams+1):(numParams+GLMPars.subunit_size^2);
+%     numParams = numParams+GLMPars.subunit_size^2;
+% end
 
 
 % Assign indices to the stim filter
@@ -63,8 +74,15 @@ if GLMType.CONVEX
         paramind.inhibitoryfilter_index = paramind.time2;
         
         paramind.X = union(paramind.time1,paramind.time2);
+    elseif isfield(GLMType,'timefilter') && strcmp(GLMType.timefilter, 'prefilter')
+        Xstart = numParams + 1;  
+        Xend   = numParams + (GLMPars.stimfilter.ROI_length^2);        
+        paramind.X      = [Xstart:Xend];
+        paramind.space1 = [Xstart: ((Xstart-1) + (GLMPars.stimfilter.ROI_length^2))];
+        numParams       = numParams  +  GLMPars.stimfilter.ROI_length^2; 
     elseif strcmp(GLMType.stimfilter_mode, 'nostim')
         paramind.Xnote = 'no field devoted to the stimulus';        
+
     else
         error('you need to properly specifiy the stimfilter in prep_paramind')
     end
@@ -114,7 +132,10 @@ if ~GLMType.CONVEX
         paramind.inhibitoryfilter_index = union(paramind.space2,paramind.time2);
     end
     
-    
+    if GLMType.Subunits
+        paramind.SU = (convParams + 1):(convParams + 9);
+        % numParams = numParams + 9;
+    end
     
     paramind.convParams = convParams;
     paramind.convParams_ind = 1:convParams;

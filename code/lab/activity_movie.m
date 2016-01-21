@@ -45,7 +45,7 @@ function mov = activity_movie(datarun, output_filename, varargin)
     end
     
     %calculate histograms 
-    mat=zeros((params.stop-params.start)/params.bin,size(datarun.position,1));
+    mat=zeros(ceil((params.stop-params.start)/params.bin),size(datarun.position,1));
     for i=1:size(datarun.position,1)
         if ~isempty(channels{i})
             mat(:,i)=histc(channels{i},[params.start:params.bin:params.stop-params.bin]);
