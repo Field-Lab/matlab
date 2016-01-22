@@ -80,7 +80,10 @@ for movieIndex = mIndices
     subtractionMatrix = repmat(firstArtifact,[size(dataTraces,1) 1]);
     modData = dataTraces - subtractionMatrix;
 %     modData = modData(:,:,8:end); %cut off the early time points
+%     spiketrials = [2 3 4 6 10 11 14 15 16 17 18 19 21 23]; %banana delete this line!!!!
+%     modData = modData(spiketrials,:,:); 
     trialAvg = squeeze(mean(modData)); 
+    keyboard; 
     amplitudes = max(trialAvg,[],2) - min(trialAvg,[],2);
     scatterData = amplitudes;
     if ~suppressPlots

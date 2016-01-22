@@ -1,9 +1,15 @@
 %% This script registers two images using control point selection
 % LG 10/2015
 
-experiment_id = '2015-10-06-3'; 
+experiment_id = '2015-10-06-6'; 
 
 switch experiment_id
+    case '2016-01-05-4'
+        alignment_image = imread('/Volumes/Transfer/2015-01-05-4/Imaging/vasculature_stitched.tif'); 
+        % Choose the channel containing vasculature only.
+        vasculature_array = alignment_image(:,:,1);
+        % Load the confocal vasculature image
+        vasculature_confocal = imread('/Volumes/Transfer/2015-01-05-4/Imaging/confocal/vasc-2016-01-05-4.tif');
     case '2015-10-06-6'
         % Load the alignment image containing the array and the vasculature
         alignment_image = imread('/Volumes/Data/2015-10-06-6/Imaging/vasculature_alignment_with_array/2015-10-06-6_stitched_sm.jpg (blue).jpg');
@@ -70,7 +76,7 @@ end
 % Transformation type can be: 'nonreflectivesimilarity' | 'similarity' | 'affine' | 'projective'
 
 % Piecewise linear transformation looked the best
-tform_pwl = fitgeotrans(movingPoints1,fixedPoints1,'pwl');
+tform_pwl = fitgeotrans(movingPoints,fixedPoints,'pwl');
 registered_pwl = imwarp(vasculature_confocal, tform_pwl);
 %% Display results
 figure; imshow(registered_pwl); title('registered confocal vasculature image'); 
@@ -108,7 +114,7 @@ hold on; h2=imshow(g_im); title('co-registered overlay using piecewise linear tr
 hold off;
 
 set(h1, 'AlphaData', 0.5);
-set(h2, 'AlphaData', 0.5);
+set(h2, 'AlphaData', 0.33);
  %% % Pad the arrays so that the can be overlayed in RGB
 % [morepadding] = size(vasculature_array) - size(registered_pwl); 
 % array_padded = padarray(vasculature_array,[-1*morepadding(1) 0],'post'); 
@@ -179,6 +185,9 @@ figure; imshow(rg_only);
 g_only = rgb_merge; 
 g_only(:,:,[1 3]) = 0; 
 figure; imshow(g_only)
+
+
+
 %% Other tries
 % mytform = fitgeotrans(movingPoints1, fixedPoints1, 'projective');
 % tform_pwl = fitgeotrans(movingPoints1, fixedPoints1,'pwl');

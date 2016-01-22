@@ -27,7 +27,7 @@ line([0 0],[min(yc) max(yc)],'Color','k');
 line([min(xc)/2 min(xc)/2],[min(yc) max(yc)],'Color','k');
 line([max(xc)/2 max(xc)/2],[min(yc) max(yc)],'Color','k');
 allthresholds = zeros(1,512); 
-
+shape={'o','+','*','x','s','d','h'};
 for n = 1:length(cellIds)
     thresh_quad1 = zeros(1,512);
     thresh_quad2 = zeros(1,512);
@@ -82,9 +82,10 @@ for n = 1:length(cellIds)
     idx = find(thresholds);
     figure(100); 
     hold on; scatter(xc(idx),yc(idx),150, thresholds(idx),'filled');
-  
-    allthresholds = allthresholds + thresholds; 
+    
+   allthresholds = allthresholds + thresholds; 
 end
+figure(100); 
 colormap(cmap.m); caxis([0.5 4.5]);
 colorbar;
 title('50% activation thresholds, human sorting'); 

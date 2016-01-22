@@ -1,8 +1,11 @@
 function bundleMeans = getBundleVoltagesAStar(path, patternNos, display, exclude)
-%Calculate the average bundle voltage for each movie of each pattern in patternNos, using the A* pathfinding algorithm to locate the bundle.
+% Calculate the average bundle voltage for each movie of each pattern in 
+% patternNos, using the A* pathfinding algorithm to locate the bundle
+
 movieNo = 0;
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-temp = load([matlab_code_path() 'private/freddy/512elecpositions.mat']); % Find a more general location for this or call a different text file.
+temp = load([matlab_code_path() ...
+    'code/projects/electrical_stim/resources/arrayPositions512.mat']); 
 positions = temp.positions;
 
 if nargin < 4
@@ -108,7 +111,7 @@ for patternIndex = 1:size(patternNos, 2)
         bundleMeans(movieIndex-1, 1, patternIndex) = bundleMean;
         bundleMeans(movieIndex-1, 2, patternIndex) = amps(1);
         bundleMeans(movieIndex-1, 3, patternIndex) = movieNos(movieIndex);
-        
+       
         if display
             cla;
             scatter(positions(:,1),positions(:,2),350,meanData,'filled');
@@ -120,7 +123,17 @@ for patternIndex = 1:size(patternNos, 2)
             %         text(positions(stimChan,1),positions(stimChan,2),'stimulating electrode')
             pause(0.001);
         end
-        %end
+        if 0 % bypass for now.
+        if amps(1) < -3.5
+            figure; scatter(positions(:,1),positions(:,2),abs(meanData),'filled')
+            hold on; scatter(positions(axonPath,1),positions(axonPath,2),100,'k')
+            hold on; scatter(positions(ignore,1),positions(ignore,2),100,'r');
+            axis image; axis off; title('black circles were averaged, red ignored');
+            title(sprintf(['%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA',...
+                '\nblack circles were averaged, red ignored'],pathToAnalysisData,...
+                patternNo,movieNos(movieIndex),amps(1)), 'Color', 'black');  
+        end
+        end
         
     end
 end
