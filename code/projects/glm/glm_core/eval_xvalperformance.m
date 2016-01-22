@@ -43,15 +43,31 @@ if fittedGLM.GLMType.CouplingFilters
     end
 end
 
+if isfield(fittedGLM.GLMType, 'Saccades')
+    saccades = zeros(1,params.bins);
+    saccades(1,1:120:params.bins) = 1;
+    saccades = repmat(saccades, [params.trials 1]);
+end
+
 
 %%
 GLMType_fortest                 = fittedGLM.GLMType;
 GLMType_fortest.stimfilter_mode = 'fullrank';   % treat all filters the same
-[X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord) ;
+if isfield(GLMType_fortest, 'Subunits') && GLMType_fortest.Subunits
+    if isfield(GLMType_fortest, 'timefilter') && strcmp(GLMType_fortest.timefilter, 'prefilter')
+        [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter, fittedGLM.linearfilters.Stimulus.pretime) ;
+    else
+        [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA, fittedGLM.SU_filter) ;
+    end
+else
+    GLMType_fortest.Subunits = 0;
+    GLMType_fortest.timefilter = 'fit';
+    [X_frame] = prep_stimcelldependentGPXV(GLMType_fortest, fittedGLM.GLMPars, teststim,inputstats,center_coord, fittedGLM.cellinfo.WN_STA) ;
+end
 clear GLMType_fortest
 GLMType = fittedGLM.GLMType;
 
-  
+
     %% Set up CIF Components
     
 
@@ -64,6 +80,9 @@ if GLMType.CouplingFilters
     CP = fittedGLM.linearfilters.Coupling.Filter;
 end
 % NBcoupling
+if isfield(GLMType,'Saccades')
+    SA = fittedGLM.linearfilters.Saccades.Filter;
+end
 K  = fittedGLM.linearfilters.Stimulus.Filter;
 
 % HUGE HACK AKHeitman 2014-10-21
@@ -78,10 +97,14 @@ K  = reshape(K, [ROI_pixels, length(frame_shifts)]);
 
 
 KX = zeros(ROI_pixels, params.frames);
-for i_pixel = 1:ROI_pixels
-    X_frame_shift = prep_timeshift(X_frame(i_pixel,:),frame_shifts);
-    tfilt = K(i_pixel,:);
-    KX(i_pixel,:) = tfilt * X_frame_shift;
+if isfield(GLMType,'timefilter') && strcmp(GLMType.timefilter, 'prefilter')
+    KX = K'*X_frame;
+else
+    for i_pixel = 1:ROI_pixels
+        X_frame_shift = prep_timeshift(X_frame(i_pixel,:),frame_shifts);
+        tfilt = K(i_pixel,:);
+        KX(i_pixel,:) = tfilt * X_frame_shift;
+    end
 end
 lcif_kx_frame = sum(KX,1);
 
@@ -123,13 +146,15 @@ if GLMType.PostSpikeFilter
     lcif_ps = fastconv(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
     lcif = lcif + lcif_ps;
 end
-if GLMType.contrast
-    C = fittedGLM.rawfit.opt_params(fittedGLM.rawfit.paramind.C);
+
+if isfield(GLMType,'Contrast') && GLMType.Contrast
     stimsize.width  = size(testmovie,1);
     stimsize.height = size(testmovie,2);
-    ROIcoord        = ROI_coord(20, fittedGLM.cellinfo.slave_centercoord, stimsize);
-    % C_shift = zeros(bins,1);
-    lcif_C = repmat(C*imresize(squeeze(mean(mean(double(testmovie(ROIcoord.xvals,ROIcoord.yvals, :))))), [1 params.bins],'nearest'), [57 1]);
+    GLMPars = GLMParams;
+    ROIcoord        = ROI_coord(GLMPars.spikefilters.C.range, fittedGLM.cellinfo.slave_centercoord, stimsize);
+    contrast = imresize(squeeze(mean(mean(double(testmovie(ROIcoord.xvals,ROIcoord.yvals, :))-0.5))), [params.bins 1],'nearest');
+    lcif_C = conv(contrast,fittedGLM.linearfilters.Contrast.Filter, 'full')';
+    lcif_C = repmat(lcif_C(1:params.bins),[57 1]);
     %         for i_bin = 1:bins
     %             if i_bin > 99
     %                 C_shift(:,i_bin) = contrast((i_bin-99):i_bin);
@@ -143,6 +168,10 @@ if GLMType.CouplingFilters
         lcif_cp = fastconv(pairspike{pair} , [0; CP{pair}]', size(pairspike{pair},1), size(pairspike{pair},2) );
         lcif = lcif + lcif_cp;
     end
+end
+if isfield(GLMType, 'Saccades')
+    lcif_sa = fastconv(saccades, [0; SA]', size(saccades,1), size(saccades,2));
+    lcif = lcif+lcif_sa;
 end
 % end NBCoupling
 glm_ratepersec  = exp(lcif);

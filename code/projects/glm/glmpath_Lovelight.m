@@ -4,7 +4,7 @@
 function glmpath_Lovelight
 
 copyfile('/home/vision/Nora/matlab/code/projects/glm/NSEM_BaseDirectories_Lovelight.m','/home/vision/Nora/matlab/code/projects/glm/NSEM_BaseDirectories.m') %BERTHA
-% copyfile('/Users/Nora/Documents/MATLAB/matlab/code/projects/glm/NSEM_BaseDirectories_Lovelight.m' , '/Users/Nora/Documents/MATLAB/matlab/code/projects/glm/NSEM_BaseDirectories.m')
+%copyfile('/Users/Nora/Documents/MATLAB/matlab/code/projects/glm/NSEM_BaseDirectories_Lovelight.m' , '/Users/Nora/Documents/MATLAB/matlab/code/projects/glm/NSEM_BaseDirectories.m')
 BD = NSEM_BaseDirectories;
 glmwrapdir     = BD.GLM_codehome ;
 glmcodedir     = sprintf('%s/glm_core', glmwrapdir);

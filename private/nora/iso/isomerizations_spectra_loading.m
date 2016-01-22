@@ -9,17 +9,6 @@ function spectra = isomerizations_spectra_loading(rig,meter,varargin)
 % rig: currently the only monitor emission file coded in is for Rig 4.
 % meter: which UDT you did the measurements with, as a string. EG '18707' 
 
-% TAKING THE MEASUREMENTS
-% The power reading should be taken at Ch2 on the meter reading, which is
-%   calibrated for 500nm. Meter sensitivity spectrum should be 1 at 500nm.
-% When you put the power meter up, shift it around to make sure the reading
-%   doesn't change. If the monitor is well centered on the meter, the
-%   reading shouldn't change.
-
-% QUESTIONS
-% cone absportion units?
-% should be 201 but is only 200... why
-
 %% Get filenames etc
 p = inputParser;
 p.addParameter('meter_sensitivity_file', ['/Volumes/Lab/Experiments/Calibration/Data/UDT/UDT-' meter '.1']) % eg udt.1
