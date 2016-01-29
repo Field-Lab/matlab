@@ -5,7 +5,7 @@
 % Testing with an example dataset
 
 eiFilePath = '/Volumes/Analysis/2015-11-09-3/data000/data000.ei';
-pathToAnalysisData = '/Volumes/Analysis/2015-11-09-3/data001/'; %elec stim data
+pathToAnalysisData = '/Volumes/Analysis/2015-11-09-3/data001-data002/'; %elec stim data
 
 % [eiFile, eiPath] = uigetfile('/Volumes/Analysis/*.ei');
 % eiFilePath = fullfile(eiPath,eiFile);

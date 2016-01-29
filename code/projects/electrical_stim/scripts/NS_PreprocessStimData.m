@@ -11,18 +11,18 @@ system = questdlg('Stim system?','stim system','stim512','stim64','stim512');  %
 % if ~strcmp(rawDataDir(end),filesep)
 %     rawDataDir = [rawDataDir filesep];
 % end
-rawDataDir = '/Volumes/Data/2015-11-09-3/';
+rawDataDir = '/Volumes/Data/2016-01-05-4/';
 disp(rawDataDir); 
 % Points to the directory of the output.
 % WritePathBase = uigetdir('/Volumes/Analysis', 'Select your output directory'); 
 % if ~strcmp(WritePathBase(end),filesep)
 %     WritePathBase = [WritePathBase filesep];
 % end
-WritePathBase = '/Volumes/Analysis/2015-11-09-3/';
+WritePathBase = '/Volumes/Analysis/2016-01-05-4/';
 % Appends this number to 'data ---'
 % fileNos = inputdlg('enter the number corresponding to datarun (1,2,...)'); %[10];
 % fileNos = str2double(fileNos); 
-fileNos = [5 7:12]; 
+fileNos = [1]; 
 % length of trace to save after each pulse (in samples)
 % At 20 samples/millisecond, 100 samples = 5 milliseconds
 traceLength = 100; %changed from 70 on 2010-03-10

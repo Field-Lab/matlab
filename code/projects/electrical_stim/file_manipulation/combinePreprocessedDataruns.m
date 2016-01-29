@@ -5,12 +5,12 @@
 % path2 = '/Volumes/Analysis/2015-09-23-8/data007';
 % % *** Need to update the code to handle 2 electrode stimulation ***
 
-path1 = '/Volumes/Analysis/2015-10-06-3/data001';
-path2 = '/Volumes/Analysis/2015-10-06-3/data002';
+path1 = '/Volumes/Analysis/2015-11-09-3/data001';
+path2 = '/Volumes/Analysis/2015-11-09-3/data002';
 
 % Create new directory to save the combined analysis
 % newDirName = '/Volumes/Analysis/2015-09-23-8/data006-data007/';
-newDirName = '/Volumes/Analysis/2015-10-06-3/data001-data002/';
+newDirName = '/Volumes/Analysis/2015-11-09-3/data001-data002/';
 if ~exist(newDirName,'dir')
     mkdir(newDirName);
 end
@@ -72,7 +72,7 @@ if ~exist(fullfile(newDirName,'status_files'),'dir')
     mkdir(fullfile(newDirName,'status_files'))
 end
 %%
-for p = 2:length(allPatterns);
+for p = 1:512;
     patternNo = allPatterns(p);
 
         % Copy files directly from the second folder.
