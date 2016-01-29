@@ -115,7 +115,7 @@ for i = 1:1:length(aa)
 end
 
 % vector of 1-D look-up table "x" points
-XI = linspace(min(xx),max(xx),max(round(abs(min(xx)-max(xx))/100),2));
+XI = linspace(min(xx),max(xx),max(round(abs(min(xx)-max(xx))/50),2));
 
 % obtain vector of 1-D look-up table "y" points
 YI = lsq_lut_piecewise( wx, wy, XI );
@@ -136,7 +136,7 @@ end
 axis image; axis off; 
 
 if printElecs
-    for e = 1:512;
+    for e = 1:length(xc);
         text(xc(e),yc(e),num2str(e),'HorizontalAlignment','center')
     end
 end

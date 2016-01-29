@@ -24,7 +24,7 @@ function [PDChunkNumber,movieBegin,numRepetitions,repetitionPeriod,Data] = getMo
     
 fid0=fopen(movieFileName,'r','b');
 readMHchunk(fid0); 
-
+ 
 % Move file pointer to the correct "movie file chunk" location in the movie file 
 for i=1:movieChunkNumber-1
     ID=fread(fid0,8,'int8')';

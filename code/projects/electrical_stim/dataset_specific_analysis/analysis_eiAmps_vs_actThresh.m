@@ -20,7 +20,7 @@ datarun  = load_sta(datarun, 'load_sta', 'all');
 datarun  = load_params(datarun);
 datarun  = load_ei(datarun, cellIds,'keep_java_ei','false');
 ei_thresh = 10; 
-
+alleis = zeros(512,70); 
 figure(100); 
 allthresholds = zeros(1,512); 
 shape={'o','+','*','x','s','d','h'};
@@ -33,6 +33,7 @@ for n = 1:length(cellIds)
     thresh_quad4 = zeros(1,512);
     neuronId = cellIds(n);
     ei = datarun.ei.eis{get_cell_indices(datarun,neuronId)};
+    alleis = alleis + ei(:,1:70); 
     eiAmps = max(ei,[],2) - min(ei,[],2);
     if n == 1
         plotCoords = true;
@@ -77,7 +78,6 @@ for n = 1:length(cellIds)
     % Plot the EI amplitude vs the activation threshold
     figure(600);
     hold on; scatter(eiAmps(idx),thresholds(idx),50,'marker',shape{n});
-    
     [sortedAmps, sortingOrder] = sort(eiAmps(idx));
     thresh_subset = thresholds(idx);
     thresh_subset = thresh_subset(sortingOrder);
@@ -89,7 +89,8 @@ for n = 1:length(cellIds)
     figure(500); 
     hold on;
     plot(sortedAmps(1:stopIdx),yCalc1,'Color',colors(n,:));
-    plot(sortedAmps,thresh_subset,[shape{n}],'Color',colors(n,:),'MarkerSize',16);
+    plot(sortedAmps,thresh_subset,[shape{n}],'Color',colors(n,:),...
+        'MarkerSize',16);
     xlabel('EI amplitude (mV)'); ylabel('activation threshold (uA)');
     figure(100);
     hold on; scatter(xc(idx),yc(idx),150, thresholds(idx),'filled');
@@ -102,4 +103,29 @@ title('50% activation thresholds, human sorting');
 
 
 
+%% Plot all the thresholds grouped as somatic or axonal EI spike. 
+figure(10); 
+for ii = 1:512
+    if allthresholds(ii)
+        figure(10); cla; 
+        plot(alleis(ii,:)); 
+        figure(20);  hold on; 
+        h=scatter(max(alleis(ii,:))-min(alleis(ii,:)),allthresholds(ii),100,'filled');
+        ButtonName = questdlg('What part of the cell?', ...
+            'Spatial location', ...
+            'axon', 'soma', 'axon');
+        switch ButtonName,
+            case 'axon',
+                h.CData = [0 1 1];
+                h.MarkerEdgeColor = [0 0 0]; 
+                h.Marker = '+';
+            case 'soma',
+                h.CData = [0 0 1]; 
+        end % switch
+    end
+end
+xlabel('EI amplitude (uV)')
+ylabel('actvation thresholds (uA)')
+title(sprintf(['ei amplitude vs activation thresholds grouped by \n'...
+    'axonal stim (black +) and somatic stim (blue o)'])); 
 

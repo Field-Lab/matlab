@@ -13,7 +13,7 @@ clear all;
 % 3   |   4
 
 %% Define inputs
-include_single_elecs = false;
+include_single_elecs = true;
 both_polarity_combs = false;
 quadrant = 1234; % 1, 2, 3, 4, 12, or 34 (12 does something in the middle of 1&2, 34 does 3 and 4 together)
 elec_spacing = 60;
@@ -23,7 +23,7 @@ scale_factor = 1; %Set scale factor to determine 2-elec ratio to use. A positive
 pairOrientation = 'downleft'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 secondOrientation = 'horizontal'; 
 delayInMs = 7.5; %interval between pulses
-saveFiles = 1; %Set to 1 to save stimulus files, 0 for testing
+saveFiles = 0; %Set to 1 to save stimulus files, 0 for testing
 saveName = 'safezone_quad1234_2016_01_05_4'; %Descriptive name for the stimulus files 
 
 %%
@@ -71,14 +71,13 @@ end
 
 %%
 
-nSamples=10000; %0.5 s
-
-timeShift=0;
-delay=delayInMs*20;
+nSamples  =10000; %0.5 s
+timeShift =0;
+delay     = delayInMs*20;
 
 pPerChunk = floor(nSamples/delay);
 
-array = zeros(length(electrodes), 0);
+array  = zeros(length(electrodes), 0);
 elec_1 = zeros(1,0); %keeps track of electrode 1 (for ordering)
 stim_type = zeros(1,0);
 
@@ -114,7 +113,7 @@ for ii = 1:length(electrodes)
             end
         otherwise
             error('invalid electrode pair orientation')
-    end
+    end % Switch statement testing pair orientation
     if isempty(elec_2)
         disp(['excluding electrode ' num2str(electrodes(ii)) ' because there is no electrode in chosen direction'])
     elseif ~ismember(elec_2, electrodes)
@@ -153,7 +152,8 @@ if elec_spacing == 60
     e_groups{1} = electrodes(elec_coords(electrodes,1)<boundaries(1));
     e_groups{8} = electrodes(elec_coords(electrodes,1)>=boundaries(7));
     for ii = 2:7
-        e_groups{ii} = electrodes(elec_coords(electrodes,1)>=boundaries(ii-1) & elec_coords(electrodes,1)<boundaries(ii)); %#ok<SAGROW>
+        e_groups{ii} = electrodes(elec_coords(electrodes,1)>=boundaries(ii-1)...
+            & elec_coords(electrodes,1)<boundaries(ii)); %#ok<SAGROW>
     end
 else
    [~, sortInd] = sort(elec_coords(electrodes,1));

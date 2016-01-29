@@ -73,3 +73,34 @@ xlabel('stimulation amplitude (uA)'); ylabel('mean voltage recorded along bundle
 figure; 
 scatter(abs(bundleMeans(1:38,2)),abs(bundleMeans(1:38,1)),100,'k','filled');
 xlabel('stimulation amplitude (uA)'); ylabel('mean voltage recorded along bundle'); 
+
+%% Show movies of stimulation overlayed with the tubulin image
+
+% Lower amplitude activation, shows the activation of one cell. 
+playMovie512arrayAfterStimPattern_dots('/Volumes/Analysis/2015-10-06-6/data001/', 90, 'movieNo', 197);
+
+% Axon bundle activation at a higher stimulus amplitude. 
+playMovie512arrayAfterStimPattern_dots('/Volumes/Analysis/2015-10-06-6/data001/', 90, 'movieNo', 221);
+
+% Load tubulin image. 
+axon_img = imread(['/Volumes/Analysis/2015-10-06-6/image analysis/'...
+    'photoshop_warp/tubulin_warped.jpg']); 
+hsize = 120; % 241=60 um separation of electrodes.
+sigma = 0.46;
+h = fspecial('log',hsize,sigma);
+filtered = imfilter(im2(:,:,1),h);
+
+% Load electrode coordinates. 
+load(['/Volumes/Analysis/2015-10-06-6/image analysis/photoshop_warp/'...
+    'electrode_coords.mat']);
+pathToAnalysisData = '/Volumes/Analysis/2015-10-06-6/data001/'; 
+patternNo = 90; 
+movieNos = findMovieNos(pathToAnalysisData, patternNo); 
+playMovie512arrayAfterStimPattern_imageOverlay(pathToAnalysisData, patternNo,...
+    filtered, newXYCoords, 'movieNo', 221,'saveMovie',true); 
+
+playMovie512arrayAfterStimPattern_imageOverlay(pathToAnalysisData, patternNo,...
+    filtered, newXYCoords, 'movieNo', 197,'saveMovie',true); 
+
+playMovie512arrayAfterStimPattern_imageOverlay(pathToAnalysisData, patternNo,...
+    filtered, newXYCoords, 'movieNo', 309,'saveMovie',true); 

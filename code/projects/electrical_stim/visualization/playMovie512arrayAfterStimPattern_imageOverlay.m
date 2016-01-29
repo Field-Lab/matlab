@@ -1,7 +1,11 @@
-function playMovie512arrayAfterStimPattern_dots(pathToAnalysisData, patternNo,varargin)
+function playMovie512arrayAfterStimPattern_imageOverlay(pathToAnalysisData, patternNo,imageData, electrodeCoords, varargin)
 %% Show average recordings from all electrodes after a given stimulus from a single electrode as movies
 % inputs:  pathToAnalysisData: a string that points to preprocessed data e.g.,'/Volumes/Analysis/2012-09-24-3/data008/';
-%          patternNo: 
+%          patternNo: stimulation pattern
+%          imageData: image (RGB or grayscale) to show underneat stimulation
+%                   data 
+%          electrodeCoords: electrode coordinates with respect to the image
+%       
 %    optional:   movieNo - only play a particular movie number or set of movies. omitting plays all movies available for a particular pattern.    
 %                saveMovie - logical true or false
 %                colorScale - controls clims on the plot, default [-20 10].
@@ -11,8 +15,8 @@ function playMovie512arrayAfterStimPattern_dots(pathToAnalysisData, patternNo,va
 %                saveInsideAxesOnly - allows saving only the inner axes,
 %                excluding the surrounding whitespace. Must be used with
 %                saveMovie set to true or it won't work. 
-% Usage: playMovie512arrayAfterStimPattern_dots('/Volumes/Analysis/2012-09-24-3/data008/',9,'saveMovie',true)
-% Lauren Grosberg 3/2014
+% Usage: playMovie512arrayAfterStimPattern_imageOverlay('/Volumes/Analysis/2012-09-24-3/data008/',9,'saveMovie',true)
+% Lauren Grosberg 1/2016
 
 % Get function arguments
 p = inputParser;
@@ -34,8 +38,8 @@ colorScale = p.Results.colorScale;
 circleSize = p.Results.circleSize; 
 saveInsideAxesOnly = p.Results.saveInsideAxesOnly; 
 
-% Load matrix containing the electrode numbers for the 512-electrode MEA
-positions = loadElecPositions512();
+% Get electrode coordinates for the 512-electrode MEA from user input
+positions = electrodeCoords';
 
 if ~strcmp(pathToAnalysisData(end),filesep)
     pathToAnalysisData = [pathToAnalysisData filesep];
@@ -76,9 +80,9 @@ end
 firstArtifact = mean(dataTraces,1);
 f = figure; set(f,'Position',[100 465 845 445]);
 set(f,'Color','white');
-
+imshow(imageData); axis image; 
 for movieIndex = mIndices
-    cla;
+    
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(movieIndex), 99999);
     % get stimulus amplitude
@@ -87,22 +91,33 @@ for movieIndex = mIndices
     subtractionMatrix = repmat(firstArtifact,[size(dataTraces,1) 1]);
     
     for t = 1:40 %size(dataTraces,3)
-        cla;
+        
         meanData = mean(dataTraces(:,:,t)-subtractionMatrix(:,:,t),1);
+        colorsToPlot = meanData; 
+        colorsToPlot((colorsToPlot<colorScale(1))) = colorScale(1); 
+        colorsToPlot((colorsToPlot>colorScale(2))) = colorScale(2); 
+        colorsToPlot = ceil(255*(colorsToPlot - colorScale(1))/diff(colorScale)); 
+        cmap = cool; 
+        colors = cmap(colorsToPlot+1,:); 
+       
         if t<10
             meanData(stimChan) = 100*stimAmpVectors(:,2)';
         end
-        ah = scatter(positions(:,1),positions(:,2),circleSize,meanData,'filled'); 
-        axis off; axis image; c=colorbar;  
-        caxis(colorScale); 
-        ylabel(c,'  \muV','rot',0);
+        if t==1
+            hold on; 
+            ah = scatter(positions(:,1),positions(:,2),10*abs(meanData),'filled');
+            th = text(positions(508,1),positions(510,2),sprintf('%0.3f ms',t/20),'FontSize',16); 
+        end
+        hold on; delete(ah); 
+        ah = scatter(positions(:,1),positions(:,2),8*abs(meanData)+0.1,colors); 
+        ah.LineWidth = 4; 
         set(gca,'FontSize',16);
         
         title(sprintf('%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA; t = %0.3f ms',pathToAnalysisData,patternNo,movieNos(movieIndex),amps(1),t/20));
         hold on; scatter(positions(stimChan,1),positions(stimChan,2),350,'black');
-%         text(positions(stimChan,1),positions(stimChan,2),'stimulating electrode')
-        text(positions(508,1),positions(510,2),sprintf('%0.3f ms',t/20),'FontSize',16)
-
+        delete(th); 
+        th = text(positions(508,1),positions(510,2),sprintf('%0.3f ms',t/20),'FontSize',16); 
+        
         if saveMovie
             if saveInsideAxesOnly
                 title(''); %turn title off. 

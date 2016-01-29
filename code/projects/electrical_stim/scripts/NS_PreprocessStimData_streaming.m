@@ -101,7 +101,7 @@ for i = fileNos
     %     Generates the "p m" files (the pattern-movie files), the
     %     stimulus_files, and the status_files
     
-    NS_SaveRespForMovieAllPatternsAllChannelsNew(rawDataPath,WritePath,...
+    NS_SaveRespForMovieAllPatternsAllChannels_stream(rawDataPath,WritePath,...
         NS_GlobalConstants,traceLength);
     
 end

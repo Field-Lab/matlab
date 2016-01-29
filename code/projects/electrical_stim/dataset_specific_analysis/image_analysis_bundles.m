@@ -41,18 +41,20 @@ figure; imshow(filtered); title(sprintf('laplacian of a gaussian hsize %0.0f sig
 
 
 [xc,yc] = getElectrodeCoords512();
-yc = -yc;
-[xx,yy] = ginput(4); % User clicks on the four corner electrodes.
-range_x = max(xc) - min(xc);
-range_xx = max(xx) - min(xx);
-yy_sort = sort(yy);
-yy = mean(reshape(yy_sort,2,[]));
-range_y = max(yc) - min(yc);
-range_yy = max(yy) - min(yy);
-
-scaleFactor = 0.9995*[range_yy/range_y range_xx/range_x];%mean(0.995*[range_yy/range_y range_xx/range_x]);
-offset = [repmat(xx(1),1,512);repmat(yy(1),1,512)];
-newXYCoords = [xc - min(xc); yc - min(yc)].*repmat(scaleFactor',1,512) + offset;
+if exist('newXYCoords','var') == 0
+    yc = -yc;
+    [xx,yy] = ginput(4); % User clicks on the four corner electrodes.
+    range_x = max(xc) - min(xc);
+    range_xx = max(xx) - min(xx);
+    yy_sort = sort(yy);
+    yy = mean(reshape(yy_sort,2,[]));
+    range_y = max(yc) - min(yc);
+    range_yy = max(yy) - min(yy);
+    
+    scaleFactor = 0.9995*[range_yy/range_y range_xx/range_x];%mean(0.995*[range_yy/range_y range_xx/range_x]);
+    offset = [repmat(xx(1),1,512);repmat(yy(1),1,512)];
+    newXYCoords = [xc - min(xc); yc - min(yc)].*repmat(scaleFactor',1,512) + offset;
+end
 hold on;  scatter(newXYCoords(1,:),newXYCoords(2,:),30,[1 1 0], 'filled');
 
 load('/Users/grosberg/Lab/matlab/code/projects/electrical_stim/resources/array_matrix_id510.mat')
@@ -64,6 +66,7 @@ idx0 = find(bundleThresholds_2015_10_06_6 == 0);
 hold on; scatter(newXYCoords(1,idx),newXYCoords(2,idx),100*bundleThresholds_2015_10_06_6(idx),'r','filled'); axis image; axis off; colormap(jet);
 figure; imshow(filtered); 
 hold on; scatter(newXYCoords(1,idx),newXYCoords(2,idx),100*bundleThresholds_2015_10_06_6(idx),'r','filled'); axis image; axis off; 
+title('Bundle thresholds by electrodes - larger dot = higher threshold')
 
 % Decide which electrodes to use (discord those near tears in the retina, for example). 
 yheight = 64;
@@ -74,6 +77,7 @@ nyc = sort(unique(newXYCoords(2,:)));
 
 figure; scatter(xc(idx),yc(idx),100,bundleThresholds_2015_10_06_6(idx),'filled'); axis image; axis off; colormap(jet); colorbar; 
 hold on; scatter(xc(idx0),yc(idx0),100,'k'); 
+title('Bundle threshold values'); 
 figure(10); 
 for row = 4:15
     cla; 
@@ -91,6 +95,9 @@ for row = 4:15
     title(['row ' num2str(row)]); 
     pause; 
 end
+%%
+fluo_vals = []; 
+bundle_ts = [];
 figure; 
 for row = 4:12
     elecs = array_matrix_id510(row,:);  
@@ -105,18 +112,23 @@ for row = 4:12
     end
     hold on; 
     scatter(vals,bundleThresholds_2015_10_06_6(elecs),20,'r','filled');
-%     title(['row ' num2str(row)]); 
+    %     title(['row ' num2str(row)]);
+    fluo_vals = [fluo_vals vals];
+    bundle_ts= [bundle_ts bundleThresholds_2015_10_06_6(elecs)];
 end
+
+[r,p] = corrcoef(fluo_vals,bundle_ts);
+title(sprintf('Correlation is %0.4f with p value of %0.3f',r(2),p(2))); 
 xlabel('fluoresence intensity value'); 
 ylabel('bundle activation threshold'); 
 
-% Create an axon bundle mask. 
+%% Create an axon bundle mask. 
 maskOfBundles =uint8(zeros(size(filtered))); 
 maskOfBundles(filtered >120) = 255; 
 figure; imshow(maskOfBundles);
 
 %%
-radius = 20; %pixels, 120 is equal to 30 microns. 
+radius = 120; %pixels, 120 is equal to 30 microns. 
 [row_idx,col_idx]= meshgrid(1:size(maskOfBundles,2),1:size(maskOfBundles,1)); 
 
 figure;
@@ -134,8 +146,8 @@ for row = 4:12
         % Find pixels within a given radius.
         C = sqrt((row_idx-newXYCoords(1,elecs(e))).^2 + ...
             (col_idx-newXYCoords(2,elecs(e))).^2)<=radius;
-        hold on; scatter(mean(maskOfBundles(C)),bundleThresholds_2015_10_06_6(elecs(e)),30,'r','filled');
-%         hold on; scatter(mean(filtered(C)),bundleThresholds_2015_10_06_6(elecs(e)),30,'r','filled');
+%         hold on; scatter(mean(maskOfBundles(C)),bundleThresholds_2015_10_06_6(elecs(e)),30,'r','filled');
+        hold on; scatter(mean(filtered(C)),bundleThresholds_2015_10_06_6(elecs(e)),30,'r','filled');
         patternNos(ii) = elecs(e); 
         fluo_vals(ii) = mean(filtered(C)); 
         bundle_ts(ii) = bundleThresholds_2015_10_06_6(elecs(e)); 
@@ -153,6 +165,13 @@ figure; scatter(fliplr(fluo_vals),bundle_ts,30,'b','filled');
 title(sprintf('Fluo vals flipped \ncorrelation is %0.4f with p value of %0.3f',r(2),p(2)));
 xlabel(sprintf('Mean intensity in a %0.0f um radius',radius/120*30)); 
 ylabel('axon bundle activation threshold (\muA)'); 
+
+%%
+radius = [5 10 15 20 25 30]; 
+corr_val = [-0.2156 -0.2575 -0.3272 -0.3083 -0.2150 -0.1463]; 
+figure; scatter(radius, abs(corr_val),100,'k','filled'); 
+xlabel('Radius (um) over which fluorescence averaged'); 
+ylabel('Absolute value of correlation coeffienct'); 
 %% Find maximum recorded signal for the bundles. 
 pathName = '/Volumes/Analysis/2015-10-06-6/data001/';
 display = 0; 
