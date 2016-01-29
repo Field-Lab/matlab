@@ -8,6 +8,9 @@ function playMovie512arrayAfterStimPattern_dots(pathToAnalysisData, patternNo,va
 %                must be a vector of length 2 [lowerLim upperLim]
 %                circleSize - default 350, controls the size of the marker
 %                'electrodes'
+%                saveInsideAxesOnly - allows saving only the inner axes,
+%                excluding the surrounding whitespace. Must be used with
+%                saveMovie set to true or it won't work. 
 % Usage: playMovie512arrayAfterStimPattern_dots('/Volumes/Analysis/2012-09-24-3/data008/',9,'saveMovie',true)
 % Lauren Grosberg 3/2014
 
@@ -21,6 +24,7 @@ p.addParameter('movieIndex', 0, @isnumeric)
 p.addParameter('saveMovie', false, @islogical) %default: don't save movie
 p.addParameter('colorScale',[-20 10], @isnumeric); 
 p.addParameter('circleSize', 350, @isnumeric);
+p.addParameter('saveInsideAxesOnly',false,@islogical); 
 
 p.parse(pathToAnalysisData, patternNo, varargin{:})
 saveMovie = p.Results.saveMovie; 
@@ -28,6 +32,7 @@ movieNo = p.Results.movieNo;
 movieIndex = p.Results.movieIndex;
 colorScale = p.Results.colorScale; 
 circleSize = p.Results.circleSize; 
+saveInsideAxesOnly = p.Results.saveInsideAxesOnly; 
 
 % Load matrix containing the electrode numbers for the 512-electrode MEA
 positions = loadElecPositions512();
@@ -87,7 +92,7 @@ for movieIndex = mIndices
         if t<10
             meanData(stimChan) = 100*stimAmpVectors(:,2)';
         end
-        scatter(positions(:,1),positions(:,2),circleSize,meanData,'filled'); 
+        ah = scatter(positions(:,1),positions(:,2),circleSize,meanData,'filled'); 
         axis off; axis image; c=colorbar;  
         caxis(colorScale); 
         ylabel(c,'  \muV','rot',0);
@@ -99,7 +104,12 @@ for movieIndex = mIndices
         text(positions(508,1),positions(510,2),sprintf('%0.3f ms',t/20),'FontSize',16)
 
         if saveMovie
-            M = getframe(f);
+            if saveInsideAxesOnly
+                title(''); %turn title off. 
+                M = getframe(gca);
+            else
+                M = getframe(f);
+            end
             writeVideo(writerObj,M);
         end
         pause(0.1); 

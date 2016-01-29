@@ -46,8 +46,10 @@ if strcmp(base_type, 'default')
     GLMType.nullpoint  = 'mean'; 
     GLMType.map_type   = 'mapPRJ'; 
     GLMType.debug      = false;
-    GLMType.contrast   = false;
+    GLMType.Contrast   = false;
     GLMType.Subunits   = false;
+    GLMType.STA_init   = true;
+    GLMType.timefilter = 'fit';
 end
 %%%%% Cone Names %%%%%%%
 
@@ -59,6 +61,13 @@ end
 if exist('changes_cell','var') && length(changes_cell)>=1
     for i_change = 1:length(changes_cell)
         change = changes_cell{i_change};
+        
+        if strcmp(change.type, 'init')
+           if strcmp(change.name, 'OFF')
+               GLMType.STA_init = false;
+           end
+        end
+            
         
         if strcmp(change.type, 'cone_model')
             if strcmp(change.name, 'rieke_linear')
@@ -90,6 +99,7 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             if strcmp(change.name, 'rk1')
                 GLMType.stimfilter_mode = 'rk1'; 
                 GLMType.CONVEX = false;
+                GLMType.STA_init   = true;
             end
             if strcmp(change.name,'fixedSP-ConductanceBased')
                 GLMType.stimfilter_mode = 'fixedSP-ConductanceBased';
@@ -118,6 +128,9 @@ if exist('changes_cell','var') && length(changes_cell)>=1
                 GLMType.postfilter_nonlinearity_type =  'piece_linear_aboutzero';
                 GLMType.DoubleOpt = true;
                 GLMType.DoubleOpt_Manual = true;
+            end
+            if strcmp(change.name, 'rect_quad')
+                GLMType.postfilter_nonlinearity_type = 'rectified_quadratic';
             end
          end
         
@@ -170,14 +183,58 @@ if exist('changes_cell','var') && length(changes_cell)>=1
             GLMType.specialchange_name = change.name;
         end
         
-        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'ON')
+        % set SU and SU type NB
+        if strcmp(change.type, 'Subunits') && strcmp(change.name, 'exp')
             GLMType.Subunits = true;
+            GLMType.Subunit_NL = 'exp';
+        elseif strcmp(change.type, 'Subunits') && strcmp(change.name, 'squared')
+            GLMType.Subunits = true;
+            GLMType.Subunit_NL = 'squared';
         end
         
+        % Add a covariate for local contrast NB
         if strcmp(change.type, 'Contrast') && strcmp(change.name, 'ON')
-            GLMType.contrast = true;
+            GLMType.Contrast = true;
         end
-
+        
+        % NB I just added this quick to allow me to save in a different
+        % folder and not overwrite
+        if strcmp(change.type, 'Name')
+            GLMType.name_change = change.name;
+        end
+        
+        if strcmp(change.type, 'timefilter')
+            GLMType.timefilter = change.name;
+%             if strcmp(change.name, 'prefilter')
+%                 GLMType.CONVEX = true;
+%             end
+%             if strcmp(change.name, 'prefit')
+%                 GLMType.timefilter = 'prefit';
+%                 % GLMType.CONVEX = true;
+%             end
+        end
+        
+        if strcmp(change.type, 'Saccades')
+            GLMType.Saccades = true;
+        end
+        
+        if strcmp(change.type, 'DataPrep')
+            GLMType.DataPrep = true;
+            GLMType.stimfilter_mode = 'rk1'; GLMType.CONVEX = true;
+            GLMType.TonicDrive = true;
+            GLMType.StimFilter = true;
+            GLMType.PostSpikeFilter = true;
+            GLMType.CouplingFilters = false;
+            GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';
+            GLMType.nullpoint  = 'mean';
+            GLMType.map_type   = 'mapPRJ';
+            GLMType.debug      = false;
+            GLMType.Contrast   = false;
+            GLMType.Subunits   = false;
+            GLMType.STA_init   = false;
+            GLMType.timefilter = 'fit';
+        end
+        
         %{
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_aboutmean';
         %GLMType.input_pt_nonlinearity_type = 'piece_linear_shiftmean';

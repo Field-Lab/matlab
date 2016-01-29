@@ -140,7 +140,6 @@ if exist('special_arg','var') && ~isempty(special_arg)
     end
 end
 
-
 GLMType.func_sname = 'glmwrap';
 GLMType.fullmfilename =mfilename('fullpath'); 
 display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
@@ -148,7 +147,6 @@ display(sprintf('Full Model Fit Parameters are:  %s', GLMType.fitname));
 if exist('runoptions','var')
     if isfield(runoptions,'replace_existing')
         replace_existing  = true;
-        disp('here')
     end
     if isfield(runoptions,'reverseorder')
         reverseorder  = true;
@@ -225,13 +223,8 @@ for i_exp = exps
         Dirs.fittedGLM_savedir  = NSEM_secondaryDirectories('savedir_GLMfit', secondDir);
         Dirs.WN_STAdir          = NSEM_secondaryDirectories('WN_STA', secondDir); 
         Dirs.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', secondDir); 
-<<<<<<< HEAD
 
-=======
-        if GLMType.CouplingFilters
-            Dirs.fittedGLM_savedir = [Dirs.fittedGLM_savedir '/CP_PCA']
-        end
->>>>>>> akheitman
+
         if ~exist(Dirs.fittedGLM_savedir), mkdir(Dirs.fittedGLM_savedir); end                  
         display(sprintf('Save Directory :  %s', Dirs.fittedGLM_savedir));
         
@@ -343,6 +336,22 @@ for i_exp = exps
                     % end NBCoupling
                     
                     % Call appropriate glm_execute
+% <<<<<<< HEAD
+%                         display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
+%                         tStart = tic;
+%                         if isfield(GLMType, 'DoubleOpt') && GLMType.DoubleOpt
+%                             [fittedGLM, manual_search] = glm_execute_DoubleOpt_Manual(GLMType, ...
+%                                 fitspikes_concat,fitmovie_concat,testspikes_raster,testmovie,inputstats,glm_cellinfo);
+%                         elseif GLMType.DataPrep
+%                             [spikes, movies] = glm_dataexport(GLMType,fitspikes_concat,fitmovie_concat,...
+%                                 testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+%                         else
+%                             [fittedGLM] = glm_execute(GLMType,fitspikes_concat,fitmovie_concat,...
+%                                 testspikes_raster,testmovie,inputstats,glm_cellinfo,neighborspikes); % NBCoupling 2015-04-20
+%                         end
+%                         duration = toc(tStart);
+%                         display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
+% =======
                     display(sprintf('### running: %s %s %s: %s ###', stimtype, expname, cell_savename,GLMType.fitname))
                     tStart = tic;
                     
@@ -378,6 +387,7 @@ for i_exp = exps
 
                     duration = toc(tStart);
                     display(sprintf('### runtime of %1.1e minutes ###', duration/60)); clear tStart duration tic
+
                 end
             end
         end

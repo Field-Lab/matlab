@@ -1,22 +1,55 @@
 function cellIDs = showCellsNearElec(datarun,electrodeNo,varargin)
 % Function that plots RFs of cells with EIs passing over a stimulating
 % electrode
-% inputs: datarun: (need load_data, load_params, load_sta, load_sta_fits,
-% get_sta_fits_from_vision, load_ei)
-% if path to elecResp file is passed in, then threshold data with slider
-% will also be plotted
-% LG
-dataPath = [];
-autoFile = false;
+% inputs: 
+%       datarun (need load_data, load_params, load_sta, load_sta_fits,
+%                   get_sta_fits_from_vision, load_ei)
+%       electrodeNo electrode number over which you are looking for signal
+%  (optional)
+%       dataPath - path to elecResp files for plotting stimulating
+%                   threshold data with a slider plot
+%       autoFile - set to true to look for elecRespAuto files
+%       threshold - threshold to include EIs (default is 7)
+% Lauren Grosberg, modified by Alena Rott summer 2015
+
 
 if length(varargin) ~= 0
     dataPath = varargin{1};    
 end
-
-
+% Set up defaults for optional parameters
+dataPath = [] ;
+autoFile = false;
 threshold = 7;
-positions  = datarun.ei.position;
 
+nbin = length(varargin);
+if mod(nbin,2)==1
+    err = MException('MATLAB:InvArgIn','Unexpected number of arguments');
+    throw(err);
+end
+
+% Read the optional input arguments
+for j=1:(nbin/2)
+    if ~ischar(varargin{j*2-1})
+        err = MException('MATLAB:InvArgIn',...
+            'Unexpected additional property');
+        throw(err);
+    end
+    
+    switch lower(varargin{j*2-1})
+        case 'datapath'
+            dataPath = varargin{j*2};
+        case 'autofile'
+            autoFile = varargin{j*2};
+        case 'threshold'
+            threshold = varargin{j*2};      
+        otherwise
+            err = MException('MATLAB:InvArgIn',...
+                'Unknown parameter specified');
+            throw(err);
+    end
+end
+
+positions  = datarun.ei.position;
 eiFile   = edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile(datarun.names.rrs_ei_path);
 try [cellSpec, cellType] = get_cell_indices( datarun, {'ON parasol', 'OFF parasol', 'ON midget', 'OFF midget'} );
     
@@ -256,9 +289,11 @@ for i = 1:length(eisToPlot)
 
 end
 
-    
+try
     lns = cellfun(@length, axon_x);
-    
+catch
+    return;
+end
     x_padded = NaN(numel(axon_x),max(lns));
     y_padded = NaN(numel(axon_y),max(lns));
     

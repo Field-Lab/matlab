@@ -2,7 +2,7 @@
 % Trying to make performance evaluation more robust.
 % CALLS eval_rasterlogprob
 
-function xvalperformance = eval_xvalperformance_NEW_CP(fittedGLM, SPars, organizedspikes,neighborspikes, testmovie)
+function xvalperformance = eval_xvalperformance_PP(fittedGLM, SPars, organizedspikes,neighborspikes, testmovie)
 %%
 
 bpf = fittedGLM.bins_per_frame;

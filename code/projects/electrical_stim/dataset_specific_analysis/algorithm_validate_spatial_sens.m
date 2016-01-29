@@ -26,8 +26,8 @@ figure(200); scatter(xc,yc,3,'k','filled');    axis off; axis image;
 line([0 0],[min(yc) max(yc)],'Color','k');
 line([min(xc)/2 min(xc)/2],[min(yc) max(yc)],'Color','k');
 line([max(xc)/2 max(xc)/2],[min(yc) max(yc)],'Color','k');
-
-
+allthresholds = zeros(1,512); 
+shape={'o','+','*','x','s','d','h'};
 for n = 1:length(cellIds)
     thresh_quad1 = zeros(1,512);
     thresh_quad2 = zeros(1,512);
@@ -82,9 +82,10 @@ for n = 1:length(cellIds)
     idx = find(thresholds);
     figure(100); 
     hold on; scatter(xc(idx),yc(idx),150, thresholds(idx),'filled');
-  
     
+   allthresholds = allthresholds + thresholds; 
 end
+figure(100); 
 colormap(cmap.m); caxis([0.5 4.5]);
 colorbar;
 title('50% activation thresholds, human sorting'); 
@@ -93,7 +94,16 @@ title('50% activation thresholds, human sorting');
 % 2. Make sure that the automated spike sorting has been done for each of
 % the cells & patterns
 % 3. Generate comparison plots. 
+%% Show same plot where the bundle threshold is lower
+load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/data_files/axonBundleThresholds_byPattern_2012_09_24_3_data001.mat'); 
 
+idx = find(allthresholds);
+idx_good = find(allthresholds < bundle_thresholds_2012_09_24');
+idx_good = intersect(idx_good,idx);
+figure(300); 
+scatter(xc(idx_good),yc(idx_good),150, allthresholds(idx_good),'filled');
+colormap(cmap.m); caxis([0.5 4.5]);
+colorbar;
 %%
 if ~exist('spatialSensitivity','var')
     spatialSensAlg = load(['/Volumes/Lab/Projects/electrical_stim/GM-sorting-'...

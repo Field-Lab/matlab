@@ -13,18 +13,18 @@ clear all;
 % 3   |   4
 
 %% Define inputs
-include_single_elecs = false;
-both_polarity_combs = true;
-quadrant = 3; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
+include_single_elecs = true;
+both_polarity_combs = false;
+quadrant = 1234; % 1, 2, 3, 4, 12, or 34 (12 does something in the middle of 1&2, 34 does 3 and 4 together)
 elec_spacing = 60;
 same_polarity = false; % Set to true to use only negative pairs. 
 use_ratios = false;
 scale_factor = 1; %Set scale factor to determine 2-elec ratio to use. A positive value gives
-pairOrientation = 'downright'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
+pairOrientation = 'downleft'; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
 secondOrientation = 'horizontal'; 
 delayInMs = 7.5; %interval between pulses
 saveFiles = 0; %Set to 1 to save stimulus files, 0 for testing
-saveName = 'safezone_quad3_2015_11_09_3'; %Descriptive name for the stimulus files 
+saveName = 'safezone_quad1234_2016_01_05_4'; %Descriptive name for the stimulus files 
 
 %%
 if elec_spacing == 60
@@ -45,9 +45,15 @@ if elec_spacing == 60
     elseif quadrant == 3.1
         electrodes = find(elec_coords(:,1) <40 & elec_coords(:,1)>-940 ...
             & elec_coords(:,2)<0); 
-    elseif quadrant == 34; 
+    elseif quadrant == 34;
         electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
             & elec_coords(:,2)<0);
+    elseif quadrant == 12;
+        electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
+            & elec_coords(:,2)>0);
+    elseif quadrant == 1234;
+        electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
+            & elec_coords(:,2)>-225 & elec_coords(:,2)<225);   
     else
         electrodes = find(elec_coords(:,1)>=0 & elec_coords(:,2)<0);
     end
@@ -65,14 +71,13 @@ end
 
 %%
 
-nSamples=10000; %0.5 s
-
-timeShift=0;
-delay=delayInMs*20;
+nSamples  =10000; %0.5 s
+timeShift =0;
+delay     = delayInMs*20;
 
 pPerChunk = floor(nSamples/delay);
 
-array = zeros(length(electrodes), 0);
+array  = zeros(length(electrodes), 0);
 elec_1 = zeros(1,0); %keeps track of electrode 1 (for ordering)
 stim_type = zeros(1,0);
 
@@ -108,7 +113,7 @@ for ii = 1:length(electrodes)
             end
         otherwise
             error('invalid electrode pair orientation')
-    end
+    end % Switch statement testing pair orientation
     if isempty(elec_2)
         disp(['excluding electrode ' num2str(electrodes(ii)) ' because there is no electrode in chosen direction'])
     elseif ~ismember(elec_2, electrodes)
@@ -147,7 +152,8 @@ if elec_spacing == 60
     e_groups{1} = electrodes(elec_coords(electrodes,1)<boundaries(1));
     e_groups{8} = electrodes(elec_coords(electrodes,1)>=boundaries(7));
     for ii = 2:7
-        e_groups{ii} = electrodes(elec_coords(electrodes,1)>=boundaries(ii-1) & elec_coords(electrodes,1)<boundaries(ii)); %#ok<SAGROW>
+        e_groups{ii} = electrodes(elec_coords(electrodes,1)>=boundaries(ii-1)...
+            & elec_coords(electrodes,1)<boundaries(ii)); %#ok<SAGROW>
     end
 else
    [~, sortInd] = sort(elec_coords(electrodes,1));
@@ -539,7 +545,7 @@ clear times_applied;
 % both_polarity_combs = false;
 % quadrant = 3; % 1, 2, 3, 4, or 34 (34 does 3 and 4 together)
 % elec_spacing = 60;
-same_polarity = true; % Set to true to use only negative pairs. 
+same_polarity = false; % Set to true to use only negative pairs. 
 % use_ratios = false;
 % scale_factor = -0.5; %Set scale factor to determine 2-elec ratio to use. A positive value gives
 pairOrientation = secondOrientation; %horizontal, downleft, downright, vertical (horizontal must be for 60 µm and vertical must be for 30 µm)
@@ -565,9 +571,15 @@ if elec_spacing == 60
     elseif quadrant == 3.1
         electrodes = find(elec_coords(:,1) <40 & elec_coords(:,1)>-940 ...
             & elec_coords(:,2)<0); 
-    elseif quadrant == 34; 
+    elseif quadrant == 34;
         electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
             & elec_coords(:,2)<0);
+    elseif quadrant == 12;
+        electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
+            & elec_coords(:,2)>0);
+    elseif quadrant == 1234;
+        electrodes = find(elec_coords(:,1)<472.5 & elec_coords(:,1)>-472.5...
+            & elec_coords(:,2)>-225 & elec_coords(:,2)<225);
     else
         electrodes = find(elec_coords(:,1)>=0 & elec_coords(:,2)<0);
     end
@@ -1001,25 +1013,6 @@ end
 
 %%
 
-if 0
-    for ii = 1:length(pattern_order_all)
-        figure
-        for jj = 1:length(pattern_order_all{ii})
-            cla; hold on; axis equal
-            plot(elec_coords(electrodes,1), elec_coords(electrodes,2), '.', 'color', [0.8 0.8 0.8])
-            if pattern_order_all{ii}(jj) == 0
-                plot(elec_coords(electrodes,1), elec_coords(electrodes,2), '.', 'color', [0.5 0.5 0.5])
-            else
-                plot(elec_coords(electrodes(array(:,pattern_order_all{ii}(jj))==1),1),  elec_coords(electrodes(array(:,pattern_order_all{ii}(jj))==1),2), 'bo', 'markerfacecolor', [0 0 1])
-                plot(elec_coords(electrodes(array(:,pattern_order_all{ii}(jj))==-1),1), elec_coords(electrodes(array(:,pattern_order_all{ii}(jj))==-1),2), 'ro', 'markerfacecolor', [1 0 0])
-            end
-            drawnow
-            
-            pause(1)
-        end
-    end
-end
-
 %%
 
 MovieChunks = [];
@@ -1063,17 +1056,24 @@ figure; imagesc(arrayarray);
 % keyboard; 
 %% Save files
 % cd /Users/grosberg/Desktop/; 
+allThresholds = ones(1,512); 
 % allThresholds = load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/data_files/Safe1029 (1).mat');
 % allThresholds = load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/data_files/Safe10296.mat');
-allThresholds = load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/data_files/Safe1193.mat');
-
+% allThresholds = load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/data_files/Safe1193.mat');
+allThresholds = load('/Users/grosberg/Downloads/Safe2016154.mat')
 try
     allThresholds = allThresholds.Safe1029;
 catch
     try
         allThresholds = allThresholds.Safe10296;
     catch
-        allThresholds = allThresholds.Safe1193;
+        try
+            allThresholds = allThresholds.Safe1193;
+        catch
+            allThresholds_temp = ones(1,512); 
+             allThresholds_temp(electrodes) = allThresholds.Safe2016154; 
+             allThresholds = allThresholds_temp; 
+        end
     end
 end
 meanThresh = mean(allThresholds(find(allThresholds))); 
@@ -1085,20 +1085,39 @@ end
 bundleThresholds = allThresholds(electrodes); 
 
 %%
-keyboard;
-% saveFiles = 1;
+
+saveFiles = 0;
 % saveName = 'safeZoneRatios'; 
-list1 = [1 1 0.75 0.5 1]; 
-list2 = [0.5 0.75 1 1 1]; 
-for j = 1:5
+list1 = [1    1   1    0.75 0.5 0.25 1]; 
+list2 = [0.25 0.5 0.75 1    1   1    1]; 
+figure; 
+for j = 1:length(list1)
     arrayarrayhey =  arrayarray; 
     arrayarrayhey(find(arrayarrayhey == 1)) = list1(j);
     arrayarrayhey(find(arrayarrayhey == -1)) = list2(j);
     bundleThresholdsM = repmat(bundleThresholds,1,size(arrayarray,2));
     arrayScaled = arrayarrayhey.*bundleThresholdsM;
+    %     figure; imagesc(arrayScaled); title(['ratio ' num2str(j)])
+    hold on;
+    scatter(arrayScaled(1,:),arrayScaled(5,:));
     if saveFiles
         fid = fopen([saveName '_ratio' num2str(j) '_pt'],'wb','ieee-le.l64');
         fwrite(fid,arrayScaled,'double');
         fclose(fid);
     end
+end
+
+%% Simulate the stimulus
+
+figure; 
+for pat = 1:size(arrayScaled,2); 
+    cla;
+    scatter(elec_coords(:,1),elec_coords(:,2),'k'); axis image; 
+    e = find(arrayScaled(:,pat)); 
+    hold on; 
+    scatter(elec_coords(electrodes(e),1),elec_coords(electrodes(e),2),100,...
+        arrayScaled(e,pat),'filled'); axis image;
+    caxis([0 2.5]); 
+    title(num2str(pat)); 
+    pause; 
 end
