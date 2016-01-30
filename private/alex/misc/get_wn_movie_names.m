@@ -1,4 +1,4 @@
-function [my_wn_movie, stixel_size] = get_wn_movie_names(filepath)
+function [my_wn_movie, stixel_size] = get_wn_movie_names(filepath, frequency)
 
 
 fid=fopen(filepath,'r');
@@ -176,6 +176,11 @@ for i=1:ndata
     end
 end
 
+if frequency~=120
+    app_freq=num2str(frequency);
+else
+    app_freq = [];
+end;
 % make white noise movies
 my_wn_movie = cell(1,ndata);
 stixel_size = zeros(1,ndata);
@@ -192,11 +197,12 @@ for i=1:ndata
         end
         
         if str2num(params{i,7}{1})*str2num(params{i,5}{1})==640 && str2num(params{i,8}{1})*str2num(params{i,5}{1})==320 % don't attach size ending
-            wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '.xml']; 
+            wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '-', app_freq,'.xml']; 
         else        
-            wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '-' params{i,7} 'x' params{i,8} '.xml'];
+            wnm = [wnm params{i,5} '-' params{i,3} '-' params{i,9} '-' params{i,4} '-' params{i,7} 'x' params{i,8} '-', app_freq,'.xml'];
         end
-        my_wn_movie{i} = cell2mat(wnm);  
+        my_wn_movie{i} = cell2mat(wnm); 
+
         stixel_size(i) = str2num(params{i,5}{1});
     end
 end

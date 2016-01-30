@@ -142,6 +142,17 @@ path2save=fullfile(server_path(), date, '/stimuli/maps/');
 frame=6;
 
 
+run = 'data001';
+path2load = ['/Volumes/Analysis/2016-01-05-1/d00-06-norefit/data001/data001'];
+path2save=fullfile(server_path(), date, '/stimuli/maps_test/');
+frame=4;
+
+coarserun = load_data('/Volumes/Analysis/2016-01-05-1/d00-06-norefit/data000/data000');
+coarserun = load_params(coarserun,'verbose',1);
+coarserun = load_sta(coarserun,'load_sta',[],'keep_java_sta',true);
+coarserun = set_polarities(coarserun);
+
+
 %% main body
 
 mapName = ['map_', run];

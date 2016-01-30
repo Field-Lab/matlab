@@ -96,6 +96,7 @@ if cellInd>0 % if not 0, show sta
     myLimits=[minx maxx miny maxy];
 
     axis(myLimits)
+    set(gca, 'dataaspectratio', [1 1 1])
     
 elseif cellInd==0 % zoom out by 30% each time
     

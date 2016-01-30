@@ -2,19 +2,8 @@
 
 local_path = '/Volumes/Analysis/';
 
-% vormap = load(['/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data001.txt']);
-% vormap = load(['/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data004.txt']);
+vormap = load(['/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data001.txt']);
 
-% vormap = load('/Volumes/Analysis/2015-11-09-4/stimuli/maps/SBC_data001/map_data001.txt');
-% vormap = load('/Volumes/Analysis/2016-01-05-1/stimuli/maps/map_data001.txt');
-
-vormap = load('/Volumes/Analysis/2015-12-18-1/stimuli/maps/map_data002.txt');
-
-vormap = load('/Volumes/Analysis/2015-11-09-4/stimuli/maps/SBC_data001/map_data001.txt');
-
-vormap = load('/Volumes/Analysis/2015-11-09-4/stimuli/maps/OFF_parasol/map_data001.txt');
-
-vormap = load('/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data004.txt');
 
 
 figure

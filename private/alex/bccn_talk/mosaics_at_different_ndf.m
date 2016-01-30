@@ -18,7 +18,7 @@
 % data014 BW-8-8-0.48-11111 1386s
 
 % NDF2
-% data015 BW-16-6-0.48-11111 900s
+% data015 BW-16?6-0.48-11111 900s
 % data016 NSEM repeats
 % data017 BW-8-6-0.48-11111 repeats
 % data018 BW-8-6-0.48-11111 1200s

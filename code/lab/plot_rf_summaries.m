@@ -282,10 +282,11 @@ if params.plot_fits
         if isempty(the_fit);continue;end
 
         % get center
+        the_fit.mean;
         ctr = the_fit.mean * params.scale;
 
         % get center radius
-        rad = the_fit.sd * params.scale * 1.5;
+        rad = the_fit.sd * params.scale;
  
         % get points of an ellipse with these parameters
         [X,Y] = drawEllipse([ctr rad the_fit.angle]);

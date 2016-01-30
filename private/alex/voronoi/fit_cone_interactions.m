@@ -1,4 +1,4 @@
-function [params params1 resp resp1 x1, resp2, x2] = fit_cone_interactions(x, cone1, cone2)
+function [params params1 params2 resp resp1 x1, resp2, x2] = fit_cone_interactions(x, cone1, cone2)
 
 x = x';
 
@@ -17,9 +17,10 @@ xt=[0.1 0.1 0.1];
 % hold on
 % plot(x, cone1, 'linewidth', 2)
 
+% Y SHIFT ONLY
 xt=[0];
 [k, ress] = lsqcurvefit(@(t,x) normcdf(x,p(1),p(2))+p(3)+t(1),xt, x', cone2);
-params = [p k];
+params = [p k ress];
 resp = cone2-k(1);
 % % figure
 % plot(x,(cone2-k(1)), 'linewidth', 2)
@@ -43,17 +44,17 @@ xt=[0.1 0.1 0.1];
 % x1 = x*k(2)+k(1);
 
 
-
+% X SHIFT ONLY
 xt=[0,1];
-[k, ress] = lsqcurvefit(@(t,x) normcdf(x+t(1),p(1),p(2))+p(3),xt, x', cone2);
-params1 = [p k];
+[k, ress] = lsqcurvefit(@(t,x) normcdf(x+t(1),p(1),p(2))+p(3),xt, x', cone2, [(x(1)-x(end))*2 -Inf]);
+params1 = [p k ress];
 resp1 = cone2;
 x1 = x+k(1);
 
-
+% X AND Y SHIFTS
 xt=[0,0];
-[k, ress] = lsqcurvefit(@(t,x) normcdf(x+t(1),p(1),p(2))+p(3)+t(2),xt, x', cone2);
-params1 = [p k];
+[k, ress] = lsqcurvefit(@(t,x) normcdf(x+t(1),p(1),p(2))+p(3)+t(2),xt, x', cone2, [(x(1)-x(end))*2 -Inf]);
+params2 = [p k ress];
 resp2 = cone2-k(2);
 x2 = x+k(1);
 % figure

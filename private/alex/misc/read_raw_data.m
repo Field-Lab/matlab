@@ -1,6 +1,6 @@
 
 %initiate data 
-raw_data_path='/Volumes/Data/2015-04-09-1/data015';
+raw_data_path='/Volumes/Transfer/2016-01-05-1/data021';
 
 
 raw_data_path='/Volumes/Data/2015-09-23-0/data000';
@@ -22,7 +22,7 @@ samplingrate=20000;
 % read 1s of data starting from 0
 all_diffs = [];
 part_d = []
-for j=0:64
+for j=0:200
     j
     m1=rawFile.getData(j*samplingrate, samplingrate);
     %     data=find(diff(m1(:,1))<-1000)+i*20000;
@@ -44,6 +44,7 @@ plot(tmp, '-*')
 hold on
 figure
 plot(diff(time_stamps)*1000)
+diff(find(diff(time_stamps)*1000>10)*robust_mean(diff(time_stamps)*1000))/1000 % in s
 
 robust_mean(diff(time_stamps)*1000)
 robust_std(diff(time_stamps)*1000)
@@ -61,7 +62,20 @@ figure
 plot(tmp)
 
 hold on
+figure
+plot(diff(time_stamps/(1/119.5)))
 
+figure
+plot(time_stamps)
+
+
+
+a = 1:5:20000;
+
+a(480:end) = a(480:end)+30;
+
+figure
+plot(diff(a(1:5:end)))
 
 
 aa = find(part_d<0);
