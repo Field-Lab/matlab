@@ -186,7 +186,7 @@ my_wn_movie = cell(1,ndata);
 stixel_size = zeros(1,ndata);
 for i=1:ndata
     if strcmpi(stim_types{i}, 'binary') || strcmpi(stim_types{i}, 'Voronoi WN')% include voronoi in future 
-        if strcmp(params{i,2}, 'NIL')
+        if strcmpi(params{i,2}, 'NIL')
             wnm = 'BW-';
         else
             wnm = 'RGB-';
