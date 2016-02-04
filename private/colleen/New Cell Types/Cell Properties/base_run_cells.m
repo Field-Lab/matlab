@@ -11,7 +11,7 @@ clc
 array_size = cell2mat(array_size(:,4));
 % txt = {'
 % };
-for j= 19%1:size(txt,1)
+for j= 16%1:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
