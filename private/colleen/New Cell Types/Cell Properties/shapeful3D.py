@@ -14,11 +14,11 @@ import importlib
 importlib.import_module('mpl_toolkits.mplot3d').Axes3D
 # plt.style.use('bmh')
 
-with open('ARVOfiguredata', 'r') as csvfile:
+with open('ARVOtest', 'r') as csvfile:
   spamreader = csv.reader(csvfile, delimiter=',')
   shape = []
   color = []
-  color_names = ['red', 'green', 'purple', 'black']
+  color_names = ['red', 'green', 'blue', 'black']
 
   x = []
   y = []
@@ -55,17 +55,17 @@ for i in range(len(x)):
 
 plt.legend(legend, ['ON type 1', 'ON type 2', 'OFF type 1', 'OFF type 2'], scatterpoints=1)
 
-#plt.show();
+plt.show();
 # plt.gca().set_xlim([1/lim,lim])
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-ax.xaxis.set_ticks_position('bottom')
-ax.yaxis.set_ticks_position('left')
+#ax.xaxis.set_ticks_position('bottom')
+#ax.yaxis.set_ticks_position('left')
 ax.grid(b=False)
 ax.set_axis_bgcolor('white')
 plt.xlabel('PC 1')
 plt.ylabel('PC 2')
 plt.title('They cluster!!')
 # plt.subplots_adjust(left=0.13, bottom=0.18)
-plt.savefig('ARVOabstract.pdf')
+#plt.savefig('ARVOabstract.pdf')
 
