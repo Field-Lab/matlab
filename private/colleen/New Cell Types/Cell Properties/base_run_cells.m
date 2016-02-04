@@ -11,7 +11,10 @@ clc
 array_size = cell2mat(array_size(:,4));
 % txt = {'
 % };
-for j= 16%1:size(txt,1)
+
+for j= 1:size(txt,1)
+
+
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
@@ -134,7 +137,44 @@ for j= 16%1:size(txt,1)
                 %                 end
                 
             end
-            count(iter) = cell_counter;
+            [~, elimin1] = removeoutliers(minimum_ind);
+            [~, elimin2] = removeoutliers(maximum_ind);
+            [~, elimin3] = removeoutliers(zc);
+            [~, elimin4] = removeoutliers(bi_ind);
+            remove = unique([elimin1; elimin2; elimin3; elimin4]);
+            
+            rf(remove) = nan;
+            t_zc(remove) = nan;
+            t_p(remove) = nan;
+           t_t(remove) = nan;
+            bi_ind(remove) = nan;
+            fr(remove) = nan;
+            amp(remove) = nan;
+%             output.parameters.width = width;
+%             output.parameters.isi_max = isi_max;
+            acf_mean(remove) = nan;
+            acf_var(remove) = nan;
+            acf_sd(remove) = nan;
+           acf_end_val(remove) = nan;
+            acf_peak(remove) = nan;
+           acf_peak_time(remove) = nan;
+            acf_rise(remove) = nan;
+            acf_slope_up(remove) = nan;
+            acf_slope_down(remove) = nan;
+            maximum(remove) = nan;
+            minimum(remove) = nan;
+            minimum_ind(remove) = nan;
+            maximum_ind(remove) = nan;
+            zc(remove) = nan; 
+            bi_ind(remove) = nan;
+            lobe1(remove) = nan; 
+            lobe2(remove) = nan; 
+            ratio_to_neighbors(remove) = nan;
+%             maximum(i), minimum(i), minimum_ind(i),  maximum_ind(i), zc(i), bi_ind(i), lobe1(i), lobe2(i), ratio_to_neighbors(i)
+% maximum = removeoutliers(maximum);
+% maximum = removeoutliers(maximum);
+% maximum = removeoutliers(maximum);
+%             count(iter) = cell_counter;
             %             try
             %                 test = cell2mat(probabilities);
             %                 test2 = reshape(test, length(bins{1}), length(test)/length(bins{1}));

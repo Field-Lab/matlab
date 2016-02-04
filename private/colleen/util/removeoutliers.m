@@ -1,4 +1,4 @@
-function dataout = removeoutliers(datain)
+function [dataout, elimin] = removeoutliers(datain)
 %REMOVEOUTLIERS   Remove outliers from data using the Thompson Tau method.
 %   For vectors, REMOVEOUTLIERS(datain) removes the elements in datain that
 %   are considered outliers as defined by the Thompson Tau method. This
@@ -33,10 +33,13 @@ else
     end
     %Sort the input data vector so that removing the extreme values
     %becomes an arbitrary task
-    dataout = sort(datain);
+    [dataout, I] = sort(datain);
+    elimin= [];
     %Compare the values of extreme high data points to TS
     while abs((max(dataout)-xbar)) > TS 
         dataout=dataout(1:(length(dataout)-1));
+        elimin = [elimin;I(end)];
+        I = I(1:end-1);
         %Determine the NEW value of S times Tau
         S=std(dataout);
         xbar=mean(dataout);
@@ -57,6 +60,9 @@ else
         end
     while abs((min(dataout)-xbar)) > TS 
         dataout=dataout(2:(length(dataout)));
+        elimin = [elimin;I(1)];
+        I = I(2:end);
+
         %Determine the NEW value of S times Tau
         S=std(dataout);
         xbar=mean(dataout);
