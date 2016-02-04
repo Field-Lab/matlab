@@ -30,7 +30,7 @@ filepath= ['/Volumes/Lab/Users/crhoades/DS/', run_opt.data_set, '/', run_opt.dat
 % You can give the cells as all of them (datarun.cell_ids) or give
 % specific vision ids
 % Find the cell to run by mapping a large cell EI from a white noise run
-cells = [2764];%'all'; % 'all' or give a vector of vision cell ids
+cells = [979,1141,1145,2928,3470,3736,3800,4412,4472,4534,4788,5882,6782,7025];%'all'; % 'all' or give a vector of vision cell ids
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,12 +45,12 @@ datarun.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run
 datarun.names.stimulus_path=['~/Desktop/2016-01-05-5/','s03','.txt'];
 
 
-% datarun{1}.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.params'];
+datarun.names.rrs_params_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.params'];
 % datarun{1}.names.rrs_sta_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.sta'];
 %
 % datarun.names.rrs_neurons_path=['/Volumes/Analysis/', run_opt.data_set, '/', run_opt.data_run, '/', run_opt.data_run, '.neurons'];
 % datarun.names.stimulus_path=['/Volumes/',location,'/', run_opt.data_set, '/Visual/s', run_opt.data_run(end-1:end)];
-opt=struct('verbose',1,'load_sta', 1,'load_params',0,'load_neurons',1,'load_obvius_sta_fits',true);
+opt=struct('verbose',1,'load_sta', 1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true);
 
 % datarun{1}=load_data(datarun{1},opt);
 datarun=load_data(datarun,opt);
@@ -203,8 +203,9 @@ for x = 1:length(cells)
             %                 g = polar(deg2rad(error_l(:,1)), error_l(:,2), 'r.-');
             
             j = polar(deg2rad(to_plot(:,1)), to_plot(:,2), 'k-');
-            
-            
+            hold on
+            template = polar(linspace(0,2*pi,1000)', repmat(mean(to_plot(:,2))/1.25, 1000,1));
+            set(template, 'Color', [0.6 0.6 0.6 ]);
 %             polarwitherrorbar(deg2rad(to_plot(1,:)),to_plot(2,:),error_b)
             %                 h = polar(deg2rad(by_trial(C,1)), by_trial(C,4), 'b.');
             %                 set( findobj(h, 'Type', 'line'),'MarkerSize',15);
