@@ -372,3 +372,30 @@ end
 
 save([location, '/DS/all'], 'outlier_ds');
 save([location, '/OS/all'], 'outlier_os');
+
+
+%%
+
+outlier_ds_mat = cell2mat(outlier_ds);
+
+answer(:,1:3) = outlier_ds_mat(1:2:end, :);
+answer(:,4:6) = outlier_ds_mat(2:2:end, :);
+
+ [Y,I] = sortrows(answer);
+
+ cells = get_cell_ids(datarun, 'all');
+
+  cells(I(size(I,1)-12:size(I,1)))
+  
+  
+  outlier_os_mat = cell2mat(outlier_os);
+
+answer(:,1:3) = outlier_os_mat(1:2:end, :);
+answer(:,4:6) = outlier_os_mat(2:2:end, :);
+
+ [Y,I] = sortrows(answer);
+
+ cells = get_cell_ids(datarun, 'all');
+
+  cells(I(size(I,1)-13:size(I,1)))
+  
