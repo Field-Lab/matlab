@@ -41,8 +41,6 @@ for cell_index = 1:ncells
 end
 
 all_sta = zeros([field_size, ncells]);
-all_marks = all_sta;
-all_rfs = zeros([field_size,length(cell_specification)]);
 
 summed_rfs = 0;
 for rgc=1:ncells
@@ -89,6 +87,7 @@ for i=1:length(cone_peaks)
     cone_stim{i} = [template_contours{t, 1}+col-3, template_contours{t, 2}+row-3];
     plot(template_contours{t, 1}+col-3, template_contours{t, 2}+row-3, 'y','linewidth', 2)
 end
+
 ncones = length(cone_peaks);
 coneweights = zeros(ncells,length(cone_peaks));
 % cone weights

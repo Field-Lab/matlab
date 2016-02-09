@@ -1,3 +1,16 @@
+sta1run = load_data('/Volumes/Analysis/2015-10-06-2/d00-13-norefit/data001/data001');
+sta1run = load_params(sta1run,'verbose',1);
+sta1run = load_sta(sta1run);
+
+sta2run1 = load_data('/Volumes/Analysis/2015-10-06-2/d00-13-norefit/data004/data004');
+sta2run1 = load_params(sta2run1,'verbose',1);
+sta2run1 = load_sta(sta2run1);
+
+sta2run2 = load_data('/Volumes/Analysis/2015-10-06-2/d00-13-norefit/data011/data011');
+sta2run2 = load_params(sta2run2,'verbose',1);
+sta2run2 = load_sta(sta2run2);
+
+
 datarun = load_data('/Volumes/Analysis/2015-10-06-2/d00-13-norefit/data008/data008');
 datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun);
@@ -29,30 +42,170 @@ for i=1:size(inputs,2)
 end
 
 full_inputs1 = reshape(full_inputs,322*322,size(full_inputs,3));
+clear full_inputs inputs
+
+tmp = (full_inputs1+0.48)/0.96;
+tmp = uint8(tmp);
+save('/Users/alexth/Desktop/2015-10-06-2_JITTER/inputs_jitter.mat', 'tmp', '-v7.3');
 
 
-
-cellID = 14; % 1202
-
-
+%% main stuff
 sta_params.length = 5;
 sta_params.offset = 0;
+% all_sta = cell(1,128);
+load('/Users/alexth/Desktop/2015-10-06-2_JITTER/correct_jitter_sta.mat');
 
-spikes = datarun.spikes{cellID};
-spikes=ceil((spikes-datarun.triggers(1))*1000/(refresh)); % spikes in frames
+% calc
+for cellID = 34:128 
+    cellID
+    spikes = datarun.spikes{cellID};
+    spikes=ceil((spikes-datarun.triggers(1))*1000/(refresh)); % spikes in frames
+    
+    spikes(spikes>size(full_inputs1,2)) = [];
+    spikes(spikes<sta_params.length-sta_params.offset) = [];
+    
+    
+    % jittered inputs
+    spikes_tmp = spikes;
+    sta=zeros(size(full_inputs1,1),sta_params.length);
+    nspikes = numel(spikes_tmp);
+    while ~isempty(spikes_tmp)
+        [~, ia, ~] = unique(spikes_tmp);
+        length(ia)
+        for j=1:sta_params.length
+            sta(:,sta_params.length-j+1) = sta(:,sta_params.length-j+1)...
+                + sum(full_inputs1(:,spikes_tmp(ia) - sta_params.length + j + sta_params.offset),2);
+        end
+        spikes_tmp(ia)=[];
+    end
+    sta = sta/nspikes;
+    sta = reshape(sta, 322,322,sta_params.length);
+    all_sta{cellID} = sta;
+    
+    save('/Users/alexth/Desktop/2015-10-06-2_JITTER/correct_jitter_sta.mat', 'all_sta');
 
-spikes(spikes>size(inputs,2)) = []; 
-spikes(spikes<sta_params.length-sta_params.offset) = [];
-% get spike rate
-spikes_tmp = spikes;
-spike_rate=zeros(size(inputs,2),1);
-while ~isempty(spikes_tmp)
-    [~, ia, ~] = unique(spikes_tmp);
-    spike_rate(spikes_tmp(ia))=spike_rate(spikes_tmp(ia))+1;
-    spikes_tmp(ia)=[];
+    datarunID = datarun.cell_ids(cellID);
+    figure
+    set(gcf, 'position', [-1680          97        1032        1008])
+    
+    sta1 = squeeze(sta1run.stas.stas{cellID});
+    sta1 = sta1(:,:,4);
+    
+    sta2 = squeeze(sta2run1.stas.stas{cellID});
+    sta2 = imresize(sta2(:,:,4),2,'method', 'nearest');
+    
+    sta3 = squeeze(sta2run2.stas.stas{cellID});
+    sta3 = imresize(sta3(:,:,4),2,'method', 'nearest');
+    
+    sta_jitter = all_sta{cellID}(:,:,2);
+    
+    mean_sd = mean(sta1run.stas.fits{cellID}.sd);
+    centers = sta1run.stas.fits{cellID}.mean;
+    
+    subplot(2,2,1)
+    colormap gray
+    imagesc(sta1)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-1-8, data001'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    subplot(2,2,2)
+    colormap gray
+    imagesc(sta2)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-2-8, data004'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    subplot(2,2,4)
+    colormap gray
+    imagesc(sta3)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-2-8, data011'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    subplot(2,2,3)
+    colormap gray
+    imagesc(sta_jitter)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-2-8 JITTER, data008'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    drawnow
+    
+    saveas(gcf, ['/Users/alexth/Desktop/2015-10-06-2_JITTER/svg/Cell_', int2str(cellID), '_datarunID_', int2str(datarunID), '.svg'])
+    saveas(gcf, ['/Users/alexth/Desktop/2015-10-06-2_JITTER/tiff/svgCell_', int2str(cellID), '_datarunID_', int2str(datarunID), '.tiff'])
+    
+    close all
+ 
+
 end
-clear spikes_tmp
 
+
+save('/Users/alexth/Desktop/correct_jitter_sta.mat', 'all_sta');
+save('/Users/alexth/Desktop/inputs_jitter.mat', 'full_inputs1', '-v7.3');
+
+% plot
+for cellID = 1:8%128 % 1202
+    cellID
+    datarunID = datarun.cell_ids(cellID);
+    figure
+    set(gcf, 'position', [-1680          97        1032        1008])
+    
+    sta1 = squeeze(sta1run.stas.stas{cellID});
+    sta1 = sta1(:,:,4);
+    
+    sta2 = squeeze(sta2run1.stas.stas{cellID});
+    sta2 = imresize(sta2(:,:,4),2,'method', 'nearest');
+    
+    sta3 = squeeze(sta2run2.stas.stas{cellID});
+    sta3 = imresize(sta3(:,:,4),2,'method', 'nearest');
+    
+    sta_jitter = all_sta{cellID}(:,:,2);
+    
+    mean_sd = mean(sta1run.stas.fits{cellID}.sd);
+    centers = sta1run.stas.fits{cellID}.mean;
+    
+    subplot(2,2,1)
+    colormap gray
+    imagesc(sta1)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-1-8, data001'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    subplot(2,2,2)
+    colormap gray
+    imagesc(sta2)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-2-8, data004'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    subplot(2,2,4)
+    colormap gray
+    imagesc(sta3)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-2-8, data011'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    subplot(2,2,3)
+    colormap gray
+    imagesc(sta_jitter)
+    axis([centers(1)-mean_sd*3 centers(1)+mean_sd*3 centers(2)-mean_sd*3 centers(2)+mean_sd*3])
+    title(['cell ', int2str(cellID), ', datarun ID ', int2str(datarunID), ', BW-2-8 JITTER, data008'], 'Interpreter', 'none')
+    set(gca, 'DataAspectRatio', [1 1 1])
+    
+    saveas(gcf, ['/Users/alexth/Desktop/2015-10-06-2_JITTER/svg/Cell_', int2str(cellID), '_datarunID_', int2str(datarunID), '.svg'])
+    saveas(gcf, ['/Users/alexth/Desktop/2015-10-06-2_JITTER/tiff/svgCell_', int2str(cellID), '_datarunID_', int2str(datarunID), '.tiff'])
+    
+    close all
+  
+end
+
+
+
+
+
+
+%% additional stuff
 % normal inputs
 spikes_tmp = spikes; 
 sta=zeros(size(inputs,1),sta_params.length);
@@ -73,31 +226,6 @@ for i=1:5
     colormap gray
     imagesc(reshape(sta(:,i), 160, 160))
 end
-
-% jittered inputs
-spikes_tmp = spikes(end/3:end*2/3); 
-sta=zeros(size(full_inputs1,1),sta_params.length);
-nspikes = numel(spikes_tmp);
-while ~isempty(spikes_tmp)
-    [~, ia, ~] = unique(spikes_tmp);
-    length(ia)
-    for j=1:sta_params.length
-        sta(:,sta_params.length-j+1) = sta(:,sta_params.length-j+1)...
-            + sum(full_inputs1(:,spikes_tmp(ia) - sta_params.length + j + sta_params.offset),2);
-    end
-    spikes_tmp(ia)=[];
-end
-sta = sta/nspikes;
-
-figure
-for i=1:5
-    subplot(2,3,i)
-    colormap gray
-    imagesc(reshape(sta(:,i), 322, 322))
-end
-
-
-
 figure
 colormap gray
 imagesc(tmp(:,:,1))

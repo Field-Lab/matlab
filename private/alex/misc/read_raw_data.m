@@ -6,7 +6,7 @@ raw_data_path='/Volumes/Transfer/2016-01-05-1/data021';
 raw_data_path='/Volumes/Data/2015-09-23-0/data000';
 raw_data_path='/Volumes/Data/2015-03-09-2/data001';
 
-raw_data_path='/Volumes/Data/8888-88-88-8/data000';
+raw_data_path='/Volumes/Data/8888-88-88-8/data004';
 
 raw_data_path='/Volumes/Data/7777-77-77-7/data002';
 
@@ -16,13 +16,16 @@ raw_data_path='/Volumes/Data/6666-66-66-6/data003';
 
 raw_data_path='/Volumes/Data/1111-11-11-1/data008';
 
+
+raw_data_path='/Volumes/Data/9999-99-99-9/data002';
+
 rawFile = edu.ucsc.neurobiology.vision.io.RawDataFile(raw_data_path);
 samplingrate=20000;
 
 % read 1s of data starting from 0
 all_diffs = [];
 part_d = []
-for j=0:200
+for j=100:200
     j
     m1=rawFile.getData(j*samplingrate, samplingrate);
     %     data=find(diff(m1(:,1))<-1000)+i*20000;
@@ -31,8 +34,8 @@ for j=0:200
 end
 % m1=rawFile.getData(5*samplingrate, samplingrate/2);
 % part_d = [part_d; m1(:,1)];
-figure
-plot(part_d)
+% figure
+% plot(part_d)
 tmp = diff(double(part_d));
 % figure;plot(tmp)
 tmp = find(tmp<-1000);
@@ -40,11 +43,12 @@ tmp = tmp/20; % in ms
 tmp = diff((tmp)); % difference between triggers in ms
 figure
 plot(tmp, '-*')
+axis([0 length(tmp) 4 16])
 
 hold on
 figure
 plot(diff(time_stamps)*1000)
-diff(find(diff(time_stamps)*1000>10)*robust_mean(diff(time_stamps)*1000))/1000 % in s
+diff(find(diff(time_stamps)*1000>12)*robust_mean(diff(time_stamps)*1000))/1000 % in s
 
 robust_mean(diff(time_stamps)*1000)
 robust_std(diff(time_stamps)*1000)
@@ -177,3 +181,12 @@ plot(data)
 a = find(data<-1000)
 figure
 plot(diff(a))
+
+
+
+for i=1:300*5
+    a(i) =diff(time_stamps{i});
+end
+
+figure
+plot(a*1000)

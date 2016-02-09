@@ -12,20 +12,21 @@ for i=1:max_cone-1
         cones(i+1,1) = mean(a);
         cones(i+1,2) = mean(b);
         for j = 1:length(a)
-            full_sta(a(j),b(j),:) = raw_sta(i+1,:);
+            full_sta(a(j),b(j),:) = raw_sta(i,:);
+%             full_sta(a(j),b(j),:) = raw_sta(i+1,:);
         end
     else
         cones(i+1,:) = nan;
     end
 end
 % next part is VERY questionable
-i = max_cone;
-[a, b] = find(map==i);
-cones(1,1) = mean(a);
-cones(1,2) = mean(b);
-for j = 1:length(a)
-    full_sta(a(j),b(j),:) = raw_sta(1,:);
-end
+% i = max_cone;
+% [a, b] = find(map==i);
+% cones(1,1) = mean(a);
+% cones(1,2) = mean(b);
+% for j = 1:length(a)
+%     full_sta(a(j),b(j),:) = raw_sta(1,:);
+% end
 
 %     figure
 %     imagesc(full_sta)
