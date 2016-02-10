@@ -62,7 +62,7 @@ for i=sta_params.length:duration
 end
 
 for i = 1:length(datarun.cell_ids)
-    sta(:,:,:,i) =  sta(:,:,:,i) / nnz(spike_array(i,:));
+    sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array(i,:));
 end
 
 save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat', 'sta', '-v7.3');
