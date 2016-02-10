@@ -10,7 +10,9 @@ sta_params.offset = 0;
 all_sta = cell(1,length(datarun.cell_ids));
 
 %%BW-2-8-0.48-11111 JITTER 320x320 field LISP, stixel field 128x64
-[inputs, refresh, duration] = get_wn_movie_ath(datarun, 'BW-5-6-0.48-11111.xml');
+[inputs, refresh, duration] = get_wn_movie_ath_rgb(datarun, 'RGB-5-6-0.48-11111.xml');
+% inputs(inputs==-0.48) = -1;
+% inputs(inputs==0.48) = 1;
 
 spike_array = uint8(zeros(length(datarun.cell_ids), duration));
 for cellID = 1:length(datarun.cell_ids)    
@@ -31,36 +33,49 @@ load('/Volumes/Analysis/2008-04-30-2/jitter/shifts')
 % stimulus.rng_init.state = Init_RNG_JavaStyle(stimulus.rng_init.seed);
 % stimulus.jitter.state = stimulus.rng_init.state;
 
-full_inputs = zeros(640+4,320+4,sta_params.length);
+full_inputs = zeros(640+4,320+4,3,sta_params.length);
 for i=1:sta_params.length-1
-    tmp = reshape(inputs(:,i), 128, 64);
+    tmp = reshape(inputs(:,:,i), 128, 64, 3);
     tmp = imresize(tmp,5, 'method', 'nearest');
     jitterX = shifts(1,i);
     jitterY = shifts(2,i);
 %     jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
 %     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
-    full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,1+i) = tmp;    
+    full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,:,1+i) = tmp;    
 end
 
-sta = zeros(644,324, sta_params.length,length(datarun.cell_ids) );
+sta = zeros(644,324, 3, sta_params.length,length(datarun.cell_ids) );
 for i=sta_params.length:duration 
     i
-    tmp = reshape(inputs(:,i), 128, 64);
+    tmp = reshape(inputs(:,:,i), 128, 64, 3);
     tmp = imresize(tmp,5, 'method', 'nearest');
     jitterX = shifts(1,i);
     jitterY = shifts(2,i);
 %     jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
 %     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
     
-    full_inputs = circshift(full_inputs,-1,3);
-    full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,sta_params.length) = tmp;   
+    full_inputs = circshift(full_inputs,-1,4);
+    full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,:,sta_params.length) = tmp;   
     
     a = find(spike_array(:,i));
-    sta(:,:,:,a) =  sta(:,:,:,a) + repmat(full_inputs, 1, 1, 1, length(a));    
+    sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));    
 end
 
 for i = 1:length(datarun.cell_ids)
     sta(:,:,:,i) =  sta(:,:,:,i) / nnz(spike_array(i,:));
 end
 
-save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat', 'sta');
+save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat', 'sta', '-v7.3');
+
+% 
+% 
+% load('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat')
+% 
+% t = sta(:,:,:,1);
+% figure
+% for i=1:5
+%     subplot(2,3,i)
+%     colormap gray
+%     imagesc(t(:,:,i))
+% end
+% 
