@@ -21,22 +21,24 @@ for cellID = 1:length(datarun.cell_ids)
     spike_array(cellID, spikes) = 1;
 end
 
+load('/Volumes/Analysis/2008-04-30-2/jitter/shifts')
+% parameters.seed = 11111;
+% stimulus.stixel_width = 5;
+% stimulus.stixel_height = 5;
 
-parameters.seed = 11111;
-stimulus.stixel_width = 5;
-stimulus.stixel_height = 5;
-
-stimulus.rng_init.state = parameters.seed;
-stimulus.rng_init.seed = parameters.seed;
-stimulus.rng_init.state = Init_RNG_JavaStyle(stimulus.rng_init.seed);
-stimulus.jitter.state = stimulus.rng_init.state;
+% stimulus.rng_init.state = parameters.seed;
+% stimulus.rng_init.seed = parameters.seed;
+% stimulus.rng_init.state = Init_RNG_JavaStyle(stimulus.rng_init.seed);
+% stimulus.jitter.state = stimulus.rng_init.state;
 
 full_inputs = zeros(640+4,320+4,sta_params.length);
 for i=1:sta_params.length-1
     tmp = reshape(inputs(:,i), 128, 64);
     tmp = imresize(tmp,5, 'method', 'nearest');
-    jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
-    jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
+    jitterX = shifts(1,i);
+    jitterY = shifts(2,i);
+%     jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
+%     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
     full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,1+i) = tmp;    
 end
 
@@ -45,8 +47,10 @@ for i=sta_params.length:duration
     i
     tmp = reshape(inputs(:,i), 128, 64);
     tmp = imresize(tmp,5, 'method', 'nearest');
-    jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
-    jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
+    jitterX = shifts(1,i);
+    jitterY = shifts(2,i);
+%     jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
+%     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
     
     full_inputs = circshift(full_inputs,-1,3);
     full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,sta_params.length) = tmp;   
