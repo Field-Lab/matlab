@@ -33,7 +33,9 @@ end
 
 %Make datarun variable
 datarun  = load_data(dataPath); %this isn't doing its job on Windows for some reason, so doing it manually - Sasi
-dataPathSplit = strsplit(dataPath, filesep);
+dataPathSplit = strsplit(dataPath, filesep); 
+disp(class(dataPathSplit))
+dataPathSplit = dataPathSplit(2:(end-1)) %needed for MAC
 datarun.names.rrs_neurons_path = [dataPath filesep dataPathSplit{end} '.neurons'];
 datarun.names.rrs_ei_path = [dataPath filesep dataPathSplit{end} '.ei'];
 datarun  = load_neurons(datarun);

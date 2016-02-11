@@ -3,21 +3,22 @@
 params.saveFigures = 0;
 params.shiftLimSpikeMin = [2 35];
 params.shiftStep = 0.25;
-%params.residLim  = [6 40]; %stim ends at 250us
-params.residLim  = [16 50]; %stim ends at 250us
+params.residLim  = [6 40]; %stim ends at 250us
+%params.residLim  = [16 50]; %stim ends at 250us
 modelType = 'prevArtifact';
 stimSystem = '512'; %'512' or '61'
 %patternNos = [39 457 410 289]; %289 is control
-patternNos = [93];
+patternNos = [95 93 322];
+neuronName = 1293;
 
 movieInt = 0;
-dp = '2015-11-09-10';
+dp = '2016-01-05-4';
 
 
 %for i=2:29; 
 %for i=[3 5 6 9 10 13 14]; 
-for i=[2 7 8];  
-	for k = [101 97];
+for i=[1 2 3 4 5];  
+	for k = [95 93 322];
 	%LOOP over all experiment folders
 
 		%% filling elecRespInfo with details for creation of elecResp
@@ -26,7 +27,7 @@ for i=[2 7 8];
 		disp(['Currently Analysing: ' dataPathFolder])
 		elecRespInfo.experimentName = dp;
 		elecRespInfo.dataPath       = ['/Volumes/Analysis/' dp '/' dataPathFolder '/'];  %Location of raw data chunks
-		elecRespInfo.analysisPath   = ['/Volumes/Analysis/' dp '/data001/'];  %Location of vision output files
+		elecRespInfo.analysisPath   = ['/Volumes/Analysis/' dp '/data000/'];  %Location of vision output files
 
 		% Check inputs
 		%{
@@ -69,7 +70,7 @@ for i=[2 7 8];
 		elecRespInfo.movieInt         =   movieInt;
 
 		%elecRespInfo.mainNeuron =       input('Enter main neuron id: '); %108;
-		elecRespInfo.mainNeuron = 1381; 
+		elecRespInfo.mainNeuron = neuronName; 
 	%	elecRespInfo.mainNeuron = 6887; 
 		elecRespInfo.activeNeurons{1} = [];
 		elecRespInfo.activeNeurons{2} = [];
