@@ -45,7 +45,7 @@ for i=1:sta_params.length-1
 end
 
 sta = zeros(644,324, 3, sta_params.length,length(datarun.cell_ids) );
-for i=sta_params.length:parts%duration 
+for i=sta_params.length:duration 
     i
     tmp = reshape(inputs(:,:,i), 128, 64, 3);
     tmp = imresize(tmp,5, 'method', 'nearest');
@@ -62,12 +62,12 @@ for i=sta_params.length:parts%duration
 end
 
 for i = 1:length(datarun.cell_ids)
-    sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array(i,1:parts));
+    sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array(i,:));
 end
 
-% save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta_1_10000.mat', 'sta', '-v7.3');
+save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat', 'sta', '-v7.3');
 
-for i=1:length(datarun.cell_ids);sta_cell=sta(:,:,:,:,i);save(['/Volumes/Analysis/2008-04-30-2/jitter/sta_parts1/sta_cell_', int2str(i)],'sta_cell');end
+for i=1:length(datarun.cell_ids);sta_cell=sta(:,:,:,:,i);save(['/Volumes/Analysis/2008-04-30-2/jitter/sta_parts/sta_cell_', int2str(i)],'sta_cell');end
 
 % 
 % % 
@@ -85,3 +85,39 @@ for i=1:length(datarun.cell_ids);sta_cell=sta(:,:,:,:,i);save(['/Volumes/Analysi
 %     imagesc(t(:,:,:,i))
 % end
 
+
+% 
+% 
+% 
+% full_inputs = zeros(64,128,3,sta_params.length);
+% for i=1:sta_params.length-1
+%     tmp = reshape(inputs(:,:,i), 64,128, 3);
+%     full_inputs(:,:,:,1+i) = tmp;    
+% end
+% 
+% sta = zeros(64,128, 3, sta_params.length,length(datarun.cell_ids) );
+% for i=sta_params.length:parts%duration 
+%     i
+%     tmp = reshape(inputs(:,:,i), 64,128, 3);
+%     full_inputs = circshift(full_inputs,-1,4);
+%     full_inputs(:,:,:,sta_params.length) = tmp;   
+%     
+%     a = find(spike_array(:,i));
+%     sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));    
+% end
+% 
+% for i = 1:length(datarun.cell_ids)
+%     sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array(i,1:parts));
+% end
+% 
+% t = sta(:,:,:,:,1);
+% t(t==0) = 0.5;
+% t = t-0.5;
+% t = t/max(abs(t(:)))/2+0.5;
+% 
+% figure
+% for i=1:5    
+%     subplot(2,3,i)
+% %     colormap gray
+%     imagesc(t(:,:,:,i))
+% end
