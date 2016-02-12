@@ -58,7 +58,7 @@ for rgc=1:ncells
         tmp = tmp/max(tmp(:));
         t = robust_std(tmp(:))*4;
         tmp(tmp<t) = 0;
-        summed_rfs = summed_rfs+tmp;
+        summed_rfs = summed_rfs+tmp*tt(rgc)/51.34;
     end
 end
 
@@ -68,9 +68,88 @@ colormap gray
 imagesc(summed_rfs)
 
 hold on
-cone_peaks = find_local_maxima(summed_rfs, 'radius', 1, 'thresh', 0.7, 'return', 'indices');
+cone_peaks = find_local_maxima(summed_rfs, 'radius', 1, 'thresh', 0.2, 'return', 'indices');
 plot(cone_peaks(:,2), cone_peaks(:,1), 'xg')
 set(gca, 'dataaspectratio',[1 1 1])
+
+
+for i=1:163
+     sta = all_sta(:,:,i);
+     a = robust_std(sta(:));
+     tt(i) = max(abs(sta(:)))/a;
+end
+
+figure
+for i=1:5
+    tmp = get_cell_indices(datarun, {i});
+    plot(sort(tt(tmp)))
+    hold on
+end
+legend('ON P', 'OFF P', 'ON m', 'OFF m', 'SBC')
+
+[~,a] = sort(tt);
+
+
+for i=a(end-20:1:end-1)
+    figure
+    colormap gray
+    sta = all_sta(:,:,i);
+    imagesc(sta)
+    hold on
+    plot(cone_peaks(:,2), cone_peaks(:,1), 'xr')
+end
+
+
+tmp = get_cell_indices(datarun, {4});
+for i=tmp(1:10)
+    figure
+    colormap gray
+    sta = all_sta(:,:,i);
+    imagesc(sta)
+    hold on
+    plot(cone_peaks(:,2), cone_peaks(:,1), 'xr')
+end
+
+rf_size=5;
+cone_templ=zeros(rf_size,rf_size,25);
+exactCorrection=zeros(25,2);
+cnt=1;
+for i=-2:2
+    for j=-2:2
+        bw_kern = make_gaussian('dim',2,'x_size',rf_size,'y_size',rf_size,'normalize','sum',...
+            'center_radius',0.9,'center',[5+i/3,5+j/3], 'effective_radius',2);
+        cone_templ(:,:,cnt) = full(bw_kern);
+        exactCorrection(cnt,:)=[i/3,j/3];
+        cnt=cnt+1;
+    end
+end
+
+template_contours = cell(25,2);
+template_blocks = cell(25,1);
+figure
+for i=1:25
+    b = cone_templ(:,:,i);
+    b(b>0.05) = 1;
+    b(b<1) = 0;
+    dd = imresize(b,5,'method', 'nearest');
+    [r, c] = find(dd,1);
+    
+    [k,m] = find(cone_templ(:,:,i)>0.1);
+    
+    template_blocks{i} = [k m];
+    contour = bwtraceboundary(dd,[r c],'W',8,Inf,'counterclockwise');
+    contour= round(contour/5)+0.5;
+    subplot(5,5,i)
+    imagesc( cone_templ(:,:,i))
+    hold on
+    plot(contour(:,2), contour(:,1), 'r','linewidth', 2)
+    template_contours{i, 1} = contour(:,2);
+    template_contours{i, 2} = contour(:,1);
+
+end
+
+
+
 
 % make stimulation regions
 cone_stim = cell(1,length(cone_peaks));

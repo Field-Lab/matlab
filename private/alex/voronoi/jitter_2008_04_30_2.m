@@ -1,4 +1,4 @@
-
+parts = 5000;
 
 datarun = load_data('/Volumes/Analysis/2008-04-30-2/data007/data007');
 datarun = load_params(datarun,'verbose',1);
@@ -45,7 +45,7 @@ for i=1:sta_params.length-1
 end
 
 sta = zeros(644,324, 3, sta_params.length,length(datarun.cell_ids) );
-for i=sta_params.length:duration 
+for i=sta_params.length:parts%duration 
     i
     tmp = reshape(inputs(:,:,i), 128, 64, 3);
     tmp = imresize(tmp,5, 'method', 'nearest');
@@ -62,20 +62,26 @@ for i=sta_params.length:duration
 end
 
 for i = 1:length(datarun.cell_ids)
-    sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array(i,:));
+    sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array(i,1:parts));
 end
 
-save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat', 'sta', '-v7.3');
+% save('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta_1_10000.mat', 'sta', '-v7.3');
+
+for i=1:length(datarun.cell_ids);sta_cell=sta(:,:,:,:,i);save(['/Volumes/Analysis/2008-04-30-2/jitter/sta_parts1/sta_cell_', int2str(i)],'sta_cell');end
 
 % 
-% 
+% % 
 % load('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat')
 % 
-% t = sta(:,:,:,1);
-% figure
-% for i=1:5
-%     subplot(2,3,i)
-%     colormap gray
-%     imagesc(t(:,:,i))
-% end
+% t = sta(:,:,:,:,165);
+% t(t==0) = 0.5;
+% t = t-0.5;
+% t = t/max(abs(t(:)))/2+0.5;
 % 
+% figure
+% for i=1:5    
+%     subplot(2,3,i)
+% %     colormap gray
+%     imagesc(t(:,:,:,i))
+% end
+
