@@ -33,21 +33,21 @@ load('/Volumes/Analysis/2008-04-30-2/jitter/shifts')
 % stimulus.rng_init.state = Init_RNG_JavaStyle(stimulus.rng_init.seed);
 % stimulus.jitter.state = stimulus.rng_init.state;
 
-full_inputs = zeros(640+4,320+4,3,sta_params.length);
+full_inputs = zeros(320+4,640+4,3,sta_params.length);
 for i=1:sta_params.length-1
-    tmp = reshape(inputs(:,:,i), 128, 64, 3);
+    tmp = reshape(inputs(:,:,i), 64,128, 3);
     tmp = imresize(tmp,5, 'method', 'nearest');
     jitterX = shifts(1,i);
     jitterY = shifts(2,i);
 %     jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
 %     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
-    full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,:,1+i) = tmp;    
+    full_inputs(3+jitterX:320+2+jitterX,3+jitterY:640+jitterY,:,1+i) = tmp;    
 end
 
-sta = zeros(644,324, 3, sta_params.length,length(datarun.cell_ids) );
+sta = zeros(324, 644, 3, sta_params.length,length(datarun.cell_ids) );
 for i=sta_params.length:duration 
     i
-    tmp = reshape(inputs(:,:,i), 128, 64, 3);
+    tmp = reshape(inputs(:,:,i),64,128, 3);
     tmp = imresize(tmp,5, 'method', 'nearest');
     jitterX = shifts(1,i);
     jitterY = shifts(2,i);
@@ -55,10 +55,14 @@ for i=sta_params.length:duration
 %     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
     
     full_inputs = circshift(full_inputs,-1,4);
-    full_inputs(3+jitterX:640+2+jitterX,3+jitterY:322+jitterY,:,sta_params.length) = tmp;   
+    full_inputs(3+jitterX:320+2+jitterX,3+jitterY:640+jitterY,:,sta_params.length) = tmp;   
     
     a = find(spike_array(:,i));
-    sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));    
+    sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));  
+    
+    if mod(i,20000)==0
+        save(['/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta_',int2str(i),'.mat'], 'sta', '-v7.3');
+    end
 end
 
 for i = 1:length(datarun.cell_ids)
