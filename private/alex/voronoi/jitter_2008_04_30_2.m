@@ -41,7 +41,7 @@ for i=1:sta_params.length-1
     jitterY = shifts(2,i);
 %     jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
 %     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
-    full_inputs(3+jitterX:320+2+jitterX,3+jitterY:640+jitterY,:,1+i) = tmp;    
+    full_inputs(3+jitterX:320+2+jitterX,3+jitterY:640+2+jitterY,:,1+i) = tmp;    
 end
 
 sta = zeros(324, 644, 3, sta_params.length,length(datarun.cell_ids) );
@@ -55,7 +55,7 @@ for i=sta_params.length:duration
 %     jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
     
     full_inputs = circshift(full_inputs,-1,4);
-    full_inputs(3+jitterX:320+2+jitterX,3+jitterY:640+jitterY,:,sta_params.length) = tmp;   
+    full_inputs(3+jitterX:320+2+jitterX,3+jitterY:640+2+jitterY,:,sta_params.length) = tmp;   
     
     a = find(spike_array(:,i));
     sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));  
