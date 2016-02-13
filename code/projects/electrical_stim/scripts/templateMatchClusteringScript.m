@@ -8,17 +8,17 @@ params.residLim  = [6 40]; %stim ends at 250us
 modelType = 'prevArtifact';
 stimSystem = '512'; %'512' or '61'
 %patternNos = [39 457 410 289]; %289 is control
-patternNos = [95 93 322];
-neuronName = 1293;
+patternNos = [327 330];
+neuronName = 4937;
 
 movieInt = 0;
-dp = '2016-01-05-4';
+dp = '2016-01-05-6';
 
 
 %for i=2:29; 
 %for i=[3 5 6 9 10 13 14]; 
-for i=[1 2 3 4 5];  
-	for k = [95 93 322];
+for i=[3 4 5];  
+	for k = [297];
 	%LOOP over all experiment folders
 
 		%% filling elecRespInfo with details for creation of elecResp
@@ -27,7 +27,7 @@ for i=[1 2 3 4 5];
 		disp(['Currently Analysing: ' dataPathFolder])
 		elecRespInfo.experimentName = dp;
 		elecRespInfo.dataPath       = ['/Volumes/Analysis/' dp '/' dataPathFolder '/'];  %Location of raw data chunks
-		elecRespInfo.analysisPath   = ['/Volumes/Analysis/' dp '/data000/'];  %Location of vision output files
+		elecRespInfo.analysisPath   = ['/Volumes/Analysis/' dp '/data001/'];  %Location of vision output files
 
 		% Check inputs
 		%{
@@ -131,4 +131,5 @@ for i=[1 2 3 4 5];
 	end
 end
 
-
+%load handel
+%sound(y,Fs)
