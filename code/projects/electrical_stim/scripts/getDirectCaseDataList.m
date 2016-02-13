@@ -62,6 +62,7 @@ for n = nvec;
 	footmp = max(foo, [], 2); 
 	cells = find(footmp);%cell ids that pass criteria
 	cells = cells'; 
+	elecList = minElecs(cellIndices(cells)); %get list of main elec for each contacting cell
 	if ~isempty(cells);
 		elecArr = {};
 		cntjr = 1; 
@@ -70,7 +71,7 @@ for n = nvec;
 			elecArr{cntjr} = grot(grot~=0); %add vector of relevant electrodes for each involved cell
 			cntjr = cntjr + 1;
 		end
-		out{cnt} = {datarun.cell_ids(cellIndices(n)) datarun.cell_ids(cellIndices(cells)) elecArr}; %output entry in format {cellID [involved cells] {[relevant elecs cell 1] [..cell 2..]..]}}
+		out{cnt} = {datarun.cell_ids(cellIndices(n)) mainElec datarun.cell_ids(cellIndices(cells)) elecList elecArr}; %output entry in format {cellID mainElec [involved cells] [mainElecs for involved cells] {[relevant elecs cell 1] [..cell 2..]..]}}
 	cnt = cnt + 1;
 	end
 end
