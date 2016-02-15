@@ -23,7 +23,7 @@ close all
 [~, txt] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
 data= [];
 
-for t= 1:size(txt,1)
+for t= [1:2, 4:5, 8:11, 13:15, 17:size(txt,1)]%1:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date{t}=strtrim(txt{t,1}); % one slash at the end
     temp1 = strtrim(txt{t,2});
@@ -76,7 +76,7 @@ for t= 1:size(txt,1)
                 output.output.parameters.pca2 = nan(length(output.output.parameters.fr));
                 new_data = [c*ones(size(cell2mat(struct2cell(output.output.parameters)'),1),1), cell2mat(struct2cell(output.output.parameters)')];
             end
-            new_data = [new_data(:, 1:8) new_data(:,20:end)];
+            new_data = [new_data(:, 1:8)];
             if c == 1
                 ref_on_parasol = new_data;
                 new_data(:,8) = 0.75;
@@ -93,7 +93,7 @@ for t= 1:size(txt,1)
             
             if c == 2 || c == 3
                 real_ind = boolean(floor(sum(~isnan(ref_on_parasol),2)/size(ref_on_parasol,2)));
-                new_data(:,[2:7 8:end]) = new_data(:,[2:7 8:end])./repmat(median(ref_on_parasol(real_ind, [2:7 8:end])), size(new_data,1),1);
+                new_data(:,[2:8]) = new_data(:,[2:8])./repmat(median(ref_on_parasol(real_ind, [2:8])), size(new_data,1),1);
                 mean_amp = median(ref_on_parasol(real_ind, 8));
                 if mean_amp < 0
                     new_data(:,8) = -0.75;
@@ -106,7 +106,7 @@ for t= 1:size(txt,1)
                 
             elseif c == 5|| c == 6
                 real_ind = boolean(floor(sum(~isnan(ref_off_parasol),2)/size(ref_off_parasol,2)));
-                new_data(:,[2:7 8:end]) = new_data(:,[2:7 8:end])./repmat(median(ref_off_parasol(real_ind,[2:7 8:end])), size(new_data,1),1);
+                new_data(:,[2:8]) = new_data(:,[2:8])./repmat(median(ref_off_parasol(real_ind,[2:8])), size(new_data,1),1);
                 new_data(:,8) = -1*new_data(:,8);
                 mean_amp = median(ref_off_parasol(real_ind, 8));
                 if mean_amp < 0
@@ -142,7 +142,7 @@ data_large(:,3:end) = data_large(:,3:end)-repmat(mean(data_large(data_rows,3:end
 % data_large(data_large(:,18)<-5, 18) = -5;
 % data_large(data_large(:,17)>5, 17) = 5;
 % data_large(:,4) = data_large(:,4)*2;
-norm_data = data_large;%[data_large(:,1:2), norm_data];
+norm_data = data_large;%[data_large(:,1:2), norm_data];=
 
 % data_large(data_large(:,2) ~= 2,2) = 1;
 % b= glmfit(data_large(:,3:end), data_large(:,2)-1, 'binomial', 'link', 'logit')
