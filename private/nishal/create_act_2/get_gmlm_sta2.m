@@ -29,20 +29,22 @@ trainData=[1:floor(length(spksGen))];
 trainData_hr = [1:floor(length(spksGen_hr))];
 
 for nSU = nSU_list%1:2 %1:10%1:filteredStimDim
+    nSU
  binnedResponsesbigd = spksGen(trainData);
 binnedResponsesbigd_hr = spksGen_hr(trainData_hr);
  mov_use=maskedMovdd(:,trainData);
   filteredStimDim=size(mov_use,1); 
  
-% [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
- [fitGMLM,f_val(nSU)] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval); 
- fitGMLM_log{nSU} = fitGMLM;
- %[fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
+ [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
+ %[fitGMLM,f_val(nSU)] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval); 
+% [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
  % fitGMLM_log(ifit).fitGMLM = fitGMLM;  %%
-%   [fitGMLM,output]= fitGMLM_full(fitGMLM,binnedResponsesbigd_hr,mov_use);
+   [fitGMLM,output]= fitGMLM_full(fitGMLM,binnedResponsesbigd_hr,mov_use);
 %   fitGMLM_full2_log{nSU}=fitGMLM;
 %   figure;
 %   plot(fitGMLM.hist.hexpanded)
+fitGMLM_log{nSU} = fitGMLM;
+
 close all;
 end
 
@@ -77,7 +79,7 @@ subplot(ceil(floor(sqrt(nSU))),ceil(nSU/(floor(sqrt(nSU)))),ifilt);
 imagesc(u_spatial(x_coord,y_coord));
 colormap gray
 %colorbar
-title(sprintf('ki: %d, e(b): %0.02f',ifilt,exp(fitGMLM.Linear.bias{ifilt})),'FontSize',10);
+%title(sprintf('ki: %d, e(b): %0.02f',ifilt,exp(fitGMLM.Linear.bias{ifilt})),'FontSize',10);
 axis image
 set(gca,'xTick',[]);set(gca,'yTick',[]);
 u_spatial = u_spatial.*totalMaskAccept;

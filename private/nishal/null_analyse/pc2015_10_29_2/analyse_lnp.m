@@ -429,14 +429,30 @@ else
 end
 gain_list = [1,2,3,5,7,10,20,30];
 
-figure;
-for iplot=1:8
-subplot(2,4,(iplot));
-plot(R2_log(cell_bin,iplot,1),R2_log(cell_bin,iplot,2),'.');
-xlim([0,1]);ylim([0,1]);
-axis square
-title(sprintf('gain: %d',gain_list(iplot)));
+% figure;
+% for iplot=1:8
+% subplot(2,4,(iplot));
+% plot(R2_log(cell_bin,iplot,1),R2_log(cell_bin,iplot,2),'.');
+% xlim([0,1]);ylim([0,1]);
+% axis square
+% title(sprintf('gain: %d',gain_list(iplot)));
+% end
+
+
+
+figure;icond=2;
+cols = distinguishable_colors(2);
+for iisu=1:length(gain_list(1:end-1))
+    isu = gain_list(iisu);
+    jsu = gain_list(iisu+1);
+    metric_ori = R2_log(cell_bin,iisu,icond)%./data_pred.metrics(cell_bin,isu,icond,3);
+    metric_end = R2_log(cell_bin,iisu+1,icond)%./data_pred.metrics(cell_bin,jsu,icond,3);
+    for icell=1:sum(cell_bin)
+        plot([isu,jsu],[metric_ori(icell),metric_end(icell)],'-*','Color',cols(icond,:));
+        hold on;
+    end
 end
+ylim([0,1]);
 
 
 %% plot recorded and predicted responses
@@ -509,4 +525,150 @@ title(sprintf('gain: %d, Correlations: WN: %0.04f, Null:%0.04f',gain,R2_pl(1),R2
 end  
 
 
+
+%% predicting responses using STA , but using 'optimal' output non-linearity!
+
+load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
+figure;histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+dataRuns = dataRuns_ON_additivity;
+cellType=1;
+%ub = 0.6; lb= 0.4; 
+movies = movies_ON_additivity;
+
+
+% load nls
+ if(cellType==2)
+   load('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/lnp_data002/data_nls2_OFF.mat')
+  else
+    load('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/lnp_data002/data_nls2_ON.mat')
+  end
+
+
+ iidx = 1:length(data_nls);
+ mcellid = iidx%(data(cellType).condba_rat<=ub & data(cellType).condba_rat>=lb & data(cellType).cells_select'==1);
+ cids = data(cellType).cellIDs;
+  
+  
+% load movies
+interval=4;
+condMov=cell(nConditions,1);
+rawMovFrames=1200/(4);
+icnt=0;
+% make pixel histogram
+for imov=movies
+    [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-29-2/Visual/%d.rawMovie',imov),rawMovFrames,1);
+    subtract_movies{3}=mean(stim,1);
+    subtract_movies{3}=mean(stim,1)*0+127.5;
+    movie=stim-repmat(subtract_movies{3},[rawMovFrames,1,1]);
+    movie=movie/255;
+    
+    icnt=icnt+1;
+    qq=permute(movie,[2,3,1]);
+    ifcnt = 0;
+    condMov{icnt}=zeros(size(qq,1),size(qq,2),size(qq,3)*interval);
+    for iframe=1:size(qq,3)
+        for irepeat=1:interval
+            ifcnt=ifcnt+1;
+            condMov{icnt}(:,:,ifcnt)=qq(:,:,iframe)+0.5; % cond mov is between 0 and 1 now!
+        end
+        
+    end
+    
+end
+
+cond_list=[3,4,5,6];ncond=length(cond_list);
+% iterate over different cells
+pred_log = cell(length(mcellid),ncond);
+R2_log = zeros(length(mcellid),ncond);
+nl_info_log=cell(length(mcellid),ncond);
+
+cellID_log=[];
+error_cells= [];
+ for imcell=1:length(mcellid)
+   
+     display(sprintf('Finished: %d out of %d cells',imcell,length(mcellid)));
+  current_cell=mcellid(imcell);
+  cellID = cids(current_cell);
+% load true responses .
+cellID_log=[cellID_log;cellID];
+   if(data_nls(current_cell).cellID== cellID)
+  display('cell IDs match');
+   end
+cols='rkrkrkrkrkrkkrkrkrkr';
+
+       try
+condDuration=10;
+nConditions=1;
+    for idata=1:length(dataRuns)
+    Null_datafile = sprintf('%s/data0%02d',location,dataRuns(idata));
+    neuronPath = [Null_datafile,sprintf('/data0%02d.neurons',dataRuns(idata))];
+    [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+    end
+    
+    close all
+    
+        R2_pl=[];
+        nl_info = cell(ncond,1);
+    icnt=1;pred=cell(ncond,1);clear ss;nTrials=30;
+    for icond=cond_list
+          % real response
+        realResp = makeSpikeMat(spkCondColl{icond}.spksColl,1/120,1200);
+        convolve=7;
+        binSz = 1/120;len=1200;
+        [PSTH_rec,time]=calculate_psth_fcn2(convolve,binSz,len,realResp);
+         ss(icnt)=spkCondColl{icond};
+         
+        % predicted response
+         [real_resp_bin1,time]=calculate_psth_fcn2(1,binSz,len,realResp);
+        [pred{icnt},lam,nl_info_log{imcell,icnt}] = response_lnp_optimal_nl(data_nls(current_cell),(condMov{icond}-0.5),nTrials,real_resp_bin1);    
+        pred{icnt}(pred{icnt}>100000)=100000;
+        [PSTH_pred,time]=calculate_psth_fcn2(convolve,binSz,len,pred{icnt});
+
+        R2_pl = [R2_pl;R_2_value(PSTH_rec(0.2*end:0.8*end)',PSTH_pred(0.2*end:0.8*end)')];
+        PSTH_rec_log{icnt} = PSTH_rec;PSTH_pred_log{icnt}=PSTH_pred;
+        
+        R2_log(imcell,icnt)=R2_pl(end);
+        p{1} =pred{icnt};
+        pred_log(imcell,icnt) =p;
+        
+        icnt=icnt+1;
+        
+    end
+%     
+%  h=figure;%('Color','w','PaperSize',[10,7],'PaperPosition',[0 0 42 7]);
+%  PSTH_str.plot=1;PSTH_str.PSTH_rec_log = PSTH_rec_log;PSTH_str.PSTH_pred_log=PSTH_pred_log;
+%  hh=plot_record_prediction(ss,pred,'PSTH_struct',PSTH_str);
+%  title(sprintf('%0.04f,%0.04f',R2_pl(1),R2_pl(2),R2_pl(3),R2_pl(4)));
+% xlim([8,10]);
+     catch
+         display(sprintf('Error in cell: %d, conditions: %d',imcell,icond));
+         error_cells = [error_cells,cids(imcell)];
+     end
+
+end
+save('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/lnp_data002_optimalNL/predictions_cond3_4_5_6_ON.mat','pred_log','R2_log','cids','cellID_log','cond_list','nl_info_log','error_cells','convolve');
+ 
+%% plot optimal prediction indices
+
+load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
+figure;histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+dataRuns = dataRuns_OFF_additivity;
+cellType=2;%ub = 0.6; lb= 0.4;
+lb=0.4;ub=0.6;
+if(cellType==1)
+    data_pred = load('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/lnp_data002_optimalNL/predictions_cond3_4_5_6_ON.mat')
+else
+    data_pred = load('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/lnp_data002_optimalNL/predictions_cond3_4_5_6_OFF.mat')
+end
+iidx = 1:length(data(cellType).cellIDs);
+cell_bin = (data(cellType).condba_rat<=ub & data(cellType).condba_rat>=lb & data(cellType).cells_select'==1);
+mcellid = iidx(cell_bin);
+cids = data(cellType).cellIDs(cell_bin);
+
+figure;
+plot(data_pred.R2_log(cell_bin,1),data_pred.R2_log(cell_bin,2),'.','markersize',15);
+hold on;
+plot([0,1],[0,1],'g')
+xlim([0,1]);ylim([0,1]);
+axis square
 

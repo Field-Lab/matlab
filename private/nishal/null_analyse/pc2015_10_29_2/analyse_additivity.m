@@ -10,17 +10,16 @@ cond_str{2}='Null ';
 
 interestingConditions=[1,2,3,4,5,6,7];
 
-dataRuns_OFF_additivity = [6,7,9,11];%[3,4,6,7,9,11,13];
-dataRuns_ON_additivity = [6,8,10,12];%[3,5,6,8,10,12,13];
-movies_OFF_addivitiy =[5,6,10,14];%[1,2,5,6,10,14,13];
-movies_ON_additivity = [5,8,12,16];%[1,4,5,8,12,16,13];
-path = '/Users/bhaishahster/Google Drive/new york'
-Cell = load([path,'/fits/Cell_3348.mat']);
-location = [path,'/fits/'];%'/Volumes/Analysis/2015-10-29-2/d00_36-norefit';
+
+dataRuns_OFF_additivity = [3,4,6,7,9,11,13];
+dataRuns_ON_additivity = [3,5,6,8,10,12,13];
+movies_OFF_addivitiy =[1,2,5,6,10,14,13];
+movies_ON_additivity = [1,4,5,8,12,16,13];
+location = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit';
 
 
-javaaddpath('/Users/bhaishahster/Dropbox/Lab/Applications/Vision.app/Contents/Resources/Java/Vision.jar');
-WN_datafile = ['/Users/bhaishahster/Google Drive/new york/analysis_data/data002/data002'];
+
+WN_datafile = '/Volumes/Analysis/2015-10-29-2/d00_36-norefit/data001/data001';
 
 
 datarun=load_data(WN_datafile)
@@ -150,3 +149,65 @@ print(h,sprintf('/Users/bhaishahster/Google Drive/new york/nSU_%d.pdf',nSU));
 
 %save('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/SUs_data002/predictions_cond3_4_OFF.mat','pred_log','R2_log','gain_list','cellID_log');
  
+%% compare WN and WN + Null stimuli cell responses
+
+
+load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
+figure;histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+dataRuns = dataRuns_ON_additivity;
+cellType=1;%ub = 0.6; lb= 0.4;
+%lb=0.4;ub=0.6; % OFF
+lb=0.15;ub=0.3; % ON
+
+iidx = 1:length(data(cellType).cellIDs);
+cell_bin = (data(cellType).condba_rat<=ub & data(cellType).condba_rat>=lb & data(cellType).cells_select'==1);
+mcellid = iidx(cell_bin);
+cids = data(cellType).cellIDs(cell_bin);
+
+% vary conditions
+clear var_cond
+icond=3;
+jcond_list = [4,5,6,7];
+for jcond = jcond_list
+var_cond(jcond).m_log=[];
+end
+
+for icell = mcellid
+    cellID = data(cellType).cellIDs(icell);
+    cellID
+    condDuration=10;
+    nConditions=1;
+    close all
+    for idata=1:length(dataRuns)
+        Null_datafile = sprintf('%s/data0%02d',location,dataRuns(idata));
+        neuronPath = [Null_datafile,sprintf('/data0%02d.neurons',dataRuns(idata))];
+        [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
+    end    
+    
+
+for jcond=jcond_list
+    
+    realResp1 = makeSpikeMat(spkCondColl{icond}.spksColl,1/120,1200);
+    realResp2 = makeSpikeMat(spkCondColl{jcond}.spksColl,1/120,1200);
+    
+    m = compute_raster_metrics(realResp1,realResp2);
+    var_cond(jcond).m_log=[var_cond(jcond).m_log;[m(1),m(2),m(3),m(4)]];
+end
+
+end
+
+figure;
+for jcond=jcond_list
+   plot(var_cond(jcond).m_log(:,3),var_cond(jcond).m_log(:,1),'.');
+   hold on;
+end
+legend('Null','WN+Null var controlled','WN+Null var not controlled','WN again')
+
+figure;
+open anafor jcond=jcond_list
+    hold on;
+  histogram(var_cond(jcond).m_log(:,1));
+   hold on;
+end
+legend('Null','WN+Null var controlled','WN+Null var not controlled','WN again')
+

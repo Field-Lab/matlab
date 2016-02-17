@@ -13,7 +13,7 @@ mov_reshape = zeros(s1,s2,size(mov_show,2));
 
 for itime=1:size(mov_show,2)
 u(iidx) = mov_show(:,itime);
-xx = reshape(u,[s1,s2])';
+xx = reshape(u,[s1,s2]);
 %mov_reshape(:,:,itime) = xx(rmin:rmax,cmin:cmax);
 mov_reshape(:,:,itime) = xx;
 end

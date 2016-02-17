@@ -1,5 +1,5 @@
 
-function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath)
+function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_12_18_2_light_photons(cellID,nConditions,condDuration,cond_str,neuronPath)
 % 
 % neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full,Null_datafile2,InterestingCell_vis_id);
 % ref_cells=neuronPairsRefVsNew(:,2);
@@ -12,7 +12,7 @@ TTL=double(neuronFile.getTTLTimes());
 spks=double(CellSpkTimes);
 
 rawMovFrames = condDuration*120;
-TTLperCondperTrial=floor(rawMovFrames/100)+1;
+TTLperCondperTrial=floor(rawMovFrames/100);
 
 nTrials=floor(length(TTL)/(TTLperCondperTrial*nConditions));
 
@@ -85,22 +85,20 @@ spkCondColl(icond).yPoints=yPoints;
 
 end
 
+col='rkrkrk';
+h=figure('Color','w');
+subplot(4,1,[1,2]);
+for icond=1:nConditions
 
-h=[];
-% col='rkrkrk';
-% h=figure('Color','w');
-% subplot(4,1,[1,2]);
-% for icond=1:nConditions
-% 
-% xPoints = spkCondColl(icond).xPoints;
-% yPoints = spkCondColl(icond).yPoints;
-% nTrials1=max(yPoints(:));
-% plot(xPoints*1/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
-% hold on
-% ylim([0,nConditions*nTrials]);
-% %title(sprintf('%s: data%03d vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},imov,InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate,spkCondColl(6).avgSpkRate));
-% end
-% xlim([0,12]);
+xPoints = spkCondColl(icond).xPoints;
+yPoints = spkCondColl(icond).yPoints;
+nTrials1=max(yPoints(:));
+plot(xPoints*1/20000, yPoints+(nConditions-icond)*nTrials1,col(icond));
+hold on
+ylim([0,nConditions*nTrials]);
+%title(sprintf('%s: data%03d vis ID: %d, Avg Spk rates (%0.02f,%0.02f,%0.02f %0.02f) spks/sec',cond_str{icond},imov,InterestingCell_vis_id(ref_cell_number),spkCondColl(1).avgSpkRate,spkCondColl(2).avgSpkRate,spkCondColl(4).avgSpkRate,spkCondColl(6).avgSpkRate));
+end
+xlim([0,12]);
 %%
 % figure;
 % plotSpikeRaster(spkColl,'PlotType','vertline');

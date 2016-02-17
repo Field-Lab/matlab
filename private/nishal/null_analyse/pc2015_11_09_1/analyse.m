@@ -96,30 +96,30 @@ for imov=movies_ON_additivity
     qq=movie;
     
     cMap{icnt}=contrastMap(qq);
-    if(icnt ==1 ||icnt==3)
+    %if(icnt ==1 ||icnt==3)
         imagesc(repelem(cMap{icnt}(:,end:-1:1)',20,20));
         title(sprintf('cMap: %d',icnt));
         colormap gray;axis image
         caxis([0,0.5]);set(gca,'xTick',[]);set(gca,'yTick',[]);
         plot_rf_fit_nishal(datarun, InterestingCell_vis_id,'magnify',20,'fill_color',[0,1,1],'alpha',0.3,'fill',false,'edge',true,'labels',false,'edge_color',[1,0,0]);
-    end
+    %end
     
-    if(icnt==2)
-  
-        h=imagesc(repelem(( cMap{icnt}(:,end:-1:1)-cMap{1}(:,end:-1:1))'./cMap{1}(:,end:-1:1)',20,20));
-        title(sprintf('cMap: %d, compared to 1',icnt));
-        caxis([-1,1]);set(gca,'xTick',[]);set(gca,'yTick',[]);
-        colormap gray;axis image
-        plot_rf_fit_nishal(datarun, InterestingCell_vis_id,'magnify',20,'fill_color',[0,1,1],'alpha',0.3,'fill',false,'edge',true,'labels',false,'edge_color',[1,0,0]);
-    end
-    
-    if(icnt==4 || icnt==5 ||icnt==6)
-        imagesc(repelem(( cMap{icnt}(:,end:-1:1)-cMap{3}(:,end:-1:1) )'./cMap{3}(:,end:-1:1)',20,20));
-        title(sprintf('cMap: %d, compared to 3',icnt));
-        caxis([-1,1]);axis image
-        colormap gray;set(gca,'xTick',[]);set(gca,'yTick',[]);
-        plot_rf_fit_nishal(datarun, InterestingCell_vis_id,'magnify',20,'fill_color',[0,1,1],'alpha',0.3,'fill',false,'edge',true,'labels',false,'edge_color',[1,0,0]);
-    end
+%     if(icnt==2)
+%   
+%         h=imagesc(repelem(( cMap{icnt}(:,end:-1:1)-cMap{1}(:,end:-1:1))'./cMap{1}(:,end:-1:1)',20,20));
+%         title(sprintf('cMap: %d, compared to 1',icnt));
+%         caxis([-1,1]);set(gca,'xTick',[]);set(gca,'yTick',[]);
+%         colormap gray;axis image
+%         plot_rf_fit_nishal(datarun, InterestingCell_vis_id,'magnify',20,'fill_color',[0,1,1],'alpha',0.3,'fill',false,'edge',true,'labels',false,'edge_color',[1,0,0]);
+%     end
+%     
+%     if(icnt==4 || icnt==5 ||icnt==6)
+%         imagesc(repelem(( cMap{icnt}(:,end:-1:1)-cMap{3}(:,end:-1:1) )'./cMap{3}(:,end:-1:1)',20,20));
+%         title(sprintf('cMap: %d, compared to 3',icnt));
+%         caxis([-1,1]);axis image
+%         colormap gray;set(gca,'xTick',[]);set(gca,'yTick',[]);
+%         plot_rf_fit_nishal(datarun, InterestingCell_vis_id,'magnify',20,'fill_color',[0,1,1],'alpha',0.3,'fill',false,'edge',true,'labels',false,'edge_color',[1,0,0]);
+%     end
     % caxis([3,6]);
     colorbar
     axis image

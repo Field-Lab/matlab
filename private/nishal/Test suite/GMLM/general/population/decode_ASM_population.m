@@ -96,13 +96,13 @@ for idim=1:d
 errMap(idim)  = R_2_value(Xdecode(idim,:)',X_ref(idim,:)');
 end
 
-mm = reshape(1:1600,[40,40]);
+mm = reshape(1:3200,[80,40]);
 iidx = mm(mask);
 
-[r,c] = find(repelem(reshape(mask,[40,40])',20,20));
-  u=mean(errMap)*ones(1600,1);
+[r,c] = find(repelem(reshape(mask,[80,40])',20,20));
+  u=mean(errMap)*ones(3200,1);
     u(iidx) = errMap;
-    xx = reshape(u,[40,40])';
+    xx = reshape(u,[80,40])';
     xx = repelem(xx,20,20);
     
     figure;

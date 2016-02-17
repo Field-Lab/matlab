@@ -431,8 +431,8 @@ end
 %% conditions WN low contrast and WN+Null
 
 
-dataRuns = dataRuns_OFF_additivity;
-cellTypeId=1;
+dataRuns = dataRuns_ON_additivity;
+cellTypeId=2;
  
   data34 = load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4.mat');
   
@@ -447,17 +447,22 @@ datarun=load_data(WN_datafile)
 datarun=load_params(datarun)
 datarun = load_sta(datarun);
 
-InterestingCell_vis_id=datarun.cell_types{cellTypeId}.cell_ids; 
+InterestingCell_vis_id=data34.data(cellTypeId).cellIDs; 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
 condDuration=10;
 nConditions=1;
-conda=3;condb=5;
+conda=3;condb=4;
 
 cols='rkrkrkrkrkrkkrkrkrkr';
 spkCondColl=cell(length(dataRuns),1);
 conda_var=[];condb_var=[];conda_mean=[];condb_mean=[];cells_select=[];
-for ref_cell_number=1:length(InterestingCell_vis_id); %11
+
+iidx = 1:length(data34.data(cellTypeId).cellIDs);
+%mcellIDs = iidx(logical(data34.data(cellTypeId).cells_select));
+%mcellI = mcellIDs(randperm(length(mcellIDs)))
+
+for ref_cell_number=iidx%mcellIDs
     close all
     cellID= InterestingCell_vis_id(ref_cell_number)
         
@@ -467,10 +472,21 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     [spkColl,spkCondColl{idata},h]=plot_raster_script_pc2015_09_23_0_light(cellID,nConditions,condDuration,cond_str,neuronPath);
     end
     
-    
+      
+%     h=figure;
+%     irun=1;
+%     for irun_d = [4,3,5,6,3] %1:length(dataRuns)
+%     plot(spkCondColl{irun_d}.xPoints/20000,spkCondColl{irun_d}.yPoints - (irun-1)*30,cols(irun));
+%     hold on;
+%     irun = irun+1;
+%     end
+%     set(gca,'yTick',[]);
+%     ylim([-(irun-2)*30,30]);
+%     title(sprintf('Cell : %d',cellID));
+%     pause
     
     % compare structure in rasters in conditions a and b
-      convolve=150;
+      convolve=70;
     binSz = 1/1200;len=12000;
     realResp = makeSpikeMat(spkCondColl{conda}.spksColl, binSz,len);
     [PSTH_reca,time]=calculate_psth_fcn2(convolve,binSz,len,realResp);
@@ -485,15 +501,15 @@ for ref_cell_number=1:length(InterestingCell_vis_id); %11
     conda_mean = [conda_mean,sqrt(mean(PSTH_reca(0.25*end:end)))];
     condb_mean = [condb_mean,sqrt(mean(PSTH_reca(0.25*end:end)))];
      
-    event_tol=0.09;
-    thr=0.4;
-    [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol);
-    s=hgexport('readstyle','event');
-   % hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
-   % save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
-    
-    
-     
+%     event_tol=0.09;
+%     thr=0.4;
+%     [spkCondColl,eventOverlap,h_event] = event_count(spkCondColl,condDuration,thr,event_tol);
+%     s=hgexport('readstyle','event');
+%    % hgexport(h_event,sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.eps',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),s);
+%    % save(sprintf('/Volumes/Lab/Users/bhaishahster/analyse_2015_03_09_2/data041/CellType_%s/CellID_%d/events_thr_%0.02f_event_tol_%0.02f.mat',datarun.cell_types{cellTypeId}.name,InterestingCell_vis_id(ref_cell_number),thr,event_tol),'eventOverlap')
+%     
+%     
+%      
 end
 
 condba_rat = condb_var./conda_var;
@@ -506,6 +522,11 @@ data(cellTypeId).conda_mean =conda_mean;
 data(cellTypeId).condb_mean =condb_mean;
 data(cellTypeId).cellIDs = InterestingCell_vis_id;
 
-% figure;
-%  histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
-  	save('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_5_event.mat','data','conda','condb');
+figure;
+histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+save('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_4_convolve7.mat','data','conda','condb','convolve');
+%% 
+load('/Volumes/Lab/Users/bhaishahster/analyse_2015_10_29_2/d_add/PSTH_cond3_5_event.mat')
+figure;
+histogram(data(1).condba_rat(data(1).cells_select==1),'Normalization','probability');hold on;histogram(data(2).condba_rat(data(2).cells_select==1),'Normalization','probability');
+ 
