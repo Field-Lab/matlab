@@ -29,7 +29,7 @@ condMov=cell(nConditions,1);
 rawMovFrames=1200/(4);
 icnt=0;
 % make pixel histogram
-for imov=movies_OFF_addivitiy
+for imov=movies_ON_additivity
     [stim,height,width,header_size] = get_raw_movie(sprintf('/Volumes/Data/2015-10-29-2/Visual/%d.rawMovie',imov),rawMovFrames,1);
     subtract_movies{3}=mean(stim,1);
     subtract_movies{3}=mean(stim,1)*0+127.5;
