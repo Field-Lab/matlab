@@ -23,7 +23,8 @@ dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48
 fitparam.fit_n_one_filters = true;
 fitparam.fit_n_two_filters = true;
 fitparam.fit_surround_sd_scale = false;
-fitparam.fit_surround =true;
+fitparam.fit_surround =false;
+fitparam.fit_surround_amp_scale =false;           
 fitparam.initial_n_one_filters =8;
 fitparam.initial_n_two_filters = 8;
 
@@ -35,7 +36,7 @@ fitparam.num_frames = 30; % both have to be run with the name number of frames
 fitparam.false_stixels =0.25;
 
 
-dataparam.cell_type = {'OFF midget'};
+dataparam.cell_type = {'ON midget'};
 
 
 
@@ -46,7 +47,7 @@ select_cells = 0;
 dataparam.cell_specification = [1636]; %can be anything if select_cells =0
 
 
-dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
+dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/Test/',dataparam.date,'/',dataparam.concatname,'/'];
 
 %% END OF INPUT
 dataparam.folder = dataparam.cell_type{1};
@@ -162,11 +163,11 @@ for rgc = 1:num_rgcs
     
     % doesn't work well
     if fitparam.independent_fit
-        [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta_(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'frame_number', fitparam.num_frames, 'mark_params', mark_params);
+        [temp_fit_params, sta, sta_temp, sig_stixels] = fit_sta_(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'fit_surround_amp_scale', fitparam.fit_surround_amp_scale, 'frame_number', fitparam.num_frames, 'mark_params', mark_params);
         print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]));
         
     else
-        [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'frame_number', fitparam.num_frames, 'mark_params', mark_params,'biggest_blob', true, 'verbose', false);
+        [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'fit_surround_amp_scale', fitparam.fit_surround_amp_scale,'frame_number', fitparam.num_frames, 'mark_params', mark_params,'biggest_blob', true, 'verbose', false);
         
         flip = strfind(lower(dataparam.cell_type{1}), 'off');
         if flip == 1
