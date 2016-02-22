@@ -2,22 +2,22 @@
 
 clear
 %% ------------------------------ INPUTS -----------------------------------
-cell_list = [128 241 1428 2001 2063 3963 5881]; %from vision
+cell_list = [397 861 1223 3812 3935 4924 5898 6289 6740 7068]; %from vision
 
-file_name = '2016-01-05-5/data002/data002';
+file_name = '2016-02-17-1/data004/data004';
 
 % where to save
-file_path = ['/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Stimulus Code/2016-01-05-5/data002/large_on/'];
+file_path = ['/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Stimulus Code/2016-02-17-1/data004/large_on/'];
 screen_width = 640; % in pixels
 screen_height = 320;
-stixels_ref = 10; % stixel size of white noise run
+stixels_ref = 16; % stixel size of white noise run
 %% ------------------------------- Load Data ------------------------------------------
 if ~exist(file_path)
     mkdir(file_path)
 end
 
-datarun.names.rrs_params_path=['/Volumes/Acquisition/Analysis/', file_name, '.params'];
-datarun.names.rrs_sta_path = ['/Volumes/Acquisition/Analysis/', file_name, '.sta'];
+datarun.names.rrs_params_path=['/Volumes/Analysis/', file_name, '.params'];
+datarun.names.rrs_sta_path = ['/Volumes/Analysis/', file_name, '.sta'];
 opt=struct('verbose',1,'load_params',1,'load_neurons',0,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',false);
 opt.load_sta_params.frames = 1:30;% if this line is missing, will error; have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
