@@ -1,4 +1,6 @@
 close all
+clear
+
 load area.mat
 [match] = get_cell_type_index(22)
 
@@ -222,7 +224,12 @@ array_size = cell2mat(array_size(:,4));
 % clear bi_ind_midget
 %% compare pieces directly
 
-pieces = [4 5 6 16 20]
+% pieces = [1, 2, 4,5,7,8,9,12,13, 15 16 19:22];
+pieces = [1,  4,5,8, 16 20:22];
+
+
+
+
 
 for j= 1:length(pieces)
     % piece = txt(j,1:3);
@@ -238,38 +245,88 @@ for j= 1:length(pieces)
     
     output_large= load([run_opts.filepath, '/' 'ON large 1','/output.mat']);
         output_parasol= load([run_opts.filepath, '/' 'ON parasol','/output.mat']);
-        output_midget= load([run_opts.filepath, '/' 'ON midget','/output.mat']);
+%         output_midget= load([run_opts.filepath, '/' 'ON midget','/output.mat']);
 
     parameters_large{pieces(j)}  =output_large.output.parameters;
-        parameters_parasol{pieces(j)}  =output_parasol.output.parameters
-        parameters_midget{pieces(j)}  =output_midget.output.parameters
+        parameters_parasol{pieces(j)}  =output_parasol.output.parameters;
+%         parameters_midget{pieces(j)}  =output_midget.output.parameters;
 
         tc_nan_large = ~isnan(parameters_large{pieces(j)}.t_zc);
                 tc_nan_parasol = ~isnan(parameters_parasol{pieces(j)}.t_zc);
-                                tc_nan_midget = ~isnan(parameters_midget{pieces(j)}.t_zc);
+%                                 tc_nan_midget = ~isnan(parameters_midget{pieces(j)}.t_zc);
 
                     bi_ind_nan_large = ~isnan(parameters_large{pieces(j)}.bi_ind);
                 bi_ind_nan_parasol = ~isnan(parameters_parasol{pieces(j)}.bi_ind);
-                                bi_ind_nan_midget = ~isnan(parameters_midget{pieces(j)}.bi_ind);
+%                                 bi_ind_nan_midget = ~isnan(parameters_midget{pieces(j)}.bi_ind);
+    t_zc_large(j) = median(parameters_large{pieces(j)}.t_zc(tc_nan_large));
+    bi_ind_large(j) = median(parameters_large{pieces(j)}.bi_ind(bi_ind_nan_large));
+%     bi_ind_midget(j) = mean(parameters_midget{pieces(j)}.bi_ind(bi_ind_nan_midget));
 
-    t_zc_large(j) = mean(parameters_large{pieces(j)}.t_zc(tc_nan_large));
-    bi_ind_large(j) = mean(parameters_large{pieces(j)}.bi_ind(bi_ind_nan_large));
-    bi_ind_midget(j) = mean(parameters_midget{pieces(j)}.bi_ind(bi_ind_nan_midget));
-
-        t_zc_midget(j) = mean(parameters_midget{pieces(j)}.t_zc(tc_nan_midget));
+%         t_zc_midget(j) = mean(parameters_midget{pieces(j)}.t_zc(tc_nan_midget));
 
         
-    t_zc_parasol(j) = mean(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
-    bi_ind_parasol(j) = mean(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
+    t_zc_parasol(j) = median(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
+    bi_ind_parasol(j) = median(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
 
     
-    parasol_rf(j) = mean(area{pieces(j)}{match(pieces(j),1)});
+    parasol_rf(j) = median(area{pieces(j)}{match(pieces(j),1)});
     
-    large_rf(j) = mean(area{pieces(j)}{match(pieces(j),5)});
-        midget_rf(j) = mean(area{pieces(j)}{match(pieces(j),3)});
+    large_rf(j) = median(area{pieces(j)}{match(pieces(j),5)});
+%         midget_rf(j) = mean(area{pieces(j)}{match(pieces(j),3)});
 
 end
 
+figure; plot(t_zc_parasol, t_zc_large, '.', 'MarkerSize', 30)
+hold on
+xlim = get(gca, 'xlim');
+ylim = get(gca, 'ylim');
+plot([min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], [min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], '--k')
+xlabel('Average ON Parasol Zero Crossing')
+ylabel('Average ON Smooth Zero Crossing')
+
+
+
+fig1= figure;
+plot([ones(1,size(t_zc_parasol,2)); 2*ones(1,size(t_zc_parasol,2))], [t_zc_parasol; t_zc_large], 'ko-', 'MarkerFaceColor', 'w', 'MarkerSize', 10)
+hold on
+set(gca, 'xtick', [0 1,2 3])
+set(gca, 'xticklabel', {'','Parasol', 'Smooth',''})
+set(gca, 'xlim', [0.5 2.5])
+on_pieces = pieces;
+title(['Zero Crossing of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+fig2= figure;
+plot([ones(1,size(bi_ind_parasol,2)); 2*ones(1,size(bi_ind_parasol,2))], [bi_ind_parasol; bi_ind_large], 'ko-', 'MarkerFaceColor', 'w', 'MarkerSize', 10)
+hold on
+set(gca, 'xtick', [0 1,2 3])
+set(gca, 'xticklabel', {'','Parasol', 'Smooth',''})
+set(gca, 'xlim', [0.5 2.5])
+on_pieces = pieces;
+title(['Biphasic Index of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+
+% 
+% subplot(1,3,2)
+% plot(parasol_rf, 'o-')
+% set(gca, 'xtick', [0 1,2 3])
+% set(gca, 'xticklabel', {'','ON parasol', 'OFF parasol',''})
+% set(gca, 'xlim', [0.5 2.5])
+% title('RF Size')
+% 
+% subplot(1,3,3)
+% plot(midget_rf, 'o-')
+% set(gca, 'xtick', [0 1,2 3])
+% set(gca, 'xticklabel', {'','ON midget', 'OFF midget',''})
+% set(gca, 'xlim', [0.5 2.5])
+% title('RF Size')
+
+% figure; plot(bi_ind_parasol, bi_ind_large, '.', 'MarkerSize', 30)
+% hold on
+% xlim = get(gca, 'xlim');
+% ylim = get(gca, 'ylim');
+% plot([min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], [min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], '--k')
+% xlabel('Average ON Parasol Biphasic Index')
+% ylabel('Average ON Smooth Biphasix Index')
 
 % rf_on_ratio = large_on_rf./on_parasol_rf;
 % rf_on_ratio2 = midget_on_rf./on_parasol_rf;
@@ -285,9 +342,181 @@ end
 % clear bi_ind_large
 % clear bi_ind_parasol
 % clear bi_ind_midget
+clearvars -except area array_size match txt fig1 on_pieces fig2
+% Compare directly with OFF smooth
+pieces = [4 5 6 10 11 14 16 18 20]
+% pieces = [9];
+
+for j= 1:length(pieces)
+    % piece = txt(j,1:3);
+    run_opts.date=strtrim(txt{pieces(j),1}); % one slash at the end
+    temp1 = strtrim(txt{pieces(j),2});
+    temp2 =  strtrim(txt{pieces(j),3});
+    run_opts.concatname=temp1; % Name (or modified name) of run, no slashes\
+    run_opts.dataname = temp2;
+    run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',run_opts.dataname, '/',run_opts.dataname];
+   
+    run_opts.save_location_root = '/Volumes/Lab/Users/crhoades/Cell Properties/';
+    run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, '/', run_opts.dataname];
+    
+    output_large = load([run_opts.filepath, '/' 'OFF large 1','/output.mat'])
+
+            output_parasol= load([run_opts.filepath, '/' 'OFF parasol','/output.mat']);
+            output_midget= load([run_opts.filepath, '/' 'OFF midget','/output.mat']);
+
+    parameters_large{pieces(j)}  =output_large.output.parameters;
+        parameters_parasol{pieces(j)}  =output_parasol.output.parameters;
+        parameters_midget{pieces(j)}  =output_midget.output.parameters;
+
+        tc_nan_large = ~isnan(parameters_large{pieces(j)}.t_zc);
+                tc_nan_parasol = ~isnan(parameters_parasol{pieces(j)}.t_zc);
+                tc_nan_midget = ~isnan(parameters_midget{pieces(j)}.t_zc);
+
+                    bi_ind_nan_large = ~isnan(parameters_large{pieces(j)}.bi_ind);
+                bi_ind_nan_parasol = ~isnan(parameters_parasol{pieces(j)}.bi_ind);
+                                bi_ind_nan_midget = ~isnan(parameters_midget{pieces(j)}.bi_ind);
+
+    t_zc_large(1,j) = mean(parameters_large{pieces(j)}.t_zc(tc_nan_large));
+    bi_ind_large(1,j) = mean(parameters_large{pieces(j)}.bi_ind(bi_ind_nan_large));
+
+        t_zc_midget(1,j) = mean(parameters_midget{pieces(j)}.t_zc(tc_nan_midget));
+    bi_ind_midget(1,j) = mean(parameters_midget{pieces(j)}.bi_ind(bi_ind_nan_midget));
+
+    
+    t_zc_parasol(1,j) = mean(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
+    bi_ind_parasol(1,j) = mean(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
+    
+    parasol_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),2)});
+    
+    large_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),7)});
+    midget_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),4)});
+
+
+end
+
+
+figure; plot(t_zc_parasol(1,:), t_zc_large(1,:), '.', 'MarkerSize', 30)
+hold on
+xlim = get(gca, 'xlim');
+ylim = get(gca, 'ylim');
+plot([min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], [min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], '--k')
+xlabel('Average OFF Parasol Zero Crossing')
+ylabel('Average OFF Smooth Zero Crossing')
+
+figure(fig1)
+% subplot(1,2,2)
+hold on
+plot([ones(1,size(t_zc_parasol,2)); 2*ones(1,size(t_zc_parasol,2))], [t_zc_parasol; t_zc_large], 'ko-', 'MarkerFaceColor', 'k', 'MarkerSize', 10)
+ylabel('Zero Crossing (ms)')
+title(['Zero Crossing of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+
+figure(fig2)
+% subplot(1,2,2)
+hold on
+plot([ones(1,size(bi_ind_parasol,2)); 2*ones(1,size(bi_ind_parasol,2))], [bi_ind_parasol; bi_ind_large], 'ko-', 'MarkerFaceColor', 'k', 'MarkerSize', 10)
+ylabel('Biphasic Index')
+title(['Biphasic Index of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+
+clearvars -except area array_size match txt fig1 on_pieces fig2 fig3 fig4
+
+
+pieces = [4 5 16 20]
 
 % Compare directly with OFF smooth
-pieces = [4 5 6 16 20]
+% pieces = [9];
+
+for j= 1:length(pieces)
+    % piece = txt(j,1:3);
+    run_opts.date=strtrim(txt{pieces(j),1}); % one slash at the end
+    temp1 = strtrim(txt{pieces(j),2});
+    temp2 =  strtrim(txt{pieces(j),3});
+    run_opts.concatname=temp1; % Name (or modified name) of run, no slashes\
+    run_opts.dataname = temp2;
+    run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',run_opts.dataname, '/',run_opts.dataname];
+   
+    run_opts.save_location_root = '/Volumes/Lab/Users/crhoades/Cell Properties/';
+    run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, '/', run_opts.dataname];
+    
+    output_large = load([run_opts.filepath, '/' 'ON large 1','/output.mat'])
+
+            output_parasol= load([run_opts.filepath, '/' 'ON parasol','/output.mat']);
+            output_midget= load([run_opts.filepath, '/' 'ON midget','/output.mat']);
+
+    parameters_large{pieces(j)}  =output_large.output.parameters;
+        parameters_parasol{pieces(j)}  =output_parasol.output.parameters;
+        parameters_midget{pieces(j)}  =output_midget.output.parameters;
+
+        tc_nan_large = ~isnan(parameters_large{pieces(j)}.t_zc);
+                tc_nan_parasol = ~isnan(parameters_parasol{pieces(j)}.t_zc);
+                tc_nan_midget = ~isnan(parameters_midget{pieces(j)}.t_zc);
+
+                    bi_ind_nan_large = ~isnan(parameters_large{pieces(j)}.bi_ind);
+                bi_ind_nan_parasol = ~isnan(parameters_parasol{pieces(j)}.bi_ind);
+                                bi_ind_nan_midget = ~isnan(parameters_midget{pieces(j)}.bi_ind);
+
+    t_zc_large(1,j) = mean(parameters_large{pieces(j)}.t_zc(tc_nan_large));
+    bi_ind_large(1,j) = mean(parameters_large{pieces(j)}.bi_ind(bi_ind_nan_large));
+
+        t_zc_midget(1,j) = mean(parameters_midget{pieces(j)}.t_zc(tc_nan_midget));
+    bi_ind_midget(1,j) = mean(parameters_midget{pieces(j)}.bi_ind(bi_ind_nan_midget));
+
+    
+    t_zc_parasol(1,j) = mean(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
+    bi_ind_parasol(1,j) = mean(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
+    
+    parasol_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),1)});
+    
+    large_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),5)});
+    midget_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),3)});
+
+
+end
+
+
+% figure; plot(t_zc_parasol(1,:), t_zc_large(1,:), '.', 'MarkerSize', 30)
+% hold on
+% xlim = get(gca, 'xlim');
+% ylim = get(gca, 'ylim');
+% plot([min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], [min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], '--k')
+% xlabel('Average OFF Parasol Zero Crossing')
+% ylabel('Average OFF Smooth Zero Crossing')
+
+fig3= figure;
+% set(gca, 'ColorOrder', [1 0 0; 0 1 0; 0 0 1; 1 1 0; 1 0 0; 0 1 0; 0 0 1; 1 1 0]);
+
+% plot([ones(1,size(t_zc_parasol,2)); 2*ones(1,size(t_zc_parasol,2))], [t_zc_parasol; t_zc_large], 'o-')
+hold on
+set(gca, 'xtick', [0 1,2 3 4 5])
+set(gca, 'xticklabel', {'','ON Parasol',  'OFF Parasol','ON Smooth','OFF Smooth',''})
+set(gca, 'xlim', [0.5 4.5])
+on_pieces = pieces;
+title(['Zero Crossing of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+fig4= figure;
+set(gca, 'xtick', [0 1,2 3 4 5])
+set(gca, 'xticklabel', {'','ON Parasol', 'OFF Parasol','ON Smooth', 'OFF Smooth',''})
+set(gca, 'xlim', [0.5 4.5])
+
+% plot([ones(1,size(bi_ind_parasol,2)); 2*ones(1,size(bi_ind_parasol,2))], [bi_ind_parasol; bi_ind_large], 'ko-', 'MarkerFaceColor', 'w', 'MarkerSize', 10)
+% hold on
+% set(gca, 'xtick', [0 1,2 3])
+% set(gca, 'xticklabel', {'','Parasol', 'Smooth',''})
+% set(gca, 'xlim', [0.5 2.5])
+% on_pieces = pieces;
+% title(['Biphasic Index of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+% 
+
+% clearvars -except area array_size match txt fig1 on_pieces fig2 fig3 fig4
+
+fig5= figure;
+ set(gca, 'xtick', [0 1,2 3 4 5])
+set(gca, 'xticklabel', {'','ON Parasol', 'OFF Parasol','ON Smooth', 'OFF Smooth',''})
+set(gca, 'xlim', [0.5 4.5])
+pieces = [4 5 16 20]
+
+% Compare directly with OFF smooth
 % pieces = [9];
 
 for j= 1:length(pieces)
@@ -336,6 +565,65 @@ for j= 1:length(pieces)
 
 
 end
+
+
+figure; plot(t_zc_parasol(1,:), t_zc_large(1,:), '.', 'MarkerSize', 30)
+hold on
+xlim = get(gca, 'xlim');
+ylim = get(gca, 'ylim');
+plot([min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], [min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], '--k')
+xlabel('Average OFF Parasol Zero Crossing')
+ylabel('Average OFF Smooth Zero Crossing')
+
+% tc = [t_zc_parasol; t_zc_large];
+
+figure(fig3)
+% subplot(1,2,2)
+% set(gca, 'ColorOrder', [1 0 0; 0 1 0; 0 0 1; 1 1 0; 1 0 0; 0 1 0; 0 0 1; 1 1 0]);
+hold on
+plot([ones(1,size(t_zc_parasol,2)); 2*ones(1,size(t_zc_parasol,2)); 3*ones(1,size(t_zc_parasol,2)); 4*ones(1,size(t_zc_parasol,2))], [t_zc_parasol(1,:); t_zc_parasol(2,:); t_zc_large(1,:);t_zc_large(2,:)], '.-', 'MarkerSize', 30)
+ylabel('Zero Crossing (ms)')
+title(['Zero Crossing'])
+
+
+figure(fig4)
+% subplot(1,2,2)
+hold on
+plot([ones(1,size(bi_ind_parasol,2)); 2*ones(1,size(bi_ind_parasol,2));3*ones(1,size(bi_ind_parasol,2)); 4*ones(1,size(bi_ind_parasol,2))], [bi_ind_parasol(1,:); bi_ind_parasol(2,:);bi_ind_large(1,:); bi_ind_large(2,:);], '.-', 'MarkerSize', 30)
+ylabel('Biphasic Index')
+title(['Biphasic Index of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+figure(fig5)
+hold on
+plot([ones(1,size(parasol_rf,2)); 2*ones(1,size(parasol_rf,2)); 3*ones(1,size(parasol_rf,2)); 4*ones(1,size(parasol_rf,2))], [parasol_rf(1,:); parasol_rf(2,:); large_rf(1,:); large_rf(2,:)], '.-', 'MarkerSize', 30)
+ylabel('RF Size (\mum)')
+title(['RF Size of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
+
+
+
+
+
+
+
+
+% hold on
+% plot(ones(size(t_zc_parasol), t_zc_parasol, 'o-')
+
+% set(gca, 'xtick', [0 1,2 3])
+
+% set(gca, 'xticklabel', {'','OFF parasol', 'OFF smooth',''})
+% set(gca, 'xlim', [0.5 2.5])
+% title('Zero Crossing')
+
+% figure; plot(bi_ind_parasol(2,:), bi_ind_large(2,:), '.', 'MarkerSize', 30)
+% hold on
+% xlim = get(gca, 'xlim');
+% ylim = get(gca, 'ylim');
+% plot([min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], [min(xlim(1), ylim(1)), max(xlim(2), ylim(2))], '--k')
+% xlabel('Average OFF Parasol Biphasic Index')
+% ylabel('Average OFF Smooth Biphasix Index')
+
+
 
 t_zc_large = [t_zc_large(:, 1:2) t_zc_large(:, 4:5)];
 t_zc_parasol = [t_zc_parasol(:, 1), t_zc_parasol(:, 3:5)];
