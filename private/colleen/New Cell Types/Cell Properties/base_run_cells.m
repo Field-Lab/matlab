@@ -85,7 +85,7 @@ for j= 1:size(txt,1)
             minimum_ind= zeros(length(cell_ids),1);
             maximum_ind= zeros(length(cell_ids),1);
             zc= zeros(length(cell_ids),1);
-            bi_ind= zeros(length(cell_ids),1);
+            bi_ind_ei= zeros(length(cell_ids),1);
             lobe1= zeros(length(cell_ids),1);
             lobe2= zeros(length(cell_ids),1);
             ratio_to_neighbors= zeros(length(cell_ids),1);
@@ -96,7 +96,7 @@ for j= 1:size(txt,1)
                 
                 try
                     [rf(i), t_zc(i), t_p(i), t_t(i), bi_ind(i), fr(i), amp(i)] = get_timecourse_prop(datarun, cell_ids(i), run_opts);
-                    [maximum(i), minimum(i), minimum_ind(i),  maximum_ind(i), zc(i), bi_ind(i), lobe1(i), lobe2(i), ratio_to_neighbors(i)] = ei_properties(datarun, cell_ids(i), array_size(j));
+%                     [maximum(i), minimum(i), minimum_ind(i),  maximum_ind(i), zc(i), bi_ind_ei(i), lobe1(i), lobe2(i), ratio_to_neighbors(i)] = ei_properties(datarun, cell_ids(i), array_size(j));
                     
                     
                 catch
@@ -137,39 +137,39 @@ for j= 1:size(txt,1)
                 %                 end
                 
             end
-            [~, elimin1] = removeoutliers(minimum_ind);
-            [~, elimin2] = removeoutliers(maximum_ind);
-            [~, elimin3] = removeoutliers(zc);
-            [~, elimin4] = removeoutliers(bi_ind);
-            remove = unique([elimin1; elimin2; elimin3; elimin4]);
-            
-            rf(remove) = nan;
-            t_zc(remove) = nan;
-            t_p(remove) = nan;
-           t_t(remove) = nan;
-            bi_ind(remove) = nan;
-            fr(remove) = nan;
-            amp(remove) = nan;
-%             output.parameters.width = width;
-%             output.parameters.isi_max = isi_max;
-            acf_mean(remove) = nan;
-            acf_var(remove) = nan;
-            acf_sd(remove) = nan;
-           acf_end_val(remove) = nan;
-            acf_peak(remove) = nan;
-           acf_peak_time(remove) = nan;
-            acf_rise(remove) = nan;
-            acf_slope_up(remove) = nan;
-            acf_slope_down(remove) = nan;
-            maximum(remove) = nan;
-            minimum(remove) = nan;
-            minimum_ind(remove) = nan;
-            maximum_ind(remove) = nan;
-            zc(remove) = nan; 
-            bi_ind(remove) = nan;
-            lobe1(remove) = nan; 
-            lobe2(remove) = nan; 
-            ratio_to_neighbors(remove) = nan;
+%             [~, elimin1] = removeoutliers(minimum_ind);
+%             [~, elimin2] = removeoutliers(maximum_ind);
+%             [~, elimin3] = removeoutliers(zc);
+%             [~, elimin4] = removeoutliers(bi_ind);
+%             remove = unique([elimin1; elimin2; elimin3; elimin4]);
+%             
+%             rf(remove) = nan;
+%             t_zc(remove) = nan;
+%             t_p(remove) = nan;
+%            t_t(remove) = nan;
+%             bi_ind(remove) = nan;
+%             fr(remove) = nan;
+%             amp(remove) = nan;
+% %             output.parameters.width = width;
+% %             output.parameters.isi_max = isi_max;
+%             acf_mean(remove) = nan;
+%             acf_var(remove) = nan;
+%             acf_sd(remove) = nan;
+%            acf_end_val(remove) = nan;
+%             acf_peak(remove) = nan;
+%            acf_peak_time(remove) = nan;
+%             acf_rise(remove) = nan;
+%             acf_slope_up(remove) = nan;
+%             acf_slope_down(remove) = nan;
+%             maximum(remove) = nan;
+%             minimum(remove) = nan;
+%             minimum_ind(remove) = nan;
+%             maximum_ind(remove) = nan;
+%             zc(remove) = nan; 
+%             bi_ind_ei(remove) = nan;
+%             lobe1(remove) = nan; 
+%             lobe2(remove) = nan; 
+%             ratio_to_neighbors(remove) = nan;
 %             maximum(i), minimum(i), minimum_ind(i),  maximum_ind(i), zc(i), bi_ind(i), lobe1(i), lobe2(i), ratio_to_neighbors(i)
 % maximum = removeoutliers(maximum);
 % maximum = removeoutliers(maximum);
@@ -216,7 +216,7 @@ for j= 1:size(txt,1)
             output.parameters.minimum_ind = minimum_ind;
             output.parameters.maximum_ind = maximum_ind;
             output.parameters.zc = zc;
-            output.parameters.bi_ind = bi_ind;
+            output.parameters.bi_ind_ei = bi_ind_ei;
             output.parameters.lobe1 = lobe1;
             output.parameters.lobe2 = lobe2;
             output.parameters.ratio_to_neighbors = ratio_to_neighbors;
