@@ -35,11 +35,11 @@ binnedResponsesbigd_hr = spksGen_hr(trainData_hr);
  mov_use=maskedMovdd(:,trainData);
   filteredStimDim=size(mov_use,1); 
  
- [fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
+ %[fitGMLM,output] = fitGMLM_MEL_EM(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval);  
  %[fitGMLM,f_val(nSU)] = fitGMLM_MEL_EM_bias(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval); 
-% [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
+ [fitGMLM,output] = fitGMLM_MEL_EM_power2(binnedResponsesbigd,mov_use,filteredStimDim,nSU,interval,2);  
  % fitGMLM_log(ifit).fitGMLM = fitGMLM;  %%
-   [fitGMLM,output]= fitGMLM_full(fitGMLM,binnedResponsesbigd_hr,mov_use);
+   %[fitGMLM,output]= fitGMLM_full(fitGMLM,binnedResponsesbigd_hr,mov_use);
 %   fitGMLM_full2_log{nSU}=fitGMLM;
 %   figure;
 %   plot(fitGMLM.hist.hexpanded)

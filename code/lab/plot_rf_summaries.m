@@ -369,8 +369,8 @@ if params.plot_contours
 else
     prefix = 'rfsummaries_';
 end
-savename = [prefix datarun.names.short_name '_ct' num2str(cell_type_num)];
-set_savename(savename);
+% savename = [prefix datarun.names.short_name '_ct' num2str(cell_type_num)];
+% set_savename(savename);
 
 
 % don't return handle if not requested

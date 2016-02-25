@@ -299,7 +299,7 @@ WN_datafile = '/Volumes/Analysis/2015-11-09-1/d14_36-norefit/data009/data009';
 
 movie_xml = 'RGB-8-2-0.48-11111';
 stim_length=1800;% 
-cellID_list = 5341%[cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
+cellID_list =[cellID_select];%1006,1411,2086,2341,2686,4096,4276,4831,5371,5566,5596,5866,7156,7216,7381,7490];
 nSU_list= [1,2,3,4,5,6,7,8,9,10];
 destination= 'pc2015_11_09_1_analysis_fits/SUs_data009'
 sta_depth=30; % CAREFUL TO CHANGE IT TO LONG .. FOR SLOWER CELLS

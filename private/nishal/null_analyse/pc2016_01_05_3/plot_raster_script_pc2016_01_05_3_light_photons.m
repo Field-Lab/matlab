@@ -1,5 +1,5 @@
 
-function [spkColl,spkCondColl,h]=plot_raster_script_pc2015_12_18_2_light_photons(cellID,nConditions,condDuration,cond_str,neuronPath)
+function [spkColl,spkCondColl]=plot_raster_script_pc2015_12_18_2_light_photons(cellID,nConditions,condDuration,cond_str,neuronPath)
 % 
 % neuronPairsRefVsNew = crossIdentifyNeuronIDs(WN_datafile_full,Null_datafile2,InterestingCell_vis_id);
 % ref_cells=neuronPairsRefVsNew(:,2);
@@ -71,7 +71,7 @@ end
 % title(sprintf('%s: data012 vis ID: %d Avg Spk Rate: %f',cond_str{icond},InterestingCell_vis_id(ref_cell_number),spkCondColl(icond).avgSpkRate));
 % end
 
-%%
+%% To make plots, remove these comments
 %nConditions=6;
 nTrials1=nTrials;
 figure;

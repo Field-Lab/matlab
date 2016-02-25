@@ -209,7 +209,7 @@ for cellID = [datarun.cell_types{icellType}.cell_ids];
                         if(su_log(i1,i2)>0)
                             plot([ix,ix],[iy,iy+1],'LineWidth',su_log(i1,i2)/4,'Color',col);
                             hold on;
-                            text(ix,iy+0.5,sprintf('%d',su_log(i1,i2)));
+                            %text(ix,iy+0.5,sprintf('%d',su_log(i1,i2)));
                             hold on;
                         end
                     end
@@ -239,7 +239,7 @@ for cellID = [datarun.cell_types{icellType}.cell_ids];
                         if(su_log(i1,i2)>0)
                             plot([ix-1,ix],[iy,iy],'LineWidth',su_log(i1,i2)/4,'Color',col);
                             hold on;
-                         text(ix-0.5,iy,sprintf('%d',su_log(i1,i2)));
+                         %text(ix-0.5,iy,sprintf('%d',su_log(i1,i2)));
                             hold on;
                         end
                     end
@@ -255,7 +255,7 @@ for cellID = [datarun.cell_types{icellType}.cell_ids];
                         if(su_log(i1,i2)>0)
                             plot([ix+1,ix],[iy,iy],'LineWidth',su_log(i1,i2)/4,'Color',col);
                             hold on;
-                           text(ix+0.5,iy,sprintf('%d',su_log(i1,i2)));
+                           %text(ix+0.5,iy,sprintf('%d',su_log(i1,i2)));
                             hold on;
                         end
                     end
@@ -264,6 +264,8 @@ for cellID = [datarun.cell_types{icellType}.cell_ids];
                 
             end
         end
+        
+       
         
         for ix=x_coord
             for iy=y_coord
@@ -291,13 +293,13 @@ end
 
 %% Do Spectral clustering
 
-for cellID = [5732]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[datarun.cell_types{icellType}.cell_ids];
+for cellID = [1531]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[datarun.cell_types{icellType}.cell_ids];
     
     close all
     %h=figure('Color','w','PaperSize',[42,7],'PaperPosition',[0 0 42 7]);
    
     iSU=0;
-    for nSU=[2,3,4,5,6,7]   
+    for nSU=4%[2,3,4,5,6,7]   
         iSU=iSU+1;
         h=figure('Color','w');
        
@@ -342,9 +344,9 @@ for cellID = [5732]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[dat
                             end
 
                         if(su_log(i1,i2)>0)
-                            plot([ix,ix],[iy,iy+1],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            plot([ix,ix],[41,41]-[iy,iy+1],'LineWidth',su_log(i1,i2)/2,'Color',col);
                             hold on;
-                            text(ix,iy+0.5,sprintf('%d',su_log(i1,i2)));
+                            %text(ix,iy+0.5,sprintf('%d',su_log(i1,i2)));
                             hold on;
                         end
                     end
@@ -357,7 +359,7 @@ for cellID = [5732]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[dat
                                 col=col_label(end,:);
                             end
                         if(su_log(i1,i2)>0)
-                            plot([ix,ix],[iy,iy-1],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            plot([ix,ix],[41,41]-[iy,iy-1],'LineWidth',su_log(i1,i2)/2,'Color',col);
                             hold on;
                            % text(ix,iy-0.5,sprintf('%d',su_log(i1,i2)));
                             hold on;
@@ -372,9 +374,9 @@ for cellID = [5732]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[dat
                         col=col_label(end,:);
                         end
                         if(su_log(i1,i2)>0)
-                            plot([ix-1,ix],[iy,iy],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            plot([ix-1,ix],[41,41]-[iy,iy],'LineWidth',su_log(i1,i2)/2,'Color',col);
                             hold on;
-                         text(ix-0.5,iy,sprintf('%d',su_log(i1,i2)));
+                        % text(ix-0.5,iy,sprintf('%d',su_log(i1,i2)));
                             hold on;
                         end
                     end
@@ -388,9 +390,85 @@ for cellID = [5732]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[dat
                                 col=col_label(end,:);
                             end
                         if(su_log(i1,i2)>0)
-                            plot([ix+1,ix],[iy,iy],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            plot([ix+1,ix],[41,41]-[iy,iy],'LineWidth',su_log(i1,i2)/2,'Color',col);
                             hold on;
-                           text(ix+0.5,iy,sprintf('%d',su_log(i1,i2)));
+                           %text(ix+0.5,iy,sprintf('%d',su_log(i1,i2)));
+                            hold on;
+                        end
+                    end
+                  
+                end
+                
+            end
+        end
+        
+         
+         for ix=x_coord
+            for iy=y_coord
+                i1 =ilist(indexedframe(ix,iy)==masked_frame);
+               
+                if(~isempty(i1))
+                  
+                    i2 = ilist(indexedframe(ix,iy+1)==masked_frame);
+                    
+                    if(~isempty(i2))
+                        
+                            if(label(i1)==label(i2))
+                                col=col_label(label(i1),:);
+                            else
+                                col=col_label(end,:);
+                            end
+
+                        if(su_log(i1,i2)>0)
+                           % plot([ix,ix],[iy,iy+1],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            hold on;
+                            text(ix,41-(iy+0.5),sprintf('%d',su_log(i1,i2)));
+                            hold on;
+                        end
+                    end
+                    
+                    i2 = ilist(indexedframe(ix,iy-1)==masked_frame);
+                    if(~isempty(i2))
+                            if(label(i1)==label(i2))
+                                col=col_label(label(i1),:);
+                            else
+                                col=col_label(end,:);
+                            end
+                        if(su_log(i1,i2)>0)
+                            %plot([ix,ix],[iy,iy-1],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            hold on;
+                            text(ix,41-(iy-0.5),sprintf('%d',su_log(i1,i2)));
+                            hold on;
+                        end
+                    end
+                    
+                    i2 = ilist(indexedframe(ix-1,iy)==masked_frame);
+                    if(~isempty(i2))
+                          if(label(i1)==label(i2))
+                        col=col_label(label(i1),:);  
+                        else
+                        col=col_label(end,:);
+                        end
+                        if(su_log(i1,i2)>0)
+                           % plot([ix-1,ix],[iy,iy],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            hold on;
+                         text(ix-0.5,41-iy,sprintf('%d',su_log(i1,i2)));
+                            hold on;
+                        end
+                    end
+                    
+                    
+                    i2 = ilist(indexedframe(ix+1,iy)==masked_frame);
+                    if(~isempty(i2))
+                            if(label(i1)==label(i2))
+                                col=col_label(label(i1),:);
+                            else
+                                col=col_label(end,:);
+                            end
+                        if(su_log(i1,i2)>0)
+                            %plot([ix+1,ix],[iy,iy],'LineWidth',su_log(i1,i2)/4,'Color',col);
+                            hold on;
+                           text(ix+0.5,41-iy,sprintf('%d',su_log(i1,i2)));
                             hold on;
                         end
                     end
@@ -404,34 +482,43 @@ for cellID = [5732]%[106,1008,842,1066,1232,1531,1981,2596,2767,2371,2806] %[dat
             for iy=y_coord
               i1 =ilist(indexedframe(ix,iy)==masked_frame);
                 if(~isempty(i1))
-                plot(ix,iy,'*','Color',col_label(label(i1),:));
+                plot(ix,41-iy,'.','Color',col_label(label(i1),:),'MarkerSize',20);
                 end
             end
         end
-        
+        set(gca,'xTick',[]);set(gca,'yTick',[]);
     axis equal    
    title(sprintf('nSU: %d',nSU));
    hold on
-        xlim([10,19]);ylim([10,26]);
-
-    if(ifgmlm==1)
-       
-if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/large/detailed_sc_subset/CellID_%d/gmlm/',cellID),'dir');
-    mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/large/detailed_sc_subset/CellID_%d/gmlm/',cellID));
-end
-   print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/large/detailed_sc_subset/CellID_%d/gmlm/gmlm_%d_su_%d.pdf',cellID,cellID,nSU));
-    else
-if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_sc_subset/CellID_%d/nnmf/',cellID),'dir');
-    mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_sc_subset/CellID_%d/nnmf/',cellID));
-end
-   print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_sc_subset/CellID_%d/nnmf/nnmf_%d_su_%d.pdf',cellID,cellID,nSU));
-   
-    end
+        xlim([20,27]);ylim([41-28,41-21]);
+% 
+%     if(ifgmlm==1)
+%        
+% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/large/detailed_sc_subset/CellID_%d/gmlm/',cellID),'dir');
+%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/large/detailed_sc_subset/CellID_%d/gmlm/',cellID));
+% end
+%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data031/large/detailed_sc_subset/CellID_%d/gmlm/gmlm_%d_su_%d.pdf',cellID,cellID,nSU));
+%     else
+% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_sc_subset/CellID_%d/nnmf/',cellID),'dir');
+%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_sc_subset/CellID_%d/nnmf/',cellID));
+% end
+%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_sc_subset/CellID_%d/nnmf/nnmf_%d_su_%d.pdf',cellID,cellID,nSU));
+%    
+%     end
 
     end
     
 end
 
+
+xxsta =-repelem(sta,1,1);
+%     xxsta = xxsta - mean(mean(xxsta((abs(xxsta)<0.2*max(abs(xxsta(:)))))));
+B = bwboundaries(abs(xxsta)>0.2*max(abs(xxsta(:))));
+hullidx = convhull(B{6}(:,1),B{6}(:,2),'simplify',true);
+xxsta = xxsta/max(abs(xxsta(:)));
+
+hold on;
+plot(B{6}(hullidx,1),41-B{6}(hullidx,2),'LineWidth',lw);
 
 %% see individual fits
 
@@ -553,7 +640,7 @@ x_coord =x_coord(6:end-4);
 y_coord = y_coord(5:end-5);
 
 u_spatial_log = zeros(40,40,nSU);
-ifit=1%1:50
+ifit=4%1:50
     lw=1.5;
     close all
     h=figure('Color','w')
