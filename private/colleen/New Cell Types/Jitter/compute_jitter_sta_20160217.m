@@ -112,7 +112,7 @@ end
 
 
 %% Compute movie
-movie = zeros(40*stixel_size, 20*stixel_size, 3,duration);
+movie = zeros(40*stixel_size, 20*stixel_size, 3,10000);
 
 sta = cell(size(spikes,2));
 for i = 1:size(spikes,2)

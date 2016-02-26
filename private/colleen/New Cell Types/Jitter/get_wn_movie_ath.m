@@ -1,6 +1,6 @@
 function [inputs, refresh, duration] = get_wn_movie_ath(datarun, mdf_file, bw)
 
-triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 300*mean(diff(datarun.triggers))]'];
+triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 600*mean(diff(datarun.triggers))]'];
 [~,height,width,duration,refresh] = get_movie_ath(mdf_file,triggers, 1,2);
 mvi=load_movie(mdf_file, triggers);
 

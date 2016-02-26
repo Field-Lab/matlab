@@ -17,11 +17,11 @@ stixels_per_frame = frame_width*frame_height;
 dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
 dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.date, '/', dataparam.concatname, '/'];
 % list specific cell (1), or run for a whole cell type (0)
-select_cells = 1;
+select_cells = 0;
 if select_cells == 1
-    dataparam.cell_specification = [1] %ON parasol
+    dataparam.cell_specification = [481] %ON parasol
 end
-dataparam.cell_type = {''};
+dataparam.cell_type = {'all'};
 %% END OF INPUT
 % dataparam.folder = dataparam.cell_type{1};
 % file path to save data and pictures
@@ -69,13 +69,13 @@ end
 
 % Set the cell_specification to all the cell of the inputted type
 if select_cells ~= 1
-    dataparam.cell_specification = datarun.cell_types{cell_type_index}.cell_ids;
+    dataparam.cell_specification = datarun.cell_ids;%datarun.cell_types{cell_type_index}.cell_ids;
 end
 
 
-triggers=datarun.triggers(1:500); %onsets of the stimulus presentation
+% triggers=datarun.triggers(1:500); %onsets of the stimulus presentation
 
-triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 300*mean(diff(datarun.triggers))]'];
+triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 600*mean(diff(datarun.triggers))]'];
 [~,height,width,duration,refresh] = get_movie_ath(dataparam.mdf_file,triggers, 1,2);
 %
 [mvi] = load_movie(dataparam.mdf_file, triggers);
@@ -85,44 +85,47 @@ cell_ids=datarun.cell_ids(cell_indices);
         stixel_width = 16;
             stixel_height = 16;
     seed = 22222;    
-%     
-%     jitterX = load('jitterX.mat');
-%     jitterX = jitterX.jitterX;
-%         jitterY = load('jitterY.mat');
-%     jitterY = jitterY.jitterY;
+    
+    jitterX = load('jitterX.mat');
+    jitterX = jitterX.jitterX;
+        jitterY = load('jitterY.mat');
+    jitterY = jitterY.jitterY;
 for j = 1:length(cell_indices)
 
     spikes{j}=  datarun.spikes{cell_indices(j)};
 
-    state = Init_RNG_JavaStyle(seed);
-    jitterX = nan(duration,1);
-    jitterY = nan(duration,1);
-
-    for i = 1:duration
-                for trash = 1:stixels_per_frame 
-                    a = random_uint16(state);
-                end
-        
-%         if mod(i, stixels_per_frame) == 0
-            jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
-            jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
-     
-            
-
-        
-    end
-
-
-    save ('jitterX', 'jitterX');
-     save ('jitterY', 'jitterY');
-
+%     state = Init_RNG_JavaStyle(seed);
+%     jitterX = nan(duration,1);
+%     jitterY = nan(duration,1);
 % 
+%     for i = 1:duration
+%                 for trash = 1:stixels_per_frame 
+%                     a = random_uint16(state);
+%                 end
+%         
+% %         if mod(i, stixels_per_frame) == 0
+%             jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
+%             jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
+%      
+%             
+% 
+%         
+%     end
+% 
+% 
+%     save ('jitterX', 'jitterX');
+%      save ('jitterY', 'jitterY');
+% 
+% % 
 
 
 end
     [sta] = compute_jitter_sta_20160217(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam.save_path);
     for i = 1:size(spikes,2)
         temp = sta{i};
+        if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026'])
+                mkdir(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026']);
+        end
     save(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026/Cell ', num2str(cell_ids(i))], 'temp')
     end
     
