@@ -3,7 +3,7 @@ function plot_cells_elecs(on,elecs,icell)
 % plot cells
 n=100;
 angle = 0:2*pi/n:2*pi;            % vector of angles at which points are drawn
-R = 3*on.coneGaussSd;                         % Unit radius
+R = 2*on.coneGaussSd;                         % Unit radius
 x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
 
 

@@ -9,7 +9,7 @@ for icell=1:population.nCones
     
     dist_elecs = (elecs.x - xCell(icell)).^2+(elecs.y - yCell(icell)).^2;
     population.elecs.dist_elecs(icell,:) = dist_elecs;
-    population.elecs.weight_elecs(icell,:) =   population.elecs.dist_elecs(icell,:)<80;
+    population.elecs.weight_elecs(icell,:) =   population.elecs.dist_elecs(icell,:)<50;
     
 end
 
