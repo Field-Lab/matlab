@@ -1,0 +1,137 @@
+%% AKHeitman 2014-03-28
+% Trying to make performance evaluation more robust.
+
+
+% CALLS eval_rasterlogprob
+
+function xvalperformance = eval_xvalperformance(Basepars, SPars, organizedspikes,testmovie, mu_avgIperpix)
+%%
+params.tstim = Basepars.tstim;
+params.dt    = Basepars.dt;
+params.bindur = params.tstim / Basepars.spikebins_perstimframe; 
+params.bins = Basepars.spikebins_perstimframe *length(SPars.testframes);  
+params.evalblocks = SPars.TestBlocks;
+params.trials = length(params.evalblocks);  
+params.frames = length(SPars.testframes);
+params.klen = length(Basepars.ROI.xdim);
+params.testdur_seconds = max(SPars.testseconds) - min(SPars.testseconds) ;  
+    
+logicalspike = zeros( length(params.evalblocks) , params.bins) ;         
+for i_blk = 1 : length(params.evalblocks)
+	blknum = params.evalblocks(i_blk);
+	sptimes = organizedspikes.block.t_sp_withinblock{blknum} - SPars.testseconds(1);
+	sptimes = sptimes(find(sptimes > 0 ) );
+	for i_sp = 1:length(sptimes)
+        spt = sptimes(i_sp);
+                binnumber = ceil(spt / params.bindur );
+                logicalspike( i_blk, binnumber )  =  logicalspike( i_blk,binnumber ) + 1;
+	end
+end    
+clear tstim bindur evalblocks testbins sptimes spt binnumber 
+testmovie_ROI = testmovie.matrix(Basepars.ROI.xdim , Basepars.ROI.ydim, :);
+testmovie_ROI = double(testmovie_ROI);
+testmovie_ROI = testmovie_ROI / max(testmovie_ROI(:)); 
+testmovie_ROI = testmovie_ROI - mu_avgIperpix;
+testmovie_ROI = testmovie_ROI(:,:, SPars.testframes);
+testmovie_ROI = reshape(testmovie_ROI , [params.klen^2,params.frames]);
+    
+%display(sprintf('~~~ Minimum stim is %d ---' , min(testmovie_ROI(:))));
+%display(sprintf('~~~ Maximum stim is %d ---' , max(testmovie_ROI(:))));   
+    %% Set up CIF Components
+    
+p_opt     = Basepars.p_opt; ps_basis = Basepars.ps_basis;
+dt        = Basepars.dt; tstim =Basepars.tstim;
+parInd    = Basepars.paramind;
+MU = p_opt(parInd.MU);
+PS = ps_basis * p_opt(parInd.PS);
+if strcmp(Basepars.k_filtermode , 'fixedSP')
+    spfilter = Basepars.spfilter;
+	if size(spfilter,2) > size(spfilter,1), spfilter = spfilter'; end
+	K  = (spfilter)*(p_opt(parInd.L)');
+	timefilter = p_opt(parInd.L)';
+	testmovie_scalar = (spfilter') * testmovie_ROI;
+	lcif_kx_frame = fastconvAH( testmovie_scalar, timefilter , 1, length(testmovie_scalar),0);     
+	%figure; subplot(2,1,1); plot( timefilter); subplot(2,1,2); plot(lcif_kx_frame);
+end
+    
+if strcmp(Basepars.k_filtermode , 'OnOff_hardrect_fixedSP_STA')
+    spfilter_pos = Basepars.spfilter_pos;
+    spfilter_neg = Basepars.spfilter_neg;
+    
+	if size(spfilter_pos,2) > size(spfilter_pos,1), spfilter_pos = spfilter_pos';  spfilter_neg = spfilter_neg';end
+%	K1 = (spfilter)*(p_opt(parInd.TIME1)');
+	timefilter1 = p_opt(parInd.TIME1)';
+    timefilter2 = p_opt(parInd.TIME2)';
+    
+    testmovie_ROIpos = testmovie_ROI;
+    testmovie_ROIneg = testmovie_ROI;
+    negind = find(testmovie_ROI(:) < 0 );
+    posind = find(testmovie_ROI(:) > 0 );
+    
+    testmovie_ROIpos(negind) = 0;
+    testmovie_ROIneg(posind) = 0;
+    
+	testmovie_pos = (spfilter_pos') * testmovie_ROIpos;
+    testmovie_neg = (spfilter_neg') * testmovie_ROIneg;
+    
+	lcif_kx_frame1 = fastconvAH( testmovie_pos, timefilter1 , 1, length(testmovie_pos),0);
+    lcif_kx_frame2 = fastconvAH( testmovie_neg, timefilter2 , 1, length(testmovie_neg),0); 
+    lcif_kx_frame  = lcif_kx_frame1 + lcif_kx_frame2;
+	%figure; subplot(2,1,1); plot( timefilter); subplot(2,1,2); plot(lcif_kx_frame);
+end
+if strcmp(Basepars.k_filtermode , 'rk2')      
+	Z = Basepars.paramind;
+	p_opt = Basepars.opt_param.p;
+	MU = p_opt(Z.MU);
+	K1 = p_opt(Z.SPACE1)*(p_opt(Z.TIME1)');
+	K2 = p_opt(Z.SPACE2)*(p_opt(Z.TIME2)');
+	K = K1 + K2;        
+	lcif_kx_frame = zeros(size(testmovie_ROI));
+	for i_spot = 1:(length(Z.SPACE1))
+        lcif_kx_frame(i_spot,:) = fastconvAH( testmovie_ROI(i_spot,:), K(i_spot,:) , 1, length(testmovie_ROI),0);
+    end
+	lcif_kx_frame = sum(lcif_kx_frame);
+end
+
+%display('binning the lcif components')
+lcif_kx0 = reshape( repmat(lcif_kx_frame, 10, 1) , 1 , params.bins);
+lcif_mu0 = MU * ones (1,params.bins);     
+lcif_mu = repmat(lcif_mu0 , params.trials, 1);
+lcif_kx = repmat(lcif_kx0 , params.trials, 1);    
+clear sbpf;   
+lcif_ps = fastconvAH(logicalspike , [0; PS]', size(logicalspike,1), size(logicalspike,2) );    
+lcif = lcif_mu + lcif_kx + lcif_ps;
+glm_ratepersec  = exp(lcif);
+glm_rateperbin  = Basepars.dt* glm_ratepersec;
+    
+spikerate_bin    = size(find(logicalspike(:))) /  size(logicalspike(:));      
+model_null0      = spikerate_bin * ones(1, params.bins);
+model_uop0       = (1/params.trials) * sum(logicalspike,1);
+model_null       = repmat(model_null0, params.trials, 1);
+model_uop        = repmat(model_uop0, params.trials, 1);
+null_logprob     = sum(eval_rasterlogprob(logicalspike, model_null, 'binary', 'conditioned'));
+uop_logprob      = sum(eval_rasterlogprob(logicalspike, model_uop, 'binary', 'conditioned'));
+% Check computations are correct % 
+%null_logprob    = sum(eval_rasterlogprob(logicalspike, model_null0, 'notbinary', 'unconditioned'));
+%uop_logprob     = sum(eval_rasterlogprob(logicalspike, model_uop0, 'notbinary', 'unconditioned'));    
+uop_bits          = uop_logprob - null_logprob;
+uop_bits_perspike = uop_bits / (sum(model_null0));
+uop_bits_persecond   = uop_bits / params.testdur_seconds;
+[raster_logprob_bin] = eval_rasterlogprob( logicalspike, glm_rateperbin,  'binary', 'conditioned') ;
+glm_logprob       = sum(raster_logprob_bin);
+glm_bits          = glm_logprob - null_logprob;
+glm_bits_perspike = glm_bits / (sum(model_null0));
+glm_bits_perbin   = glm_bits / params.bins;
+glm_bits_persecond   = glm_bits / params.testdur_seconds;
+
+
+xvalperformance.logprob_null_raw     = null_logprob;
+xvalperformance.logprob_uop_raw      =  uop_logprob;
+xvalperformance.logprob_glm_raw      =  glm_logprob;
+xvalperformance.logprob_uop_bpspike  =  uop_bits_perspike;
+xvalperformance.logprob_glm_bpspike  =  glm_bits_perspike;
+xvalperformance.logprob_uop_bpsec    =  uop_bits_persecond;
+xvalperformance.logprob_glm_bpsec    =  glm_bits_persecond;
+xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
+
+end

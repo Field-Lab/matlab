@@ -1,4 +1,4 @@
-% function      prep_BlockSpikeandRasters  
+% function  cd    prep_BlockSpikeandRasters  
 %               2013-12-04  AKHeitman (previously EDOI) 
 %
 %               
@@ -51,8 +51,11 @@ function prep_BlockSpikeandRasters(string_date, slv_type, map_type)
 %exp_nm = '2012-09-27-3'; fit_type = 'BW'; map_type = 'mapPRJ'; 
 exp_nm = string_date;
 boolean_debug = false;
-CTYPE = {'On-Parasol','Off-Parasol','On-Midget','Off-Midget', 'SBC'}; %
-CTYPE_sname = { 'ONPar' , 'OFFPar','ONMid','OFFMid','SBC' };  % short name
+% CTYPE = {'On Parasol','Off Parasol','On Midget','Off Midget', 'SBC', 'nc5', 'nc4', 'nc6', 'Unclassified'}; %
+CTYPE = {'On Large', 'Off Large', 'nc5', 'nc4', 'nc6', 'Unclassified'}; %
+
+% CTYPE_sname = { 'ONPar' , 'OFFPar','ONMid','OFFMid','SBC', 'nc5', 'nc6', 'Unknown'};  % short name
+CTYPE_sname = {'ONLarge', 'OFFLarge', 'nc5','nc4', 'nc6', 'Unknown'};  % short name
 
 %%% Just or debugging
 %{ 
@@ -62,7 +65,7 @@ shortlist_cellID= {[1276], [1471], [7652], [648]}; % [271];
 CTYPE = {'On-Parasol','Off-Parasol','On-Midget','Off-Midget'}; %
 CTYPE_sname = { 'ONPar' , 'OFFPar','ONMid','OFFMid' };  % short name
 %}
-[StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v18_split(exp_nm, boolean_debug, slv_type, map_type)
+[StimulusPars, DirPars, datarun_slv, datarun_mas] = Directories_Params_v19_split(exp_nm, slv_type, map_type)
 if strcmp(slv_type,'BW')
     Stim = StimulusPars.BW;
 elseif strcmp(slv_type, 'NSEM')
@@ -85,7 +88,7 @@ end
 %%% OUTPUT GOES INTO snl-e/glm/output/2012-08-21-1/BW
 for n_ctype = 1:length(CTYPE)
    
-   [celltype_index, CID] = celltype_id_AH(CTYPE{n_ctype}, datarun_slv.cell_types);
+   [celltype_index, CID] = celltype_id_AH(CTYPE{n_ctype}, datarun_mas{1}.cell_types);
     
     
  %  CID = datarun_mas.cell_types{n_ctype}.cell_ids;
@@ -95,7 +98,7 @@ for n_ctype = 1:length(CTYPE)
    
    %% CYCLE THROUGH ALL CELLS OF THE TPE
    for n_cid = 1:length(CID)
-       
+       try
       %% Load data by cell and save ... sort spikes into blocks
       % Also repository for as much information about the cell as possible
       clear organizedspikes
@@ -131,6 +134,10 @@ for n_ctype = 1:length(CTYPE)
       
       SPars = Stim;
       hack_printRasters(organizedspikes,SPars,pdf_name)
+       catch
+           disp('missing cell id')
+       end
+       
    end
 
 end

@@ -7,7 +7,7 @@ function [PSTH_sim, PSTH_rec] = plotrasters(xval, fittedGLM, varargin)
 % INPUTS
 % 
 % REQUIRED
-% xval: the output structure from glm_predict
+% xval: t, fittehe output structure from glm_predict
 % fittedGLM: the output structure from glm_fit
 %
 % Optional Parameters
@@ -28,7 +28,7 @@ addRequired(p,'fittedGLM', @isstruct);
 addParameter(p,'raster_length',5, @isnumeric); % length of raster in seconds, default 5
 addParameter(p,'labels',false, @islogical); % display axis ticks and labels if true
 addParameter(p,'separate',false, @islogical); % separate windows (true) or in subplots (false)
-addParameter(p,'PSTH',true, @islogical); % display PSTH if true
+addParameter(p,'PSTH',false, @islogical); % display PSTH if true
 addParameter(p,'start_time',0,@isnumeric); % set the raster start time to something other than 0
 addParameter(p,'PSTH_window_size', 100, @isnumeric); % set the amount smoothing in the PSTH
 addParameter(p, 'rasters', 1, @islogical); % set to 0 to only plot the PSTH

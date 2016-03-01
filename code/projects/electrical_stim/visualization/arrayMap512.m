@@ -2,7 +2,7 @@ function arrayMap512(positions)
 
 if nargin < 1
     % Load matrix containing the electrode numbers for the 512-electrode MEA
-    temp = load('/Users/vision/Dropbox/Lab/Development/matlab-standard/private/freddy/512elecpositions.mat'); % Find a more general location for this or call a different text file.
+    temp = load('/Users/colleen/matlab/private/freddy/512elecpositions.mat'); % Find a more general location for this or call a different text file.
     positions = temp.positions;
 end
     

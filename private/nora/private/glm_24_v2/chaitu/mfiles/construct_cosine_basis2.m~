@@ -1,0 +1,53 @@
+% functional form of raised cosine (with logarithmic time scale) is
+% g_j(t) = (1/2)cos(a*log[b*t + c] - phi_j) + (1/2)
+% for t such that (phi_j - pi) <= a*log(b*t + c) <= (phi_j + pi)
+
+% alpha - starting point (can be negative)
+% beta - finishing point
+% b - time scaling INSIDE log
+% nfilters - number of filters to construct
+% dt - timestep
+
+function [basis phi] = construct_cosine_basis2(alpha,beta,b,nfilters,dt,spacing,fl_out)
+if ~exist('fl_out','var')
+   fl_out = 0;
+end
+
+tvec = alpha:dt:beta;
+% define c s/t [b*t + c] = dt when t = alpha; this is necessary for
+% the logarithmic time scaling (where t need to be > 0)
+c = -b*alpha + dt;
+if (~exist('spacing','var'))
+   spacing = pi/2; % default spacing (square sum is constant)
+end
+a = (spacing*(nfilters-1) + 2*pi) * 1/log((b*beta + c)/(b*alpha + c));
+minphi = a*log(b.*alpha + c) + pi;
+maxphi = a*log(b.*beta  + c) - pi;
+
+if (maxphi < minphi)
+   fprintf('ERROR: alpha beta are unsuitable for cosine basis construction, minphi=%f, maxphi=%f !\n',minphi,maxphi);
+   return;
+end
+
+T = length(tvec);
+
+phi = linspace(minphi,maxphi,nfilters);
+if (length(phi) > 1)
+   A = norm(diff(phi) - repmat(spacing,1,nfilters-1));
+   if (A > 10^(-6))
+      fprintf('ERROR: spacing is incorrect to precision %f!n',A);
+   end
+end
+
+basis = zeros(T,nfilters);
+% Construct the postspike basis functions
+arg = a.*log(b.*tvec + c);
+for k=1:nfilters
+   idx_k =  find((arg > phi(k)-pi) & (arg < phi(k)+pi));
+   if isempty(idx_k)
+      fprintf('timespan of filter %d is empty!\n',k);
+   else
+      fprintf('timespan of filter %d is (%f,%f)\n',k,tvec(idx_k(1)),tvec(idx_k(end)));
+      basis(idx_k,k) = 0.5.*(cos(arg(idx_k) - phi(k))+1);
+   end
+end

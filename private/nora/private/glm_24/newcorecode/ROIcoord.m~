@@ -1,0 +1,31 @@
+% AKHeitman 2014-04-27
+% Concise way to get ROI coord given center and length
+
+
+function [ROIcoord] = ROIcoord(ROI_length, center, stimsize)
+% ROI_length preferably odd
+% Stimsize.width (corresponds to x)
+% Stimsizse.height  (corresponds to y)
+
+
+if ROI_length > stimsize.width
+    ROI_length - 
+
+modvec = -floor(ROI_length/2) : floor(ROI_length/2) ;
+xdim = center.x_coord + modvec;
+ydim = center.y_coord + modvec;
+if min(xdim)<1
+	xdim = 1:ROI_length;
+end
+if min(ydim)<1
+	ydim = 1:ROI_length;
+end
+if max(xdim) > stimsize.width
+	xdim = (stimsize.width - ROI_length + 1):stimsize.width ;
+end
+if max(ydim) > stimsize.height
+	ydim = (stimsize.height - ROI_length + 1):stimsize.height ;
+end
+
+ROIcoord.xvals =  xdim;
+ROIcoord.yvals  = ydim;

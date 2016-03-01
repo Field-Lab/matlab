@@ -1,6 +1,6 @@
 % clear
-datapath='/Volumes/Lab/Users/Nora/NSEM_home/GLMOutput_Raw/fixedSP_rk1_linear_MU_PS_CP_p8IDp8/standardparams/';
-exp_names=['2012-08-09-3/';'2012-09-27-3/';'2013-08-19-6/';'2013-10-10-0/'];
+datapath='/Volumes/Lab/Users/Nora/NSEM_Home/GLMOutput_Raw/fixedSP_rk1_linear_MU_PS_CP_p8IDp8/standardparams/';
+exp_names=['2012-08-09-3/';'2012-09-27-3/';'2013-08-19-6/'];
 fittypepath{2}='NSEM_mapPRJ/';
 fittypepath{1}='WN_mapPRJ/';
 
@@ -17,11 +17,6 @@ for fittype=1
         for file=1:n_cells
             disp(file)
             load([datapath fittypepath{fittype} exp_names(exp,:) matfiles(file).name]);
-            for pair = 1:6
-                cp_max(fittedGLM.linearfilters.Coupling.Filter{pair})
-                if  > 0.1
-                    
-                end
         end
     end
 end
@@ -29,27 +24,27 @@ end
 %%
 
 params = fittedGLM.rawfit.opt_params;
-t1_idx = fittedGLM.rawfit.paramind.time1;
-t2_idx = fittedGLM.rawfit.paramind.time2;
-s1_idx = fittedGLM.rawfit.paramind.space1;
-s2_idx = fittedGLM.rawfit.paramind.space2;
+t1_idx = fittedGLM.rawfit.paramind.X;
+%t2_idx = fittedGLM.rawfit.paramind.time2;
+%s1_idx = fittedGLM.rawfit.paramind.space;
+%s2_idx = fittedGLM.rawfit.paramind.space2;
 time = (1:length(t1_idx))*1/120*1000;
 figure('Position', [100 100 700 200]);
 subplot(1,3,1)
 plot(time, params(t1_idx))
 hold on
-plot(time, params(t2_idx))
+%plot(time, params(t2_idx))
 % title(cell_savename)
-xlim([0 250])
-xlabel('Time (ms)')
-subplot(1,3,2)
-imagesc(reshape(params(s1_idx),11,11))
-caxis([0 0.5])
-axis image
-subplot(1,3,3)
-imagesc(reshape(params(s2_idx),11,11))
-caxis([0 0.5])
-axis image
+% xlim([0 250])
+% xlabel('Time (ms)')
+% subplot(1,3,2)
+% imagesc(reshape(params(s1_idx),11,11))
+% caxis([0 0.5])
+% axis image
+% subplot(1,3,3)
+% %imagesc(reshape(params(s2_idx),11,11))
+% caxis([0 0.5])
+% axis image
 % print(['Users/Nora/Desktop/' cell_savename '.eps'], 'eps')
 
 %%
