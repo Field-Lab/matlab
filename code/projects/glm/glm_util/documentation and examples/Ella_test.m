@@ -26,3 +26,7 @@ plotfilters(fittedGLM)
 %% Testing
 xval = glm_predict(fittedGLM, WNStimData.TestMovie, 'testspikes', WNCellData.OFFPar_1292.Spikes(1:2:end));
 plotrasters(xval, fittedGLM);
+
+%% check out the basis we are using for the post spike filter
+[~,GLMPars] = glm_parameters;
+plot(prep_spikefilterbasisGP(GLMPars.spikefilters.ps, (1/120)/GLMPars.bins_per_frame));
