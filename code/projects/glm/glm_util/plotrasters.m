@@ -2,7 +2,7 @@ function [PSTH_sim, PSTH_rec] = plotrasters(xval, fittedGLM, varargin)
 % NB 2015-06-18
 % DESCRIPTION
 % This function takes in xval from glm_predict, fittedGLM from glm_fit, and
-% plots rasters and PSTH
+% plots rasters and PSTH. Red is predicted and black is recorded.
 %
 % INPUTS
 % 
