@@ -18,7 +18,7 @@ datarun=load_data('2012-08-09-3/data002');
 %   (includes spike times) and polarities
 % datarun=load_sta(datarun);
 datarun=load_params(datarun);
-% datarun=load_neurons(datarun);
+datarun=load_neurons(datarun);
 %datarun=set_polarities(datarun);
 
 % Let's look at the data! This is a classification run.

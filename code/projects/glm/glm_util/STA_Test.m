@@ -52,7 +52,7 @@ end
 STA_full = STA;
 
 STA = squeeze(STA);
-STA = abs(sum(STA, 3));
+STA = abs(sum(STA(:,:,24:27), 3));
 row = max(STA);
 col = max(STA');
 x = find(row == max(row));

@@ -23,6 +23,7 @@ end
 dataruns{1} = load_sta(dataruns{1});
 avg_rf = sum(get_average_rf(dataruns{1}, cell_type, 'scale', 5),3);
 
+
 %
 n_angles = 50;
 slice = zeros(200,1);

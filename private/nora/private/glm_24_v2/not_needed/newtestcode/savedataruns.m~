@@ -1,0 +1,25 @@
+clear all;
+BD = NSEM_BaseDirectories;
+
+
+savedir = '/Users/akheitman/NSEM_Home/temp_dataruns';
+
+for i_dataset = 1:4
+
+    if i_dataset == 1, exp_nm = '2012-08-09-3'; sname = 'A'; end
+    if i_dataset == 2, exp_nm = '2012-09-27-3'; sname = 'B'; end
+    if i_dataset == 3, exp_nm = '2013-08-19-6'; sname = 'C'; end
+    if i_dataset == 4, exp_nm = '2013-10-10-0'; sname = 'D'; end
+    
+    map_type = 'map_PRJ';
+    
+    for i_fittype = 1:2
+        if i_fittype, fit_type = 'WN'; end
+        if i_fittype, fit_type = 'NSEM'; end
+    
+
+        [StimulusPars DirPars datarun_slv  datarun_mas] = Directories_Params_v24(exp_nm, fit_type, map_type, BD);
+
+
+    eval(sprintf('save %s/datarun%s_%s.mat datarun_slv datarun_mas', savedir, sname, fit_type));
+

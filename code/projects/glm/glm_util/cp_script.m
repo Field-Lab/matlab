@@ -20,5 +20,4 @@ end
 testmovie0 = loadmoviematfile(exp , type, fittedGLM.GLMType.cone_model,'testmovie');
 xval = glm_predict(fittedGLM, testmovie0{1}.matrix, 'neighborspikes', neighborspikes);
 
-%%
-plotrasters(fittedGLM.xvalperformance, fittedGLM)
+plotrasters(fittedGLM.xvalperformance, fittedGLM);
