@@ -4,9 +4,9 @@ function [match] = get_cell_type_index(j_values)
 
 cell_types_of_interest = {'ON parasol', 'OFF parasol', 'ON midget', 'OFF midget', 'ON large 1', 'ON large 2', 'OFF large 1', 'OFF large 2'};
 [~, txt,array_size] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
-array_size = cell2mat(array_size(:,4));
+array_size = cell2mat(array_size(2:end,4));
 
-for j= 1:j_values%:size(txt,1)
+for j= 2:j_values%:size(txt,1)
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
     temp2 =  strtrim(txt{j,3});

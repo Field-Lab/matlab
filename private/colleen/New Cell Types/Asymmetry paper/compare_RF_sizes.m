@@ -6,10 +6,10 @@ function [area] = compare_RF_sizes(j_values)
 
 
 [~, txt,array_size] = xlsread('/Volumes/Lab/Users/crhoades/Large Cell Data ARVO.xlsx');
-array_size = cell2mat(array_size(:,4));
+array_size = cell2mat(array_size(2:end,4));
 % txt = {'
 % };
-for j= 1:22  %1:20%j_values%:size(txt,1)
+for j= 33:size(txt,1)%2:j_values  %1:20%j_values%:size(txt,1)
     % piece = txt(j,1:3);
     run_opts.date=strtrim(txt{j,1}); % one slash at the end
     temp1 = strtrim(txt{j,2});
