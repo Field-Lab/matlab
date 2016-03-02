@@ -1,20 +1,20 @@
 clear
 close all
 
-dataparam.date='2010-09-24-0/';
-dataparam.concatname='data001-nwpca';
+dataparam.date='2016-02-17-6/';
+dataparam.concatname='data023_cf';
 
 % Wrong Movie Information
-dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/wrongMovie/wrongMovie'];
+dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/', 'edited/data023_cf/wrongMovie/wrongMovie'];
 % dataparam.file_name_wrong = [dataparam.date, '/', dataparam.concatname, '/', 'wrongMovie/wrongMovie'];
 
-dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111-80x60.xml';
+dataparam.mdf_file_wrong='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-22222-119.5.xml';
 
 % Right Movie Information
-dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
+dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', 'edited/data023_cf/data023_cf'];
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname, '/','data003'];
 %
-dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-22222-80x60.xml';
+dataparam.mdf_file_right='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-33333-119.5.xml';
 
 
 
@@ -25,8 +25,8 @@ fitparam.fit_n_two_filters = true;
 fitparam.fit_surround_sd_scale = false;
 fitparam.fit_surround =false;
 fitparam.fit_surround_amp_scale =false;           
-fitparam.initial_n_one_filters =8;
-fitparam.initial_n_two_filters = 8;
+fitparam.initial_n_one_filters =12;
+fitparam.initial_n_two_filters = 12;
 
 % fitparam.interpolate = false;
 % fit the channels separately (useful for blue/green or SBCs)
@@ -36,7 +36,7 @@ fitparam.num_frames = 30; % both have to be run with the name number of frames
 fitparam.false_stixels =0.25;
 
 
-dataparam.cell_type = {'ON midget'};
+dataparam.cell_type = {'ON large 1'};
 
 
 
@@ -47,7 +47,7 @@ select_cells = 0;
 dataparam.cell_specification = [1636]; %can be anything if select_cells =0
 
 
-dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/Test/',dataparam.date,'/',dataparam.concatname,'/'];
+dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
 
 %% END OF INPUT
 dataparam.folder = dataparam.cell_type{1};
@@ -83,7 +83,9 @@ opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',t
 opt.load_sta_params.save_rf = 1;
 opt.load_sta_params.frames = 1:fitparam.num_frames;% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun2=load_data(datarun2,opt);
-
+if exist([dataparam.filepath, '/datarun.mat'])
+	load([dataparam.filepath, '/datarun'], 'datarun2')
+end
 
 
 
@@ -105,7 +107,11 @@ end
 
 % Set the cell_specification to all the cell of the inputted type
 if select_cells == 0
-    dataparam.cell_specification = datarun2.cell_types{cell_type_index}.cell_ids;
+    dataparam.cell_specification = [];
+    for i = 1:size(dataparam.cell_type,2)
+        dataparam.cell_specification = [dataparam.cell_specification, datarun2.cell_types{cell_type_index(i)}.cell_ids];
+    end
+    
 end
 
 
@@ -134,6 +140,7 @@ end
 
 
 cell_indices = get_cell_indices(datarun2, dataparam.cell_specification);
+cell_ids=get_cell_ids(datarun2,dataparam.cell_specification);
 num_rgcs = length(cell_indices);
 variables = {'cell_specification', 'cell_indices', 'center_point_x', 'center_point_y', 'center_sd_x', 'center_sd_y', 'center_rotation_angle', 'color_weight_a', 'color_weight_b', 'color_weight_c', 'x_dim', 'y_dim', 'surround_sd_scale', 'surround_amp_scale', 'scale_one', 'scale_two', 'tau_one', 'tau_two','n_one_filters', 'n_two_filters','frame_number', 'rmse'};
 parameters= zeros(num_rgcs,size(variables,2)); % want to save this
@@ -167,7 +174,7 @@ for rgc = 1:num_rgcs
         print(fig,'-dpdf',sprintf('%s%s%s.pdf',[filepath,folder,'/'],['cell_',int2str(visionID)]));
         
     else
-        [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'fit_surround_amp_scale', fitparam.fit_surround_amp_scale,'frame_number', fitparam.num_frames, 'mark_params', mark_params,'biggest_blob', true, 'verbose', false);
+        [temp_fit_params, sta, sig_stixels] = fit_sta(temp_sta, 'fit_n_one_filters', fitparam.fit_n_one_filters,'fit_n_two_filters', fitparam.fit_n_two_filters, 'fit_surround_sd_scale', fitparam.fit_surround_sd_scale,'fit_surround', fitparam.fit_surround, 'initial_n_one_filters', fitparam.initial_n_one_filters,'initial_n_two_filters', fitparam.initial_n_two_filters, 'fit_surround_amp_scale', fitparam.fit_surround_amp_scale,'frame_number', fitparam.num_frames, 'mark_params', mark_params,'biggest_blob', false, 'verbose', false);
         
         flip = strfind(lower(dataparam.cell_type{1}), 'off');
         if flip == 1
@@ -179,7 +186,7 @@ for rgc = 1:num_rgcs
         
         suptitle({dataparam.dataset; sprintf('Fit for cell %d', datarun2.cell_ids(cell_indices(rgc)))})
         
-        print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],['cell_',int2str(datarun.cell_ids(cell_indices(rgc)))]));
+        print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],['cell_',int2str(datarun2.cell_ids(cell_indices(rgc)))]));
         save_sig_stixels{rgc} = sig_stixels;
     end
     
@@ -223,7 +230,8 @@ for rgc = 1:num_rgcs
     
     sta = datarun2.stas.stas{cell_indices(rgc)};
     parameters_per_cell = datarun2.matlab.sta_fits{cell_indices(rgc)};
-    save(sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],['cell_',int2str(datarun.cell_ids(cell_indices(rgc)))]), 'dataparam', 'fitparam', 'parameters_per_cell', 'sta' )
+    save(sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],['cell_',int2str(datarun2.cell_ids(cell_indices(rgc)))]), 'dataparam', 'fitparam', 'parameters_per_cell', 'sta' )
+    save([dataparam.filepath, '/datarun'], 'datarun2')
 
     
 end
@@ -285,3 +293,13 @@ title({['STA Fitting Code:  ', dataparam.cell_type{1}] ; dataset})
 print(gcf,'-dpdf',sprintf('%s%s%s.pdf',[dataparam.filepath,dataparam.folder,'/'],[dataparam.cell_type{1}, ' Mosaic']));
 
 fitting_results = datarun2.matlab.sta_fits;
+
+% ind = get_cell_indices(datarun2, 'ON large 1');
+% for i = 1:length(ind)
+%     large_dia_on(i) = geomean([datarun2.matlab.sta_fits{ind(i)}.center_sd_x,datarun2.matlab.sta_fits{ind(i)}.center_sd_y])*2./(datarun2.matlab.sta_fits{ind(i)}.x_dim/640).*5.5;
+% end
+% 
+% ind = get_cell_indices(datarun2, 'OFF large 1');
+% for i = 1:length(ind)
+%     large_dia_off(i) = geomean([datarun2.matlab.sta_fits{ind(i)}.center_sd_x,datarun2.matlab.sta_fits{ind(i)}.center_sd_y])*2./(datarun2.matlab.sta_fits{ind(i)}.x_dim/640).*5.5;
+% end
