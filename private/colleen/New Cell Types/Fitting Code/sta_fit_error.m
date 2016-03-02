@@ -103,7 +103,7 @@ fit_error = sqrt(mean((reshape(sta,1,[]) - reshape(sta_fit,1,[])).^2)) +...
 % fit_error = sqrt(mean((reshape(sta,1,[]) - reshape(sta_fit,1,[])).^2)); % this last bit constrains the color vector to be norm 1.
 % % apply constraints
 constraint_error = apply_constraints(all_params);
-fit_error = fit_error + constraint_error;
+fit_error = fit_error * (1+constraint_error);
 
 
 end
@@ -134,8 +134,20 @@ end
 % function to constrain parameters
 function constraint_error = apply_constraints(all_params)
 
-    constraint_error = 0;
+% error if spatial fit is too small
 
+if all_params(9) == all_params(10) % square stimulus 320x320
+    area = all_params(3)*all_params(4)*pi*320/all_params(9)*320/all_params(10);
+
+else % stimulus 640/320
+    area = all_params(3)*all_params(4)*pi*640/all_params(9)*320/all_params(10);
+
+end
+
+penalty = 1/(area);
+
+    constraint_error = penalty;
+% constraint_error = 0;
     % ensure surround_radius >= center_radius
 %     if all_params(13) < 1; constraint_error = constraint_error + 1000; end
     
