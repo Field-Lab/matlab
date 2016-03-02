@@ -41,7 +41,7 @@ function [sta] = compute_jitter_sta(datarun, mdf_file, num_frames, spikes, jitte
 
 
 %% ---------------------------------- Process movie ------------------------------
-triggers=datarun.triggers; %onsets of the stimulus presentation
+triggers=datarun.triggers(1:1700); %onsets of the stimulus presentation
 
 [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
     triggers, 1,2);
@@ -60,7 +60,10 @@ for j = 1:size(spikes,2)
     
     
     frames_needed{j} = zeros(3,(length(triggers)-2)*100+120);
-    frames_needed{j}(1,:) = kron(1:upsampled_num_frames/upsample_factor, ones(1,upsample_factor));
+     a = kron(1:upsampled_num_frames/upsample_factor, ones(1,upsample_factor));
+    frames_needed{j}(1,:) = a(1:170020);
+    
+%     frames_needed{j}(1,:) = kron(1:upsampled_num_frames/upsample_factor, ones(1,upsample_factor));
     
     
     for i= 1:length(triggers)-1
@@ -132,9 +135,18 @@ else
                     %             if sum(frames_needed(3,(start_points(j) + i:start_points(j) + i-1+num_frames)))~=0
                     %                 if i  <= (duration - 1)
                     true_frame = zeros(height*stixel_size, width*stixel_size);
-                    F = round(mvi.getFrame(frames_needed{cel}(1,start_points(j)-1 + i)).getBuffer);
+                    frame_number = frames_needed{cel}(1,start_points(j)-1 + i);
+
+                    F = round(mvi.getFrame(frame_number).getBuffer);
+                    
                     shaped_frame = round(reshape(F(1:3:end),width,height)'-0.5);
-                    sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
+                    amount_of_shift = frame_number*2-2;
+                    F_shifted = circshift(shaped_frame, [0 amount_of_shift]);
+                    %% circshift the frame
+                    
+%                     sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
+                    sized_frame = imresize(double(F_shifted), stixel_size, 'nearest');
+
                     movie(:,:,1,i) = sized_frame;
                     sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
                     position = [jitter_x(frames_needed{cel}(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y(frames_needed{cel}(1,start_points(j)-1 + i))+1+stixel_size/2];
@@ -143,6 +155,8 @@ else
                     movie(:,:,1,i) = true_frame;
                     if num_colors == 3
                         shaped_frame = round(reshape(F(2:3:end),width,height)'-0.5);
+                        shaped_frame = circshift(shaped_frame, [0 amount_of_shift]);
+
                         sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
                         sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
                         % x and y might be reversed
@@ -150,6 +164,8 @@ else
                         movie(:,:,2,i) =true_frame;
                         
                         shaped_frame = round(reshape(F(3:3:end),width,height)'-0.5);
+                        shaped_frame = circshift(shaped_frame, [0 amount_of_shift]);
+
                         sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
                         sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
                         % x and y might be reversed
@@ -172,7 +188,7 @@ else
                     else
                         for t = 1:num_frames
                             subtract = num_frames - t +1;
-                            sta(:,:, :,subtract) = sta(:,:, :, subtract) + movie(:,:,:,i-t) * frames_needed{cel}(3,start_points(j)-1 + i);
+                            sta{cel}(:,:, :,subtract) = sta{cel}(:,:, :, subtract) + movie(:,:,:,i-t) * frames_needed{cel}(3,start_points(j)-1 + i);
                         end
                     end
                 end
@@ -200,15 +216,15 @@ end
 
 
 
-% figure;
-% for i = 1:num_frames
-%     if size(sta,3) == 3
-%         imagesc(sta(:,:,2,i))
-%     else
-%         imagesc(sta(:,:,1,i))
-%     end
-%     pause(0.25)
-% end
+figure;
+for i = 1:num_frames
+    if size(sta{1},3) == 3
+        imagesc(sta{1}(:,:,2,i))
+    else
+        imagesc(sta{1}(:,:,1,i))
+    end
+    pause(0.25)
+end
 % 
 % 
 % axis equal
