@@ -74,7 +74,9 @@ for kkk = 1:parts:length(datarun.cell_ids)
 %   
         a = find(spike_array_tmp(:,i));
         sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));
-        
+        if mod(i,10000)==0
+            i
+        end
         if mod(i,40000)==0
             save(['/Volumes/Analysis/2016-02-17-6/jitter/correct_jitter_sta_',int2str(i),'_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
             disp(['saved STA from ', int2str(i), ' frames for cells ', int2str(kkk), ' to ', int2str(kkk+parts-1)]);
