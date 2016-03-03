@@ -1,5 +1,5 @@
 
-datarun = load_data('/Volumes/Analysis-1/2016-02-17-6/data026/data026');
+datarun = load_data('/Volumes/Analysis/2016-02-17-6/data026/data026');
 datarun = load_params(datarun,'verbose',1);
 datarun = load_neurons(datarun);
 
