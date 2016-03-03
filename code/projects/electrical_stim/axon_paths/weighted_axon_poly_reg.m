@@ -14,11 +14,15 @@ function [curve_x, curve_y, p, soma_x, soma_y, valid, res] = weighted_axon_poly_
 %                       N - Specifies the degree of polynomial. 
 %               ei_thresh - Manually set the ei threshold of points
 %                           considered for the axon curve.
+%           axonBundleFit - default false, set to true to ignore the
+%                           'soma' and fit a across the entire array
 %   outputs:      curve_x - X coordinates of axon estimation.
 %                 curve_y - Y coordinates of axon estimation.
 %                       p - polynomial fit coefficients
 %                   valid - boolean of whether or not the fit is valid
 %                     res - residual, measures goodness of fit
+% Alena Rott, summer 2015
+% LG added axon bundle fitting.
 
 % Yields the minimum squared-error, on average
 N = 7;
@@ -30,7 +34,7 @@ point_threshold = max(eiAmps) / 15;
 
 plot_reg = false;
 valid = true;
-
+axonBundleFit = false; 
 
 nbin = length(varargin);
 for j=1:(nbin/2)
@@ -47,6 +51,8 @@ for j=1:(nbin/2)
             N = varargin{j*2};
         case 'ei_thresh'
             point_threshold = varargin{j*2};
+        case 'axonBundleFit'
+            axonBundleFit = varargin{j*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -182,16 +188,27 @@ val_right = sum(eiAmps(right_of_soma))*abs(soma_x - last_coord);
 
 x_steps = 1;
 
-% Sets range for axon x
-if val_left > val_right
-    curve_x = first_coord:x_steps:soma_x;
-    curve_x = fliplr(curve_x);
-    x_range = soma_x - first_coord;
+if axonBundleFit
+    % Sets range for axon x
+    if val_left > val_right
+        curve_x = first_coord:x_steps:last_coord;
+        curve_x = fliplr(curve_x);
+        x_range = last_coord - first_coord;
+    else
+        curve_x = first_coord:x_steps:last_coord;
+        x_range = last_coord - first_coord;
+    end
 else
-    curve_x = soma_x:x_steps:last_coord;
-    x_range = last_coord - soma_x;
-end  
-
+    % Sets range for axon x
+    if val_left > val_right
+        curve_x = first_coord:x_steps:soma_x;
+        curve_x = fliplr(curve_x);
+        x_range = soma_x - first_coord;
+    else
+        curve_x = soma_x:x_steps:last_coord;
+        x_range = last_coord - soma_x;
+    end
+end
 % The following code that alters N is meant to give smaller axons an
 % estimate with a smaller-order polynomial (smaller slices of the array
 % don't need a 7th order polynomial)
