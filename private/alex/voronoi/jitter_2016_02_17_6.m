@@ -41,9 +41,9 @@ end
 
 load('/Volumes/Analysis/2016-02-17-6/jitter/shifts')
 
-% parts of 50 STAs
+% parts of 20 STAs
 
-for kkk = 1:50:length(datarun.cell_ids)
+for kkk = 1:20:length(datarun.cell_ids)
     
     spike_array_tmp = spike_array(kkk:kkk+49,:);
     
@@ -56,7 +56,7 @@ for kkk = 1:50:length(datarun.cell_ids)
         full_inputs(9+jitterX:320+8+jitterX,9+jitterY:640+8+jitterY,:,1+i) = tmp;
     end
     
-    sta = zeros(320+15,640+15, 3, sta_params.length,50);
+    sta = zeros(320+15,640+15, 3, sta_params.length,20);
     for i=sta_params.length:90000
         tmp = reshape(inputs(:,:,i),20,40, 3);
         tmp = imresize(tmp,16, 'method', 'nearest');
@@ -69,16 +69,16 @@ for kkk = 1:50:length(datarun.cell_ids)
         a = find(spike_array_tmp(:,i));
         sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));
         
-        if mod(i,1000) == 0
+        if mod(i,500) == 0
             kkk
             i
         end
-        if mod(i,20000)==0
+        if mod(i,500)==0
             save(['/Volumes/Analysis/2016-02-17-6/jitter/correct_jitter_sta_',int2str(i),'_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
         end
     end
     
-    for i = 1:50
+    for i = 1:20
         sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array_tmp(i,1:90000));
     end
     save(['/Volumes/Analysis/2016-02-17-6/jitter/correct_jitter_sta_complete_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
