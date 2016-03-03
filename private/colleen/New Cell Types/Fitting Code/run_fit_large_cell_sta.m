@@ -8,7 +8,8 @@ close all
 array_size = cell2mat(array_size(2:end,4));
 % txt = {'
 % };
-for j= 25:size(txt,1)
+for j= 29%27:size(txt,1)
+    close all
     clear dataparam fitparam
     % piece = txt(j,1:3);
     dataparam.date=[strtrim(txt{j,1}), '/']; % one slash at the end
@@ -51,11 +52,11 @@ for j= 25:size(txt,1)
     fitparam.false_stixels =0.25;
     
     
-    dataparam.cell_type = {'ON large 1'};
+    dataparam.cell_type = {'OFF large 1'};
     
     % list specific cell (1), or run for a whole cell type (0)
-    dataparam.select_cells = 0;
-    dataparam.cell_specification = [6512]; %can be anything if select_cells =0
+    dataparam.select_cells = 1;
+    dataparam.cell_specification = [411]; %can be anything if select_cells =0
     
     
     dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];

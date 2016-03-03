@@ -56,11 +56,15 @@ for num_cell_types = 1:size(dataparam.cell_type,2)
     end
     
 end
+if cell_type_index == 0
+    return;
+end
 
 % Set the cell_specification to all the cell of the inputted type
 if dataparam.select_cells == 0
     dataparam.cell_specification = [];
     for i = 1:size(dataparam.cell_type,2)
+        
         dataparam.cell_specification = [dataparam.cell_specification, datarun2.cell_types{cell_type_index(i)}.cell_ids];
     end
     
@@ -150,6 +154,10 @@ for rgc = 1:num_rgcs
         warn_message = ['cell ',num2str(temp_id), ' has no sig stixels and no fit'];
         warning(warn_message)
     end
+    
+%     if temp_fit_params.center_rotation_angle < 0 
+%         temp_fit_params.center_rotation_angle = 2*pi - temp_fit_params.center_rotation_angle;
+%     end
     
     datarun2.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
     datarun2.matlab.sta_fits{cell_indices(rgc)}.sig_stixels = sig_stixels;
@@ -247,16 +255,28 @@ set(gca,'YDir','reverse');
 fitting_results = datarun2.matlab.sta_fits;
 
 %% Write to Vision File
+i=1;
+temp_fit_params.center_rotation_angle = 0;
+temp_fit_params.fit_params(5) = 0;
+temp_fit_params.center_sd_x = 2;
+temp_fit_params.fit_params(3) = 2;
+temp_fit_params.center_sd_y = 1;
+temp_fit_params.fit_params(4) = 1;
 
+            plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'on');
+
+    datarun2.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
+
+    
 paramFile = edu.ucsc.neurobiology.vision.io.ParametersFile(datarun2.names.rrs_params_path);
 for i = 1:length(cell_ids)
 paramFile.setCell(cell_ids(i), 'x0', datarun2.matlab.sta_fits{cell_indices(i)}.center_point_x-0.5)
 paramFile.setCell(cell_ids(i), 'y0', datarun2.stimulus.field_height - datarun2.matlab.sta_fits{cell_indices(i)}.center_point_y+0.5)
 
-paramFile.setCell(cell_ids(i), 'SigmaX', datarun2.matlab.sta_fits{cell_indices(i)}.center_sd_x)
+paramFile.setCell(cell_ids(i), 'SigmaX', datarun2.matlab.sta_fits{cell_indices(i)}.center_sd_y)
 
-paramFile.setCell(cell_ids(i), 'SigmaY', datarun2.matlab.sta_fits{cell_indices(i)}.center_sd_y)
-paramFile.setCell(cell_ids(i), 'Theta', datarun2.matlab.sta_fits{cell_indices(i)}.center_rotation_angle)
+paramFile.setCell(cell_ids(i), 'SigmaY', datarun2.matlab.sta_fits{cell_indices(i)}.center_sd_x)
+paramFile.setCell(cell_ids(i), 'Theta', (2*pi - datarun2.matlab.sta_fits{cell_indices(i)}.center_rotation_angle))
 
 end
 
