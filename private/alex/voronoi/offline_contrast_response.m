@@ -137,7 +137,7 @@ for cone1 = 1:length(center_cones)
     
     % referent cone unconditional response
     tmp = sort(inputs(cone1,:));    
-    cone1_contr = tmp(1:size_cone1_bin:end);
+    cone1_contr = [tmp(1:size_cone1_bin:end) tmp(end)];
     cone1_uncond_rate = zeros(1, nbins_cone1);
     cone1_valid = cell(1,nbins_cone1);
     for j = 1:nbins_cone1
@@ -161,7 +161,7 @@ for cone1 = 1:length(center_cones)
 
     for cone2 = other_cones        
         tmp = sort(inputs(cone2,:));
-        cone2_contr = tmp(1:size_cone2_bin:end);        
+        cone2_contr = [tmp(1:size_cone2_bin:end) tmp(end)];        
         cond_rate = zeros(nbins_cone2, nbins_cone1-1);
         % highest and lowest contrasts on the other cone ONLY
         for i=[1,nbins_cone2]         
@@ -234,7 +234,7 @@ for cone1 = 1:length(center_cones)
     end
     colored_cones = zeros([size(comb), 3]);
     for i = 1:length(center_cones)
-        [a, b] = find(map==center_cones(i)-1);
+        [a, b] = find(map==center_cones(i));
         if i~=cone1
             c = t(i,:)/max(t(i,:));
         else c= [1 1 1];
@@ -262,7 +262,7 @@ for cone1 = 1:length(center_cones)
     end
     colored_cones = zeros([size(comb), 3]);
     for i = 1:length(center_cones)
-        [a, b] = find(map==center_cones(i)-1);
+        [a, b] = find(map==center_cones(i));
         if i~=cone1
             c = t(i,:)/max(t(i,:));
         else c= [1 1 1];
@@ -286,7 +286,7 @@ for cone1 = 1:length(center_cones)
     cnt = 1;cnt1 = 1;
     for i=1:max(map(:))
         if ~isempty(voronoi_contours{i, 1})
-            if ~isempty(find(center_cones==i+1,1))
+            if ~isempty(find(center_cones==i,1))
                 wid = 1.2; col = colors(cnt1, :);
                 cnt1=cnt1+1;
             else

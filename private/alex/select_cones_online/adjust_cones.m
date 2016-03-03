@@ -19,8 +19,13 @@ for i=1:length(myCells)
     sta=squeeze(datarun.stas.stas{datInd});
     sta=sta(:,:,frame); % frame
     
-    for j=1:length(cones{i})
-        all_cones(:,:,cnt)=sta(cones{i}(j,2)-2:cones{i}(j,2)+2,cones{i}(j,1)-2:cones{i}(j,1)+2);
+    for j=1:size(cones{i},1)
+%         if cones{i}(j,1)<264
+            all_cones(:,:,cnt)=sta(cones{i}(j,2)-2:cones{i}(j,2)+2,cones{i}(j,1)-2:cones{i}(j,1)+2);
+%         else
+%             all_cones(:,:,cnt) = 0;
+%         end
+            
         cnt=cnt+1;
     end
     conesPerCell(i)=size(cones{i},1);
@@ -33,7 +38,7 @@ end
 myPlot=subplot('position',[0.6 0.05 0.35 0.35]);
 set(gca,'DataAspectRatio',[1 1 1])
 hold on
-mycolors='rbkgmcykkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk';
+mycolors='rbkgmcykkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk';
 
 pp=1;
 col=mycolors(1);
@@ -113,17 +118,17 @@ if tmp==hTemplate(2) % gauss
     if ~isempty(find(p<dist_threshold, 1)) % doubled cone
         p=find(p<dist_threshold);
         while length(p)>1
-            q=find(w(:,p(1))==min(w(:,p(1))));
+            q=find(w(:,p(1))==min(w(:,p(1))))';
             % find mean weighted position
             ptmp=stim.coord(p(1),:);
             qtmp=stim.coord(q,:);
             weighted_position=(stim.weight(p(1))*ptmp+stim.weight(q)*qtmp)/(sum(stim.weight([p(1) q])));
             
-            stim.coord([p(1) q],:)=repmat(weighted_position,2,1);
-            if stim.weight(p(1))>stim.weight(q)
-                stim.templateNumber(q)=stim.templateNumber(p(1));
+            stim.coord([p(1) q(1)],:)=repmat(weighted_position,2,1);
+            if stim.weight(p(1))>stim.weight(q(1))
+                stim.templateNumber(q(1))=stim.templateNumber(p(1));
             else
-                stim.templateNumber(p(1))=stim.templateNumber(q);
+                stim.templateNumber(p(1))=stim.templateNumber(q(1));
             end
             
             p(1)=[];

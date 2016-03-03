@@ -42,7 +42,14 @@ if flag==0 % find cones automatically
     
     % prepare sta
     sta=datarun.stas.stas{datInd};
-    sta=sta(:,:,:,params.frame); % frame
+    
+    aa=sta(:,:,:,params.frame); 
+    bb=sta(:,:,:,params.frame-1);
+    if max(abs(aa(:)))< max(abs(bb(:)));
+        sta = bb;
+    else
+        sta=sta(:,:,:,params.frame); % frame
+    end
     if datarun.stimulus.independent=='t'
         % RGB run, choose either green or blue channel
         tmpGreen=sta(:,:,2);
@@ -66,13 +73,13 @@ if flag==0 % find cones automatically
         w_center=[];
 
         keep_looking=true;
-        while keep_looking && length(cones{myInd})<20
+        while keep_looking && length(cones{myInd})<15
             myMax=max(tmp_sta(:));
             myCoord=find(tmp_sta==myMax,1);
             [row, col]=ind2sub(size(tmp_sta),myCoord);
             % check if border position... if, then correct - don't trust!
-            row=min(max(row,3),size(sta,1)-3);
-            col=min(max(col,3),size(sta,2)-3);
+            row=min(max(row,4),size(sta,1)-4);
+            col=min(max(col,4),size(sta,2)-4);
             
             if length(cones{myInd})>5 % start checking from 6th cone, 5 are obligatory
                 
@@ -100,7 +107,7 @@ if flag==0 % find cones automatically
             end
             if keep_looking
                 w_center=[w_center; tmp_sta(row,col)];
-                tmp_sta(row-2:row+2,col-2:col+2,:)=0;
+                tmp_sta(row-3:row+3,col-3:col+3,:)=0;
                 cones{myInd}=[cones{myInd}; [col, row]];
             end
         end

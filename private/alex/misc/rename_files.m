@@ -54,3 +54,7 @@ calc_sta_grind('/Volumes/Data/2011-10-25-9/Visual/stimuli.lisp', '/Volumes/Analy
 calc_sta_grind('/Volumes/Archive/2007-02-06-4/Visual/stimuli.lisp', '/Volumes/Analysis/2007-02-06-4/d00-015-norefit/')
 get_wn_movie_names('/Volumes/Data/2011-10-25-9/Visual/stimuli.lisp', 60.35);
 calc_ei_grind('2007-02-06-4', '/Volumes/Analysis/2007-02-06-4/d00-015-norefit/')
+
+
+
+calc_ei_grind('2016-02-17-4', '/Volumes/Analysis/2016-02-17-4/d00-05-norefit/')

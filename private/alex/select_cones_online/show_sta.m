@@ -1,4 +1,4 @@
-function show_sta(cellInd, varargin)
+function sta = show_sta(cellInd, varargin)
 
 % index_type:   myCells - index of the cell in myCells array (from 1 to 5-10)
 %               cellID - true index of cell (could be 3586)
@@ -49,14 +49,17 @@ if cellInd>0 % if not 0, show sta
     % get cell index in myCells array (for cones)
     myInd=find(myCells==datarun.cell_ids(datInd));
     
-    % check and load sta if not loaded
-    if isempty(datarun.stas.stas{datInd})
-        datarun = load_sta(datarun, struct('load_sta',myCells(myInd)));
-    end
-    
     % prepare sta
     sta=datarun.stas.stas{datInd};
-    sta=sta(:,:,:,params.frame); % frame
+    aa=sta(:,:,:,params.frame);
+    bb=sta(:,:,:,params.frame-1);
+    
+    if max(abs(aa(:)))<max(abs(bb(:)));
+        sta = bb;
+    else
+        sta=sta(:,:,:,params.frame); % frame
+    end
+%     sta=sta(:,:,:,params.frame); % frame
     if datarun.stimulus.independent=='t'
         % RGB run, choose either green or blue channel
         tmpGreen=sta(:,:,2);
@@ -69,51 +72,11 @@ if cellInd>0 % if not 0, show sta
     end
     sta=double(squeeze(sta));
     
-    
-    
-    % prepare RF fit
-    centre=round(ctr(datInd,:));
-    radius=ceil(max(rad(datInd,:)))*params.scale;
-    [X, Y] = drawEllipse([ctr(datInd,:) rad(datInd,:) fit_angle(datInd)]);
-    [X, Y] = tformfwd(coord_tform, X, Y);
-    
-    % plot stuff
     subplot(hPlot);
     colormap gray
     
     imagesc(sta);
-    
-    hold on
-    
-    plot(X,Y,'r')
-    
-    % get axis limits
-    minx=max(centre(1)-radius,1);
-    maxx=min(centre(1)+radius,datarun.stimulus.field_width);
-    miny=max(centre(2)-radius,1);
-    maxy=min(centre(2)+radius, datarun.stimulus.field_height);
-    
-    myLimits=[minx maxx miny maxy];
-
-    axis(myLimits)
-    set(gca, 'dataaspectratio', [1 1 1])
-    
-elseif cellInd==0 % zoom out by 30% each time
-    
-    subplot(hPlot)
-    xx=get(hPlot,'XLim');
-    yy=get(hPlot,'YLim');
-    
-    tmpx=diff(xx)*0.3;
-    tmpy=diff(yy)*0.3;
-    xx(1)=max(xx(1)-tmpx,1);    
-    xx(2)=min(xx(2)+tmpx,datarun.stimulus.field_width);    
-    yy(1)=max(yy(1)-tmpy,1);
-    yy(2)=min(yy(2)+tmpy,datarun.stimulus.field_height);
-    
-    axis([xx yy])
-    
-    
+ 
 end
 
 

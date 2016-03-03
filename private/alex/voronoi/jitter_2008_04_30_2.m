@@ -75,20 +75,22 @@ for i=1:length(datarun.cell_ids);sta_cell=sta(:,:,:,:,i);save(['/Volumes/Analysi
 
 % 
 % % 
-% load('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat')
+load('/Volumes/Analysis/2008-04-30-2/jitter/correct_jitter_sta.mat')
 % 
-% t = sta(:,:,:,:,165);
-% t(t==0) = 0.5;
-% t = t-0.5;
-% t = t/max(abs(t(:)))/2+0.5;
-% 
-% figure
-% for i=1:5    
-%     subplot(2,3,i)
-% %     colormap gray
-%     imagesc(t(:,:,:,i))
-% end
 
+for j=1:10
+t = sta(:,:,:,:,j);
+t(t==0) = 0.5;
+t = t-0.5;
+t = t/max(abs(t(:)))/2+0.5;
+
+figure
+for i=1:5    
+    subplot(2,3,i)
+%     colormap gray
+    imagesc(t(:,:,:,i))
+end
+end
 
 % 
 % 

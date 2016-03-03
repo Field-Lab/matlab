@@ -8,7 +8,7 @@ raw_data_path='/Volumes/Data/2015-03-09-2/data001';
 
 raw_data_path='/Volumes/Data/8888-88-88-8/data004';
 
-raw_data_path='/Volumes/Data/7777-77-77-7/data002';
+raw_data_path='/Volumes/Data/7777-77-77-7/data009';
 
 raw_data_path='/Volumes/Data/5555-55-55-5/data003';
 
@@ -25,7 +25,7 @@ samplingrate=20000;
 % read 1s of data starting from 0
 all_diffs = [];
 part_d = []
-for j=100:200
+for j=200:400
     j
     m1=rawFile.getData(j*samplingrate, samplingrate);
     %     data=find(diff(m1(:,1))<-1000)+i*20000;

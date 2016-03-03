@@ -5,12 +5,11 @@
 
 %% BW data only
 
-path2load = '/Volumes/Analysis/2016-01-05-1/d00-06-norefit/data001/data001';
+path2load = '/Volumes/Acquisition/Analysis/2017-02-17-4/data003/data003';
 
 frame = 4;
 cell_specification = {1,2,3,4,5};
-scale = 3;
-field_size = [400 400];
+field_size = [300 400];
 
 %% load data
 % main datarun
@@ -52,13 +51,20 @@ for rgc=1:ncells
     all_sta(:,:,rgc) = sta;
     t = robust_std(sta(:))*5;
     sigstix = sum(sta(:)>t);
-    if sigstix>0 && sigstix<100 % possibly cell with cones
+    if sigstix>0 && sigstix<200 % possibly cell with cones
         %             sta = imresize(sta,2);
         tmp = sta;
         tmp = tmp/max(tmp(:));
         t = robust_std(tmp(:))*4;
         tmp(tmp<t) = 0;
-        summed_rfs = summed_rfs+tmp*tt(rgc)/51.34;
+        [r,c] = find(tmp);
+        tmp1 = squareform(pdist([r c]));
+        tmp1(tmp1==0)=760;
+        p = find(min(tmp1)>25);
+        for i=1:length(p)
+            tmp(r(p(i)), c(p(i))) = 0;
+        end        
+        summed_rfs = summed_rfs+tmp;%*tt(rgc)/51.34;
     end
 end
 
@@ -68,8 +74,8 @@ colormap gray
 imagesc(summed_rfs)
 
 hold on
-cone_peaks = find_local_maxima(summed_rfs, 'radius', 1, 'thresh', 0.2, 'return', 'indices');
-plot(cone_peaks(:,2), cone_peaks(:,1), 'xg')
+cone_peaks = find_local_maxima(summed_rfs, 'radius', 1, 'thresh', 0.7, 'return', 'indices');
+plot(cone_peaks(:,2), cone_peaks(:,1), '+r')
 set(gca, 'dataaspectratio',[1 1 1])
 
 
@@ -97,7 +103,52 @@ for i=a(end-20:1:end-1)
     imagesc(sta)
     hold on
     plot(cone_peaks(:,2), cone_peaks(:,1), 'xr')
+    
+    % weights
+    t = [cone_peaks(:,2), cone_peaks(:,1)];
+    for j=1:length(cone_peaks)
+        m(j) = sta( t(j,2),t(j,1));
+        if m(j)<0; m(j) = 0; end        
+        plot(t(j,1), t(j,2), '+g', 'markersize', m(j)*100+0.1)
+    end
+    k = m/max(m);
+    kk = find(k>0.3);
+    for j=1:length(kk)
+        tmp = sta(t(kk(j),2)-1:t(kk(j),2)+1,t(kk(j),1)-1:t(kk(j),1)+1);
+        [~,ic]=sort(tmp(:), 'descend');
+        [r, c]=ind2sub([3 3],ic(1:4));
+        r = t(kk(j),2) + r -2;
+        c = t(kk(j),1) + c -2;
+        plot(c,r, 'xb')
+    end       
+    
 end
+
+
+
+sta = all_sta(:,:,6);
+
+k = zeros(400);
+for i=2:399
+    for j=2:399
+        tmp = sta(i-1:i+1,j-1:j+1);
+        [a ic] = sort(tmp(:));
+        ic = ic(end:-1:1);
+        if ic(1)~=5
+             k(i,j) = tmp(2,2)+tmp(ic(1));
+        else
+            k(i,j) = tmp(2,2)+tmp(ic(2));
+        end
+    end
+end
+
+figure
+colormap gray
+imagesc(k)
+figure
+colormap gray
+imagesc(sta)
+
 
 
 tmp = get_cell_indices(datarun, {4});

@@ -38,11 +38,11 @@ while ~strcmp(get(hEditRadius, 'String'), '0')
         
         C = coord(kone,:);
         if R==1 % if single pixel stimulus desired
-            myMap(round(C(1)),round(C(2)))=kone;            
+            myMap(round(C(2)),round(C(1)))=kone;            
         else            
             t = linspace(0, 2*pi, 100);
-            x = round(R*cos(t) + C(1));
-            y = round(R*sin(t) + C(2));
+            x = round(R*cos(t) + C(2));
+            y = round(R*sin(t) + C(1));
             %     figure
             %     plot(x,y)
             cc=zeros((max(x)-min(x)+1)*(max(y)-min(y)+1),2);
@@ -66,7 +66,7 @@ while ~strcmp(get(hEditRadius, 'String'), '0')
 
         
     end
-    myMap=myMap';
+%     myMap=myMap';
     
     xx=get(gca, 'XLim');
     yy=get(gca, 'YLim');
@@ -130,10 +130,10 @@ if ~isempty(myCluster)
     end
 end
 
-if ~exist(path2save,'dir')
-    mkdir(path2save)
-end
-
+% if ~exist(path2save,'dir')
+%     mkdir(path2save)
+% end
+path2save = '/Users/alexth/Desktop/papers/'
 info.name = datarun.names.rrs_prefix;
 info.cellType = cellType;
 info.cells = myCells;
