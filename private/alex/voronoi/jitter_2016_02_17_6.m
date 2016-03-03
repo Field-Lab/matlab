@@ -48,7 +48,7 @@ disp('starting sta calculation')
 
 for kkk = 1:20:length(datarun.cell_ids)
     
-    spike_array_tmp = spike_array(kkk:kkk+49,:);
+    spike_array_tmp = spike_array(kkk:kkk+19,:);
     
     full_inputs = zeros(320+15,640+15,3,sta_params.length);
     for i=1:sta_params.length-1
