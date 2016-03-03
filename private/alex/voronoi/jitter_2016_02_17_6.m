@@ -5,6 +5,8 @@ datarun = load_neurons(datarun);
 
 [inputs, refresh, duration] = get_wn_movie_ath_rgb(datarun, 'RGB-16-2-0.48-22222-119.5.xml');
 
+disp('done inputs loading')
+
 new_inputs = zeros(800,3,107301);
 for j=1:3
     a = squeeze(inputs(:,j,:));
@@ -42,6 +44,7 @@ end
 load('/Volumes/Analysis/2016-02-17-6/jitter/shifts')
 
 % parts of 20 STAs
+disp('starting sta calculation')
 
 for kkk = 1:20:length(datarun.cell_ids)
     
