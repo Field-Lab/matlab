@@ -45,11 +45,11 @@ load('/Volumes/Analysis/2016-02-17-6/jitter/shifts')
 
 % parts of 20 STAs
 disp('starting sta calculation')
+parts = 50;
+for kkk = 1:parts:length(datarun.cell_ids)
+    
+    spike_array_tmp = spike_array(kkk:kkk+parts-1,:);
 
-for kkk = 1:20:length(datarun.cell_ids)
-    
-    spike_array_tmp = spike_array(kkk:kkk+19,:);
-    
     full_inputs = zeros(320+15,640+15,3,sta_params.length);
     for i=1:sta_params.length-1
         tmp = reshape(inputs(:,:,i), 20,40, 3);
@@ -59,29 +59,29 @@ for kkk = 1:20:length(datarun.cell_ids)
         full_inputs(9+jitterX:320+8+jitterX,9+jitterY:640+8+jitterY,:,1+i) = tmp;
     end
     
-    sta = zeros(320+15,640+15, 3, sta_params.length,20);
+    sta = zeros(320+15,640+15, 3, sta_params.length,parts);
     for i=sta_params.length:90000
         tmp = reshape(inputs(:,:,i),20,40, 3);
         tmp = imresize(tmp,16, 'method', 'nearest');
         jitterX = shifts(1,i);
         jitterY = shifts(2,i);
         
-        full_inputs = circshift(full_inputs,-1,29);
+        full_inputs = circshift(full_inputs,-1,4);
         full_inputs(9+jitterX:320+8+jitterX,9+jitterY:640+8+jitterY,:,sta_params.length) = tmp;
         
+%         figure
+%         imagesc(full_inputs(:,:,2,5))
+%   
         a = find(spike_array_tmp(:,i));
         sta(:,:,:,:,a) =  sta(:,:,:,:,a) + repmat(full_inputs, 1, 1, 1, 1, length(a));
         
-        if mod(i,500) == 0
-            kkk
-            i
-        end
-        if mod(i,500)==0
+        if mod(i,40000)==0
             save(['/Volumes/Analysis/2016-02-17-6/jitter/correct_jitter_sta_',int2str(i),'_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
+            disp(['saved STA from ', int2str(i), ' frames for cells ', int2str(kkk), ' to ', int2str(kkk+parts-1)]);
         end
     end
-    
-    for i = 1:20
+
+    for i = 1:parts
         sta(:,:,:,:,i) =  sta(:,:,:,:,i) / nnz(spike_array_tmp(i,1:90000));
     end
     save(['/Volumes/Analysis/2016-02-17-6/jitter/correct_jitter_sta_complete_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
