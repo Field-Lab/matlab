@@ -68,8 +68,9 @@ title(sprintf('iter: %d',iter));
 end
 
 %% True log-likelihood surface - a LOT of data!
-nsamples = 10000;
-x = randn(2,10000);
+nsamples = 100000;
+nsample_batch=500;
+x = randn(2,nsamples);
 k1 = [1,0.2];
 k2 = [0.2,1];
 
@@ -81,23 +82,58 @@ fd = @(x) exp(x);
 lam = (f(k1*x) + f(k2*x))/10;
 spk =poissrnd(lam);
 
+k1_0 = [0.8,0];k2_0=[0.3,0];
+
 xcnt=0;
-ll=[];
-range = -1:0.1:1;
-for k1_grid=-1:0.1:1
+ll=[];ll_ub_full=[];ll_ub_batch=[];
+range = -2:0.1:2; k1_fixed=0;k2_fixed=0;
+for k1_ctr=range
     xcnt=xcnt+1;
     ycnt=0;
-    for k2_grid=-1:0.1:1
+    for k2_ctr=range
         ycnt=ycnt+1;
-        lam_grid =  sum((f(k1_grid*x) + f(k2_grid*x))/10);
+        
+        k1_grid = [k1_ctr,k1_fixed];
+        k2_grid = [k2_ctr,k2_fixed];
+        
+        lam_grid =  (f(k1_grid*x) + f(k2_grid*x))/10;
         ll(xcnt,ycnt) = (sum(lam_grid) - spk*log(lam_grid'))/nsamples;
+        
+        lam_approx = (f(k1_0*x) + f(k2_0*x))/10;
+        ll_ub_full(xcnt,ycnt) = (sum(lam_grid) - (spk*log(lam_approx') + ... 
+        spk*((1./lam_approx).* (fd(k1_0*x).*((k1_grid-k1_0)*x/10) + fd(k2_0*x).*((k2_grid-k2_0)*x/10) )  )' ))/nsamples;
+        
+        x_batch = x(:,1:nsample_batch);spk_batch = spk(1:nsample_batch);
+        lam_approx_batch = (f(k1_0*x_batch) + f(k2_0*x_batch))/10;
+        lam_grid_batch =  (f(k1_grid*x_batch) + f(k2_grid*x_batch))/10;
+        ll_ub_batch(xcnt,ycnt) = (sum(lam_grid_batch) - (spk_batch*log(lam_approx_batch') + ... 
+        spk_batch*((1./lam_approx_batch).* (fd(k1_0*x_batch).*((k1_grid-k1_0)*x_batch/10) + fd(k2_0*x_batch).*((k2_grid-k2_0)*x_batch/10) )  )' ))/nsample_batch;
         
     end
 end
 npts = length(range);
 figure;
-contourf(repelem(range',1,npts),repelem(range,npts,1),ll);
+surf(repelem(range',1,npts),repelem(range,npts,1),ll);
 
-% get approximation at a particular point! k0!! 
 
+figure;
+surf(repelem(range',1,npts),repelem(range,npts,1),ll_ub_full);
+
+figure;
+contourf(repelem(range',1,npts),repelem(range,npts,1),abs(ll_ub_full-ll));
+hold on;
+plot(k1_0(1),k2_0(1),'r.','MarkerSize',20);
+caxis([-1.5,1.5]);
+
+figure;
+contourf(repelem(range',1,npts),repelem(range,npts,1),(ll_ub_batch-ll)>-0.02);
+hold on;
+plot(k1_0(1),k2_0(1),'r.','MarkerSize',20);
+caxis([-1.5,1.5]);
+
+
+figure;
+contourf(repelem(range',1,npts),repelem(range,npts,1),(ll_ub_batch-ll_ub_full),100);
+hold on;
+plot(k1_0(1),k2_0(1),'r.','MarkerSize',20);
 
