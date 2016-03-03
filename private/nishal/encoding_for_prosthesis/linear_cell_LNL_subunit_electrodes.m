@@ -11,7 +11,7 @@ off = model_population_stas('coneLatticeOrientation',pi/6,'gridsz',spatial_exten
 % plot cells
 n=100;
 angle = 0:2*pi/n:2*pi;            % vector of angles at which points are drawn
-R = 2*on.coneGaussSd;                         % Unit radius
+R =1*on.coneGaussSd;                         % Unit radius
 x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
 
 figure;
@@ -25,7 +25,7 @@ for icone=1:on.nCones
 end
 hold on;
 
-R = 2*off.coneGaussSd;                         % Unit radius
+R = 1*off.coneGaussSd;                         % Unit radius
 x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
 
 %plot(off.conesX,off.conesY,'b*');
@@ -39,8 +39,8 @@ end
 
 %% electrode map 
 
-elecSpacing=4%6;
-arrSz=round(spatial_extent*1.7/elecSpacing);
+elecSpacing=2%6;
+arrSz=round(spatial_extent*2/elecSpacing);
 elecLatticeOrientation = pi/6;
 elecs = getElectrodes_simulation(elecSpacing,arrSz,elecLatticeOrientation,spatial_extent)
 nElecs = length(elecs.x);
@@ -62,7 +62,7 @@ nCells = size(stas,1);
 
 
 weight_elec_su = [on.elecs.weight_elec_su;off.elecs.weight_elec_su];
-su_elec = elecs.su_elec;
+su_elec = full(elecs.su_elec);
 
 nl_ec = @(x) 1./(1+exp(-(x)));
 nl_ec_deri = @(x) (exp(-(x))./(1+exp(-(x))).^2);
@@ -72,13 +72,22 @@ plot([-3:0.1:7],nl_ec_deri([-3:0.1:7]));
 %cell_current = @(current) weight_elec_su*nl_ec(su_elec*current);
 %cell_current_linear = @(current, current_old) (cell_current(current_old) + weight_elec_su*(nl_ec_deri(su_elec*current_old).*(su_elec*(current-current_old))));
 
-cell_current = @(current) nl_ec(weight_elec_su*nl_ec(su_elec*current));
-cell_current_linear = @(current, current_old) (cell_current(current_old) ...
-    + nl_ec_deri(weight_elec_su*(nl_ec(su_elec*current_old))).*  (weight_elec_su*(nl_ec_deri(su_elec*current_old).*(su_elec*(current-current_old)))));
+%cell_current = @(current) nl_ec(weight_elec_su*nl_ec(su_elec*current));
+%cell_current_linear = @(current, current_old) (cell_current(current_old) ...
+%    + nl_ec_deri(weight_elec_su*(nl_ec(su_elec*current_old))).*  (weight_elec_su*(nl_ec_deri(su_elec*current_old).*(su_elec*(current-current_old)))));
+
+nl1 = @(x) (log(1+exp(x)));
+nl2 = @(x) (nl_ec(9*x-4.5));
+cell_current = @(current) nl2(weight_elec_su*nl1(su_elec*current));
 
 %% To be modified after this --
+
+%% save architecture for pythonizing! 
+
+save('/Volumes/Lab/Users/bhaishahster/encoding_for_prosthesis_simulation.mat','weight_elec_su','su_elec','stas','stas_inv','gridSzX','gridSzY','-v7.3');
+
 %% %% Input image
-img = imread('~/Downloads/SIPI database/misc/4.2.03.tiff'); 
+img = imread('/Volumes/Lab/Users/bhaishahster/SIPI database/misc/4.2.03.tiff'); 
 img = double(img(:,:,1))/255 - 0.5;
 %img = double(img(200:199+gridSzX,200:199+gridSzY));
 img = imresize(img,[gridSzX,gridSzY]);
@@ -215,7 +224,7 @@ weight_elec_su = [on.elecs.weight_elec_su;off.elecs.weight_elec_su];
 su_elec = elecs.su_elec;
 elec_list = su_elec'*( weight_elec_su'*cellProbe);
 iidx = 1:nElecs;
-electrodes_chosen = iidx(elec_list>0);
+electrodes_chosen = [263,264];%iidx(elec_list>0);
 figure;
 nElec_chosen = length(electrodes_chosen);
 iiicnt=0;
@@ -234,7 +243,7 @@ for iielec=1:nElec_chosen
 
 icnt=0;
 resp = [];
-current_lim = [-10:0.5:10];
+current_lim = [-20:2:20];
 for icurrent = current_lim;
     icnt=icnt+1;
     jcnt=0;
@@ -261,3 +270,111 @@ set(gca,'xTick',[]);
 set(gca,'yTick',[]);
     end
 end
+
+%% Plot electrodes, cells , sub-units
+
+figure;plot(elecs.x,elecs.y,'r.','MarkerSize',10);hold on;plot(elecs.suX,elecs.suY,'b.');
+cols = distinguishable_colors(on.nCones);
+for icell=1:on.nCones
+   iidx_su = 1:elecs.nSU;
+    su_list = iidx_su(logical(on.elecs.weight_elec_su(icell,:)));
+   for isu=su_list
+       hold on;
+       plot([on.conesX(icell),elecs.suX(isu)],[on.conesY(icell),elecs.suY(isu)],'Color',cols(icell,:));
+       
+       
+   end
+end
+hold on;
+plot(on.conesX(35),on.conesY(35),'.','MarkerSize',40);
+% plot SU
+for isu=1:elecs.nSU
+    iidx_elecs = 1:elecs.nCones;
+    elecs_list = iidx_elecs(logical(elecs.su_elec(isu,:)~=0));
+    a = convhull(elecs.x(elecs_list),elecs.y(elecs_list));
+    hold on;
+    plot(elecs.x(elecs_list(a)),elecs.y(elecs_list(a)),'g');
+end
+
+for ielec=1:elecs.nCones
+    hold on;
+text(elecs.x(ielec),elecs.y(ielec),sprintf('%d',ielec));
+end
+
+%% plot electrodes, cells
+figure;plot(elecs.x,elecs.y,'k.','MarkerSize',10);
+xlim([0,64]);ylim([0,64]);
+set(gca,'xTick',[]);set(gca,'yTick',[]);
+set(gca,'visible','off');
+axis square 
+
+n=100;
+angle = 0:2*pi/n:2*pi;            % vector of angles at which points are drawn
+R =1*on.coneGaussSd;                         % Unit radius
+x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
+
+%plot(on.conesX,on.conesY,'r*');
+hold on;
+
+for icone=1:on.nCones
+    plot(x+on.conesX(icone),y+on.conesY(icone),'r','LineWidth',2);                      % Plot the circle 
+    axis square;
+    grid on;
+end
+hold on;
+xlim([0,64]);ylim([0,64]);
+
+
+
+figure;plot(elecs.x,elecs.y,'k.','MarkerSize',10);
+xlim([0,64]);ylim([0,64]);
+set(gca,'xTick',[]);set(gca,'yTick',[]);
+set(gca,'visible','off');
+axis square 
+
+n=100;
+angle = 0:2*pi/n:2*pi;            % vector of angles at which points are drawn
+R =1*off.coneGaussSd;                         % Unit radius
+x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
+
+%plot(on.conesX,on.conesY,'r*');
+hold on;
+
+for icone=1:on.nCones
+    plot(x+off.conesX(icone),y+off.conesY(icone),'b','LineWidth',2);                      % Plot the circle 
+    axis square;
+    grid on;
+end
+hold on;
+xlim([0,64]);ylim([0,64]);
+
+%% Load theano results
+dat = load('/Volumes/Lab/Users/bhaishahster/encoding_for_prosthesis_simulation_perception.mat');
+figure;
+imagesc(dat.img_recons2);
+axis image
+colormap gray;
+set(gca,'visible','off')
+
+figure;
+imagesc(dat.img_perfect2);
+axis image
+colormap gray;
+set(gca,'visible','off')
+
+
+figure;
+imagesc(dat.img_orig);
+axis image
+colormap gray;
+set(gca,'visible','off')
+
+figure;
+current = dat.current;
+scatter(elecs.x,elecs.y,40*abs((current)'+1),2*sign(current),'filled');colormap cool
+hold on;
+scatter(elecs.x,elecs.y,40*abs((current)'+1),zeros(nElecs,1));
+axis square;
+hold on;
+xlim([0,64]);ylim([0,64]);
+set(gca,'visible','off')

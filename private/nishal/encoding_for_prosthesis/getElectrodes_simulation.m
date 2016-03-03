@@ -18,8 +18,8 @@ theta = coneLatticeOrientation;
 R = [cos(theta),-sin(theta);
     sin(theta),cos(theta)];
 
-for ix = 0:xdim
-    for iy=-ydim/3:ydim*2/3
+for ix = round(-0.5*xdim):xdim
+    for iy=-ydim/3:ydim*3/3
         conx = (ix-1)*sqrt(3)*d/2+10;
         cony = (d/2)*rem(ix,2) + (iy-1)*d;
         % rotate
@@ -49,8 +49,8 @@ elecs.nCones=nCones;
 %% 
 suX = [];
 suY = [];
-for ix = 0:xdim-1
-    for iy=-2*ydim/3:2*ydim*2/3-1
+for ix = round(-0.5*xdim):xdim
+    for iy=-ydim/3:ydim*3/3
         conx = (ix-1)*sqrt(3)*d/2 + sqrt(3)*d/(4) +10;
         cony = (iy-1)*d/2;
         % rotate
@@ -74,27 +74,30 @@ elecs.suY=suY;
 elecs.nSU = length(elecs.suX);
 
 %% assign electrodes to electrode SU
-su_elec = size(elecs.nSU,elecs.nCones);
+su_elec = sparse(elecs.nSU,elecs.nCones);
 for isu=1:elecs.nSU
+    if(rem(isu,100)==1) 
+        isu 
+    end
 dists = (elecs.x-elecs.suX(isu)).^2 + (elecs.y-elecs.suY(isu)).^2;
 [v,idx] =sort(dists,'ascend');
 su_elec(isu,idx(1:3))=rand(1,3);
 end
 elecs.su_elec = su_elec;
-
-figure;
-plot(elecs.x,elecs.y,'r.');
-hold on;
-plot(elecs.suX,elecs.suY,'b.');
-hold on;
-for isu=1:elecs.nSU
-iidx = su_elec(isu,:);
-xx = elecs.x(logical(iidx));
-yy = elecs.y(logical(iidx));
-aa = convhull([xx,yy]);
-plot(xx(aa),yy(aa));
-hold on;
-end
+% 
+% figure;
+% plot(elecs.x,elecs.y,'r.');
+% hold on;
+% plot(elecs.suX,elecs.suY,'b.');
+% hold on;
+% for isu=1:elecs.nSU
+% iidx = su_elec(isu,:);
+% xx = elecs.x(logical(iidx));
+% yy = elecs.y(logical(iidx));
+% aa = convhull([xx,yy]);
+% plot(xx(aa),yy(aa));
+% hold on;
+% end
 
 %% 
 % Make cone input weights

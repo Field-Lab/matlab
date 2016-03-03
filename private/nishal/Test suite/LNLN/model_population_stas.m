@@ -34,8 +34,8 @@ stix = 1 ;
 % Cone parameters
 % on model : 256x256 grid, conegauss sd = 2, cone spacing =12;
 nCones_max = 64*64*64;
-coneSpacing = 8; % in grid units 
-coneLocSd = 1; 
+coneSpacing = 4; % in grid units 
+coneLocSd = 0.25; 
 coneLatticeOrientation = params.coneLatticeOrientation; % in radians
 coneWindowSz = 4; % actually, its half of cone window.
 coneGaussSd = 2; % the cone gaussian input profile
@@ -90,7 +90,7 @@ axis equal
 hold on
 n=100;
 angle = 0:2*pi/n:2*pi;            % vector of angles at which points are drawn
-R = 2*coneGaussSd;                         % Unit radius
+R = 1*coneGaussSd;                         % Unit radius
 x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
 for icone=1:nCones
     plot(x+conesX(icone),y+conesY(icone),'r');                      % Plot the circle 
