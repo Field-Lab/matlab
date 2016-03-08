@@ -1,9 +1,9 @@
 close all
 clear
 
-% load area.mat
+load area_new.mat
 
-[area] = compare_RF_sizes(1);
+% [area] = compare_RF_sizes(1);
 [match] = get_cell_type_index(34);
 
 
@@ -227,7 +227,7 @@ array_size = cell2mat(array_size(2:end,4));
 %% compare pieces directly
 
 % pieces = [1, 2, 4,5,7,8,9,12,13, 15 16 19:22];
-pieces = [1,  4,5,7,8, 16 20:22] + 1;
+pieces = [2,  5,6,9, 16 20:22 24 26 27 29:31 33];
 
 
 
@@ -282,9 +282,9 @@ for j= 1:length(pieces)
     bi_ind_parasol(j) = median(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
     
     
-    parasol_rf(j) = median(area{pieces(j)-1}{match(pieces(j),1)});
+    parasol_rf(j) = median(area{pieces(j)}{match(pieces(j),1)});
     
-    large_rf(j) = median(area{pieces(j)-1}{match(pieces(j),5)});
+    large_rf(j) = median(area{pieces(j)}{match(pieces(j),5)});
     %         midget_rf(j) = mean(area{pieces(j)}{match(pieces(j),3)});
     
 end
@@ -302,7 +302,7 @@ ylabel('Average ON Smooth Zero Crossing')
 fig1= figure;
 plot([ones(1,size(t_zc_parasol,2)); 2*ones(1,size(t_zc_parasol,2))], [t_zc_parasol; t_zc_large], 'ko-', 'MarkerFaceColor', 'w', 'MarkerSize', 10)
 hold on
-set(gca, 'xtick', [0 1,2 3])
+set(gca, 'xtick', [0 1,2 3]+0.05)
 set(gca, 'xticklabel', {'','Parasol', 'Smooth',''})
 set(gca, 'xlim', [0.5 2.5])
 on_pieces = pieces;
@@ -311,7 +311,7 @@ title(['Zero Crossing of ', num2str(length(on_pieces)),' ON pieces and ', num2st
 fig2= figure;
 plot([ones(1,size(bi_ind_parasol,2)); 2*ones(1,size(bi_ind_parasol,2))], [bi_ind_parasol; bi_ind_large], 'ko-', 'MarkerFaceColor', 'w', 'MarkerSize', 10)
 hold on
-set(gca, 'xtick', [0 1,2 3])
+set(gca, 'xtick', [0 1,2 3]+0.05)
 set(gca, 'xticklabel', {'','Parasol', 'Smooth',''})
 set(gca, 'xlim', [0.5 2.5])
 on_pieces = pieces;
@@ -359,7 +359,7 @@ on_ratio = large_rf./parasol_rf;
 % clear bi_ind_midget
 clearvars -except area array_size match txt fig1 on_pieces fig2 on_ratio
 % Compare directly with OFF smooth
-pieces = [4 5 6 10 11 14 16 18 20]+1
+pieces = [5:7 11 12 15 17 18 20 24 25 27 31 32]
 % pieces = [9];
 
 for j= 1:length(pieces)
@@ -401,10 +401,10 @@ for j= 1:length(pieces)
     t_zc_parasol(1,j) = mean(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
     bi_ind_parasol(1,j) = mean(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
     
-    parasol_rf(1,j) = mean(area{pieces(j)-1}{match(pieces(j),2)});
+    parasol_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),2)});
     
-    large_rf(1,j) = mean(area{pieces(j)-1}{match(pieces(j),7)});
-    midget_rf(1,j) = mean(area{pieces(j)-1}{match(pieces(j),4)});
+    large_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),7)});
+    midget_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),4)});
     
     
 end
@@ -421,7 +421,7 @@ ylabel('Average OFF Smooth Zero Crossing')
 figure(fig1)
 % subplot(1,2,2)
 hold on
-plot([ones(1,size(t_zc_parasol,2)); 2*ones(1,size(t_zc_parasol,2))], [t_zc_parasol; t_zc_large], 'ko-', 'MarkerFaceColor', 'k', 'MarkerSize', 10)
+plot([ones(1,size(t_zc_parasol,2))+0.1; 2*ones(1,size(t_zc_parasol,2))+0.1], [t_zc_parasol; t_zc_large], 'ko-', 'MarkerFaceColor', 'k', 'MarkerSize', 10)
 ylabel('Zero Crossing (ms)')
 title(['Zero Crossing of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
 
@@ -429,7 +429,7 @@ title(['Zero Crossing of ', num2str(length(on_pieces)),' ON pieces and ', num2st
 figure(fig2)
 % subplot(1,2,2)
 hold on
-plot([ones(1,size(bi_ind_parasol,2)); 2*ones(1,size(bi_ind_parasol,2))], [bi_ind_parasol; bi_ind_large], 'ko-', 'MarkerFaceColor', 'k', 'MarkerSize', 10)
+plot([ones(1,size(bi_ind_parasol,2))+0.1; 2*ones(1,size(bi_ind_parasol,2))+0.1], [bi_ind_parasol; bi_ind_large], 'ko-', 'MarkerFaceColor', 'k', 'MarkerSize', 10)
 ylabel('Biphasic Index')
 title(['Biphasic Index of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
 
@@ -438,14 +438,17 @@ off_ratio = large_rf./parasol_rf;
 
 
 figure;
+
+% set(bh, 'facecolor', [0 0 0 0.25])
+hold on
+
 [nb,xb] =hist(on_ratio);
-bh= bar(xb,nb);
-set(bh, 'facecolor', [1 1 1])
-hold on 
+createPatches(xb,nb,[1 1 1],0.05,0.05);
 [nb,xb] =hist(off_ratio);
-bh= bar(xb,nb);
-set(bh, 'facecolor', [0 0 0])
-title({'OFF Smooth Cells are Proportionally Larger than ON Smooth Cells';'8 ON and 8 OFF datasets'})
+% [bh]= bar(xb,nb);
+createPatches(xb,nb,[0 0 0],0.05,0.75);
+
+title({'OFF Smooth Cells are Proportionally Larger than ON Smooth Cells';[num2str(length(on_pieces)),  ' ON and ', num2str(length(off_ratio)), ' OFF datasets']})
 xlabel('ON(OFF) Median Smooth RF Diameter/ON(OFF) Median Parasol RF Diameter')
 ylabel('Number of examples')
 
@@ -453,7 +456,7 @@ ylabel('Number of examples')
 clearvars -except area array_size match txt fig1 on_pieces fig2 fig3 fig4
 
 
-pieces = [4 5 16 20]+1
+pieces = [5 6 17 20 24 27 31 34]
 
 % Compare directly with OFF smooth
 % pieces = [9];
@@ -497,10 +500,10 @@ for j= 1:length(pieces)
     t_zc_parasol(1,j) = mean(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
     bi_ind_parasol(1,j) = mean(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
     
-    parasol_rf(1,j) = mean(area{pieces(j)-1}{match(pieces(j),1)});
+    parasol_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),1)});
     
-    large_rf(1,j) = mean(area{pieces(j)-1}{match(pieces(j),5)});
-    midget_rf(1,j) = mean(area{pieces(j)-1}{match(pieces(j),3)});
+    large_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),5)});
+    midget_rf(1,j) = mean(area{pieces(j)}{match(pieces(j),3)});
     
     
 end
@@ -545,7 +548,7 @@ fig5= figure;
 set(gca, 'xtick', [0 1,2 3 4 5])
 set(gca, 'xticklabel', {'','ON Parasol', 'OFF Parasol','ON Smooth', 'OFF Smooth',''})
 set(gca, 'xlim', [0.5 4.5])
-pieces = [4 5 16 20]+1
+pieces = [5 6 17 20 24 27 31 34]
 
 % Compare directly with OFF smooth
 % pieces = [9];
@@ -589,10 +592,10 @@ for j= 1:length(pieces)
     t_zc_parasol(2,j) = mean(parameters_parasol{pieces(j)}.t_zc(tc_nan_parasol));
     bi_ind_parasol(2,j) = mean(parameters_parasol{pieces(j)}.bi_ind(bi_ind_nan_parasol));
     
-    parasol_rf(2,j) = mean(area{pieces(j)-1}{match(pieces(j),2)});
+    parasol_rf(2,j) = mean(area{pieces(j)}{match(pieces(j),2)});
     
-    large_rf(2,j) = mean(area{pieces(j)-1}{match(pieces(j),7)});
-    midget_rf(2,j) = mean(area{pieces(j)-1}{match(pieces(j),4)});
+    large_rf(2,j) = mean(area{pieces(j)}{match(pieces(j),7)});
+    midget_rf(2,j) = mean(area{pieces(j)}{match(pieces(j),4)});
     
     
 end
@@ -631,11 +634,18 @@ ylabel('RF Size (\mum)')
 title(['RF Size of ', num2str(length(on_pieces)),' ON pieces and ', num2str(length(pieces)),' OFF pieces'])
 
 
-
-
-
-
-
+figure; 
+plot(large_rf(1,:), large_rf(2,:), 'ok','MarkerFaceColor', 'k', 'MarkerSize', 7)
+xlim = get(gca, 'xlim');
+ylim = get(gca, 'ylim');
+hold on
+plot([ 0 max([xlim(:); ylim(:)])+10], [0 max([xlim(:); ylim(:)])] + 10, 'k--')
+axis([ 0 max([xlim(:); ylim(:)])+10 0 max([xlim(:); ylim(:)])]+10)
+off_large_increase =large_rf(2,:)./large_rf(1,:);
+pec_inc_off_large = median(off_large_increase);
+title(['OFF smooth are large than ON smooth on average by ', num2str(round(pec_inc_off_large*1000)/10-100), '%'])
+xlabel('ON smooth RF diameter (\mum)')
+ylabel('OFF smooth RF diameter (\mum)')
 
 % hold on
 % plot(ones(size(t_zc_parasol), t_zc_parasol, 'o-')
