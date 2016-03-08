@@ -255,17 +255,6 @@ set(gca,'YDir','reverse');
 fitting_results = datarun2.matlab.sta_fits;
 
 %% Write to Vision File
-i=1;
-temp_fit_params.center_rotation_angle = 0;
-temp_fit_params.fit_params(5) = 0;
-temp_fit_params.center_sd_x = 2;
-temp_fit_params.fit_params(3) = 2;
-temp_fit_params.center_sd_y = 1;
-temp_fit_params.fit_params(4) = 1;
-
-            plot_sta_fit(sta, temp_fit_params.fit_params, temp_fit_params.fixed_params, temp_fit_params.fit_indices, temp_fit_params.fixed_indices, sig_stixels, 'on');
-
-    datarun2.matlab.sta_fits{cell_indices(rgc)} = temp_fit_params;
 
     
 paramFile = edu.ucsc.neurobiology.vision.io.ParametersFile(datarun2.names.rrs_params_path);
