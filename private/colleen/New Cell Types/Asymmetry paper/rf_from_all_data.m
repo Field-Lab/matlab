@@ -1,8 +1,11 @@
 % load database
 clear
 monkey_dates = cell(0);
+
+%% read spreadsheet
 [~,~,RAW]=xlsread('/Volumes/Lab/Users/crhoades/Database spreadsheet.xlsx', 'Animal');
 
+%% Format the dates
 for i = 1:size(RAW,1)
     if ~isa(RAW{i,1}, 'char') && ~isnan(RAW{i,1}) % not a date with -A/B/C or NAN
         RAW{i,1} = datestr(RAW{i,1}+datenum('30-Dec-1899'), 29);
@@ -13,7 +16,7 @@ for i = 1:size(RAW,1)
 end
 
 
-% Find monkey pieces
+% Populate RAW_piece which has all the pieces, array size, ecc, and angle
 [~,~,RAW_piece]=xlsread('/Volumes/Lab/Users/crhoades/Database spreadsheet.xlsx', 'Piece');
 for i = 1:size(RAW_piece,1)
     array_info = RAW_piece{i,3};
@@ -51,13 +54,14 @@ all_pieces(:,3) = RAW_piece(:,9); % angle
 all_pieces(:,5) = RAW_piece(:,3); %array id
 
 test = [];
+% all_pieces has the corrected eccentriicty measure in column 4
 for i = 2:size(all_pieces,1)
     
     if ~isnan(all_pieces{i,3})  && ~isnan(all_pieces{i,2})
         [X,Y] = pol2cart(all_pieces{i,3}+pi/2, all_pieces{i,2}); % referenc epoint of all_pieces{i,3} is 12:00, change to be 3:00 by adding pi/2
         test = [test;all_pieces{i,3}];
         if all_pieces{i,3} > (pi)
-            E = sqrt((X/0.61)^2+Y^2); %nasal
+            E = sqrt((X*0.61)^2+Y^2); %nasal % formula in the 2002 Chichilnisky paper is wrong
 
         else
 
@@ -73,7 +77,7 @@ for i = 2:size(all_pieces,1)
     
 end
 
-% ecc_measurements
+%% eliminate pieces that aren't primates and put into variable monkey_pieces
 results = zeros(size(monkey_dates,1), size(all_pieces,1));
 for i = 1:size(monkey_dates,1)
     for j = 1:size(all_pieces)
@@ -99,7 +103,7 @@ for i =1:size(all_pieces,1)
 end
 
 
-% find pieces with some analysis done
+%% find pieces with some analysis done
 monkey_pieces_with_ana = cell(0);
 for i = 1:size(monkey_pieces,1)
     path = ['/Volumes/Analysis/' monkey_pieces{i,1}];
@@ -110,7 +114,7 @@ for i = 1:size(monkey_pieces,1)
     
 end
 
-% Find white noise runs for each piece
+%% Find white noise runs for each piece
 [~,~,RAW_data]=xlsread('/Volumes/Lab/Users/crhoades/Database spreadsheet.xlsx', 'Dataruns');
 
 match = zeros(size(monkey_pieces_with_ana,1), size(RAW_data,1));
@@ -121,6 +125,7 @@ for i = 1:size(monkey_pieces_with_ana,1)
     
 end
 
+%only search pieces that have analysis
 for i = 1:size(monkey_pieces_with_ana,1)
     start_index = find(match(i,:) == 1);
     monkey_pieces_with_ana{i,2} = start_index;
@@ -187,8 +192,8 @@ for i = 1:size(parameters,1)
             for t = possibilities
                 stixel_choices(t) = parameters{i,1}{t,3};
             end
-            stixel_choices(stixel_choices <= 4) = inf;
-            stixel_choices(stixel_choices >= 16) = inf;
+            stixel_choices(stixel_choices <= 2) = inf; %implement stixel_choices based on ecc?
+            stixel_choices(stixel_choices >= 12) = inf;
             
             %             opt_stixel_choices = find(~isinf(stixel_choices));
             %             [stixel_size, smallest_available] = min(stixel_choices);
@@ -263,13 +268,30 @@ for i = 1:size(parameters,1)
                             if ~strcmp(all_pieces{co,5}, '60')
                                 continue;
                             end
-                            
+                            b = 0;
                             monkey_pieces_with_ana{i,4} = k;
                             for ii = 1:size(RAW_data,1)
                                if ~isempty(strfind(RAW_data{ii,1},monkey_pieces_with_ana{i,1}))
-                                   ndf_data = RAW_data{ii,6}; 
+                                   if ~isempty(strfind(RAW_data{ii,4}, parameters{i,1}{k,1}))
+                                         ndf_data = RAW_data{ii,6}; 
+                                         b = 1;
+
+                                       end
+                                       ii = ii+1;
+                                   while ~strcmp(RAW_data{ii,4}, 'data000') && b == 0
+                                       if ~isempty(strfind(RAW_data{ii,4}, parameters{i,1}{k,1}))
+                                         ndf_data = RAW_data{ii,6}; 
+                                         b = 1;
+
+                                       end
+                                       ii = ii+1;
+                                   end
+                                   
+                               end
+                                if b == 1
                                     break;
                                 end
+                                
                             end
                             if isnan(ndf_data) | ndf_data==0 | ndf_data==0.3| ndf_data==0.6| isempty(ndf_data) |strcmp(ndf_data, 'none')
                             else
@@ -406,14 +428,14 @@ for i = 1:size(good_data_sets(:,6),1)
     
 end
 
-ecc_include = ecc(~any(isnan(rf_cell_type),2)');
-figure; gscatter(rf_cell_type_include(~isnan(ecc_include),1), rf_cell_type_include(~isnan(ecc_include),2), ecc_include(~isnan(ecc_include)))
-hold on
-xlim = get(gca, 'xlim');
-ylim = get(gca,'ylim');
-plot([0 max(xlim(2), ylim(2))], [0 max(xlim(2), ylim(2))], '--k')
-xlabel('ON parasol')
-ylabel('OFF parasol')
+% ecc_include = ecc(~any(isnan(rf_cell_type),2)');
+% figure; gscatter(rf_cell_type_include(~isnan(ecc_include),1), rf_cell_type_include(~isnan(ecc_include),2), ecc_include(~isnan(ecc_include)))
+% hold on
+% xlim = get(gca, 'xlim');
+% ylim = get(gca,'ylim');
+% plot([0 max(xlim(2), ylim(2))], [0 max(xlim(2), ylim(2))], '--k')
+% xlabel('ON parasol')
+% ylabel('OFF parasol')
 
 figure;
 % plot(ecc_include(~isnan(ecc_include)), rf_cell_type_include(~isnan(ecc_include),1), 'ko', 'MarkerFaceColor', 'k')
@@ -426,6 +448,11 @@ ylabel('RF diameter (\mum)')
 title('Parasols')
 legend('ON parasol', 'OFF parasol');
 
+for i =1:size(good_data_sets,1)
+    if rf_cell_type(i,3)<80 && ecc(i) < 8
+        rf_cell_type(i,3:4) = nan;
+    end
+end
 
 figure;
 % plot(ecc_include(~isnan(ecc_include)), rf_cell_type_include(~isnan(ecc_include),1), 'ko', 'MarkerFaceColor', 'k')
@@ -439,25 +466,25 @@ title('Midgets')
 legend('ON midget', 'OFF midget');
 
 
-b1 = [ones(length(ecc_include(~isnan(ecc_include))'),1) ecc_include(~isnan(ecc_include))']\rf_cell_type_include(~isnan(ecc_include),2);
-yCalc1 = [ones(length(ecc_include(~isnan(ecc_include))'),1) ecc_include(~isnan(ecc_include))']*b1;
-hold on
-plot(ecc_include(~isnan(ecc_include)), yCalc1, 'o')
+% b1 = [ones(length(ecc_include(~isnan(ecc_include))'),1) ecc_include(~isnan(ecc_include))']\rf_cell_type_include(~isnan(ecc_include),2);
+% yCalc1 = [ones(length(ecc_include(~isnan(ecc_include))'),1) ecc_include(~isnan(ecc_include))']*b1;
+% hold on
+% plot(ecc_include(~isnan(ecc_include)), yCalc1, 'o')
+
+% 
+% figure; plot(ecc_include(~isnan(ecc_include)), rf_cell_type_include(~isnan(ecc_include),3), 'ko', 'MarkerFaceColor', 'k')
+% hold on
+% plot(ecc_include(~isnan(ecc_include)), rf_cell_type_include(~isnan(ecc_include),4), 'ro', 'MarkerFaceColor', 'r')
+% title('Midget versus ecc')
 
 
-figure; plot(ecc_include(~isnan(ecc_include)), rf_cell_type_include(~isnan(ecc_include),3), 'ko', 'MarkerFaceColor', 'k')
-hold on
-plot(ecc_include(~isnan(ecc_include)), rf_cell_type_include(~isnan(ecc_include),4), 'ro', 'MarkerFaceColor', 'r')
-title('Midget versus ecc')
 
-
-
-figure; gscatter(rf_cell_type_include(~isnan(ecc_include),3), rf_cell_type_include(~isnan(ecc_include),4), ecc_include(~isnan(ecc_include)))
-hold on
-xlim = get(gca, 'xlim');
-ylim = get(gca,'ylim');
-plot([0 max(xlim(2), ylim(2))], [0 max(xlim(2), ylim(2))], '--k')
-xlabel('ON midget')
-ylabel('OFF midget')
+% figure; gscatter(rf_cell_type_include(~isnan(ecc_include),3), rf_cell_type_include(~isnan(ecc_include),4), ecc_include(~isnan(ecc_include)))
+% hold on
+% xlim = get(gca, 'xlim');
+% ylim = get(gca,'ylim');
+% plot([0 max(xlim(2), ylim(2))], [0 max(xlim(2), ylim(2))], '--k')
+% xlabel('ON midget')
+% ylabel('OFF midget')
 
 
