@@ -200,6 +200,8 @@ subplot(1,5,4);
 imagesc(stim_img_pros);axis image
 colormap gray;
 title('Current Prosthesis');
+
+
 % 
 % % second sight stimulation with only ON cells
 % elec_sta_inp = elecs.stas*(img_flat);
@@ -302,8 +304,9 @@ text(elecs.x(ielec),elecs.y(ielec),sprintf('%d',ielec));
 end
 
 %% plot electrodes, cells
-figure;plot(elecs.x,elecs.y,'k.','MarkerSize',10);
-xlim([0,64]);ylim([0,64]);
+figure;
+%plot(elecs.x,elecs.y,'k.','MarkerSize',10);
+%xlim([0,64]);ylim([0,64]);
 set(gca,'xTick',[]);set(gca,'yTick',[]);
 set(gca,'visible','off');
 axis square 
@@ -317,17 +320,18 @@ x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
 hold on;
 
 for icone=1:on.nCones
-    plot(x+on.conesX(icone),y+on.conesY(icone),'r','LineWidth',2);                      % Plot the circle 
+    plot(x+on.conesY(icone),y+64-on.conesX(icone),'r','LineWidth',2);                      % Plot the circle 
     axis square;
     grid on;
 end
 hold on;
-xlim([0,64]);ylim([0,64]);
+xlim([-1,66]);ylim([-1,66]);
 
 
 
-figure;plot(elecs.x,elecs.y,'k.','MarkerSize',10);
-xlim([0,64]);ylim([0,64]);
+figure;
+%plot(elecs.x,elecs.y,'k.','MarkerSize',10);
+%xlim([0,64]);ylim([0,64]);
 set(gca,'xTick',[]);set(gca,'yTick',[]);
 set(gca,'visible','off');
 axis square 
@@ -341,12 +345,14 @@ x = R*cos(angle);  y = R*sin(angle);   % Coordinates of the circle
 hold on;
 
 for icone=1:on.nCones
-    plot(x+off.conesX(icone),y+off.conesY(icone),'b','LineWidth',2);                      % Plot the circle 
+    plot(x+off.conesY(icone),y+64-off.conesX(icone),'b','LineWidth',2);                      % Plot the circle 
     axis square;
     grid on;
 end
 hold on;
-xlim([0,64]);ylim([0,64]);
+xlim([-1,66]);ylim([-1,66]);
+
+% ON and OFF grid without the electrodes!
 
 %% Load theano results
 dat = load('/Volumes/Lab/Users/bhaishahster/encoding_for_prosthesis_simulation_perception.mat');
@@ -371,10 +377,22 @@ set(gca,'visible','off')
 
 figure;
 current = dat.current;
-scatter(elecs.x,elecs.y,40*abs((current)'+1),2*sign(current),'filled');colormap cool
-hold on;
-scatter(elecs.x,elecs.y,40*abs((current)'+1),zeros(nElecs,1));
+scatter(elecs.y,64-elecs.x,100,20*(current),'filled');colormap gray
+%hold on;
+%scatter(elecs.y,64-elecs.x,40*abs((current)'+1),zeros(nElecs,1));
 axis square;
 hold on;
-xlim([0,64]);ylim([0,64]);
+xlim([1,64]);ylim([1,64]);
+set(gca,'visible','off')
+
+
+% second sight current input
+figure;
+current = current_inp;
+scatter(elecs.y,64-elecs.x,100,30*(current),'filled');colormap gray
+%hold on;
+%scatter(elecs.y,64-elecs.x,40*abs((current)'+1),zeros(nElecs,1));
+axis square;
+hold on;
+xlim([1,64]);ylim([1,64]);
 set(gca,'visible','off')

@@ -24,7 +24,7 @@ for ifile = 1:length(files)-1
 data{ifile}=load(files{ifile});    
 end
 
-myVideo = VideoWriter('/Volumes/Lab/Users/bhaishahster/QIF/stimulation2.avi', 'Uncompressed AVI');
+myVideo = VideoWriter('/Volumes/Lab/Users/bhaishahster/QIF/stimulation3.avi', 'Uncompressed AVI');
 
 myVideo.FrameRate = 15;  % Default 30
 %myVideo.Quality = 100;    % Default 75
@@ -50,12 +50,38 @@ for icell=1:nCell
     set(gca,'visible','off');
     hold on;
     xlim([15.5,65]);ylim([8,37]);
-       set(gca,'LooseInset',get(gca,'TightInset'))
-       title(sprintf('electrode: %d, current: %f A',ielec,data{icell}.elecRespAuto.stimInfo.listAmps(iAmp)));
+    text(17,36,'current');
+    plot([15.5,15.5+(iAmp/39)*(25-15.5)],[35,35])
+    
+    set(gca,'LooseInset',get(gca,'TightInset'))
+   %title(sprintf('electrode: %d, current: %f A',ielec,data{icell}.elecRespAuto.stimInfo.listAmps(iAmp)));
 end
+
 F = getframe(h);
 writeVideo(myVideo, F);
 
 end
 close(myVideo);
+
+
+%%
+  
+ielec = 81;
+files = ls(sprintf('/Volumes/Analysis/2015-11-09-3/data001-data002-autosort/elecRespAuto_n*_p%d.mat',ielec));
+files = strsplit(files,'\n');
+    
+data=cell(length(files),1);
+for ifile = 1:length(files)-1
+data{ifile}=load(files{ifile});    
+end
+
+nCell=length(files)-1;
+figure;
+for icell=1:nCell
+    color = data{icell}.elecRespAuto.LogisticReg(iAmp);
+    cellID = data{icell}.elecRespAuto.neuronInfo.neuronIds;
+  plot(data{icell}.elecRespAuto.LogisticReg,'LineWidth',2);
+  hold on;
+end
+set(gca,'xTick',[]);
 
