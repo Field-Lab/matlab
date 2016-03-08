@@ -8,13 +8,18 @@ close all
 array_size = cell2mat(array_size(2:end,4));
 % txt = {'
 % };
-for j= 29%27:size(txt,1)
+% row 1 is headers
+for j=2:size(txt,1)
     close all
     clear dataparam fitparam
     % piece = txt(j,1:3);
     dataparam.date=[strtrim(txt{j,1}), '/']; % one slash at the end
     temp1 =  strtrim(txt{j,3});
     stimulus =  strtrim(txt{j,6});
+    if isempty(stimulus)
+        continue;
+    end
+    
     dataparam.concatname=temp1; % Name (or modified name) of run, no slashes\
     
     % Sometimes the data has two versions of the concate name
@@ -52,14 +57,17 @@ for j= 29%27:size(txt,1)
     fitparam.false_stixels =0.25;
     
     
-    dataparam.cell_type = {'OFF large 1'};
+    cell_types = {'ON large 2', 'OFF large 2'}; % only have one cell type listed if using select_cells
     
     % list specific cell (1), or run for a whole cell type (0)
-    dataparam.select_cells = 1;
+    dataparam.select_cells = 0;
     dataparam.cell_specification = [411]; %can be anything if select_cells =0
     
     
     dataparam.filepath=['/Volumes/Lab/Users/crhoades/Fitting/',dataparam.date,'/',dataparam.concatname,'/'];
+    for i = 1:size(cell_types,2)
+        dataparam.cell_type = {cell_types{i}};
+        fit_large_cell_sta_function(dataparam, fitparam)
+    end
     
-    fit_large_cell_sta_function(dataparam, fitparam)
 end
