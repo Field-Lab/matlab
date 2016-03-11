@@ -18,6 +18,6 @@ end
 end
 toc
 clear chunk
-fitmovie = fitmovie(:,:,1:3600*120);
+fitmovie = fitmovie(:,:,1:3000*120);
 
 save('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat', fitmovie, '-v7.3');
