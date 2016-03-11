@@ -4,7 +4,7 @@ function [GLMT, GLMP] = glm_parameters
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
 GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true; % The spatial part is taken from the STA
-% GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; % Both the spatial and temporal parts are fit, rank 1
+%GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; % Both the spatial and temporal parts are fit, rank 1
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false; % Two spatial and temporal parts are fit, rank 2
 
 % Coupling on or off?
@@ -32,7 +32,8 @@ GLMT.init = false;
 
 % Timing
 GLMP.bins_per_frame = 10;
-GLMP.approx_refresh_hz  = 120;
+% GLMP.approx_refresh_hz  = 120;
+GLMP.approx_refresh_hz  = 119.5;
 %GLMP.dt             = GLMPars.tstim / GLMPars.bins_per_frame;
 GLMP.timenotes_0    = 'tstim is ~time in seconds of frame refresh,  dt is the ~time per GLM bin';
 GLMP.timenotes_1    = 'True tstim is usually .0083275' ;
@@ -44,7 +45,7 @@ GLMP.stimfilter.fixedSP_type = 'WNSTA';
 
 
 GLMP.stimfilter.ROI_length = 15;  % This is the SIZE of the spatial filter in pixels
-GLMP.stimfilter.frames = 50;  % This is the number of frames in the temporal filter
+GLMP.stimfilter.frames = 30;  % This is the number of frames in the temporal filter
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMP.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
@@ -69,9 +70,9 @@ GLMP.spikefilters.cp.ms  = 100 ;      %% cp spike filter time length in millisec
 GLMP.spikefilters.BiDirect_CP     = false;
 GLMP.spikefilters.ps.filternumber = 20;
 GLMP.spikefilters.cp.filternumber = 8;
-GLMP.spikefilters.ps.spacing      = pi/4;
+GLMP.spikefilters.ps.spacing      = pi/8;
 GLMP.spikefilters.cp.spacing      = pi/2;
-GLMP.spikefilters.ps.bstretch     = 0.05;
+GLMP.spikefilters.ps.bstretch     = 0.95;
 GLMP.spikefilters.ps.alpha        = 0;
 GLMP.spikefilters.cp.bstretch     = 0.05;
 GLMP.spikefilters.cp.alpha        = 0;

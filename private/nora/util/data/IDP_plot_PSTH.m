@@ -3,6 +3,10 @@ function [spike_rate] = IDP_plot_PSTH(prepped_data, cell_to_plot, color)
 if nargin == 2
     color = [0    0.4470    0.7410]; % default color 1
 end
+if length(color)==1
+   default_colors = get(gca,'ColorOrder');
+   color = default_colors(mod(color,7),:);
+end
 
 trials = size(prepped_data.testspikes, 1);
 spikes = cell2mat(prepped_data.testspikes(:,cell_to_plot)); % spikes to frames

@@ -62,18 +62,22 @@ p.addParameter('stim_length', 900)
 p.addParameter('d_save', 0)
 p.addParameter('monitor_refresh', 120)
 p.addParameter('center_verification', false)
+p.addParameter('testmovie', 0)
+p.addParameter('testspikes', 0)
+p.addParameter('neighborspikes', 0)
 p.parse(varargin{:});
 stim_length = p.Results.stim_length;
 d_save = p.Results.d_save;
 monitor_refresh = p.Results.monitor_refresh;
 center_verification = p.Results.center_verification;
-clear p
+testmovie = p.Results.testmovie;
+%clear p
 frames_per_trigger = 100;
 
 % Load datarun
 datarun=load_data(dataset);
 datarun=load_neurons(datarun);
-datarun=load_sta(datarun, 'load_sta', cells);
+% datarun=load_sta(datarun, 'load_sta', cells);
 datarun=load_params(datarun);
 
 % Make the directory to save
@@ -124,46 +128,33 @@ for i_cell = 1:length(cells)
     size_fitmovie = size(fitmovie);
     assert(length(size_fitmovie) == 3, ['The movie size is ' num2str(size_fitmovie)])
     
-    % Spike loading
-    spikes = datarun.spikes{master_idx};
-    
     % Load the STA and check the size
-    WN_STA = datarun.stas.stas{master_idx};
-    if size(WN_STA,3) == 3
-        temp_STA=squeeze(RGB(1)*WN_STA(:,:,1,:)+ ...
-            RGB(2)*WN_STA(:,:,2,:)+ ...
-            RGB(3)*WN_STA(:,:,3,:));
-        clear WN_STA
-        WN_STA = permute(temp_STA, [2 1 3]);
-        clear temp_STA
-    end
-    WN_STA = squeeze(WN_STA);
-    size_STA = size(WN_STA);
-    assert(length(size_STA) == 3, ['The STA size is ' num2str(size_STA)])  
-    if size_fitmovie(1:2) ~= size_STA(1:2),
-        warn('Fitmovie and STA are not the same size')
-    end
-    
+%     WN_STA = datarun.stas.stas{master_idx};
+%     if size(WN_STA,3) == 3
+%         temp_STA=squeeze(RGB(1)*WN_STA(:,:,1,:)+ ...
+%             RGB(2)*WN_STA(:,:,2,:)+ ...
+%             RGB(3)*WN_STA(:,:,3,:));
+%         clear WN_STA
+%         WN_STA = permute(temp_STA, [2 1 3]);
+%         clear temp_STA
+%     end
+%     WN_STA = squeeze(WN_STA);
+%     size_STA = size(WN_STA);
+%     assert(length(size_STA) == 3, ['The STA size is ' num2str(size_STA)])  
+%     if size_fitmovie(1:2) ~= size_STA(1:2),
+%         warn('Fitmovie and STA are not the same size')
+%     end
+%     
     % Pull out the cell location
-    center_coord = datarun.vision.sta_fits{master_idx}.mean;
-    center(1) = round(center_coord(1)); % x_coord
-    center(2) = size(fitmovie,2) - round(center_coord(2)); %y_coord
-    clear cell_savename
-    
+%     center_coord = datarun.vision.sta_fits{master_idx}.mean;
+%     center(1) = round(center_coord(1)); % x_coord
+%     center(2) = size(fitmovie,2) - round(center_coord(2)); %y_coord
+%     clear cell_savename
+%   
+
+    % Spike loading
     % Align the spikes and the movies to the triggers;
-    spikes_adj=spikes;
-    n_block=0;
-    for i=1:(length(datarun.triggers)-1)
-        actual_t_start=datarun.triggers(i);
-        supposed_t_start=n_block*frames_per_trigger/monitor_refresh;
-        idx1=spikes > actual_t_start;
-        idx2=spikes < datarun.triggers(i+1);
-        spikes_adj(find(idx2.*idx1))=spikes(find(idx2.*idx1))+supposed_t_start-actual_t_start;
-        n_block=n_block+1;
-    end
-    clear spikes
-    fitspikes=spikes_adj;
-    clear spikes_adj;
+    fitspikes=align_spikes_triggers(datarun.spikes{master_idx}, datarun.triggers, 100, monitor_refresh);
     
     % If coupling, load up the neighboring spikes and adjust them to the
     % triggers
@@ -195,18 +186,35 @@ for i_cell = 1:length(cells)
     
     % Check that everything is working, and automatically find the center
 
-    [STA, ~] = STA_Test(fitspikes, fitmovie, center_verification, 1/monitor_refresh);
+    [STA, center] = STA_Test(fitspikes, fitmovie, center_verification, 1/monitor_refresh);
     
     % Execute and save GLM
     tic
-    fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', WN_STA, 'monitor_refresh', monitor_refresh, 'neighborspikes', neighborspikes);
+    fittedGLM     = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', monitor_refresh, 'neighborspikes', neighborspikes);
     toc
+    
+    fittedGLM.STA = STA;
+    fittedGLM.center = center;
     
     if GLMT.CouplingFilters
         fittedGLM.paired_cells = paired_cells;
     end
+    
+    if testmovie
+         fittedGLM.xvalperformance = glm_predict(fittedGLM, p.Results.testmovie,'testspikes', p.Results.testspikes(:,i_cell), 'neighborspikes',p.Results.neighborspikes);
+    end
+    
     if isstr(d_save)
         eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+        close all
+        plotfilters(fittedGLM);
+        set(gcf, 'Position', [100 100 800 250])
+        exportfig(gcf, [d_save '/' glm_cellinfo.cell_savename '_filters'], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'opengl');
+        if testmovie
+            plotrasters(fittedGLM.xvalperformance, fittedGLM);
+            exportfig(gcf, [d_save '/' glm_cellinfo.cell_savename '_rasters'], 'Bounds', 'loose', 'Color', 'rgb');
+        end
+        close all
     end
     
     

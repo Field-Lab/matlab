@@ -1,0 +1,1 @@
+spikes = align_with_triggers 

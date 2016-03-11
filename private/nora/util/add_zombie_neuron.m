@@ -1,7 +1,7 @@
-EL = uint32(197);
-cluster = uint32(5);
-ID  = uint32(2945);
-neurons_file = '/Volumes/Analysis/2016-02-17-8/mVision/data000/data000.neurons';
+EL = uint32(325);
+cluster = uint32(8);
+ID  = uint32(4868);
+neurons_file = '/Volumes/Analysis/2016-02-17-8/mVision/data005/data005.neurons';
 
 % check is cluster number and ID are consistent
 if cluster ~= mod(ID, 15)
