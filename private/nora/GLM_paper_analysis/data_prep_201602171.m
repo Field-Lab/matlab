@@ -8,12 +8,21 @@ mkdir(dsave)
 monitor_refresh = 119.5;
 
 %% BW
+%<<<<<<< HEAD
 % test_data = 'data027';
 % fit_data = 'data026';
 % test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
 % repeats = interleaved_data_prep(test_datarun, 1100, 30, 'cell_spec', cells,'visual_check', 0, 'stimulus_name', 'BW-8-1', 'seed', 22222);
 % glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-11111', 'testmovie', repeats.testmovie, 'testspikes', repeats.testspikes, 'd_save', dsave, 'monitor_refresh', monitor_refresh, 'stim_length', 1800);
 
+%=======
+test_data = 'data027';
+fit_data = 'data026';
+test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
+repeats = interleaved_data_prep(test_datarun, 1100, 30, 'cell_spec', cells,'visual_check', 0, 'stimulus_name', 'BW-8-1', 'seed', 22222);
+glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-11111', 'testmovie', repeats.testmovie, 'testspikes', repeats.testspikes, 'd_save', dsave, 'monitor_refresh', monitor_refresh, 'stim_length', 1800);
+disp('done with WN glm fit')
+%>>>>>>> 621d45877f10815ec0f522d10c088621c760b9d3
 %% NSEM
 test_data = 'data022';
 fit_data = 'data025';
@@ -23,8 +32,13 @@ fit_datarun = load_data([Analysis_Path '/' fit_data '/' fit_data], struct('load_
 load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat')
 testmovie = fitmovie(:,:,1:1200);
 BPS = zeros(length(cells), 2);
+%<<<<<<< HEAD
 for i = 1:111%length(cells)
 	  disp(i)
+=======
+for i = 1:length(cells)
+    disp(i)
+>>>>>>> 621d45877f10815ec0f522d10c088621c760b9d3
     glm_cellinfo.cid           = cells(i);
     glm_cellinfo.cell_savename = num2str(cells(i));
     master_idx         = find(fit_datarun.cell_ids == cells(i));
