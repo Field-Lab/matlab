@@ -18,31 +18,34 @@ glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-1
 test_data = 'data022';
 fit_data = 'data025';
 test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
-repeats = interleaved_data_prep(test_datarun, 1100, 30,'datarun_class', cells,'visual_check', 0, 'stimulus_name', 'NSinterval');
+repeats = interleaved_data_prep(test_datarun, 1100, 30,'cell_spec', cells,'visual_check', 0);
 fit_datarun = load_data([Analysis_Path '/' fit_data '/' fit_data], struct('load_neurons', 1, 'load_params', 1));
-load('/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSinterval/downsampledNSinterval.mat');
-
-for i = 1%:length(cells)
+load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat')
+testmovie = fitmovie(:,:,1:1200);
+BPS = zeros(length(cells), 2);
+for i = 1:length(cells)
     glm_cellinfo.cid           = cells(i);
-    glm_cellinfo.cell_savename = num2str(cid);
+    glm_cellinfo.cell_savename = num2str(cells(i));
     master_idx         = find(fit_datarun.cell_ids == cells(i));
-    fitspikes = align_spikes_triggers(fit_datarun.spikes{master_idx}, datarun.triggers, 100, monitor_refresh);
+    fitspikes = align_spikes_triggers(fit_datarun.spikes{master_idx}, fit_datarun.triggers, 100, monitor_refresh);
     
-    eval(sprintf('load %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+    eval(sprintf('load %s/%s.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
+    BPS(i,1) = fittedGLM.xvalperformance.glm_normedbits;
     [STA, center] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
-    
+   
     fittedGLM     = glm_fit(fitspikes, fitmovie, fittedGLM.center, 'WN_STA', fittedGLM.STA, 'monitor_refresh', monitor_refresh);
-    fittedGLM.xvalperformance = glm_predict(fittedGLM, p.Results.testmovie,'testspikes', p.Results.testspikes(:,i_cell));
-    if 0
-    eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
+    fittedGLM.xvalperformance = glm_predict(fittedGLM, testmovie,'testspikes', repeats.testspikes(:,i));
+    BPS(i,2) = fittedGLM.xvalperformance.glm_normedbits;
+    eval(sprintf('save %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
     close all
     plotfilters(fittedGLM);
     set(gcf, 'Position', [100 100 800 250])
-    exportfig(gcf, [d_save '/' glm_cellinfo.cell_savename '_filters'], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'opengl');
+    exportfig(gcf, [dsave '/' glm_cellinfo.cell_savename '_NSEMfilters'], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'opengl');
     
     plotrasters(fittedGLM.xvalperformance, fittedGLM);
-    exportfig(gcf, [d_save '/' glm_cellinfo.cell_savename '_rasters'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, [dsave '/' glm_cellinfo.cell_savename '_NSEMrasters'], 'Bounds', 'loose', 'Color', 'rgb');
     
     close all
-    end
+
 end
+save([dsave '/BPSsummary.mat'], BPS);
