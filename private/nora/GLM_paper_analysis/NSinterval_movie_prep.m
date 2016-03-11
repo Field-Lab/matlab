@@ -6,10 +6,15 @@ tic
 while i_start < 3600*120;
     chunk = load([movie_path 'movie_chunk_' num2str(i_chunk) '.mat']);
     chunk_length = size(chunk.movie_chunk, 3);
+if chunk_length>0    
     i_end = i_start + chunk_length -1;
     fitmovie(:,:,i_start:i_end) = permute(imresize(chunk.movie_chunk,1/4, 'box'), [2, 1, 3]);
     i_start = i_end+1;
-    i_chunk = i_chunk +1;
+end   
+ i_chunk = i_chunk +1;
+if ~mod(i_chunk, 10)
+disp(i_end)
+end
 end
 toc
 clear chunk

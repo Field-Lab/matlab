@@ -1,0 +1,48 @@
+% Version Convergence -- AKHeitman 2014-10-19
+
+% Version 22-- AKHeitman 2014-04-02
+%             -- done 2014-04-06
+% Calls:  BD = NSEM_BaseDirectories
+        % NSEM_secondaryDirectories
+        %StimulusPars.master = params_classificationfile(exp_info.masfile);
+        %StimulusPars.slv    = params_fitandraster(slv_file);
+
+
+% MFILE     Directories_Params_func  ( so that we input date and do less
+%                                                      switching)
+%
+%
+% inputs: string_date... piece number in the char form '2012-09-27-3'
+%         string_fitttyepe  .. either char 'BW'   or char 'NSEM'
+%         boolean_debug   either false or true,  false = long version
+%                             ture is the short debugger version
+%         maptype:   either  "mapEI"  or "mapPRJ"
+%
+%
+
+% slv_type is an optional argument
+%
+% usage:  single m-file with all directories and params for the GLM
+%
+%
+% outputs:     datarun  -loads the master classifcation (1)
+%                       -loads the slave classification and spikes (2)
+%              all params used throughout the GLM  
+%
+% AK HEITMAN START 2012-09-17 .. COMMENTING 2012-10-1  
+
+
+%%%%%%%%   NOTES      %%%%%%%%%%%
+% DEBUG JUST LIMITS THE NUMBER OF BLOCKS
+% NSEM AND BW HAVE DIFFERENT NUMBERING SCHEME IN MATLAB STORAGE
+% NOVEL - ALL NOVEL BLOCKS
+% TEST  - THE STATIC RUNS
+% FIT   - SUBSET OF NOVEL USED FOR MODEL FITTING
+% BW AND NSEM PARAMS BASED UPON MARTIN'S STIMULUS FILES
+
+%{
+clear all
+string_piece = '2012-08-09-3'; slv_type = 'NSEM'; map_type = 'mapPRJ'; 
+Directories_Params_v22(string_piece, slv_type, map_type)
+[StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v22(string_piece, slv_type, map_type)
+%}

@@ -1,0 +1,21 @@
+clear; clc
+
+BD = NSEM_BaseDirectories;
+eval(sprintf('load %s/allcells.mat', BD.Cell_Selection)); 
+rast_eye = allcells;
+
+
+eval(sprintf('load %s/Raster_By_Eye/rastcheck_byeye_expA.mat',BD.Cell_Selection));
+eval(sprintf('load %s/Raster_By_Eye/rastcheck_byeye_expB.mat',BD.Cell_Selection));
+eval(sprintf('load %s/Raster_By_Eye/rastcheck_byeye_expC.mat',BD.Cell_Selection));
+eval(sprintf('load %s/Raster_By_Eye/rastcheck_byeye_expD.mat',BD.Cell_Selection));
+
+
+%%
+
+ 
+rast_eye{1}.stim_type{1}.celltype{1}.not_stable = A_WN_ONP 
+
+            
+            
+            
