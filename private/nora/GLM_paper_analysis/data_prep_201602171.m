@@ -4,16 +4,16 @@ datarun_class = load_data([Analysis_Path '/data024/data024'], struct('load_neuro
 cells = get_cell_ids(datarun_class, 'On Parasol');
 dsave = '/Users/Nora/Desktop/GLMFits/2016-02-17-1';
 mkdir(dsave)
-cells = cells(1);
+%cells = cells(1);
 monitor_refresh = 119.5;
 
 %% BW
 test_data = 'data027';
 fit_data = 'data026';
 test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
-repeats = interleaved_data_prep(test_datarun, 1100, 30, 'cell_spec', cells,'visual_check', 0, 'stimulus_name', test_stim, 'seed', 22222);
+repeats = interleaved_data_prep(test_datarun, 1100, 30, 'cell_spec', cells,'visual_check', 0, 'stimulus_name', 'BW-8-1', 'seed', 22222);
 glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-11111', 'testmovie', repeats.testmovie, 'testspikes', repeats.testspikes, 'd_save', dsave, 'monitor_refresh', monitor_refresh, 'stim_length', 1800);
-
+disp('done with WN glm fit')
 %% NSEM
 test_data = 'data022';
 fit_data = 'data025';
@@ -24,6 +24,7 @@ load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat')
 testmovie = fitmovie(:,:,1:1200);
 BPS = zeros(length(cells), 2);
 for i = 1:length(cells)
+    disp(i)
     glm_cellinfo.cid           = cells(i);
     glm_cellinfo.cell_savename = num2str(cells(i));
     master_idx         = find(fit_datarun.cell_ids == cells(i));

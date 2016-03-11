@@ -234,7 +234,7 @@ if p.Results.stimulus_name
         end
         if ~testmovie_only
             % fitmovie
-            offset = block_seconds(2);
+            %offset = block_seconds(2);
             for i_block = 1:floor(n_blocks/2)
                 prepped_data.fitmovie{i_block} = zeros(160, 320, block_frames(1), 'uint8');
                 idx = 1:120;

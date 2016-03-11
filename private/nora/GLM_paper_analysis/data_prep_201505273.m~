@@ -31,7 +31,7 @@ clear prepped_data
 cell_spec = [202];
 visual_check = 1;
 trial_idx = 1:10;
-for i_block = 2%:2
+for i_block = 1%:2
     for i_block_trigger = blocks{i_block}
         % load up the triggers and find triggers per block
         try
@@ -118,13 +118,10 @@ end
 disp(['Spike organization took ' num2str(toc) ' seconds.'])
 
 %% Load up and organize the stimulus
-WN_stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
+stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
 a = STA_from_blocks(prepped_data.fitspikes, stim.fitmovie);
-
-
-%%
-NSEM_stim = interleaved_data_prep(model_fit_data, 2*[3600 1200], 50, 'stimulus_name', 'NSbrownian_3000_B');
-a = STA_from_blocks(prepped_data.fitspikes, NSEM_stim.fitmovie);
+stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
+a = STA_from_blocks(prepped_data.fitspikes, stim.fitmovie);
 
 %%
 % stimulus_name
