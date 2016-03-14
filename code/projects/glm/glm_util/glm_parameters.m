@@ -1,4 +1,3 @@
-
 function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
