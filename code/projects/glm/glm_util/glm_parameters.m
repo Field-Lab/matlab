@@ -11,7 +11,7 @@ GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true; % The spatial p
 GLMT.CouplingFilters = false; % If this is on, you need to include neighborspikes as a parameter to glm_fit and glm_predict
 
 % Use this to do a quick check that things are right
-GLMT.debug      = false; % this just increases the tolerance so the fitting stops more quickly. 
+GLMT.debug      = true; % this just increases the tolerance so the fitting stops more quickly. 
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
