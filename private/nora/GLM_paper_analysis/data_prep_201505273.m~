@@ -29,14 +29,10 @@ blocks{2} = block_starts(2:2:end);
 
 %% Find Block Times
 clear prepped_data
-
-cell_spec = get_cell_ids(datarun_class,'On Parasol');
-
-
-
+cell_spec = [202];%'On Parasol';
 visual_check = 1;
 trial_idx = 1:10;
-for i_stim = 1:2
+for i_stim = 2%:2
     tic;
     for i_block_trigger = blocks{i_stim}
         % load up the triggers and find triggers per block
@@ -187,7 +183,7 @@ for i_stim = 1:2
              clear fittedGLM
         end
     
-        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', 119.5);
+        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', 120);
         fittedGLM.xvalperformance = glm_predict(fittedGLM, prepped_data.testmovie, 'testspikes', prepped_data.testspikes(:,i_cell));
         fittedGLM.STA = STA;
         fittedGLM.center = center;
