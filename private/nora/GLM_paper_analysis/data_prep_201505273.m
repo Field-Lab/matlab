@@ -2,7 +2,8 @@ clear
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));
 model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neurons', 1, 'load_params', 0));
-
+dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
+mkdir(dsave);
 %%
 %pd= interleaved_data_prep(model_fit_data, [96000+2300 48000+1700], 5);
 block_starts = [1 503 1485 1987 2969 3471 4453 4955 5937 6439];
@@ -31,7 +32,8 @@ clear prepped_data
 cell_spec = [202];
 visual_check = 1;
 trial_idx = 1:10;
-for i_block = 2%:2
+for i_block = 1%:2
+    tic;
     for i_block_trigger = blocks{i_block}
         % load up the triggers and find triggers per block
         try
@@ -74,12 +76,8 @@ for i_block = 2%:2
         prepped_data.start_time = start_time;
         
         % Find and organize the spikes
-        disp(['Trigger finding took ' num2str(toc) ' seconds.'])
-        
         % Organize the cell spikes
         if cell_spec
-            disp('Loading spikes...')
-            tic
             if isstruct(datarun_class)
                 cids = get_cell_indices(datarun_class, cell_spec);
             else
@@ -101,31 +99,58 @@ for i_block = 2%:2
                 trial_idx = trial_idx+10;
             end
             clear spikes
-            % Visual check
-            
         end
     end
-end
-
-if visual_check
-    figure;
-    hold on
-    for i = 1:size(prepped_data.testspikes, 1)
-        plot(prepped_data.testspikes{i, 1}, i*ones(length(prepped_data.testspikes{i, 1})), 'k.')
+    
+    if 0
+        figure;
+        hold on
+        for i = 1:size(prepped_data.testspikes, 1)
+            plot(prepped_data.testspikes{i, 1}, i*ones(length(prepped_data.testspikes{i, 1})), 'k.')
+        end
+        title('Checking Cell Repeats')
     end
-    title('Checking Cell Repeats')
+    
+    disp(['Trigger and spike finding took ' num2str(toc) ' seconds.'])
+    
+    %% Load up and organize the stimulus
+    tic;
+    if i_block == 1
+        WN_stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
+        prepped_data.fitmovie = WN_stim.fitmovie;
+        prepped_data.testmovie = WN_stim.testmovie;
+        clear WN_stim
+        a = STA_from_blocks(prepped_data.fitspikes, prepped_data.fitmovie);
+        disp(['Stimulus organization took ' num2str(toc) ' seconds.']); tic
+        [fittedGLM, center, STA] = glm_fit_from_block(prepped_data, 0, 1, 1);
+        save_name = '';
+    else
+        load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
+        idx = (1:7200)+2400;
+        for i = 1:49
+            NSEM_stim.fitmovie{i} = fitmovie(:,:,idx);
+            prepped_data.fitmovie = NSEM_stim.fitmovie;
+            clear NSEM_stim
+            idx = idx + 7200;
+        end
+        load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
+        prepped_data.testmovie = fitmovie;
+        a = STA_from_blocks(prepped_data.fitspikes, prepped_data.fitmovie);
+        disp(['Stimulus organization took ' num2str(toc) ' seconds.']); tic
+        fittedGLM = glm_fit_from_block(prepped_data, 0, center, STA);
+        save_name = 'NSEM';
+    end
+   
+    eval(sprintf('save %s/%s.mat fittedGLM', dsave, [glm_cellinfo.cell_savename save_name]));
+    close all
+    plotfilters(fittedGLM);
+    set(gcf, 'Position', [100 100 800 250])
+    exportfig(gcf, [dsave '/' glm_cellinfo.cell_savename '_' save_name 'filters'], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'opengl');
+    
+    plotrasters(fittedGLM.xvalperformance, fittedGLM);
+    exportfig(gcf, [dsave '/' glm_cellinfo.cell_savename '_' save_name 'rasters'], 'Bounds', 'loose', 'Color', 'rgb');
+    
 end
-disp(['Spike organization took ' num2str(toc) ' seconds.'])
-
-%% Load up and organize the stimulus
-WN_stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
-a = STA_from_blocks(prepped_data.fitspikes, stim.fitmovie);
-
-
-%%
-NSEM_stim = interleaved_data_prep(model_fit_data, 2*[3600 1200], 50, 'stimulus_name', 'NSbrownian_3000_B');
-a = STA_from_blocks(prepped_data.fitspikes, NSEM_stim.fitmovie);
-
 %%
 % stimulus_name
 % can be an XML type specification (ie BW-8-1-0.48-11111) currently only
@@ -152,7 +177,7 @@ a = STA_from_blocks(prepped_data.fitspikes, NSEM_stim.fitmovie);
 %
 % testmovie only
 % only load up the test movie (much faster)
-
+%{
 
 % loading up the appropriate stimulus
 if p.Results.stimulus_name
@@ -290,3 +315,4 @@ if ischar(p.Results.activity_movie)
     res_spikes_plot(prepped_data.testmovie, res, p.Results.activity_movie, 'scaling', 4)
     disp(['Making the movie took ' num2str(toc) '  seconds.'])
 end
+%}
