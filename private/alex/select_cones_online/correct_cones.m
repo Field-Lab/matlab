@@ -9,6 +9,7 @@ set(hmain, 'position', [-1650  584  1130 500], 'KeyPressfcn', @figure1_WindowKey
     'WindowButtonDownFcn',@wbdcb)
 tPlot=subplot(1,2,1);
 hPlot=subplot(1,2,2);
+[contour, map_speck] = contruct_cone_region(radius);
 
 colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
 
@@ -80,21 +81,12 @@ colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
         yinit = cp(1,2);
         
         if strcmp(seltype,'normal') % left button ADD cone
+            
             new_cones(end+1,:) = [xinit yinit];
-            th = 0:pi/250:2*pi;
-            xunit = round(((radius * cos(th) + xinit)*4))/4;
-            yunit = round(((radius * sin(th) + yinit)*4))/4;
-            aa = [xunit; yunit]';
-            m = [];
-            for k=1:499
-                if xunit(k)==xunit(k+1) && xunit(k)==xunit(k+2) && yunit(k)==yunit(k+1) && yunit(k+1)==yunit(k+2)
-                    m = [m k];
-                end
-            end
-            aa(m,:) = [];
+            new_regions{end+1} = [contour(:,1)+new_cones(end,1) contour(:,2)+new_cones(end,2)];
+            
             subplot(hPlot);
-            plot(aa(:,1), aa(:,2), 'color', [1 1 1]);
-            new_regions{end+1} = aa;
+            plot(new_regions{end}(:,1), new_regions{end}(:,2), 'color', [1 1 1]);
             
         elseif strcmp(seltype,'alt') % right button DELETE cone
             

@@ -95,3 +95,28 @@ for kkk = 1:parts:length(datarun.cell_ids)
     save(['/Volumes/Analysis/2016-02-17-6/jitter/correct_jitter_sta_complete_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
     
 end
+
+
+load('/Volumes/Analysis-1/2016-02-17-6/jitter/correct_jitter_sta_40000_cells_1.mat')
+
+for j=1:3
+    figure
+    for i=1:30
+        tmp = sta(:,:,:,i,j);
+        tmp = tmp/max(abs(tmp(:)))/2+0.5;
+        subplot(5,6,i)
+        imagesc(tmp);
+    end
+end
+
+
+for j=21:20
+    figure
+    for i=27
+        tmp = sta(:,:,:,i,j);
+        tmp = tmp/max(abs(tmp(:)))/2+0.5;
+        imagesc(tmp);
+    end
+end
+
+

@@ -15,6 +15,8 @@ oldPosCone = [];
 xinit = [];
 yinit = [];
 new_cone_region = [];
+[contour, map_speck] = contruct_cone_region(radius);
+field_size = [size(all_sta,1), size(all_sta,2)];
 
     function figure1_WindowKeyPressFcn(hmain, eventdata, handles)
         
@@ -44,23 +46,22 @@ new_cone_region = [];
                         if ~isempty(a)
                             tmp_sta = 0;
                             for j=1:length(a)
-                                sta=pols(a(j))*all_sta(:,:,:,a(j));
+                                sta=pols(a(j))*all_sta(:,:,a(j));
                                 tmp_sta = tmp_sta+sta;
                             end
-                            sta2show = tmp_sta/max(tmp_sta(:));
-                            sta2show(sta2show<0) = 0;
-                            sta2show = imresize(sta2show, 2, 'method', 'nearest');
+%                             sta2show = tmp_sta/max(tmp_sta(:));
+%                             sta2show(sta2show<0) = 0;
                             
                             subplot(oldPosPlot)
                             hold off
-                            imagesc(sta2show)
-                            common_axis = [x*2-15, x*2+15, y*2-15, y*2+15];
+                            imagesc(tmp_sta)
+                            common_axis = [ x-15, x+15, y-15, y+15];
                             axis(common_axis)
                             hold on
 %                             oldPosCone = plot(cone_regions{i}(:,1), cone_regions{i}(:,2),  'color', [1 1 1]*0.5);
                             title(['Cone ', int2str(i),', ', int2str(length(a)), ' cells found'])
                             
-                            sta2showNeg = -sta2show+1;
+                            sta2showNeg = -tmp_sta+1;
                             subplot(oldNegPlot)
                             hold off
                             imagesc(sta2showNeg)
@@ -69,31 +70,7 @@ new_cone_region = [];
 %                             oldNegCone = plot(cone_regions{i}(:,1), cone_regions{i}(:,2),  'color', [0 0 0]+0.5);
                             title(['Cone ', int2str(i),', ', int2str(length(a)), ' cells found'])
                             
-                            
-                            % get new cone position
-%                             bord = 2;
-%                             tmp = sta2show(y-bord:y+bord, x-bord:x+bord,:);
-%                             tmp = imresize(tmp, 3, 'method', 'nearest');
-%                             tmp = tmp(4:12,4:12,:);
-%                             tmp = tmp.^2;
-%                
-%                             xcoord = -bord*2:bord*2;
-%                             xcoord = repmat(xcoord,bord*2*2+1,1);
-%                             xcoord = repmat(xcoord,1,1,3);
-%                             xcoord = tmp.*xcoord;
-% 
-%                             ycoord = [-bord*2:bord*2]';
-%                             ycoord = repmat(ycoord,1, bord*2*2+1);
-%                             ycoord = repmat(ycoord,1,1,3);
-%                             ycoord = tmp.*ycoord;
-                            
-%                             figure
-%                             imagesc(tmp)
-%                             hold on
-%                             plot(a(:,1)-cones(i,1)+5, a(:,2)-cones(i,2)+5,  'color', [1 0 0], 'linewidth', 2);
-
-%                             new_x = (sum(xcoord(:))/sum(tmp(:)))/(9/5);
-%                             new_y = (sum(ycoord(:))/sum(tmp(:)))/(9/5);                            
+                          
                             
                             th = 0:pi/250:2*pi;
  

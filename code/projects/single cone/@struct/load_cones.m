@@ -20,33 +20,35 @@ function [datarun extras] = load_cones(datarun, ind, varargin)
 % tmp=regexp(path2data,'data');
 % path2data=path2data(1:tmp(1)-1);
 
-cone_data = find_cone_data(datarun);
-if isempty(cone_data)
-    warning('No cone data found');
-    return;
-end
-
-if length(cone_data) > 1 && (nargin < 2 || isempty(ind))
-    disp('Multiple matching cone data found:');
-    disp_cone_data(cone_data);
-    disp('Run again with desired cone data index as 2nd argument.');
-    return;
-end
-
-if length(cone_data) == 1 && nargin < 2
-    datarun.names.cones = cone_data{1};
-elseif isnumeric(ind) && ~isempty(ind)
-    datarun.names.cones = cone_data{ind};
-elseif ischar(ind)
-    datarun.names.cones = detect(cone_data, @(cd) (regexp(cd, ind)));
-    if isempty(datarun.names.cones)
-        disp(['No cone data found matching string "' ind '". Data found:']);
-        disp_cone_data(cone_data);
-        return;
-    end
-end
+% cone_data = find_cone_data(datarun);
+% if isempty(cone_data)
+%     warning('No cone data found');
+%     return;
+% end
+% 
+% if length(cone_data) > 1 && (nargin < 2 || isempty(ind))
+%     disp('Multiple matching cone data found:');
+%     disp_cone_data(cone_data);
+%     disp('Run again with desired cone data index as 2nd argument.');
+%     return;
+% end
+% 
+% if length(cone_data) == 1 && nargin < 2
+%     datarun.names.cones = cone_data{1};
+% elseif isnumeric(ind) && ~isempty(ind)
+%     datarun.names.cones = cone_data{ind};
+% elseif ischar(ind)
+%     datarun.names.cones = detect(cone_data, @(cd) (regexp(cd, ind)));
+%     if isempty(datarun.names.cones)
+%         disp(['No cone data found matching string "' ind '". Data found:']);
+%         disp_cone_data(cone_data);
+%         return;
+%     end
+% end
+cone_data{1} = 'd01-13-norefit_data002_data002-bayes-msf_10.00-_data002_bayes';
+datarun.names.cones = 'd01-13-norefit_data002_data002-bayes-msf_10.00-_data002_bayes'
  
-[datarun extras] = import_single_cone_data(datarun, ['/Volumes/Acquisition/Analysis/2015-10-29-1/cone_data/',cone_data{1}], varargin{:});
+[datarun extras] = import_single_cone_data(datarun, ['/Volumes/Analysis-1/2016-02-17-7/cone_data/',cone_data{1}], varargin{:});
  
 % PHL: I don't really see the point of keeping the extras separate.  Move the
 % things I care about into datarun

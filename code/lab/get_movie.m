@@ -17,6 +17,8 @@ refresh = double(mvi.getRefreshTime);
 if exist('frames','var')
     if frames<=duration
         tduration=frames;
+    elseif isinf(frames)
+        tduration=duration;
     else
         error('movie too short');
     end

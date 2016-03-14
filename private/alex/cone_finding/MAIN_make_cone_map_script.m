@@ -2,22 +2,29 @@ clear
 
 %% Input parameters
 
-piece = '2015-10-29-1';
+piece = '2016-02-17-4';
 run = 'data001';
 online = false;  % look in online folder (/Volumes/Acquisition/date)
-streamed = true;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
+streamed = false;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
 
-magic_number = 20
+magic_number = 2
 inclusion_radius = 1.5
 
 %% load data
 '/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004'
-path2data = '/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004';
+path2data = '/Volumes/Analysis-1/2016-02-17-4/d00-05-norefit/data001/data001';
 datarun = load_data(path2data);
 datarun = load_params(datarun,struct('verbose',1));  
 datarun = load_sta(datarun,'load_sta',[]);
 datarun = set_polarities(datarun);
-datarun = load_cones(datarun, {});
+
+cone_data = 'd00-05-norefit_data001_-bayes-msf_2.00-_data001_bayes';
+datarun.names.cones = cone_data;
+ 
+[datarun extras] = import_single_cone_data(datarun, ['/Volumes/Analysis-1/2016-02-17-4/cone_data/',cone_data]);
+ 
+% 
+% datarun = load_cones(datarun, {});
 % datarun = load_cones_ath(datarun,magic_number);
 datarun = make_mosaic_struct(datarun);
 
@@ -48,8 +55,8 @@ cone_map = index_masks(spaced, num2cell(indexes));
 figure
 imagesc(cone_map)
 
-dlmwrite('/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data004.txt', cone_map, 'delimiter', '\t', 'newline', 'pc')
-a = dlmread('/Volumes/Analysis/2015-10-29-1/stimuli/maps/map_data004.txt')
+dlmwrite('/Volumes/Analysis-1/2016-02-17-4/cone_data/d00-05-norefit_data001_-bayes-msf_2.00-_data001_bayes/map_data001.txt', cone_map, 'delimiter', '\t', 'newline', 'pc')
+a = dlmread('/Volumes/Analysis-1/2016-02-17-4/cone_data/d00-05-norefit_data001_-bayes-msf_2.00-_data001_bayes/map_data001.txt');
 
 figure;
 imagesc(a)

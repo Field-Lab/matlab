@@ -82,6 +82,7 @@ while ind<size(all_sta,3) && length(unique(checked_list))<size(all_sta,3)
     checked_list = [checked_list ind];
     
     t = find(prelim_peaks(:,3)==ind);
+    
     acc_ic = [];
     for i=1:length(t)
         [tt, ic]=sort(tmp(t(i),:));
@@ -89,23 +90,24 @@ while ind<size(all_sta,3) && length(unique(checked_list))<size(all_sta,3)
     end
     acc_ic(acc_ic>=t(1) & acc_ic<=t(end)) = [];
     p = unique(acc_ic);
-    clear tt
-    for i=1:length(p)
-        tt(i) = nnz(acc_ic==p(i));
+    if ~isempty(p)
+        clear tt
+        for i=1:length(p)
+            tt(i) = nnz(acc_ic==p(i));
+        end
+        
+        k = find(tt>2);
+        sta = (pols(ind)*all_sta(:,:,ind));
+        for i = 1:length(k)
+            ind2 = prelim_peaks(p(k(i)),3);
+            sta = sta + (pols(ind2)*all_sta(:,:,ind2));
+            checked_list = [checked_list ind2];
+        end
+        checked_list = unique(checked_list);
+        coll_sta{cct} = sta;
+        cct = cct+1;
     end
-    
-    k = find(tt>2);
-    sta = (pols(ind)*all_sta(:,:,ind));
-    for i = 1:length(k)
-        ind2 = prelim_peaks(p(k(i)),3);
-        sta = sta + (pols(ind2)*all_sta(:,:,ind2));
-        checked_list = [checked_list ind2];
-    end
-    checked_list = unique(checked_list);
-    coll_sta{cct} = sta;
-    cct = cct+1;
 end
-
 coll_sta = cell2mat(coll_sta);
 coll_sta = reshape(coll_sta, 600, 800, cct-1);
 
@@ -120,6 +122,8 @@ select_cells(coll_sta, pols_a, radius, 1);
 %% initial finding
 
 % load('/Volumes/Analysis-1/2016-02-17-4/stimuli/maps/map_data001_test_ready_info.mat');
+% load('/Volumes/Analysis-1/2016-02-17-7/stimuli/maps/map_data002_test_20160302_info.mat', 'cone_regions', 'cones')
+
 
 cone_regions = [];
 cones = [];
@@ -147,7 +151,7 @@ while flag
     end
 end
 
-path2save=['/Volumes/Analysis-1/', date, '/stimuli/maps/map_', run, '_test_20160302'];
+path2save=['/Volumes/Analysis-1/', date, '/stimuli/maps/map_', run, '_test_20160303_full'];
 if ~isdir(path2save)
     mkdir(path2save);
 end
@@ -305,17 +309,42 @@ imagesc(savedMap)
 
 
 %% control!
+map1 = a;
+for i=31:50
+    figure
+    set(gcf, 'position', [-1384         287        1067         812])
+    set(gca, 'dataaspectratio', [1 1 1])
 
-for i=1:10
     tmp = pols(i)*all_sta(:,:,i);
+    [p,t] = find(tmp == max(tmp(:)),1);
     
     comb = zeros(600,800,3);
-    comb(:,:,1) = map;
+    comb(:,:,1) = savedMap;
+    comb(:,:,3) = map1;
     comb(comb>0) = 0.5;
     comb(:,:,2) = tmp/max(tmp(:));
-    figure
     imagesc(comb)
+    axis([t-80 t+80 p-80 p+80])
+    title(int2str(i))
 end
+
+
+
+for i=21:40
+    figure
+    set(gcf, 'position', [-1384         287        1067         812])
+    set(gca, 'dataaspectratio', [1 1 1])
+
+    tmp = pols(i)*all_sta(:,:,i);
+    [p,t] = find(tmp == max(tmp(:)),1);
+    imagesc(tmp)
+    colormap gray
+    axis([t-80 t+80 p-80 p+80])
+    title(int2str(i))
+    hold on
+    plot(a(:,2)*2, a(:,3)*2, 'xr')
+end
+
 
 
 
@@ -463,3 +492,24 @@ for i=check_missed(11:30)
     imagesc(comb)
 end
 
+figure
+plot(cones(:,1), cones(:,2), 'xr')
+
+clear a
+for i=1:length(cone_regions)
+    a(i,1) = round(mean(cone_regions{i}(:,1)));
+    a(i,2) = round(mean(cone_regions{i}(:,2)));
+end
+t = [];
+for i=1:length(cones)
+    b = find(a(:,1)==cones(i,1)&a(:,2)==cones(i,2));
+    
+    if length(b)>1
+        t = [t b(2:end)];
+        i
+    end
+end
+t = unique(t)
+cone_regions(t) = [];
+
+unique(a, 'rows')

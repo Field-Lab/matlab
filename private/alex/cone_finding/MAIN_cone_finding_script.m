@@ -1,18 +1,18 @@
 %% Input here
 
 % main parameters
-piece = '2015-10-29-1';
-run = 'data004';
-movie_descr = 'BW-1-8-0.48-11111-320x320.xml';
-online = true;  % look in online folder (/Volumes/Acquisition/date)
-streamed = true;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
+piece = '2016-02-17-4';
+run = 'data001';
+movie_descr = 'BW-2-6-0.48-11111-400x300-60.35.xml';
+online = false;  % look in online folder (/Volumes/Acquisition/date)
+streamed = false;  %  look for streamed data in offline folder (/Volumes/Analysis/date/streamed)
 
 % additionbal parameters
 nickname = '';
 rig = 'A';
 optical_path_direction = 'below';
-display_type = 'crt';
-cell_types = {1,2,3,4}; % to analyze for cone finding
+display_type = 'oled';
+cell_types = {1,2,3,4,5}; % to analyze for cone finding
 
 %% load stuff
 
@@ -22,8 +22,9 @@ datarun = load_data(path2data);
 % % datarun = load_data('/Volumes/Analysis/2012-09-24-5/d03-06-07-norefit/data003/data003');
 % datarun = load_data('/Volumes/Analysis/2012-09-24-5/d00_06-norefit/data003-from-d00_06/data003-from-d00_06');
 % datarun = load_data('/Volumes/Analysis/2012-09-13-2/d01_09-norefit/data001-from-d01_09/data001-from-d01_09');
+% datarun = load_data('/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004');
 
-datarun = load_data('/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004');
+datarun = load_data('/Volumes/Analysis-1/2016-02-17-4/d00-05-norefit/data001/data001');
 
 datarun.names.nickname = nickname;
 datarun.piece.rig = rig;
@@ -37,7 +38,7 @@ datarun = set_polarities(datarun);
 
 
 % find movie, check if exists
-movie_spec = fullfile(movies_path(), movie_descr);
+movie_spec = fullfile('/Volumes/Analysis-1/stimuli/white-noise-xml/', movie_descr);
 if ~exist(movie_spec, 'file')
     fprintf('\nMOVIE DOESN''T EXIST\n')
 end
@@ -272,8 +273,8 @@ choose_magic_number(datarun,bcf,bcf_params);
 
 
 %%
-magic_number = 20
-extra_dirname_info='_data004';
+magic_number = 2
+extra_dirname_info='_data001_bayes';
 save_bayesian_cones(datarun, bcf, bcf_params, magic_number, [extra_dirname_info], false, [], 'fit_foa', [], 'robust_std_method', 1);
 
 %%

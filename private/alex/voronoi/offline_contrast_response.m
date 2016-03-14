@@ -48,10 +48,33 @@ figure
 set(gcf, 'position', [422  140  975  944])
 
 subplot(2,2,1)
+
+comb = zeros(size(sta1, 1), size(sta1, 2), 3);
+comb(:,:,1) = map;
+comb(comb>0.5) = 0.5;
+comb(:,:,2) = sta1/max(abs(sta1(:)));
+% comb(:,:,3) = sta2/max(abs(sta2(:)));
+imagesc(comb)
+
+subplot(2,2,2)
+comb = zeros(size(sta1, 1), size(sta1, 2), 3);
+comb(:,:,1) = map;
+comb(comb>1) = 0.5;
+comb(:,:,2) = sta2/max(abs(sta2(:)));
+imagesc(comb)
+
+subplot(2,2,3)
+comb = zeros(size(sta1, 1), size(sta1, 2), 3);
+comb(:,:,1) = sta1/max(abs(sta1(:)));
+comb(:,:,3) = sta2/max(abs(sta2(:)));
+imagesc(comb)
+
+
 colormap gray
 imagesc(sta1)
 hold on
 cnt = 1;cnt1 = 1;
+
 for i=1:max(map(:))
     if ~isempty(voronoi_contours{i, 1})
         if ~isempty(find(center_cones==i+1,1))
