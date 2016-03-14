@@ -29,7 +29,7 @@ blocks{2} = block_starts(2:2:end);
 
 %% Find Block Times
 clear prepped_data
-cell_spec = [202];
+cell_spec = get_cell_ids(datarun_class,'On Parasol');
 visual_check = 1;
 trial_idx = 1:10;
 for i_block = 1%:2
