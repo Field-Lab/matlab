@@ -10,14 +10,9 @@ params.global.x0=[2.6766    2.6729    1.5639    2.5233    1.9566  -20.7433    0.
 params.global.positions=positions;
 params.global.maxIter=5;
 params.global.thresEI=30;
-x0=params.global.x0;
-params.global.useStimElec = 0;
-
 params.bundle.cutBundle =0 ;
 params.bundle.nVec=1;
-params.bundle.updateFreq =3;
-params.bundle.useBundle = 0;
-params.bundle.detectThreshold=-12;
+x0=params.global.x0;
 
 tarray=params.global.tarray;
 Tmax=params.global.Tmax;
