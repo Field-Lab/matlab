@@ -154,7 +154,8 @@ for i_cell = 1:length(cells)
 
     % Spike loading
     % Align the spikes and the movies to the triggers;
-    fitspikes=align_spikes_triggers(datarun.spikes{master_idx}, datarun.triggers, 100, monitor_refresh);
+    fitspikes = align_spikes_triggers(datarun.spikes{master_idx}, datarun.triggers, 100, monitor_refresh);
+    fitspikes = fitspikes(fitspikes < stim_length);
     
     % If coupling, load up the neighboring spikes and adjust them to the
     % triggers

@@ -1,44 +1,32 @@
 clear
+
+%% Classification run
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));
 model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neurons', 1, 'load_params', 0));
 dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
-mkdir(dsave);
-%%
-%pd= interleaved_data_prep(model_fit_data, [96000+2300 48000+1700], 5);
+
+%% ONLY CHANGE THINGS HERE
+cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
+%cell_spec = [202];
+convergence = 0.5; % fraction of data to use
+
+%% Don't change these
+if convergenve < 1; dsave = [dsave '_Conv_' num2str(convergence)]; end
+mkdir(dsave)
+
 block_starts = [1 503 1485 1987 2969 3471 4453 4955 5937 6439];
 blocks{1} = block_starts(1:2:end);
 blocks{2} = block_starts(2:2:end);
-
-%%
-% block frames is a vector of the different block lengths,
-% ex = [1200*3 1200] aka even fitting blocks first and odd testing blocks
-% second. Weird order is so that frames(block i) = block_frames(mod(i,2)+1)
-%
-% Output:
-% preppeddata structure, including start_time which has the starts of the
-% blocks and p which are the optional parameters you included
-% It can also include: fitspikes, testspikes, fitmovie, testmovie, etc
-% which depend on which options you choose. They will be in cells and each
-% cell corresponds to a block of data.
-%
-% cell_spec
-% Setting cell_specification will return the organized spikes for those
-% cells. Details for what cell_specification should be are detailed in the
-% get_cell_indices function
-
-%% Find Block Times
-clear prepped_data
-
-cell_spec = get_cell_ids(datarun_class,'On Parasol');
-%cell_spec = [202];
-
-monitor_refresh = 120;%119.5;
+monitor_refresh = 120;
 visual_check = 1;
 trial_idx = 1:10;
-for i_stim = 1
+
+%%
+for i_stim = 1:2 % WN is 1, NSEM is 2
     tic;
     for i_block_trigger = blocks{i_stim}
+        
         % load up the triggers and find triggers per block
         try
             triggers = model_fit_data.triggers(i_block_trigger+(1:1000)-1);
@@ -117,7 +105,7 @@ for i_stim = 1
     
     disp(['Trigger and spike finding took ' num2str(toc) ' seconds.'])
     
-    %% Load up and organize the stimulus
+    % Load up and organize the stimulus
     tic;
     if i_stim == 1
         WN_stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
@@ -126,11 +114,15 @@ for i_stim = 1
     else
         load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
         fitmovie = fitmovie(:,:,2401:end);
+        if convergence < 1
+            stimlength = 3600*convergence;
+            fitmovie = fitmovie(:,:,1:stimlength);
+        end
+            
         load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
         prepped_data.testmovie = fitmovie;
         save_name = 'NSEM';
-    end  
-    
+    end   
     
     % Concat WN movie
     if i_stim == 1;
@@ -157,7 +149,7 @@ for i_stim = 1
             end
             idx = idx+block_length;
         end
-        %clear WN_stim
+        if convergence < 1; fitmovie = fitmovie(:,:,1:(block_length*n_blocks*convergence)); end
     end
     disp(['Stimulus organization took ' num2str(toc) ' seconds.']); tic
     
@@ -173,6 +165,7 @@ for i_stim = 1
             fitspikes = [fitspikes; prepped_data.fitspikes{i_block,i_cell}+t_block_start];
             idx = idx+block_length;
         end
+        fitspikes = fitspikes(fitspikes < block_length*n_blocks*convergence/monitor_refresh);
         
         if i_stim == 1
             close all
