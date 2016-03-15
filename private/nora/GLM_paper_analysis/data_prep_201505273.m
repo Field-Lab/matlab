@@ -36,7 +36,7 @@ cell_spec = get_cell_ids(datarun_class,'On Parasol');
 
 visual_check = 1;
 trial_idx = 1:10;
-for i_stim = 1:2
+for i_stim = 2
     tic;
     for i_block_trigger = blocks{i_stim}
         % load up the triggers and find triggers per block
@@ -192,8 +192,7 @@ for i_stim = 1:2
         fittedGLM.STA = STA;
         fittedGLM.center = center;
         
-        
-        eval(sprintf('save %s/%s.mat fittedGLM', dsave, [cell_savename save_name]));
+        save([dsave '/' cell_savename save_name '.mat'], fittedGLM, '-v7.3');
         close all
         plotfilters(fittedGLM);
         set(gcf, 'Position', [100 100 800 250])
