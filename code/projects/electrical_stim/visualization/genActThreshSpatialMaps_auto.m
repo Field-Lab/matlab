@@ -1,10 +1,12 @@
-function [allVals, actProb, actAmp] = genActThreshSpatialMaps_auto(fPath,neuronId, varargin)
+function [allVals, actProb, actAmp] = genActThreshSpatialMaps_auto(fPath,eipath,neuronId, varargin)
 % GENACTTHRESHSPATIALMAPS(...) generates images that represent the
 % activation thresholds of a cell for multiple stimulating electrodes
 % for use with automatic analysis
 % inputs:   fpath       path to elecRespAuto files
 %           neuronId    neuron id, can be a single value or a vector of
 %                           multiple ids
+%           eipath    path to ei file in order to load eis for plotting.
+%           (must end in .ei)
 %   optional: saveFiles
 %             printElecs
 %             plotResponseCurves: plots the sigmoidal activation curve for
@@ -88,6 +90,7 @@ for nn = 1:length(neuronId);
                 elecResp = temp.elecRespAuto; clear temp;
                 try
                     spikes = cell2mat(elecResp.spikes);
+%                     spikes(find(isnan(spikes))) = 0; 
                     responseProb = sum(spikes,2)/size(spikes,2);
                     stimAmps     = abs(elecResp.stimInfo.listAmps);
                 catch err
@@ -103,8 +106,8 @@ for nn = 1:length(neuronId);
                     actProb(elecResp.stimInfo.patternNo) = 0;
                     actAmp(elecResp.stimInfo.patternNo) = max(stimAmps);
                 end
-                
-                [threshold, completeFit, erfErr] = fitToErf_inline(elecResp,...
+                responseProb(isnan(responseProb)) =0; 
+                [threshold, ~, ~] = fitToErf_inline(elecResp,...
                     responseProb,plotResponseCurves); 
                 if threshold > 0
                     
@@ -141,33 +144,31 @@ for nn = 1:length(neuronId);
     clear actThresholds;
     [~,aL_view] = ei2matrix(elVals);
     allVals(nn,:) = elVals; %#ok<AGROW>
-    if 0
-    eiamps = max(elecResp.cells.mainEI,[],2) - min(elecResp.cells.mainEI,[],2);
-
+    [eiM,nIdList] = convertEiFileToMatrix(eipath);
+    alleiamps = squeeze(max(eiM,[],2) - min(eiM,[],2)); 
+    nIdx = find(neuron == nIdList);
+    eiamps = alleiamps(:,nIdx);  %#ok<FNDSB>
     allEiAmps(nn,:) = eiamps'; %#ok<AGROW>
     if ~suppressPlots
+        [xc,yc] = getElectrodeCoords512();
         figure;
-        subplot(2,1,1); imagesc(aL_view); axis image; colorbar; colormap hot; axis off;
-        % set(gcf,'Position',[25  300  1230 570]);
-        title(['50% activation threshold n' num2str(neuron)]);
-        [~,eipic] = ei2matrix(eiamps);
-        subplot(2,1,2); imagesc(eipic,[0 max(eiamps)/2]); axis image; colorbar; colormap hot;
-        title(['EI for n ' num2str(neuron)]); axis off;
+        idx = find(eiamps>2);
+        scatter(xc(idx),yc(idx),eiamps(idx),'k','filled');   hold on;
+        [axon_x, axon_y, ~, soma_x, soma_y] = weighted_axon_poly_reg(eiamps);
+        plot(axon_x, axon_y, 'Color', 'r','LineWidth',2, 'DisplayName', num2str(neuron));
+        scatter(soma_x,soma_y,max(eiamps)+0.1,'r','filled');
+        idx = find(elVals);
+        if ~isempty(idx)
+            scatter(xc(idx),yc(idx),100,elVals(idx),'filled');
+        end
+        axis image; axis off; c=colorbar; caxis([0.3 3]); 
+        c.Label.String = 'activation threshold \muA';
+        title(['EI for n ' num2str(neuron) ' -- 50% activation thresholds overlayed']); axis off;
        
         if printElecs
-            fname = fullfile(fileparts(mfilename('fullpath')),'../resources/array_matrix_id510');
-            h = load(fname);
-            electrodeMatrix = h.array_matrix_id510; clear h;
-            for x = 1:size(electrodeMatrix,2)
-                for y = 1:size(electrodeMatrix,1)
-                    if y/2 == round(y/2)
-                        th=text(x*2-1,y*2,num2str(electrodeMatrix(y,x)));
-                        set(th,'color','g');
-                    else
-                        th=text(x*2,y*2,num2str(electrodeMatrix(y,x)));
-                        set(th,'color','g');
-                    end
-                end
+            for eIdx = 1:length(idx)
+                text(xc(idx(eIdx)),yc(idx(eIdx))+10,num2str(idx(eIdx)),...
+                    'HorizontalAlignment','center'); 
             end
         end
         
@@ -178,7 +179,7 @@ for nn = 1:length(neuronId);
             saveas(gcf, savingName,'jpg');
         end
     end %End if statement to show plots
-    end
+    
 end % Loop through neurons
 
     function [threshold,completeFit, erfErr] = fitToErf_inline(elecResp,responseProb,plotResponseCurves)

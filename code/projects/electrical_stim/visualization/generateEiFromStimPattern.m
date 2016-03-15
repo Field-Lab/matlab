@@ -65,7 +65,7 @@ rawData = zeros(size(dataTraces,1),size(dataTraces,2),size(dataTraces,3),length(
 idx = 0; % index for saving rawData output
 for movieIndex = mIndices
     idx = idx + 1; 
-    cla;
+    if ~suppressPlots; cla; end %or clear specific axis. 
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(movieIndex), 99999);
     try
@@ -83,7 +83,7 @@ for movieIndex = mIndices
 %     spiketrials = [2 3 4 6 10 11 14 15 16 17 18 19 21 23]; %banana delete this line!!!!
 %     modData = modData(spiketrials,:,:); 
     trialAvg = squeeze(mean(modData)); 
-    keyboard; 
+%     keyboard; 
     amplitudes = max(trialAvg,[],2) - min(trialAvg,[],2);
     scatterData = amplitudes;
     if ~suppressPlots

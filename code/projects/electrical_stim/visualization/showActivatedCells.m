@@ -45,8 +45,14 @@ end % End search through directory
         
         % linear-based
         data(1,:) = abs(data(1,:));
-        [erfParams, completeFit, erfErr] = erfFitter(data, 2, -1, 'makePlot', plotResponseCurves);
-        threshold = -erfParams(2)/erfParams(1);
+        try
+            [erfParams, completeFit, erfErr] = erfFitter(data, 2, -1, 'makePlot', plotResponseCurves);
+            threshold = -erfParams(2)/erfParams(1);
+        catch
+            threshold = 0;
+            completeFit = zeros(1,size(data,2)); 
+            erfErr = 0;
+        end
         
     end
 end% end function
