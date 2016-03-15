@@ -22,7 +22,7 @@ function varargout = clusterSorting(varargin)
 
 % Edit the above text to modify the response to help clusterSorting
 
-% Last Modified by GUIDE v2.5 20-Feb-2015 11:58:57
+% Last Modified by GUIDE v2.5 11-Mar-2016 16:25:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -164,8 +164,12 @@ function patternNo_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of patternNo as text
 %        str2double(get(hObject,'String')) returns contents of patternNo as a double
-setElecColor(handles); 
-handles = go_Callback(hObject,eventdata,handles) 
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end
+handles = go_Callback(hObject,eventdata,handles); 
 guidata(hObject,handles); 
 
 % --- Executes during object creation, after setting all properties.
@@ -291,7 +295,7 @@ for m = 1:size(movieNos,2)
     
     % Fuzzy C-means clustering on the first 2 principal components
     fcmdata = score(:,1:2);
-    [~, U, ~] = fcm(fcmdata, 2, clusteringOptions);
+    [~, U, ~] = fcm(fcmdata, str2double(get(handles.numClusters,'String')), clusteringOptions);
     maxU = max(U);
     index1 = find(U(1,:) == maxU);
     index2 = find(U(2,:) == maxU);
@@ -307,10 +311,14 @@ for m = 1:size(movieNos,2)
     end
     
     while plotOn
-        if any(sum(abs(subMeanTrace))<20)
+        if any(sum(abs(subMeanTrace))<20) && get(handles.useElectrodeCluster,'Value')==0 % Saturation not as important if using cluster of elecs
             plotOn = 0;
-            surprise = getEmoji();
-            msgbox(sprintf('movie %d is saturated for pattern %d at electrode %d',movieNos(m),patternNo,tempRecElec),'SATURATED SIGNAL','custom',surprise);
+            try
+                surprise = getEmoji();
+                msgbox(sprintf('movie %d is saturated for pattern %d at electrode %d',movieNos(m),patternNo,tempRecElec),'SATURATED SIGNAL','custom',surprise);
+            catch
+                msgbox(sprintf('movie %d is saturated for pattern %d at electrode %d',movieNos(m),patternNo,tempRecElec),'SATURATED SIGNAL');
+            end
             handles.responseRate = responseRate; 
             handles.responseStimAmps = responseStimAmps; 
             handles.vectorMultiplier = ones(size(responseRate)); 
@@ -326,8 +334,8 @@ for m = 1:size(movieNos,2)
         eval(['axes(handles.axes' num2str(subplotIdx) ');']);
         
         if min(mean(group1,1)) < min(mean(group2,1))
-            plot(subMeanTrace(index2,:)','red'); hold on;
-            plot(subMeanTrace(index1,:)','green');
+            plot(subMeanTrace(index2,:)','Color',0.7*[1 1 1]); hold on;
+            plot(subMeanTrace(index1,:)','red');
             axis off;
             title(sprintf('movie %d',movieNos(m)));
             handles.tempData(subplotIdx).spikes = subMeanTrace(index1,:)';
@@ -336,8 +344,8 @@ for m = 1:size(movieNos,2)
             responseStimAmps(subplotIdx) = stimAmp;
             responseRate(subplotIdx) = length(index1)/size(testTrace,1);
         else
-            plot(subMeanTrace(index1,:)','red'); hold on;
-            plot(subMeanTrace(index2,:)','green');
+            plot(subMeanTrace(index1,:)','Color',0.7*[1 1 1]); hold on;
+            plot(subMeanTrace(index2,:)','red');
             axis off;
             title(sprintf('movie %d',movieNos(m)));
             handles.tempData(subplotIdx).spikes = subMeanTrace(index2,:)';
@@ -355,9 +363,12 @@ for m = 1:size(movieNos,2)
             handles.vectorMultiplier = ones(size(responseRate)); 
             handles.tempRecElec = tempRecElec; 
             guidata(hObject,handles);
-%             calculateRespRate_Callback(hObject, eventdata, handles); 
-%             setElecColor(handles,tempRecElec,actThresh); 
-            setElecColor(handles)
+           
+            if get(handles.displayCurrentElec,'Value');
+                setElecColor(handles)
+            elseif get(handles.allElectrodeDisplay,'Value');
+                setElecColorShowPast(handles);
+            end
             return;
         end
     end
@@ -374,8 +385,6 @@ handles.vectorMultiplier = ones(size(handles.responseRate));
 handles.tempRecElec = tempRecElec;
 guidata(hObject,handles);
 
-
-
 function setElecColor(handles)
 % Check for activation results file
 dirname = get(handles.datapath,'String');
@@ -388,8 +397,32 @@ patternNo = str2double(get(handles.patternNo,'String'));
 info = activationResults.pattern(patternNo); 
 toPlot = info.thresholds.*info.userAccepted; 
 maxAmp = str2double(get(handles.maxAmp,'String')); 
-minAmp = str2double(get(handles.minAmp,'String')); 
+minAmp = str2double(get(handles.minAmp,'String'));  
+axes(handles.axes0); hold on; 
+h = scatter(handles.xCoords, handles.yCoords, 500, toPlot,'filled'); 
+handles.map(1,:) = 0.5*[1 1 1]; 
+colormap(handles.map); 
+axis off; axis image;   
+caxis([minAmp maxAmp]);
+ylabel(handles.cbar,'  \muA','rot',0);
+set(gca,'FontSize',16);
+set(h,'ButtonDownFcn',{@arrayClickCallback, handles});
 
+function setElecColorShowPast(handles)
+% Check for activation results file
+dirname = get(handles.datapath,'String');
+resultsFile = fullfile(dirname,'activationResults.mat');
+if exist(resultsFile,'file')
+    tmp = load(resultsFile); 
+    activationResults = tmp.activationResults; 
+end
+toPlot = zeros(512,1); 
+for e = 1:512
+    toPlot(e) = activationResults.pattern(e).thresholds(e);
+end
+
+maxAmp = str2double(get(handles.maxAmp,'String')); 
+minAmp = str2double(get(handles.minAmp,'String')); 
 axes(handles.axes0); hold on; 
 h = scatter(handles.xCoords, handles.yCoords, 500, toPlot,'filled'); 
 handles.map(1,:) = 0.5*[1 1 1]; 
@@ -523,14 +556,16 @@ responseStimAmps = nonzeros(handles.responseStimAmps.*handles.vectorMultiplier)'
 responseRate = nonzeros(handles.responseRate.*handles.vectorMultiplier)';
 disp(['using the following movies to calculate threshold: '...
     num2str(handles.vectorMultiplier)]); 
-[abs(responseStimAmps); responseRate]
+[abs([responseStimAmps(1)/1.1 responseStimAmps responseStimAmps(end)*1.1]) ; 0 responseRate 1]
+forcedStimAmps = abs([responseStimAmps(1)/1.1 responseStimAmps responseStimAmps(end)*1.1]); 
+forcedRespRate = [0 responseRate 1];
 % Define function that will be used to fit data
 % (F is a vector of fitting parameters)
 f = @(F,x) (1 +exp(-F(1)*(x - F(2)))).^(-1); % sigmoid
-F_fitted = nlinfit(abs(responseStimAmps),responseRate,f,[1 1]);
+F_fitted = nlinfit(forcedStimAmps,forcedRespRate,f,[1 1]);
 
 % Plot data fit
-stimAmps = abs(responseStimAmps);
+stimAmps = forcedStimAmps;
 xx = stimAmps(1):0.001:stimAmps(end);
 yy = f(F_fitted,xx);
 
@@ -580,8 +615,11 @@ activationResults.pattern(str2double(get(handles.patternNo,'String'))).userAccep
 
 save(resultsFile,'activationResults'); 
 handles.actThresh = handles.tempActThresh; 
-setElecColor(handles)
-
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end
 
 function maxAmp_Callback(hObject, eventdata, handles)
 % hObject    handle to maxAmp (see GCBO)
@@ -590,7 +628,11 @@ function maxAmp_Callback(hObject, eventdata, handles)
 if isnan(str2double(get(hObject,'String')))
     set(hObject,'String','4'); 
 end
-setElecColor(handles);
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end 
 
 % --- Executes during object creation, after setting all properties.
 function maxAmp_CreateFcn(hObject, eventdata, handles)
@@ -614,8 +656,11 @@ if isnan(str2double(get(hObject,'String')))
     set(hObject,'String','0'); 
 end
 % callback to refresh electrode map.
-setElecColor(handles);
-
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end
 
 % --- Executes during object creation, after setting all properties.
 function minAmp_CreateFcn(hObject, eventdata, handles)
@@ -642,7 +687,7 @@ if idx <= size(handles.tempData,2)
     misses = handles.tempData(idx).spikes;
     
     eval(sprintf('cla(handles.axes%d); axes(handles.axes%d);',idx,idx));
-    plot(misses,'red'); hold on; plot(spikes,'green');
+    plot(misses,'Color',0.7*[1 1 1]); hold on; plot(spikes,'red');
     axis off;
     
     handles.tempData(idx).spikes = spikes;
@@ -710,8 +755,11 @@ activationResults.pattern(str2double(get(handles.patternNo,'String'))).userAccep
 
 save(resultsFile,'activationResults'); 
 handles.actThresh = handles.tempActThresh; 
-setElecColor(handles)
-
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end
 
 
 function templatepath_Callback(hObject, eventdata, handles)
@@ -746,3 +794,73 @@ startpath = get(handles.datapath,'String');
 % Project onto template waveform
 templatePath = uigetdir(startpath,'Select ei directory');
 set(handles.templatepath,'String',templatePath); 
+
+
+% --- Executes on button press in allElectrodeDisplay.
+function allElectrodeDisplay_Callback(hObject, eventdata, handles)
+% hObject    handle to allElectrodeDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of allElectrodeDisplay
+if get(hObject,'Value')
+    set(handles.displayCurrentElec,'Value',0); 
+else
+    set(handles.displayCurrentElec,'Value',1); 
+end
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end
+
+% --- Executes on button press in displayCurrentElec.
+function displayCurrentElec_Callback(hObject, eventdata, handles)
+% hObject    handle to displayCurrentElec (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of displayCurrentElec
+if get(hObject,'Value')
+    set(handles.allElectrodeDisplay,'Value',0); 
+else
+    set(handles.allElectrodeDisplay,'Value',1); 
+end
+if get(handles.displayCurrentElec,'Value');
+    setElecColor(handles)
+elseif get(handles.allElectrodeDisplay,'Value');
+    setElecColorShowPast(handles);
+end
+
+
+
+function numClusters_Callback(hObject, eventdata, handles)
+% hObject    handle to numClusters (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of numClusters as text
+%        str2double(get(hObject,'String')) returns contents of numClusters as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function numClusters_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to numClusters (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% Enforce 2-4 clusters. 
+if str2double(get(hObject,'String'))>4
+    set(hObject,'String','2'); 
+end
+if str2double(get(hObject,'String'))<2
+    set(hObject,'String','2'); 
+end
+
+% go_Callback(hObject, eventdata, handles)
