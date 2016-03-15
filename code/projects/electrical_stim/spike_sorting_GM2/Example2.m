@@ -1,5 +1,5 @@
 %% Example 2: Use Bundle Information to 'cut' spike sorting at that point
-
+%Gonzalo Mena, 03/2016
 
 
 %% Comments
@@ -41,6 +41,8 @@ params.global.nTrials=50; %maximum number of trials for the same stimulus (this 
 params.bundle.findBundle=1;
 params.bundle.useBundleAlg=0; %dont change the variance model after the bundle
 params.bundle.cutBundle=1;  %Terminate spike sorting information just before the onset of bundle
+                       %are solved by filling with NaNs (see TracesAll)
+params.global.useStimElec=0; %dont use information of stimulating electrode'
 
 
 %%Set values for spike sorting, and do spike sorting

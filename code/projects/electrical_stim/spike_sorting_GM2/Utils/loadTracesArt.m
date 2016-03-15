@@ -1,7 +1,8 @@
-function [TracesAll Art var0 listAmps listCurrents onset onsetC]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials,varargin)
+function [TracesAll Art var0 listAmps listCurrents onset onsetC pval]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials,varargin)
 %load data from a pattern in a given folder
 %also loads stimulus data and construct a firt artifact estimate (means
 %accross trials). nTrials is the maximum number of trials
+%Gonzalo Mena,3/2016
 findBundle=0;
 
 if(nargin==5)
@@ -55,59 +56,57 @@ if(findBundle)
 [Res]=ResidualsElectrodeSimple(Art,patternNo,findBundleTimes);
 
 
-
-
     
     
 pats=getNeighbors(patternNo,nNeighborsExclude);
+nConds=size(Art,1);
 
-for k=1:size(Art,1)
+for k=1:nConds
     
 [h p]=kstest((log(Res(k,setdiff([1:512],pats)))-nanmean(log(Res(k,setdiff([1:512],pats)))))./nanstd((log(Res(k,setdiff([1:512],pats))))));
 
 pval(k)=log(p);
 end
   
-    pp(:,1)=NaN;
+    pval(1)=NaN;
    
-for k=1:length(thresHolds)
-
-    for i=1:length(pattern)
-  
-    aux=find(pp(i,:)>thresHolds(k));
+    aux=find(pval>detectThreshold);
     comp=lastConnectedComponent(aux);
     
     if(isempty(aux));
-      onset(i,k)=listamps{i}(2);
-    onsetC(i,k)=2;
-    continue
+    onset=listAmps(2);
+    onsetC=2;
+    return
     else
-    if(length(comp)==1&&comp(end)==tamr(i))
+    if(length(comp)==1&&comp(end)==nConds)
         if(aux(1)==2)
-        onset(i,k)=NaN;
-        onsetC(i,k)=NaN;
-        continue
+        onset=NaN;
+        onsetC=NaN;
+        return
         else
             condi=2;
         end
-    elseif(length(comp)==1&&comp(end)<tamr(i));
+    elseif(length(comp)==1&&comp(end)<nConds);
         condi=comp(end)+1;
     else
-    if(comp(end)==tamr(i))
+    if(comp(end)==nConds)
         condi=comp(end-1)+1;
     else
         condi=comp(end)+1;
     end
     end
     
-    onset(i,k)=listamps{i}(condi);
-    onsetC(i,k)=condi;
+    onset=listAmps(condi);
+    onsetC=condi;
     end
+else
+    onset=NaN;
+    onsetC=NaN;
+    pval=NaN;
 end
+    
 
-end
 
-pval=pp;
 
 
     

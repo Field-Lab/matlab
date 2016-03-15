@@ -1,5 +1,5 @@
 function y= lastConnectedComponent(x)
-
+%Gonzalo Mena, 3/2016
 cont=1;
 
 aux=x(1);

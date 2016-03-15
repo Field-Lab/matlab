@@ -1,12 +1,12 @@
 function [Output]=DoSpikeSortingLargeScale(pathToPreparation,pathToEi,patternNo,neuronIds,params,varargin)
-
+%Gonzalo Mena, 03/2016
 
 Dif1=params.global.Dif1;
 Dif2=params.global.Dif2;
 positions=params.global.positions;
 x=params.arrayInfo.x;
 useStimElec = params.global.useStimElec;
-useBundle = params.bundle.useBundle;
+useBundleAlg = params.bundle.useBundleAlg;
 
 Tmax=params.global.Tmax;
 nTrials=params.global.nTrials;
@@ -106,17 +106,34 @@ params.patternInfo.Art =Art;
 params.patternInfo.var0=var0;
 params.patternInfo.rho=rho;
 params.patternInfo.patternNo=patternNo;
+params.patternInfo.listAmps=listAmps;
+params.patternInfo.listCurrents=listCurrents;
+params.patternInfo.Diags=Diags;
+params.patternInfo.Difs=Difs;
+
+
+params.bundle.onsBundle=onsetC;
+params.bundle.onset=onset;
 
 templates=makeTemplatesFromEiShift(pathToEi, neuronIds,[1:512]);
 params.neuronInfo.templates = templates;
-if(~useStimElec&&(~useBundle))
+if(~useStimElec&&(~useBundleAlg))
 [spikes Log params]=SpikeSortingNoBundleNoStim(params,TracesAll);
-elseif(~useStimElec&&(useBundle))
+elseif(~useStimElec&&(useBundleAlg))
 [spikes Log params]=SpikeSortingBundleNoStim(params,TracesAll);    
+elseif(useStimElec&&(~useBundleAlg))
+    params = MakeStimKernels(params);
+[spikes Log params]=SpikeSortingNoBundleStim(params,TracesAll);    
+  elseif(useStimElec&&(useBundleAlg))
+       params = MakeStimKernels(params);
+[spikes Log params]=SpikeSortingBundleStim(params,TracesAll);    
+
 end
 
 if(useStimElec)
     Output.stimInfo.ActiveElectrodes=[1:512];
+    Output.stimInfo.KersStim=params.patternInfo.KersStim;
+    Output.stimInfo.breakpoints=params.patternInfo.breakpoints;
 else
     Output.stimInfo.ActiveElectrodes=ind;
 end
@@ -137,5 +154,10 @@ Output.Log=Log;
 Output.path.pathToEi=pathToEi;
 Output.path.pathToPreparation=pathToPreparation;
 Output.path.pathToAnalysisData=pathToAnalysisData;
+Output.bundle=params.bundle;
+Output.bundle.onsetC=onsetC;
+Output.bundle.onset=onset;
+Output.bundle.pvals=pval;
+Output.stimInfo.useStimElec=useStimElec;
 end
 

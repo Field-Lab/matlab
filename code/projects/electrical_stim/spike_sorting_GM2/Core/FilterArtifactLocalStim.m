@@ -3,7 +3,7 @@ function ArtF=FilterArtifactLocalStim(Kers,Art,x,cmax,Q,Qt,krondiaginv)
 %of the same stimulus amplitudes) using the model and noise level. Only for
 %Stimulating electrodes
 %Here, x(end) contains log variance sigma0.
-%Gonzalo Mena, 03/16
+%Gonzalo Mena, 03/2016
 
 
 varsmax=length(x);

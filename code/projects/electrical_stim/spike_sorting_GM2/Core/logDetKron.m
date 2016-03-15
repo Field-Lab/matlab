@@ -9,7 +9,7 @@ function [val grad]=logDetKron(Art,var,Difs,varsactive,types,Diags,nvar)
 %nvar= indicates the number of variables in each Kernel
 %References: Thesis: Scalable Inference for Structured Gaussian Process Models. .Yunus Saatchi, Cambride University
 %
-%Gonzalo Mena, 03/16
+%Gonzalo Mena, 03/2016
 
 logs=0;
 

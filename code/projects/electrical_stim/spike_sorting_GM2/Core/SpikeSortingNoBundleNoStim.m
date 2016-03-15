@@ -1,5 +1,5 @@
-function [spikes Log]=SpikeSortingNoBundleNoStim(params,TracesAll)
-
+function [spikes Log params]=SpikeSortingNoBundleNoStim(params,TracesAll)
+%Gonzalo Mena, 3/2016
 
 Kers=params.patternInfo.Kers;
 Q=params.patternInfo.Q;
@@ -10,16 +10,15 @@ templates=params.neuronInfo.templates;
 Art=params.patternInfo.Art;
 var0=params.patternInfo.var0;
 
-
 thresEI=params.global.thresEI;
 Tmax=params.global.Tmax;
 tarray=params.global.tarray;
-maxIter=params.global.maxIter;
+maxIter=params.global.maxIter*length(templates);
 cutBundle=params.bundle.cutBundle;
-nvect=params.bundle.nVec;
+contMessage=1;
 
 if(cutBundle==1)
-    maxCond=params.bundle.onsCond;
+    maxCond=params.bundle.onsBundle-1;
 else
     maxCond=size(TracesAll,1);
 end
@@ -31,12 +30,15 @@ x=params.arrayInfo.x;
 
 els=[];
 for n=1:length(templates)
-    spikes{n}=NaN*zeros(size(TracesAll,1),size(TracesAll,2));
+    templates{n}=templates{n}(ind,:);
+    spikes{n}=NaN*zeros(maxCond,size(TracesAll,2));
     [a b]=sort(max(abs(templates{n}')),'descend');
     ind2=find(a>thresEI);
+    params.neuronInfo.ActiveElectrodes{n}=ind(b(ind2));
     els=union(b(ind2),els);
 end
 
+params.neuronInfo.ActiveElectrodesAll=ind(els);
 
 for n=1:length(templates)
     for t=1:length(tarray)
@@ -60,6 +62,7 @@ krondiaginv=(exp(x(end))*krondiag0*Kers{3}(i,i)+var0).^(-1);
 
 
 trialI=nansum(~isnan(squeeze(TracesAll(i,:,1,1))));
+params.patternInfo.nTrials(i)=trialI;
 cont=1;
 while(flag==1&&cont<=maxIter)
     
@@ -103,11 +106,11 @@ while(flag==1&&cont<=maxIter)
     flag=max(flag2);
     for n=1:length(templates)
         spikes{n}(1,1:trialI)=tarray(times(n,:));
-        tarray(times(n,:))
+        
     end
     cont=cont+1;
 end
-Log(1)=cont;
+Log.Iter(1)=cont;
 
 
 
@@ -119,6 +122,8 @@ for i=2:maxCond
     krondiaginv=(exp(x(end))*krondiag0*Kers{3}(i,i)+var0).^(-1);
     
     trialI=nansum(~isnan(squeeze(TracesAll(i,:,1,1))));
+    params.patternInfo.nTrials(i)=trialI;
+    
     [Apred]=ExtrapolateArtifactCond(Kers,Q,Qt,dL,i,ArtF,x,var0);
     
     flag=1;
@@ -143,7 +148,7 @@ for i=2:maxCond
             
             corrs=-2*AA'*Kn{r(n)}+repmat(nansum(Kn{r(n)}.^2),trialI,1);
             [mins tmax]=min(corrs');
-           
+            times(r(n),:)=tmax;
             TracesResidual(:,ind,:)=TracesResidual(:,ind,:)-Knn{r(n)}(tmax,:,:);
             
         end
@@ -170,9 +175,12 @@ for i=2:maxCond
             
         end
         cont=cont+1;
-        
+        if(cont==maxIter)
+             Log.Message{contMessage}=['Maximum number of iterations exceeded at conditon ' num2str(i) ];
+        contMessage=contMessage+1;
+        end
     end
     
-    Log(i)=cont-1;
+    Log.Iter(i)=cont-1;
 end
-params.patternInfo=Art;
+params.patternInfo.Art=Art(1:maxCond,:,:);

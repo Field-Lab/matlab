@@ -1,6 +1,6 @@
-%% Example 3: Use Bundle Information to delocalize artifact model and improve spike sorting
-             % post-bundle onset
-%Gonzalo Mena, 03/2016
+%% Example 4: Use stimulating electrode information (still not advisable, very unstable)
+%Gonzalo Mena, 3/16
+
 
 
 %% Comments
@@ -32,7 +32,6 @@ params=InitializeArray(pathToPreparationInitial,patternNoInitial);
 
 
 
-
 %% Change some default values, 
 
 params.global.tarray=[0 [7:30]]; %(times to look for spikes);
@@ -41,12 +40,9 @@ params.global.Tmax=40; %use first 2ms of recordings (recall, sampling rate 20KhZ
 params.global.nTrials=50; %maximum number of trials for the same stimulus (this is to create appropriate matrices, unbalances
                            %are solved by filling with NaNs (see TracesAll)
 params.bundle.findBundle=1;
-params.bundle.useBundleAlg=1; %change the variance model after the bundle
-params.bundle.cutBundle=0;  %Don't terminate spike sorting  just before the onset of bundle
-                            %are solved by filling with NaNs (see TracesAll)
-params.global.useStimElec=0; %dont use information of stimulating electrode'
-%%Set values for spike sorting, and do spike sorting
-
+params.bundle.cutBundle=1;  %Terminate spike sorting  just before the onset of bundle
+params.bundle.useBundleAlg=0; %dont change the variance model after the bundle
+params.global.useStimElec=1;
 
 %%Set values for spike sorting, and do spike sorting
 neuronIds=[4058 4656 3457];

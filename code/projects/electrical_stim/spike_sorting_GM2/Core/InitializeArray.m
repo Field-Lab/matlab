@@ -1,5 +1,5 @@
 function params=InitializeArray(pathToPreparation,varargin)
-
+%Gonzalo Mena, 03/2016
 load arrayPositions512
 
 params.global.Tmax=40;

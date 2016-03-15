@@ -4,7 +4,7 @@ function [Ker KerD]=evalKernels(Dif,x,vars,type)
 %breakpoints)
 %vars = values of the variables, depends on the type
 %type of Kernel (see below)
-% Gonzalo Mena, 03/16
+% Gonzalo Mena, 03/2016
 
 if(type==1)
     %Most usual, for 3 Kernels with same structure

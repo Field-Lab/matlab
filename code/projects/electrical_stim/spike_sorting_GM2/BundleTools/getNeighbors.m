@@ -1,5 +1,5 @@
 function e=getNeighbors(e1,deg)
-
+%Gonzalo Mena, 3/2016
 
 for k=1:deg
     aux=e1;

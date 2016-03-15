@@ -1,6 +1,6 @@
 function [Z]=KronProd(K,y)
 %computes A*y where K is the kronecker product between K{1},K{2},...K{n}
-%Gonzalo Mena, March 2016
+%Gonzalo Mena, 03/2016
 %References:Elad Gilboa, Yunus Saatc ?and John P. Cunningham 
 %Scaling Multidimensional Inference for Structured Gaussian Processes
 % IEEE TRANSACTIONS ON PATTERN ANALYSIS AND MACHINE INTELLIGENCE, VOL. 37, NO. 2, FEBRUARY 2015

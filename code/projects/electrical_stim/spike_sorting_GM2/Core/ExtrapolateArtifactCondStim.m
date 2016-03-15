@@ -2,7 +2,7 @@ function [Apred]=ExtrapolateArtifactCondStim(Kers,Q,Qt,dL,cmax,Art,x,sigma2)
 %Extrapolate artifact at condition cmax given (full) observations until
 %condition cmax-1. Extrapolation is done in al electrodes but the
 %stimulating
-%Gonzalo Mena, 03/16
+%Gonzalo Mena, 03/2016
 
 
 T=size(Kers{1},1);
