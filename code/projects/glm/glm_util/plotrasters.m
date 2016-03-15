@@ -114,14 +114,14 @@ else
             rec1 = time(find(rec_rast(i_trial,:)));
             plot(rec1, i_trial, 'k.')
             sim1 = time(find(sim_rast(i_trial,:)));
-            if length(sim1) < 4*length(rec1)
+if length(sim1) < 4*length(rec1) && ~isempty(sim1)
                 plot(sim1, i_trial + trials, 'r.')
             else
                 runawaytrial(i_trial)=0;
             end
             ylim([1 trials*2])
         else
-            sim1 = time(find(sim_rast(i_trial,:)));
+	  sim1 = time(find(sim_rast(i_trial,:)));
             if length(sim1) < 4*length(rec1)
                 plot(sim1, i_trial, 'r.')
             else

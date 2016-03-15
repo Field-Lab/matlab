@@ -192,7 +192,7 @@ for i_stim = 2
         fittedGLM.STA = STA;
         fittedGLM.center = center;
         
-        save([dsave '/' cell_savename save_name '.mat'], fittedGLM, '-v7.3');
+        save([dsave '/' cell_savename save_name '.mat'],'fittedGLM', '-v7.3');
         close all
         plotfilters(fittedGLM);
         set(gcf, 'Position', [100 100 800 250])

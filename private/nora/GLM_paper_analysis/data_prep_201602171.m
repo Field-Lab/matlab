@@ -16,6 +16,7 @@ glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-1
 disp('done with WN glm fit')
 
 %% NSEM
+%{
 test_data = 'data022';
 fit_data = 'data025';
 test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
@@ -24,7 +25,7 @@ fit_datarun = load_data([Analysis_Path '/' fit_data '/' fit_data], struct('load_
 load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat')
 testmovie = fitmovie(:,:,1:1200);
 BPS = zeros(length(cells), 2);
-
+ %}
 for i = 1:length(cells)
     disp(i)
     glm_cellinfo.cid           = cells(i);
