@@ -169,9 +169,8 @@ if useRobustFitting
             end
         end
         
-        if iter > 10
-            disp('robust fitting shouldn''t require this many iterations -- looping?')
-            keyboard
+        if iter > 15
+            disp(sprintf('robust fitting shouldn''t require %0.0f iterations -- looping?',iter)) ;        
         end
         
         % re-determine which data points lie in range based on new fit
