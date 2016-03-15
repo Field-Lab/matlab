@@ -138,7 +138,7 @@ Diags{3}=listAmps'/max(listAmps);
   f1=@(Art,x)logDetKron(Art(:,ind,:),[x(1:7) -100 -100 x(8) log(var0)],Difs,setdiff([1:10],[8 9]),[1 1 1],Diags,[3 3 3]);
  g1=@(x)f1(Art,x);
 
- x1 = fminunc(g1,x0,options);
+ x1 = fminunc(g1,x0,'options');
  x=[x1(1:7) -100 -100 x1(end)];
 
  params.arrayInfo.x= x;

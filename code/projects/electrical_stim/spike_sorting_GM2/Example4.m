@@ -28,6 +28,7 @@ patternNoInitial=200;  %Pattern chosen to do initialization. Can leave empty and
                        
 IndFolderInitial={'data003','data004','data005','data006'};  %look for the pattern in data003,data004,data005,data006. If empty, will look at all folderes
 pathToPreparationInitial='/Volumes/Analysis/2012-09-24-3/';
+
 params=InitializeArray(pathToPreparationInitial,patternNoInitial);
 
 
@@ -53,5 +54,6 @@ IndFolder={'data003','data004','data005','data006'};  %look for the pattern in d
                       
 pathToEi=['/Volumes/Analysis/data000/data000.ei'];
 pathToPreparation='/Volumes/Analysis/2012-09-24-3/';
-
+tic
 [Output]=DoSpikeSortingLargeScale(pathToPreparation,pathToEi,patternNo,neuronIds,params,IndFolder);
+toc
