@@ -31,12 +31,12 @@ blocks{2} = block_starts(2:2:end);
 clear prepped_data
 
 cell_spec = get_cell_ids(datarun_class,'On Parasol');
+%cell_spec = [202];
 
-
-
+monitor_refresh = 120;%119.5;
 visual_check = 1;
 trial_idx = 1:10;
-for i_stim = 2
+for i_stim = 1
     tic;
     for i_block_trigger = blocks{i_stim}
         % load up the triggers and find triggers per block
@@ -91,7 +91,7 @@ for i_stim = 2
             for i_cell = 1:length(cids)
                 spikes_temp = model_fit_data.spikes{cids(i_cell)};
                 for i_trigger = 1:n_blocks
-                    block_length = block_frames(mod(i_trigger,2)+1)/120;
+                    block_length = block_frames(mod(i_trigger,2)+1)/monitor_refresh;
                     spikes{i_trigger, i_cell} = spikes_temp( (spikes_temp > start_time(i_trigger)) & (spikes_temp < (start_time(i_trigger) + block_length)) ) - start_time(i_trigger);
                 end
             end
@@ -139,7 +139,6 @@ for i_stim = 2
         block_size = size(WN_stim.fitmovie{1});
         block_length = block_size(3);
         grey_frames = 60;
-        monitor_refresh = 120;%119.5;
         if grey_buffer
             block_length = block_length+grey_frames;
             movie_mean = mean(WN_stim.fitmovie{1}(:));
@@ -187,12 +186,12 @@ for i_stim = 2
              clear fittedGLM
         end
     
-        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', 119.5);
+        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', monitor_refresh);
         fittedGLM.xvalperformance = glm_predict(fittedGLM, prepped_data.testmovie, 'testspikes', prepped_data.testspikes(:,i_cell));
         fittedGLM.STA = STA;
         fittedGLM.center = center;
         
-        save([dsave '/' cell_savename save_name '.mat'], fittedGLM, '-v7.3');
+        save([dsave '/' cell_savename save_name '.mat'], 'fittedGLM', '-v7.3');
         close all
         plotfilters(fittedGLM);
         set(gcf, 'Position', [100 100 800 250])
