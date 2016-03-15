@@ -45,18 +45,18 @@ if(length(dirs(i).name)>=4)
         aux=find(dirs(i).name(1:4)=='data');
     if(length(aux)>0)
         
-        FoldersInd(cont)=str2num(dirs(i).name(5:end));
+        FoldersNames{cont}=dirs(i).name;
         cont=cont+1;
     end
     end
     end
     
 elseif(nargin==3)
-    FoldersInd=varargin{2};
+    FoldersNames=varargin{2};
 end
 
-for f=1:length(FoldersInd)
-    pathAux=[pathToPreparation 'data00' num2str(FoldersInd(f))];
+for f=1:length(FoldersNames)
+    pathAux=[pathToPreparation FoldersNames{f}];
         dirs=dir(pathAux);
         
         

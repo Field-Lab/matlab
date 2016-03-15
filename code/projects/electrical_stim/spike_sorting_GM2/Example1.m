@@ -26,7 +26,7 @@ patternNoInitial=200;  %Pattern chosen to do initialization. Can leave empty and
                        %as closest to the center of the array as possible,
                        %to avoid undesided 'aliasing' effects.
                        
-IndFolderInitial=[3 4 5 6]; %look for the pattern in data003,data004,data005,data006. If empty, will look at all folderes
+IndFolderInitial={'data003','data004','data005','data006'};  %look for the pattern in data003,data004,data005,data006. If empty, will look at all folderes
 pathToPreparationInitial='/Volumes/Analysis/2012-09-24-3/';
 params=InitializeArray(pathToPreparationInitial,patternNoInitial);
 
@@ -46,7 +46,7 @@ params.bundle.useBundeAlg=0; %dont change the variance model after the bundle
 %%Set values for spike sorting, and do spike sorting
 neuronIds=[4058 4656 3457];
 patternNo=116;
-IndFolder=[3 4 5 6]; %as above. It indicates possible places (data00 folders) where to look for pattern information
+IndFolder={'data003','data004','data005','data006'};  %look for the pattern in data003,data004,data005,data006. If empty, will look at all folderes
                       %it is optional, but if not stated, it may use
                       %information of an undesired folder.
                       
