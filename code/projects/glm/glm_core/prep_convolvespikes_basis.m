@@ -13,7 +13,7 @@ binned_spikes = binned_spikes(find(binned_spikes < bins) ) + 1;
 
 
 convolvedspikes_base                  = zeros(1,bins);
-convolvedspikes_base(binned_spikes+1) = 1; 
+convolvedspikes_base(binned_spikes) = 1; 
 
 convolvedspikes = zeros(vectors, bins + vectorbins - 1);
 for i_vec = 1:vectors
