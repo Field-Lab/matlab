@@ -9,10 +9,10 @@ dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
 %% ONLY CHANGE THINGS HERE
 cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
 %cell_spec = [202];
-convergence = 0.5; % fraction of data to use
+convergence = 1; % fraction of data to use
 
 %% Don't change these
-if convergenve < 1; dsave = [dsave '_Conv_' num2str(convergence)]; end
+if convergence < 1; dsave = [dsave '_Conv_' num2str(convergence)]; end
 mkdir(dsave)
 
 block_starts = [1 503 1485 1987 2969 3471 4453 4955 5937 6439];
@@ -20,10 +20,11 @@ blocks{1} = block_starts(1:2:end);
 blocks{2} = block_starts(2:2:end);
 monitor_refresh = 120;
 visual_check = 1;
-trial_idx = 1:10;
+
 
 %%
-for i_stim = 1:2 % WN is 1, NSEM is 2
+for i_stim = 2 % WN is 1, NSEM is 2
+    trial_idx = 1:10;
     tic;
     for i_block_trigger = blocks{i_stim}
         
@@ -114,13 +115,13 @@ for i_stim = 1:2 % WN is 1, NSEM is 2
     else
         load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
         fitmovie = fitmovie(:,:,2401:end);
+        stimlength = round(size(fitmovie,3)*convergence);
         if convergence < 1
-            stimlength = 3600*convergence;
             fitmovie = fitmovie(:,:,1:stimlength);
         end
             
-        load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
-        prepped_data.testmovie = fitmovie;
+        test = load('/Volumes/Lab/Users/Nora/downsampledNSbrownian_testA.mat');
+        prepped_data.testmovie = test.fitmovie;
         save_name = 'NSEM';
     end   
     
@@ -140,7 +141,7 @@ for i_stim = 1:2 % WN is 1, NSEM is 2
         fitmovie = zeros(block_size,'uint8');
         
         % concatenate the movie
-        idx = 1:block_length;
+        idx = 1:block_length; 
         for i_block = 1:n_blocks
             if ~grey_buffer
                 fitmovie(:,:,idx) = WN_stim.fitmovie{i_block};
@@ -156,16 +157,16 @@ for i_stim = 1:2 % WN is 1, NSEM is 2
     
     % fit each cell
     n_cells = size(prepped_data.fitspikes,2);
+    block_length = i_stim*[3600];
+    n_blocks = size(prepped_data.fitspikes,1);
     for i_cell=1:n_cells
         cell_savename = num2str(cell_spec(i_cell));
         fitspikes = [];
-        idx = 1:block_length;
         for i_block = 1:n_blocks
-            t_block_start = block_length*(i_block - 1)/120;
+            t_block_start = block_length*(i_block - 1)/monitor_refresh;
             fitspikes = [fitspikes; prepped_data.fitspikes{i_block,i_cell}+t_block_start];
-            idx = idx+block_length;
         end
-        fitspikes = fitspikes(fitspikes < block_length*n_blocks*convergence/monitor_refresh);
+        fitspikes = fitspikes(fitspikes < stimlength/monitor_refresh);
         
         if i_stim == 1
             close all
