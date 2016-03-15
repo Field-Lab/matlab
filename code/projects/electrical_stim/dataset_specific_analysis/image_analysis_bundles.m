@@ -33,7 +33,7 @@ tubulin(:,:,2) = im2(:,:,1) + maskOfElectrodes;
 tubulin(:,:,1 ) = maskOfElectrodes; 
 tubulin(:,:,3) = maskOfElectrodes; 
 figure; imshow(tubulin); 
-hsize = 120; % 241=60 um separation of electrodes.
+hsize = 1000% 120; % 241=60 um separation of electrodes.
 sigma = 0.46;
 h = fspecial('log',hsize,sigma);
 filtered = imfilter(im2(:,:,1),h);
