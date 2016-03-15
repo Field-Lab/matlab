@@ -30,13 +30,13 @@ blocks{2} = block_starts(2:2:end);
 %% Find Block Times
 clear prepped_data
 
-cell_spec = get_cell_ids(datarun_class,'On Parasol');
+cell_spec = get_cell_ids(datarun_class,'Off Parasol');
 
 
 
 visual_check = 1;
 trial_idx = 1:10;
-for i_stim = 2
+for i_stim =1:2
     tic;
     for i_block_trigger = blocks{i_stim}
         % load up the triggers and find triggers per block

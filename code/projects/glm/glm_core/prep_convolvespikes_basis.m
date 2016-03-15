@@ -10,7 +10,7 @@ function [spikesconvbasis]  = prep_convolvespikes_basis(binned_spikes,basis,bins
 vectors = size(basis,1); vectorbins= size(basis,2);
 %offset by 1,  so PS filter starts in the next bin!!! 
 binned_spikes = binned_spikes(find(binned_spikes < bins) ) + 1;
-
+max(binned_spikes)
 
 convolvedspikes_base                  = zeros(1,bins);
 convolvedspikes_base(binned_spikes) = 1; 
