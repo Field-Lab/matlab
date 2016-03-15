@@ -8,13 +8,13 @@ function elecsUsed = getElecsFromPatternFile(filePath,p)
 
 prevPattern = 0; 
 files = dir(filePath);
-indp=strmatch(['pattern' num2str(p)], char(files.name));
+indp=strmatch(['pattern' num2str(p) '_'], char(files.name));
 
 for i = indp
     fileName = files(i).name;
     pattern = str2double(fileName(8:find(fileName == '_',1)-1));
     if pattern ~= prevPattern
-        temp = load([filePath fileName]);
+        temp = load(fullfile(filePath, fileName));
         if isfield(temp,'pattern')
             for ii = 1:size(temp.pattern,2)
                 allPatterns(pattern,ii) = temp.pattern(ii).channel;

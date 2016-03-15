@@ -6,11 +6,12 @@ function wholeArrayAutoAnalysis(eiFilePath, pathToAnalysisData,varargin)
 %   optional    threshold
 %               sortingThreshold
 %               startPattern
-
+%               endPattern
 % LG 12/2015
 
 % Set default parameters
 startPattern = 1; 
+endPattern = 512; 
 threshold = 10; 
 sortingThreshold = 45; % Difficult to analyze cells underneath this threshold
 
@@ -34,7 +35,9 @@ for j=1:(nbin/2)
         case 'threshold'
             threshold = varargin{j*2};
         case 'sortingthreshold'
-            sortingThreshold = varargin{j*2};      
+            sortingThreshold = varargin{j*2};
+        case 'endpattern'
+            endPattern = varargin{j*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -74,7 +77,7 @@ fprintf('\n');
 % %% %% % Calculate the total number of pattern-cell pairs to analyze % %% 
 % %% %% % % %% %% % % %% %% % % %% %% % % %% %% % % %% %% % % %% %% % % %% 
 totalNo = 0; 
-for e = 1:512
+for e = startPattern:endPattern
     totalNo = length(cellsToAnalyze{e}) + totalNo; 
 end
 fprintf('Total number of pattern-cell pairs is %0.0f\n',totalNo); 
@@ -94,7 +97,7 @@ end
 % %% %% % % %% %% % % %% %% % % %% %% % % %% %% % % %% %% % % %% %% % % %% 
 disp('Beginning automatic analysis. Come back in a while'); 
 try
-    for e = startPattern:512
+    for e = startPattern:endPattern
         cellIDs = cellsToAnalyze{e} ;
         patternNo = e;
         disp( '**************************************************');
