@@ -13,11 +13,14 @@ params.global.thresEI=30;
 x0=params.global.x0;
 params.global.useStimElec = 0;
 
-params.bundle.cutBundle =0 ;
+params.bundle.cutBundle = 0;
 params.bundle.nVec=1;
 params.bundle.updateFreq =3;
-params.bundle.useBundle = 0;
+params.bundle.useBundleAlg = 0;
 params.bundle.detectThreshold=-12;
+params.bundle.findBundle = 0;
+params.bundle.findBundleTimes=setdiff([1:params.global.Tmax],[6 7 8]);
+params.bundle.nNeighborsExclude=3;
 
 tarray=params.global.tarray;
 Tmax=params.global.Tmax;

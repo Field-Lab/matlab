@@ -17,7 +17,7 @@ maxIter=params.global.maxIter*length(templates);
 cutBundle=params.bundle.cutBundle;
 
 if(cutBundle==1)
-    maxCond=params.bundle.onsCond-1;
+    maxCond=params.bundle.onsBundle-1;
 else
     maxCond=size(TracesAll,1);
 end
@@ -30,7 +30,7 @@ x=params.arrayInfo.x;
 els=[];
 for n=1:length(templates)
     templates{n}=templates{n}(ind,:);
-    spikes{n}=NaN*zeros(size(TracesAll,1),size(TracesAll,2));
+    spikes{n}=NaN*zeros(maxCond,size(TracesAll,2));
     [a b]=sort(max(abs(templates{n}')),'descend');
     ind2=find(a>thresEI);
     params.neuronInfo.ActiveElectrodes{n}=ind(b(ind2));
@@ -179,4 +179,4 @@ for i=2:maxCond
     
     Log(i)=cont-1;
 end
-params.patternInfo.Art=Art;
+params.patternInfo.Art=Art(1:maxCond,:,:);

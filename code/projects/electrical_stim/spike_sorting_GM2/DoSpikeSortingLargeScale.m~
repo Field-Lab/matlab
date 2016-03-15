@@ -14,7 +14,7 @@ nTrials=params.global.nTrials;
  
 
 if(nargin==6)
-    pathToAnalysisData=[pathToPreparation 'data00' num2str(varargin{1})];
+   FoldersInd=varargin{1}; 
 else
     
     
@@ -33,8 +33,29 @@ else
     end
     end
     end
-  pathToAnalysisData=[pathToPreparation 'data00' FoldersInt];
+  
 end
+
+for f=1:length(FoldersInd)
+    pathAux=[pathToPreparation 'data00' num2str(FoldersInd(f))];
+        dirs=dir(pathAux);
+        
+        
+        
+        for i=1:length(dirs)
+        
+        aux=find(dirs(i).name(1)=='p');
+        if(length(aux)>0)
+            
+            if(isequal(dirs(i).name(2:end),num2str(patternNo)))
+                path=pathAux;
+            end
+        end
+        end
+end
+
+pathToAnalysisData=path;
+
 
 
 
@@ -45,7 +66,7 @@ ind=setdiff([1:512],find(rho==0));
 
 rho=rho(ind);
 
-[TracesAll Art var0 listAmps listCurrents]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials);
+[TracesAll Art var0 listAmps listCurrents onset onsetC pval]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials,params);
 
 
 for j=1:length(listAmps)
@@ -84,6 +105,7 @@ params.patternInfo.ind=ind;
 params.patternInfo.Art =Art;
 params.patternInfo.var0=var0;
 params.patternInfo.rho=rho;
+params.patternInfo.patternNo=patternNo;
 
 templates=makeTemplatesFromEiShift(pathToEi, neuronIds,[1:512]);
 params.neuronInfo.templates = templates;
@@ -109,7 +131,11 @@ Output.stimInfo.listAmps=listAmps;
 Output.stimInfo.listCurrents=listCurrents;
 Output.stimInfo.Art=params.patternInfo.Art;
 Output.stimInfo.nTrials=params.patternInfo.nTrials;
-Output.stimInfo.Kers=params.pKers;
+Output.stimInfo.Kers=params.patternInfo.Kers;
+Output.stimInfo.rho=rho;
 Output.Log=Log;
+Output.path.pathToEi=pathToEi;
+Output.path.pathToPreparation=pathToPreparation;
+Output.path.pathToAnalysisData=pathToAnalysisData;
 end
 

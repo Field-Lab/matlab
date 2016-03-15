@@ -1,5 +1,5 @@
-%% Example 1 Plain vanilla spike sorting for 3 neurons, 1 pattern. 
-% No bundle information is computed/taking into account
+%% Example 3: Use Bundle Information to delocalize artifact model and improve spike sorting
+             % post-bundle onset
 
 
 
@@ -39,6 +39,9 @@ params.global.thresEI=35; %(for spike sorting, only consider electrodes with str
 params.global.Tmax=40; %use first 2ms of recordings (recall, sampling rate 20KhZ)
 params.global.nTrials=50; %maximum number of trials for the same stimulus (this is to create appropriate matrices, unbalances
                            %are solved by filling with NaNs (see TracesAll)
+params.bundle.findBundle=1;
+params.bundle.useBundleAlg=1; %change the variance model after the bundle
+params.bundle.cutBundle=0;  %Don't terminate spike sorting  just before the onset of bundle
 
 
 %%Set values for spike sorting, and do spike sorting

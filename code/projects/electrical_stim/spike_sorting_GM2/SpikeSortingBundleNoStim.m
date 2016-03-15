@@ -27,7 +27,7 @@ updateFreq=params.bundle.updateFreq;
 
 
 if(cutBundle==1)
-    maxCond=params.bundle.onsCond-1;
+    maxCond=params.bundle.onsBundle-1;
 else
     maxCond=size(TracesAll,1);
 end
@@ -40,7 +40,7 @@ x=params.arrayInfo.x;
 els=[];
 for n=1:length(templates)
     templates{n}=templates{n}(ind,:);
-    spikes{n}=NaN*zeros(size(TracesAll,1),size(TracesAll,2));
+    spikes{n}=NaN*zeros(maxCond,size(TracesAll,2));
     [a b]=sort(max(abs(templates{n}')),'descend');
     ind2=find(a>thresEI);
     els=union(b(ind2),els);
@@ -123,10 +123,10 @@ xold=x;
 for i=2:maxCond
     
     
-    if(i>=params.bundle.onsCond)
+    if(i>=params.bundle.onsBundle)
         
-        if(i==params.bundle.onsCond)
-            [Res]=ResidualsElectrodeSimple(Art(params.bundle.onsCond:end,:,:),patternNo,[1:Tmax]);
+        if(i==params.bundle.onsBundle)
+            [Res]=ResidualsElectrodeSimple(Art(params.bundle.onsBundle:end,:,:),patternNo,[1:Tmax]);
             [a bb c]=svd(Res(:,ind));
             
             v1=max(a(:,1:nVec)*bb(1:nVec,1:nVec)*c(:,1:nVec)',0);
@@ -137,8 +137,8 @@ for i=2:maxCond
         Diags{3}=1;
         
         DiagsBundle=Diags;
-        DiagsBundle{2}=v1(i-params.bundle.onsCond+1,:)';
-        if(mod(i-params.bundle.onsCond,updateFreq)==0)
+        DiagsBundle{2}=v1(i-params.bundle.onsBundle+1,:)';
+        if(mod(i-params.bundle.onsBundle,updateFreq)==0)
         f11=@(Art,x)logDetKron(Art(i,ind,:),[xold(1:9) x log(var0)],Difs,10,[1 4 1],DiagsBundle,[3 3 3]);
         
         g11=@(x)f11(Art,x);
@@ -225,4 +225,4 @@ for i=2:maxCond
     
     Log(i)=cont;
 end
-params.patternInfo.Art=Art;
+params.patternInfo.Art=Art(1:maxCond,:,:);

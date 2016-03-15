@@ -6,7 +6,7 @@ Dif2=params.global.Dif2;
 positions=params.global.positions;
 x=params.arrayInfo.x;
 useStimElec = params.global.useStimElec;
-useBundle = params.bundle.useBundle;
+useBundleAlg = params.bundle.useBundleAlg;
 
 Tmax=params.global.Tmax;
 nTrials=params.global.nTrials;
@@ -66,7 +66,7 @@ ind=setdiff([1:512],find(rho==0));
 
 rho=rho(ind);
 
-[TracesAll Art var0 listAmps listCurrents]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials);
+[TracesAll Art var0 listAmps listCurrents onset onsetC pval]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials,params);
 
 
 for j=1:length(listAmps)
@@ -107,11 +107,14 @@ params.patternInfo.var0=var0;
 params.patternInfo.rho=rho;
 params.patternInfo.patternNo=patternNo;
 
+params.bundle.onsBundle=onsetC;
+params.bundle.onset=onset;
+
 templates=makeTemplatesFromEiShift(pathToEi, neuronIds,[1:512]);
 params.neuronInfo.templates = templates;
-if(~useStimElec&&(~useBundle))
+if(~useStimElec&&(~useBundleAlg))
 [spikes Log params]=SpikeSortingNoBundleNoStim(params,TracesAll);
-elseif(~useStimElec&&(useBundle))
+elseif(~useStimElec&&(useBundleAlg))
 [spikes Log params]=SpikeSortingBundleNoStim(params,TracesAll);    
 end
 
@@ -137,5 +140,10 @@ Output.Log=Log;
 Output.path.pathToEi=pathToEi;
 Output.path.pathToPreparation=pathToPreparation;
 Output.path.pathToAnalysisData=pathToAnalysisData;
+Output.bundle=params.bundle;
+Output.bundle.onsetC=onsetC;
+Output.bundle.onset=onset;
+Output.bundle.pvals=pval;
+
 end
 
