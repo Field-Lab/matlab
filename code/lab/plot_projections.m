@@ -121,7 +121,7 @@ for ff=1:length(dim_to_plot)
 
     % plot clusters if desired
     if params.clusters ~= EMPTY
-        axes(density_plot_axes{ff}+3);
+        axes(density_plot_axes{ff+3});
         plot(spike_proj(1:params.points,dim(1)),spike_proj(1:params.points,dim(2)),'m.'); hold on;
         rng = [xlim ylim];
         nClusters = length(params.clusters.probability);

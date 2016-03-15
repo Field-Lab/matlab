@@ -14,9 +14,13 @@ end
 patterns = datarun{1,2}.stimulus.trials;
 RGB = zeros(length(patterns), 3);
 X_DELTA = zeros(length(patterns),1);
+try
 for i =1:length(patterns)
     RGB(i, :) = patterns(i).RGB;
     X_DELTA(i, :) = patterns(i).X_DELTA;
+end
+catch
+    disp('problem with RGB or X_DELTA')
 end
 
 X_DELTA  = X_DELTA./abs(X_DELTA); % make +1 for right or -1 for left

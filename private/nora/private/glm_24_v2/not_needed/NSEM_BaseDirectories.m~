@@ -1,0 +1,33 @@
+function [BASEDIR] = NSEM_BaseDirectories_Bertha
+
+
+BASEDIR.note                = 'GLM and NSEM directories.  Code and Data.  Independent of experiment number, parameters, fit types';
+BASEDIR.NSEM_home_snleapp   = '/netapp/snle/lab/Experiments/Array/Analysis/akheitman/NSEM_Projects';
+
+BASEDIR.general_codehome = '/Testing/akheitman/Matlab_code/';
+%BASEDIR.analysisdir      = '/Volumes/Analysis/';
+BASEDIR.analysisdir      = '/Testing/akheitman/temp_Aa
+BASEDIR.NSEM_home        = '/Testing/akheitman/NSEM_Home';
+
+
+
+
+BASEDIR.BlockedSpikes   = '/Testing/akheitman/NSEM_Home/BlockedSpikes';
+BASEDIR.GLM_output      = '/Testing/akheitman/NSEM_Home/GLM_Output';
+BASEDIR.GLM_codehome    = '/Testing/akheitman/Matlab_code/glm_AH_24/';
+
+
+
+
+
+BASEDIR.GLM_troubleshootplots = sprintf('%s/troubleshootingplots', BASEDIR.GLM_codehome); 
+
+
+BASEDIR.tempnote = 'temporary directory discrepancies due to Stanford move' ;
+BASEDIR.temp.GLM_output_netappsnle = '/netapp/snle/lab/Experiments/Array/Analysis/akheitman/NSEM_Projects/GLM'; 
+BASEDIR.temp.GLM_output_alligator = '/Users/akheitman/Matlab_code/glm_output';
+
+% Directories that should follow over
+BASEDIR.NSEM_stimuli = sprintf('%s/Stimuli', BASEDIR.NSEM_home_snleapp);
+
+end

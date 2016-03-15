@@ -27,7 +27,7 @@ end
 sta_fit = struct;
 
 % if input is empty, return empty
-if isempty(vision_fit);return;end
+if isempty(fieldnames(vision_fit));return;end
 
 % convert center point
 sta_fit.mean = [vision_fit.mean(1) (datarun.stimulus.field_height - vision_fit.mean(2))] + 0.5;

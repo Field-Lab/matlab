@@ -1,0 +1,66 @@
+function A = fastconvAH(x,k,M,N,padval,revflag)
+% Usage: A = fastconv(x,k,M,N,padval,revflag)
+% Input
+%   x: n x T signal         
+%   k: n x klen stimulus filter
+%   M: 
+%   N: time point in 
+
+% Convolves the T with the klen
+
+% k is rowvec or a matrix
+
+%(Stimpars.movie_ROI(space_idx,:),temp_filt1',nspace,T);
+
+[n T] = size(x);
+klen = size(k,2);
+
+% Pad with a specified value so that klen+T-1 is a power of 2 (fft will be fast!)
+L = 2^(ceil(log(klen+T-1)/log(2)));
+
+if (~exist('padval','var'))
+   padval = 0;
+end
+if (~exist('revflag','var'))
+   revflag = 0;
+end
+
+if (n > 1)
+   if (size(k,1) == 1) % k is a rowvec
+      
+      if (revflag)
+         A = ifft(fft([x padval.*ones(n,L-T)],[],2).*conj(repmat(fft([k zeros(1,L-klen)]),n,1)),[],2);
+      else
+         A = ifft(  fft([x padval.*ones(n,L-T)],[],2) .*  repmat( fft([k zeros(1,L-klen)]), n, 1)       ,[],2 );
+      end
+   elseif(size(k,1) == n)
+      
+      if (revflag)
+         A = ifft(fft([x padval.*ones(n,L-T)],[],2).*conj(fft([k zeros(n,L-klen)],[],2)),[],2);
+      else
+         1;
+         A = ifft(fft([x padval.*ones(n,L-T)],[],2).*fft([k zeros(n,L-klen)],[],2),[],2);
+         % this computation is time consuming (edoi)
+      end
+   else
+      error('spatial size of k (%d) does not match spatial size of stimulus (%d)!\n',size(k,1),size(x,1));
+   end
+else
+   A = zeros(size(k,1),L);
+   for j=1:size(k,1)
+      if (revflag)
+         1;
+         A(j,:) = ifft(fft([x padval.*ones(n,L-T)],[],2).*conj(fft([k(j,:) zeros(1,L-klen)],[],2)));
+      else
+         tic 
+         A(j,:) = ifft( fft([x padval.*ones(n,L-T)],[],2) .* fft([k(j,:) zeros(1,L-klen)],[],2));
+         toc
+         1+1
+      end
+      
+   end
+end
+if (exist('M','var') && exist('N','var'))
+   % A is size n x L
+   A = A(1:M,1:N);
+end
