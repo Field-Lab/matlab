@@ -1,14 +1,26 @@
 clear
+
+%% Classification run
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));
 model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neurons', 1, 'load_params', 0));
 dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
-mkdir(dsave);
-%%
-%pd= interleaved_data_prep(model_fit_data, [96000+2300 48000+1700], 5);
+
+%% ONLY CHANGE THINGS HERE
+cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
+%cell_spec = [202];
+convergence = 1; % fraction of data to use
+
+%% Don't change these
+if convergence < 1; dsave = [dsave '_Conv_' num2str(convergence)]; end
+mkdir(dsave)
+
 block_starts = [1 503 1485 1987 2969 3471 4453 4955 5937 6439];
 blocks{1} = block_starts(1:2:end);
 blocks{2} = block_starts(2:2:end);
+monitor_refresh = 120;
+visual_check = 1;
+
 
 %%
 % block frames is a vector of the different block lengths,
@@ -31,15 +43,16 @@ blocks{2} = block_starts(2:2:end);
 clear prepped_data
 
 
-cell_spec = get_cell_ids(datarun_class,'On Parasol');
+
 
 monitor_refresh = 120;
 visual_check = 1;
-trial_idx = 1:10;
 
-for i_stim =1:2
+for i_stim = 2
+    trial_idx = 1:10;
     tic;
     for i_block_trigger = blocks{i_stim}
+        
         % load up the triggers and find triggers per block
         try
             triggers = model_fit_data.triggers(i_block_trigger+(1:1000)-1);
@@ -118,7 +131,7 @@ for i_stim =1:2
     
     disp(['Trigger and spike finding took ' num2str(toc) ' seconds.'])
     
-    %% Load up and organize the stimulus
+    % Load up and organize the stimulus
     tic;
     if i_stim == 1
         WN_stim = interleaved_data_prep(model_fit_data, [3600 1200], 50, 'stimulus_name', 'BW-8-1');
@@ -127,11 +140,15 @@ for i_stim =1:2
     else
         load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
         fitmovie = fitmovie(:,:,2401:end);
-        load('/Volumes/Lab/Users/Nora/downsampledNSbrownian.mat');
-        prepped_data.testmovie = fitmovie;
+        stimlength = round(size(fitmovie,3)*convergence);
+        if convergence < 1
+            fitmovie = fitmovie(:,:,1:stimlength);
+        end
+            
+        test = load('/Volumes/Lab/Users/Nora/downsampledNSbrownian_testA.mat');
+        prepped_data.testmovie = test.fitmovie;
         save_name = 'NSEM';
-    end  
-    
+    end   
     
     % Concat WN movie
     if i_stim == 1;
@@ -149,7 +166,7 @@ for i_stim =1:2
         fitmovie = zeros(block_size,'uint8');
         
         % concatenate the movie
-        idx = 1:block_length;
+        idx = 1:block_length; 
         for i_block = 1:n_blocks
             if ~grey_buffer
                 fitmovie(:,:,idx) = WN_stim.fitmovie{i_block};
@@ -158,22 +175,23 @@ for i_stim =1:2
             end
             idx = idx+block_length;
         end
-        %clear WN_stim
+        if convergence < 1; fitmovie = fitmovie(:,:,1:(block_length*n_blocks*convergence)); end
     end
     disp(['Stimulus organization took ' num2str(toc) ' seconds.']); tic
     
     
     % fit each cell
     n_cells = size(prepped_data.fitspikes,2);
-    for i_cell=1:n_cells
+    block_length = i_stim*[3600];
+    n_blocks = size(prepped_data.fitspikes,1);
+    for i_cell=11:n_cells
         cell_savename = num2str(cell_spec(i_cell));
         fitspikes = [];
-        idx = 1:block_length;
         for i_block = 1:n_blocks
-            t_block_start = block_length*(i_block - 1)/120;
+            t_block_start = block_length*(i_block - 1)/monitor_refresh;
             fitspikes = [fitspikes; prepped_data.fitspikes{i_block,i_cell}+t_block_start];
-            idx = idx+block_length;
         end
+        fitspikes = fitspikes(fitspikes < stimlength/monitor_refresh);
         
         if i_stim == 1
             close all
