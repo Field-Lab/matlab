@@ -30,9 +30,8 @@ fit_datarun = load_data([Analysis_Path '/' fit_data '/' fit_data], struct('load_
 load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat')
 testmovie = fitmovie(:,:,1:1200);
 if convergence < 1
-    frames = 3600*convergence;
-    fitmovie = fitmovie(:,:,1:frames);
-    stim_length = frames / monitor_refresh;
+    stim_length = (3600-10)*convergence;
+    fitmovie = fitmovie(:,:,1:ceil(stim_length*monitor_refresh));
 end
 
 
@@ -42,7 +41,7 @@ for i = 1:length(cells)
     glm_cellinfo.cell_savename = num2str(cells(i));
     master_idx         = find(fit_datarun.cell_ids == cells(i));
     fitspikes = align_spikes_triggers(fit_datarun.spikes{master_idx}, fit_datarun.triggers, 100, monitor_refresh);
-    if convergence < 1; fitspikes = fitspikes(fitspikes<stim_length); end
+    fitspikes = fitspikes(fitspikes < stim_length);
     
     eval(sprintf('load %s/%s.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
     BPS(i,1) = fittedGLM.xvalperformance.glm_normedbits;
