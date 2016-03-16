@@ -41,10 +41,6 @@ visual_check = 1;
 
 %% Find Block Times
 clear prepped_data
-
-
-
-
 monitor_refresh = 120;
 visual_check = 1;
 
@@ -178,8 +174,7 @@ for i_stim = 2
         if convergence < 1; fitmovie = fitmovie(:,:,1:(block_length*n_blocks*convergence)); end
     end
     disp(['Stimulus organization took ' num2str(toc) ' seconds.']); tic
-    
-    
+      
     % fit each cell
     n_cells = size(prepped_data.fitspikes,2);
     block_length = i_stim*[3600];
@@ -210,7 +205,6 @@ for i_stim = 2
         fittedGLM.STA = STA;
         fittedGLM.center = center;
         
-
         save([dsave '/' cell_savename save_name '.mat'],'fittedGLM', '-v7.3');
         close all
         plotfilters(fittedGLM);
