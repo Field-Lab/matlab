@@ -261,13 +261,13 @@ all_data.cone_rgb = ones(num_cones,3);
 all_data.cone_types_kmeans = cone_types;
 all_data.cone_types_em = cone_types;
 
-path2data=['/Volumes/Analysis-1/',datarun.names.short_name(21:32),'/cone_data/'];
+path2data=['/Volumes/Analysis/',datarun.names.short_name(1:12),'/cone_data/'];
 
 % save most info to text files
 if isscalar(final_magic_number)
-    save_file_path = [path2data datarun.names.short_name(34:56) sprintf('-bayes-msf_%0.2f-%s/',final_magic_number,save_suffix)];
+    save_file_path = [path2data datarun.names.short_name(14:end-8) sprintf('-bayes-msf_%0.2f-%s/',final_magic_number,save_suffix)];
 else
-    save_file_path = [path2data datarun.names.short_name(34:56) sprintf('-bayes-msf_LM_%0.2f-msf_S_%0.2f-%s/',...
+    save_file_path = [path2data datarun.names.short_name(14:end-8) sprintf('-bayes-msf_LM_%0.2f-msf_S_%0.2f-%s/',...
         final_magic_number(1),final_magic_number(2),save_suffix)];
 end
 mkdir(save_file_path)

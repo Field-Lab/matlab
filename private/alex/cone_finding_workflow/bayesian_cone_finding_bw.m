@@ -1,5 +1,5 @@
 function [added_cones,first_dll,W,kernel_norms,num_kern_y,num_kern_x] = bayesian_cone_finding(bcf_params,...
-    roi_x,roi_y,W,kernel_norms, cell_constants, stas, kern_c, dist_filt)
+    roi_x,roi_y,W,kernel_norms, cell_constants, stas, dist_filt)
 %
 %
 % bayesian_cone_finding     perform bayesian cone finding on a small patch
@@ -46,36 +46,8 @@ if new_W || ~exist('W','var') || isempty(W)  || (exist('loop_mode','var') && loo
             kernel_x = reshape(kernel_x,[],1);
             kernel_y = reshape(kernel_y,[],1);
     end
-    num_kernels = length(kernel_x)*kern_c;
+    num_kernels = length(kernel_x);
 end
-
-
-
-% % generate W
-% if new_W || ~exist('W','var') || isempty(W)
-%     num_cone_types = length(fieldnames(kernel_colors));    
-%     % size of the ROI
-%     rf_size = [diff(roi_y)+1 diff(roi_x)+1];
-%     
-%     % generate spec for each kernel
-%     
-%     % locations
-%     kernel_centers = 1 + [kernel_x-roi_x(1) kernel_y-roi_y(1)];
-%     % replicate, once for each cone type
-%     kernel_centers = reshape(reshape(repmat(kernel_centers,1,kern_c)',[],1),2,[])';
-%     % load into struct
-%     kernel_spec = struct('center',mat2cell(kernel_centers,ones(size(kernel_centers,1),1)));
-%     
-%     % types
-%     for cc = 1:kern_c; [kernel_spec(cc:num_cone_types:end).type] = deal(kernel_color_names{cc}); end
-%     
-%     % radii
-%     for cc = 1:kern_c; [kernel_spec(cc:num_cone_types:end).radius] = deal(kernel_radii(cc)); end
-%     tic
-%     % compute W and norm of each kernel
-%     [W,kernel_norms] = make_cone_weights_matrix(rf_size,kernel_spec,kernel_colors);
-%     toc
-% end
 
 
 % ITERATE
@@ -90,7 +62,7 @@ B = sparse(num_kernels,num_rfs);
 best_dll = zeros(num_iter,1);
 best_kernel = zeros(num_iter,1);
 added_cones = zeros(num_iter,9);
-added_cones_mat = zeros(num_kern_y,num_kern_x,kern_c);
+added_cones_mat = zeros(num_kern_y,num_kern_x);
 likelihood = zeros(num_iter,1);
 
 % effective cone density
@@ -116,16 +88,9 @@ for ii =1:num_iter
     
     
     % compute the term in delta prior for cone repulsion
-    % initialize
-    repulsion_force = zeros(num_kern_y,num_kern_x,kern_c);
-    % for each pair of cone types...
-    for new_cone_c = 1:kern_c
-        for cc=1:kern_c
-            % compute the repulsion from other cones
-            repulsion_force(:,:,new_cone_c) = repulsion_force(:,:,new_cone_c) + ...
-                imfilter(added_cones_mat(:,:,cc),log(dist_filt{new_cone_c,cc}));
-        end
-    end
+
+    % compute the repulsion from other cones
+    repulsion_force = imfilter(added_cones_mat,log(dist_filt{1}));
     
     % sum up terms in delta_prior
     delta_prior = log(eff_q) - log(1-eff_q) + reshape(permute(repulsion_force,[3 1 2]),1,[]);
@@ -147,22 +112,17 @@ for ii =1:num_iter
     % add weights to it in each RGC
     B(best_kernel(ii),:) = temp_value(:,best_kernel(ii))' ./ kernel_norms(best_kernel(ii));
     
-    %     subplot(4,4,ii)
-    %     tmp=full(B);
-    %     a=reshape(tmp,58,58);
-    %     imagesc(a)
-    
     % note the location of the new cone in a list of coordinates
-    bk_c = mod(best_kernel(ii)-1,kern_c) + 1;
-    bk_y = mod( ceil(best_kernel(ii)/kern_c) - 1, num_kern_y) + 1;
-    bk_x = mod( ceil(best_kernel(ii)/(kern_c*num_kern_y)) - 1, num_kern_x) + 1;
-    bk_real_x = kernel_x(ceil(best_kernel(ii)/kern_c));
-    bk_real_y  = kernel_y(ceil(best_kernel(ii)/kern_c));
+    bk_c = 1; % bk_c is cone type, to be deleted entirely in the future!
+    bk_y = mod( best_kernel(ii) - 1, num_kern_y) + 1;
+    bk_x = mod( ceil(best_kernel(ii)/num_kern_y) - 1, num_kern_x) + 1;
+    bk_real_x = kernel_x(best_kernel(ii));
+    bk_real_y  = kernel_y(best_kernel(ii));
     added_cones(ii,:) = [bk_x bk_y bk_c bk_real_x bk_real_y...
         best_dll(ii) delta_log_likelihood(best_kernel(ii)) delta_prior(best_kernel(ii)) best_kernel(ii)];
     
     % and in a matrix
-    added_cones_mat(bk_y,bk_x,bk_c) = 1;
+    added_cones_mat(bk_y,bk_x) = 1;
     
     
     % compute likelihood

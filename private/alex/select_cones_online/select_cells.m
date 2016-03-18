@@ -1,8 +1,9 @@
 function select_cells(all_sta, pols, rad, ind)
 
 global cones cone_regions
-persistent cone_peaks new_cone_regs
-
+% persistent cone_peaks new_cone_regs
+ cone_peaks = [];
+ new_cone_regs = [];
 
 if ~exist('hmain', 'var')
     hmain=figure;
@@ -58,7 +59,7 @@ new_cone_color = [1 0 0];
                             for i = 1:length(new_cone_regs)
                                 plot(new_cone_regs{i}(:,1), new_cone_regs{i}(:,2));
                             end
-                        else
+                        elseif isempty(findobj('XData', cone_regions{1}(:,1), 'YData', cone_regions{1}(:,2)))
                             for i = 1:length(cone_regions)
                                 plot(cone_regions{i}(:,1), cone_regions{i}(:,2));
                             end
@@ -77,9 +78,6 @@ new_cone_color = [1 0 0];
                     else
                         sta=all_sta(:,:,ind);
                         sta2show = sta;
-                        
-
-                        
                     end
                     
                     
@@ -115,6 +113,19 @@ new_cone_color = [1 0 0];
                     if ~isempty(tmp)
                         cone_peaks(tmp,:) = [];
                     end
+                    
+                    close_cones = cones(:,1)>min(cone_peaks(:,1))-bord*1.5 & ...
+                        cones(:,1)<max(cone_peaks(:,1))+bord*1.5 & ...
+                        cones(:,2)>min(cone_peaks(:,2))-bord*1.5 & ...
+                        cones(:,2)<max(cone_peaks(:,2))+bord*1.5;
+                    
+                    for i=find(close_cones)'
+                        plot(cone_regions{i}(:,1), cone_regions{i}(:,2), 'color', [1 1 0]);
+                    end
+                    axis([min(cone_peaks(:,1))-bord ...
+                        max(cone_peaks(:,1))+bord ...
+                        min(cone_peaks(:,2))-bord ...
+                        max(cone_peaks(:,2))+bord]);
                                         
                     tmp = pdist2(cones, cone_peaks);
                     tmp = min(tmp);
@@ -124,21 +135,8 @@ new_cone_color = [1 0 0];
                     end
 
                     if ~isempty(cone_peaks(:))
-                        
-                      
-                        
-                        close_cones = cones(:,1)>min(cone_peaks(:,1))-bord*2 & ...
-                            cones(:,1)<max(cone_peaks(:,1))+bord*2 & ...
-                            cones(:,2)>min(cone_peaks(:,2))-bord*2 & ...
-                            cones(:,2)<max(cone_peaks(:,2))+bord*2;
-                        
-                        for i=find(close_cones)'
-                            plot(cone_regions{i}(:,1), cone_regions{i}(:,2), 'color', [1 1 0]);
-                        end
-                        
-                        
+
                         new_cone_regs = cell(1,size(cone_peaks,1));
-                        coll_sta = zeros(size(all_sta,1),size(all_sta,2) );
                         for i=1:size(cone_peaks,1)
                             raw_row = map_speck(:,1)+cone_peaks(i,1);
                             raw_col = map_speck(:,2)+cone_peaks(i,2);
@@ -176,16 +174,12 @@ new_cone_color = [1 0 0];
                             plot(new_cone_regs{i}(:,1),new_cone_regs{i}(:,2), col);
                              
                         end
-                        
-                        axis([min(cone_peaks(:,1))-bord ...
-                            max(cone_peaks(:,1))+bord ...
-                            min(cone_peaks(:,2))-bord ...
-                            max(cone_peaks(:,2))+bord]);
-                        
-                        subplot(conePlot)
-                        imagesc(sta2show)
- 
+                    else
+                        new_cone_regs = [];
                     end
+                    
+                    subplot(conePlot)
+                    imagesc(sta2show)
                 else
                     cones = [cones; cone_peaks];
                     cone_regions = [cone_regions new_cone_regs];
@@ -307,10 +301,12 @@ new_cone_color = [1 0 0];
             new_cone_regs(t) = [];
             cone_peaks(t,:) = [];
             
-            axis([min(cone_peaks(:,1))-bord ...
-                max(cone_peaks(:,1))+bord ...
-                min(cone_peaks(:,2))-bord ...
-                max(cone_peaks(:,2))+bord]);
+            if ~isempty(cone_peaks)
+                axis([min(cone_peaks(:,1))-bord ...
+                    max(cone_peaks(:,1))+bord ...
+                    min(cone_peaks(:,2))-bord ...
+                    max(cone_peaks(:,2))+bord]);
+            end
             
         elseif strcmp(seltype,'extend') % double click any button DELETE OLD cone
             

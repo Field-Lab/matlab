@@ -24,7 +24,7 @@ datarun = load_data(path2data);
 % datarun = load_data('/Volumes/Analysis/2012-09-13-2/d01_09-norefit/data001-from-d01_09/data001-from-d01_09');
 % datarun = load_data('/Volumes/Acquisition/Analysis/2015-10-29-1/data004/data004');
 
-datarun = load_data('/Volumes/Analysis-1/2016-02-17-4/d00-05-norefit/data001/data001');
+datarun = load_data('/Volumes/Analysis/2016-02-17-4/d00-05-norefit/data001/data001');
 
 datarun.names.nickname = nickname;
 datarun.piece.rig = rig;
@@ -34,11 +34,15 @@ datarun.piece.display = display_type;
 datarun = load_params(datarun,'verbose',1);
 datarun = load_neurons(datarun);
 datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
+load('/Volumes/Analysis/2016-02-17-4/data001_denoised_sta', 'denoised_sta')
+for i=1:length(datarun.cell_ids)
+    tmp = denoised_sta(:,:,:,i); 
+    datarun.stas.stas{i} = permute(tmp, [1 2 4 3]);
+end
 datarun = set_polarities(datarun);
 
-
 % find movie, check if exists
-movie_spec = fullfile('/Volumes/Analysis-1/stimuli/white-noise-xml/', movie_descr);
+movie_spec = fullfile('/Volumes/Analysis/stimuli/white-noise-xml/', movie_descr);
 if ~exist(movie_spec, 'file')
     fprintf('\nMOVIE DOESN''T EXIST\n')
 end
@@ -65,7 +69,7 @@ datarun = get_sta_summaries(datarun, cell_types, ...
 % calculate static nonlinearities
 datarun = load_java_movie(datarun, movie_spec);
 start_time=0;
-datarun = get_snls(datarun, datarun.cell_ids(get_cell_indices(datarun, cell_types)),'frames',-2:0,'start_time',start_time,'stimuli',10000,'new',true);
+datarun = get_snls(datarun, datarun.cell_ids(get_cell_indices(datarun, cell_types)),'frames',-2:0,'start_time',start_time,'stimuli',3000,'new',true);
 
 
 
@@ -132,7 +136,7 @@ for i=1:length(datarun.cell_ids)
     tmp=sum(datarun.stas.stas{i}(:,:,:,6),3);
     [a,b]=max(abs(tmp(:)));
     [x,y]=ind2sub(size(tmp),b);
-    if y>10 && x>10 && x<310 && y<310
+    if y>10 && x>10 && x<290 && y<390
         kk(:,:,cnt)=tmp(x-10:x+10,y-10:y+10)*sign(tmp(b));
         cnt=cnt+1;
     end
@@ -273,8 +277,8 @@ choose_magic_number(datarun,bcf,bcf_params);
 
 
 %%
-magic_number = 2
-extra_dirname_info='_data001_bayes';
+magic_number = 85
+extra_dirname_info='_denoised_bayes';
 save_bayesian_cones(datarun, bcf, bcf_params, magic_number, [extra_dirname_info], false, [], 'fit_foa', [], 'robust_std_method', 1);
 
 %%

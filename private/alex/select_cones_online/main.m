@@ -1,6 +1,5 @@
 
 %% load data
-clear
 close all
 clear
 
@@ -8,13 +7,18 @@ global cones cone_regions new_cones new_regions
 
 date = '2016-02-17-4';
 run = 'data001';
-path2load = ['/Volumes/Analysis-1/',date, '/d00-05-norefit/',run,'/',run];
-field_size = [300, 400];
-scale = 2;
+path2load = ['/Volumes/Analysis/',date, '/d00-05-norefit/',run,'/',run];
+field_size = [200, 265];
+scale = 3;
 
 datarun = load_data(path2load);
 datarun = load_params(datarun,'verbose',1);
-datarun = load_sta(datarun,'load_sta','all','keep_java_sta',true);
+datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
+load('/Volumes/Analysis/2016-02-17-4/data001_denoised_sta', 'denoised_sta')
+for i=1:length(datarun.cell_ids)
+    tmp = denoised_sta(:,:,:,i); 
+    datarun.stas.stas{i} = permute(tmp, [1 2 4 3]);
+end
 datarun = set_polarities(datarun);
 
 cell_indices = get_cell_indices(datarun, {1,2,3,4,5});
@@ -45,6 +49,58 @@ end
 all_sta = all_sta(:,:,ic);
 all_sta = imresize(all_sta,scale); % perhaps nearest?
 pols = pols(ic);
+
+% read in the map
+vormap = dlmread('/Volumes/Analysis/2016-03-17-2/cone_data/data001/denoised_bayes-msf_20/map_data001.txt');
+load('/Volumes/Analysis/2016-03-17-2/cone_data/data001/denoised_bayes-msf_20/cones.mat', 'cone_centers')
+
+radius = 3;
+[contour, map_speck] = contruct_cone_region(radius);
+new_cone_regs = cell(1,size(cone_centers,1));
+for i=1:size(cone_centers,1)
+    new_cone_regs{i} = [contour(:,1)+cone_centers(i,1)*scale contour(:,2)+cone_centers(i,2)*scale];
+end
+figure
+hold on
+axis ij
+for i=1:size(cone_centers,1)
+    plot(new_cone_regs{i}(:,1), new_cone_regs{i}(:,2))
+end
+
+cone_regions = new_cone_regs;
+cones = cone_centers*scale;
+radius = 3
+select_cells(all_sta, pols, radius, 1);
+
+
+%
+% % get regions
+% tic
+% tmpmap = imresize(vormap,3,'method', 'nearest');
+% voronoi_contours = cell(max(vormap(:)),2);
+% for i=1:max(vormap(:))
+%     tmp = uint8(tmpmap);
+%     if ~isempty(find(vormap==i,1))
+%         tmp(tmpmap~=i)=0;
+%         [r, c] = find(tmp,1);
+%         contour = bwtraceboundary(tmp,[r c],'W',8,Inf,'counterclockwise');
+%         contour= round(contour/3)+0.5;
+% %         plot(contour(:,2), contour(:,1), 'linewidth', 2)
+%         voronoi_contours{i, 1} = contour(:,2);
+%         voronoi_contours{i, 2} = contour(:,1);
+%     end
+% end
+% toc
+% figure
+% colormap gray
+% td = vormap;
+% td(vormap>0) = 1;
+% imagesc(td)
+% hold on
+% for i=1:max(vormap(:))
+%     plot(voronoi_contours{i, 1}, voronoi_contours{i, 2}, 'linewidth', 2)
+% end
+
 
 %% pre-finding: auto
 prelim_peaks = zeros(6000,3);
@@ -127,6 +183,17 @@ select_cells(coll_sta, pols_a, radius, 1);
 
 cone_regions = [];
 cones = [];
+cnt = 1;del_cones = [];
+for i=1:max(vormap(:))
+    if ~isempty(voronoi_contours{i})
+        cone_regions{cnt} =[voronoi_contours{i, 1}, voronoi_contours{i, 2}];
+        cnt = cnt+1;
+    else
+        del_cones = [del_cones i];
+    end
+end
+cones = cone_centers*2;
+cones(del_cones, :) = [];
 radius = 3
 select_cells(all_sta, pols, radius, 1);
 
@@ -151,7 +218,7 @@ while flag
     end
 end
 
-path2save=['/Volumes/Analysis-1/', date, '/stimuli/maps/map_', run, '_test_20160303_full'];
+path2save=['/Volumes/Analysis/', date, '/stimuli/maps/map_', run, '_test_20160303_full'];
 if ~isdir(path2save)
     mkdir(path2save);
 end
@@ -269,7 +336,8 @@ double_cones = cell2mat(cone_lists');
 length(double_cones)
 
 radius = 3;
-weight_threshold = 0.25;
+weight_threshold = 0.3;
+close all
 correct_cones(tmp_w, all_sta, pols, cones, cone_regions, cone_lists, radius, weight_threshold)
 
 cones(double_cones,:) = [];
@@ -299,7 +367,7 @@ imagesc(tmp)
 
 
 %% save map
-path2save=['/Volumes/Analysis-1/', date, '/stimuli/maps/map_', run, '_test_20160302'];
+path2save=['/Volumes/Analysis/2016-03-17-2/cone_data/map_data001_manual'];
 dlmwrite([path2save '.txt'], map, 'delimiter', '\t', 'newline', 'pc');
 save([path2save '_info'],'cell_indices', 'ic', 'cones', 'cone_regions')
 
@@ -309,6 +377,7 @@ imagesc(savedMap)
 
 
 %% control!
+
 map1 = a;
 for i=31:50
     figure

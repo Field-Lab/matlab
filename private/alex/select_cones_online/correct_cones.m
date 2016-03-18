@@ -12,6 +12,10 @@ hPlot=subplot(1,2,2);
 [contour, map_speck] = contruct_cone_region(radius);
 
 colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
+a = [];
+suspect_cones = [];
+axlims = [];
+addFigure = [];
 
     function figure1_WindowKeyPressFcn(hmain, eventdata, handles)
         
@@ -19,7 +23,9 @@ colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
             case 'space'
                 if i<length(cone_lists)
                     i = i+1
-                    
+                    if ishandle(addFigure)
+                        close(addFigure)
+                    end
                     suspect_cones = cone_lists{i};
                     % find cells with significant weight on the cones
                     a = [];
@@ -48,12 +54,18 @@ colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
                     hold off
                     imagesc(comb);
                     hold on
+                    axlims = zeros(4, length(suspect_cones));
                     for j=1:length(suspect_cones)
                         plot(cone_regions{suspect_cones(j)}(:,1), cone_regions{suspect_cones(j)}(:,2), 'color', colors(j));
+                        axlims(1,j) = min(cone_regions{suspect_cones(j)}(:,1));
+                        axlims(2,j) = max(cone_regions{suspect_cones(j)}(:,1));
+                        axlims(3,j) = min(cone_regions{suspect_cones(j)}(:,2));
+                        axlims(4,j) = max(cone_regions{suspect_cones(j)}(:,2));
                     end
+                    
 %                     plot(cone_regions{c(i)}(:,1), cone_regions{c(i)}(:,2));
-                    axis([cones(suspect_cones(j),1)-10, cones(suspect_cones(j),1)+10,...
-                        cones(suspect_cones(j),2)-10, cones(suspect_cones(j),2)+10])
+                    axis([min(axlims(1,:))-5, max(axlims(2,:))+5,...
+                        min(axlims(3,:))-5, max(axlims(4,:))+5])
                     set(gca, 'DataAspectRatio', [ 1 1 1])
                     title(int2str(length(a)))
                     
@@ -61,12 +73,26 @@ colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
                     hold off
                     imagesc(comb);
                     hold on
-                    axis([cones(suspect_cones(j),1)-10, cones(suspect_cones(j),1)+10,...
-                        cones(suspect_cones(j),2)-10, cones(suspect_cones(j),2)+10])
+                    axis([min(axlims(1,:))-5, max(axlims(2,:))+5,...
+                        min(axlims(3,:))-5, max(axlims(4,:))+5])
                     set(gca, 'DataAspectRatio', [ 1 1 1])
                 else
                     delete(hmain)
                 end
+                addFigure = figure;
+                set(addFigure, 'position', [64  104 1648 991])
+                [r,c] = opt_subplots(length(a));
+                for k=1:length(a)
+                    subplot(r,c,k)
+                    imagesc(all_sta(:,:,a(k)));
+                    hold on
+                    for j=1:length(suspect_cones)
+                        plot(cone_regions{suspect_cones(j)}(:,1), cone_regions{suspect_cones(j)}(:,2), 'color', colors(j));
+                    end
+                    axis([min(axlims(1,:))-15, max(axlims(2,:))+15,...
+                        min(axlims(3,:))-15, max(axlims(4,:))+15])
+                end
+
         end
         
     end
@@ -85,15 +111,26 @@ colors = 'rkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkrrkrkrkrkrkrkr';
             new_cones(end+1,:) = [xinit yinit];
             new_regions{end+1} = [contour(:,1)+new_cones(end,1) contour(:,2)+new_cones(end,2)];
             
+            figure(hmain)
             subplot(hPlot);
             plot(new_regions{end}(:,1), new_regions{end}(:,2), 'color', [1 1 1]);
+            
+            figure(addFigure)
+            tmp = get(gcf, 'Children');
+            for k=1:length(tmp)
+                subplot(tmp(k))
+                plot(new_regions{end}(:,1), new_regions{end}(:,2), 'color', [1 1 1]);
+            end
+            figure(hmain)             
             
         elseif strcmp(seltype,'alt') % right button DELETE cone
             
             [~,t] = min(pdist2([xinit yinit], new_cones));
             tmp = findobj('XData', new_regions{t}(:,1), 'YData', new_regions{t}(:,2));
             if ~isempty(tmp)
-                delete(tmp(1));
+                for k=1:length(tmp)
+                    delete(tmp(k));
+                end
                 new_regions(t) = [];
                 new_cones(t,:) = [];
             else

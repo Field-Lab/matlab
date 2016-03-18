@@ -38,11 +38,7 @@ end
 
 
 
-
-
-
 % PLOT WITH USER-SCALABLE MAGIC SCALE FACTOR
-
 
 switch 1
     case 1
@@ -56,6 +52,7 @@ switch 1
 end
 
 % make figure
+cones_fig = 1;
 figure(cones_fig);clf
 
 % make slider
@@ -81,7 +78,10 @@ while 1
     end
 
     % plot dll
-    imagesc((norm_image(   dll   )-0.5).^0.4,...
+    
+    tmp = (norm_image(dll)-0.5).^0.4;
+    tmp = tmp/max(tmp(:));
+    imagesc(tmp,...
         'xdata',[1 datarun.stimulus.field_width]-(1-kernel_spacing),'ydata',[1 datarun.stimulus.field_height]-(1-kernel_spacing))
     axis image;hold on
 
@@ -98,14 +98,14 @@ while 1
             % find which cones to plot
             plot_indices = (all_added_cones(:,7) + (msf/magic_number)*all_added_cones(:,8)) > 0;
             % note in title
-            plot_title = sprintf('magic scale factor, %0.1f',msf);
+            plot_title = sprintf('magic scale factor %0.1f',msf);
         case 'mo'
             % get value based on slider
             mo = magic_values(k);
             % find which cones to plot
             plot_indices = (all_added_cones(:,7) + all_added_cones(:,8)) > mo;
             % note in title
-            plot_title = sprintf('magic offset, %0.1f',mo);
+            plot_title = sprintf('magic offset %0.1f',mo);
     end
 
     % plot them
@@ -115,7 +115,7 @@ while 1
     end
 
     % plot ROI boundaries
-    if 1
+    if 0
         for rr = 1:size(rois_x,1)
             roi_x = rois_x(rr,:) + [padding_x-1 -padding_x];
             roi_y = rois_y(rr,:) + [padding_y-1 -padding_y];
@@ -128,7 +128,7 @@ while 1
     ylim(curr_lim(2,:))
 
     % add title
-    title([datarun.names.nickname ', ' plot_title])
+    title(plot_title)
     
     
     

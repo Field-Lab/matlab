@@ -377,6 +377,7 @@ end
 
 save('/Volumes/Analysis/alex/peters_fits.mat', 'rfweights', 'crweights', 'f', 'gof', 'coneID', 'ncones', 'ncells')
 
+ load('/Users/alexth/Analysis/peters_fits.mat')
 figure
 hold on
 for i=1:length(rfweights)

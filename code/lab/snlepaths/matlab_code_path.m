@@ -7,4 +7,4 @@ function the_path = matlab_code_path
 % 2010-01  gauthier
 %
 
-the_path = '/snle/home/snl-e/matlab-standard/';
+the_path = '/Users/alexth/test4/matlab/';
