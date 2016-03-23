@@ -67,7 +67,7 @@ for kkk = 1:parts:length(datarun.cell_ids)
         
         a = find(spike_array_tmp(:,i));
         sta(:,:,:,a) =  sta(:,:,:,a) + repmat(full_inputs, 1, 1, 1, length(a));
-        if mod(i,5000)==0
+        if mod(i,10000)==0
             a = toc;
             disp(['processed ', int2str(i), ' frames in ', num2str(a), ' s'])
             tic;
@@ -76,24 +76,24 @@ for kkk = 1:parts:length(datarun.cell_ids)
     end
 
     for i = 1:parts
-        sta(:,:,:,i) =  sta(:,:,:,i) / nnz(spike_array_tmp(i,duration));
+        sta(:,:,:,i) =  sta(:,:,:,i) / nnz(spike_array_tmp(i,1:duration));
     end
     save(['/Volumes/Analysis/2015-10-06-2/jitter/correct_jitter_sta_cells_',int2str(kkk),'.mat'], 'sta', '-v7.3');
     
 end
 % 
 % 
-% load('/Volumes/Analysis/2015-10-06-2/jitter/correct_jitter_sta_40000_cells_1.mat')
-
-for j=1:3
-    figure
-    for i=1:6
-        tmp = sta(:,:,i,j);
-        tmp = tmp/max(abs(tmp(:)))/2+0.5;
-        subplot(2,3,i)
-        imagesc(tmp);
-    end
-end
+% load('/Volumes/Analysis/2015-10-06-2/jitter/correct_jitter_sta_cells_1.mat')
+% 
+% for j=1:3
+%     figure
+%     for i=1:6
+%         tmp = sta(:,:,i,j);
+%         tmp = tmp/max(abs(tmp(:)))/2+0.5;
+%         subplot(2,3,i)
+%         imagesc(tmp);
+%     end
+% end
 % 
 % 
 % for j=21:20
