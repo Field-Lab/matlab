@@ -53,9 +53,10 @@ datarun = get_sta_summaries(datarun, cell_types, ...
     
 % calculate static nonlinearities
 datarun = load_java_movie(datarun, movie_spec);
+tic
 datarun = get_snls(datarun, datarun.cell_ids(cell_inds),...
     'frames',-2:0,'start_time',0,'stimuli',3000,'new',true); % most memory and time-consuming part
-
+toc
 %% initial cone estimation, prior set up (local max)
 stixel_threshold = 4.5;
 thresh = 15;

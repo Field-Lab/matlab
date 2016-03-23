@@ -91,7 +91,6 @@ for cc = 1:length(cell_ids)
         cell_constant = num_frames * stim_variance * exp(fit_b);
         n_spikes = length(datarun.spikes{cell_index});
         cell_constants(cc) = cell_constant;
-        cell_constant = n_spikes / cell_constant;
         % get sta
         sta = datarun.stas.stas{cell_index};        
         % force RGB sta into BW format
@@ -115,7 +114,7 @@ for cc = 1:length(cell_ids)
         sta_spatial = sta_spatial .* imfilter(sig_stix,rel_filt);
         
         processed_stas(:,:,cc) = sta_spatial;
-        stas_matrix(:,:,cc) =cell_constant*sta_spatial;
+        stas_matrix(:,:,cc) = (n_spikes / cell_constant) *sta_spatial;
     end
 end
 toc

@@ -77,7 +77,8 @@ new_cone_color = [1 0 0];
                         sta2show = sta*sta2show/2+0.5;
                     else
                         sta=all_sta(:,:,ind);
-                        sta2show = sta;
+                        sta2show = zeros(size(sta,1),size(sta,2),3);
+                        sta2show(:,:,2) = pols(ind)*sta/max(abs(sta(:)));
                     end
                     
                     

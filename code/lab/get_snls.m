@@ -75,7 +75,7 @@ params = p.Results;
 % identify how many cells need SNLs computed
 
 % get cell indices
-cell_indices_ = get_cell_indices(datarun,cell_spec);
+cell_indices = get_cell_indices(datarun,cell_spec);
 
 % ensure proper fields exist in datarun
 if ~isfield(datarun.stas,'snls')
@@ -86,29 +86,15 @@ else
     end
 end
 
-% if new computation
-if params.new
-    % compute for all cells
-    cell_indices = cell_indices_;
-else
-    % otherwise, identify only the cells that need it
-    cell_indices = [];
-    
-    % check each cell
-    for cc = 1:length(cell_indices_)
-        if isempty(datarun.stas.snls{cell_indices_(cc)})
-            cell_indices = [cell_indices cell_indices_(cc)]; %#ok<AGROW>
-        end
-    end
+% if NOT new computation
+if ~params.new
+    cell_indices = cell_indices(cellfun(@isempty, datarun.stas.snls(cell_indices)));
 end
-
-
 
 % if none, quit
 if isempty(cell_indices)
     return
 end
-
 
 % prepare movie
 

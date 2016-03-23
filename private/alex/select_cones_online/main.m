@@ -1,30 +1,26 @@
-
+   spike_rate = histc(datarun.spikes{cell_index},datarun.triggers(1):refresh_time:movie.size*refresh_time+datarun.triggers(1));
+ 
 %% load data
 close all
 clear
 
 global cones cone_regions new_cones new_regions
 
-date = '2016-02-17-4';
-run = 'data001';
-path2load = ['/Volumes/Analysis/',date, '/d00-05-norefit/',run,'/',run];
+date = '2016-03-17-2';
+run = 'data005';
+path2load = ['/Volumes/Acquisition/Analysis/',date,'/',run,'/',run];
+% path2load = ['/Volumes/Analysis/',date, '/d00-05-norefit/',run,'/',run];
 field_size = [200, 265];
 scale = 3;
 
 datarun = load_data(path2load);
 datarun = load_params(datarun,'verbose',1);
-datarun = load_sta(datarun,'load_sta',[],'keep_java_sta',true);
-load('/Volumes/Analysis/2016-02-17-4/data001_denoised_sta', 'denoised_sta')
-for i=1:length(datarun.cell_ids)
-    tmp = denoised_sta(:,:,:,i); 
-    datarun.stas.stas{i} = permute(tmp, [1 2 4 3]);
-end
-datarun = set_polarities(datarun);
+datarun = load_sta(datarun,'load_sta','all','keep_java_sta',true);
 
-cell_indices = get_cell_indices(datarun, {1,2,3,4,5});
+% cell_indices = get_cell_indices(datarun, {1,2,3,4,5});
+cell_indices = 1:length(datarun.cell_ids);
 
 all_sta = zeros(field_size(1),field_size(2),length(cell_indices));
-
 cnt=1;
 t = zeros(1,6);
 pols = ones(1, length(cell_indices));
@@ -36,6 +32,9 @@ for i=cell_indices
     end
     [~, frame] = max(t);
     sta=datarun.stas.stas{i}(:,:,:,frame);
+    if size(sta,3)>1
+        sta = sum(sta,3);
+    end
     if max(sta(:))<max(abs(sta(:))) % OFF cell
         pols(cnt) = -1;
     end
@@ -45,6 +44,9 @@ for i=cell_indices
 end
 
 [~, ic] = sort(max_pix, 'descend');
+% denoise
+noise_sta = mean(all_sta,3);
+all_sta = all_sta - repmat(noise_sta, 1,1,length(cell_indices));
 
 all_sta = all_sta(:,:,ic);
 all_sta = imresize(all_sta,scale); % perhaps nearest?
@@ -195,7 +197,7 @@ end
 cones = cone_centers*2;
 cones(del_cones, :) = [];
 radius = 3
-select_cells(all_sta, pols, radius, 1);
+select_cells(all_sta, pols, radius, 20);
 
 
 % eliminate absolute duplicates
@@ -347,7 +349,7 @@ cone_regions = [cone_regions new_regions];
 
 
 %% construct map
-map = zeros(600,800);
+map = zeros(size(all_sta,1),size(all_sta,2));
 for i=1:size(cone_regions,2)
     t = round(cones(i,:));
     cr = cone_regions{i};
@@ -367,7 +369,7 @@ imagesc(tmp)
 
 
 %% save map
-path2save=['/Volumes/Analysis/2016-03-17-2/cone_data/map_data001_manual'];
+path2save=['/Volumes/Analysis/2016-03-17-2/cone_data/map_data005_manual_postexp'];
 dlmwrite([path2save '.txt'], map, 'delimiter', '\t', 'newline', 'pc');
 save([path2save '_info'],'cell_indices', 'ic', 'cones', 'cone_regions')
 
@@ -377,8 +379,9 @@ imagesc(savedMap)
 
 
 %% control!
-
-map1 = a;
+a = load('/Volumes/Analysis/2016-03-17-2/cone_data/data001/denoised_bayes-msf_20/map_data001.txt')
+% map1 = a;
+savedMap = a;
 for i=31:50
     figure
     set(gcf, 'position', [-1384         287        1067         812])
@@ -387,9 +390,9 @@ for i=31:50
     tmp = pols(i)*all_sta(:,:,i);
     [p,t] = find(tmp == max(tmp(:)),1);
     
-    comb = zeros(600,800,3);
+    comb = zeros(size(savedMap,1),size(savedMap,2),3);
     comb(:,:,1) = savedMap;
-    comb(:,:,3) = map1;
+%     comb(:,:,3) = map1;
     comb(comb>0) = 0.5;
     comb(:,:,2) = tmp/max(tmp(:));
     imagesc(comb)
