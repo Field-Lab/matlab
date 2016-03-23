@@ -18,11 +18,14 @@ stimulus.jitter.state = stimulus.rng_init.state;
 shifts = zeros(2,duration);
 tic
 for i=1:duration
+    if mod(i, 100)==0
+        i
+    end
     for j=1:field_width*field_height;
         random_uint16(stimulus.jitter.state);
     end
-    jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - floor(stimulus.stixel_width/2);
-    jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - floor(stimulus.stixel_height/2);
+    jitterX = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_width) - stimulus.stixel_width/2;
+    jitterY = mod(double(random_uint16(stimulus.jitter.state)), stimulus.stixel_height) - stimulus.stixel_height/2;
     shifts(1,i) = jitterX;
     shifts(2,i) = jitterY;
 end
