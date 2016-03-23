@@ -37,7 +37,10 @@ params.global.tarray=[0 [7:30]]; %(times to look for spikes);
 params.global.thresEI=35; %(for spike sorting, only consider electrodes with strong enough signal)
 params.global.Tmax=40; %use first 2ms of recordings (recall, sampling rate 20KhZ)
 params.global.nTrials=50; %maximum number of trials for the same stimulus (this is to create appropriate matrices, unbalances
-                           %are solved by filling with NaNs (see TracesAll)
+                            %are solved by filling with NaNs (see TracesAll)
+params.global.sortData=1;    
+
+
 params.bundle.findBundle=1;
 params.bundle.useBundleAlg=0; %dont change the variance model after the bundle
 params.bundle.cutBundle=1;  %Terminate spike sorting information just before the onset of bundle

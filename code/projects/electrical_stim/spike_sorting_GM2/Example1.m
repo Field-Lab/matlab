@@ -37,8 +37,10 @@ params=InitializeArray(pathToPreparationInitial,patternNoInitial);
 params.global.tarray=[0 [7:30]]; %(times to look for spikes);
 params.global.thresEI=35; %(for spike sorting, only consider electrodes with strong enough signal)
 params.global.Tmax=40; %use first 2ms of recordings (recall, sampling rate 20KhZ)
-params.global.nTrials=50; %maximum number of trials for the same stimulus (this is to create appropriate matrices, unbalances
-                           %are solved by filling with NaNs (see TracesAll)
+params.global.nTrials=50; %maximum number of trials for the same stimulus (this is to create appropriate matrices, unbalances %are solved by filling with NaNs (see TracesAll)
+params.global.sortData=1;            
+
+
 params.global.useStimElec=0; %dont use information of stimulating electrode'
 params.bundle.cutBundle=0; %dont use bundle information to terminate spike sorting
 params.bundle.findBundle=0; %dont attempt finding the onset of axonal activation;

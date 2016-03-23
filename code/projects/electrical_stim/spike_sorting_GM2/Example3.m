@@ -46,7 +46,7 @@ params.bundle.cutBundle=0;  %Don't terminate spike sorting  just before the onse
                             %are solved by filling with NaNs (see TracesAll)
 params.global.useStimElec=0; %dont use information of stimulating electrode'
 %%Set values for spike sorting, and do spike sorting
-
+params.global.sortData=1;   
 
 %%Set values for spike sorting, and do spike sorting
 neuronIds=[4058 4656 3457];

@@ -1,4 +1,4 @@
-function [Ker KerD]=evalKernels(Dif,x,vars,type)
+function [Ker KerD]=evalKernels(Dif,x,vars,type,varargin)
 %Dif = Diferences between covariates (matrix)
 %x = non-stationarity vector (diagonal of Dif usually) (also, for stimulating electrode, indicate
 %breakpoints)
@@ -85,6 +85,44 @@ elseif(type==4)
     KerD{1}=Ker0;
     KerD{2}=Ker0;
     KerD{3}=Ker0;
+    
+ 
+elseif(type==5)
+    KerPrev=varargin{1};
+    %for post-bundle Kernels
+    lambda=exp(vars(2));
+    K=exp(vars(1));
+    sigma=exp(vars(3));
+    
+    Dg=x.^(1/2);
+    
+    Ker0=(1+sqrt(3)*(Dif)*lambda).*exp(-sqrt(3)*(Dif)*lambda);
+    
+    Ker0l=-3*lambda*exp(-sqrt(3)*(Dif)*lambda).*lambda.*(Dif).^2;
+   
+    Ker=KerPrev+K*(Dg*Dg').*Ker0;
+    KerD{1}=K*(Dg*Dg').*Ker0;
+    KerD{2}=K*(Dg*Dg').*Ker0l;
+    KerD{3}=Ker0;
+    
+    
+elseif(type==6)
+    KerPrev=varargin{1};
+    %for post-bundle Kernels
+    lambda=exp(vars(2));
+    K=exp(vars(1));
+    sigma=exp(vars(3));
+    
+    Dg=x;
+    
+    %%Ker0=(1+sqrt(3)*(Dif)*lambda).*exp(-sqrt(3)*(Dif)*lambda);
+    
+    %Ker0l=-3*lambda*exp(-sqrt(3)*(Dif)*lambda).*lambda.*(Dif).^2;
+   
+    Ker=KerPrev+K*diag(Dg);
+    KerD{1}=K*diag(Dg);
+    %KerD{2}=K*(Dg*Dg').*Ker0l;
+    %KerD{3}=Ker0;
     
 end
 

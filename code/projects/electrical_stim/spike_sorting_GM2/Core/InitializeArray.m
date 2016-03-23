@@ -5,11 +5,12 @@ load arrayPositions512
 params.global.Tmax=40;
 params.global.tarray=[0 [7:32]];
 params.global.options=optimoptions('fminunc','Algorithm','trust-region','GradObj','on');
-params.global.nTrials = 50;
+params.global.nTrial = 50;
 params.global.x0=[2.6766    2.6729    1.5639    2.5233    1.9566  -20.7433    0.3893 32.0274];
 params.global.positions=positions;
 params.global.maxIter=5;
 params.global.thresEI=30;
+params.global.sortData=0;
 x0=params.global.x0;
 params.global.useStimElec = 0;
 
@@ -24,7 +25,6 @@ params.bundle.nNeighborsExclude=3;
 
 tarray=params.global.tarray;
 Tmax=params.global.Tmax;
-nTrials=params.global.Tmax;
 options=params.global.options;
 
 path=[];
@@ -86,8 +86,8 @@ end
   pathToAnalysisData=path;   
  
   
-  
-[TracesAll Art var0 listAmps listCurrent]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials);%Knn2(ind,:)=squeeze(Knn(22,:,:))
+
+[TracesAll Art var0 listAmps listCurrent]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,params.global.nTrial);%Knn2(ind,:)=squeeze(Knn(22,:,:))
 
 Tmax=40;
     times=[1:Tmax]';

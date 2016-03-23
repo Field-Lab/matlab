@@ -44,6 +44,7 @@ params.bundle.findBundle=1;
 params.bundle.cutBundle=1;  %Terminate spike sorting  just before the onset of bundle
 params.bundle.useBundleAlg=0; %dont change the variance model after the bundle
 params.global.useStimElec=1;
+params.global.sortData=1;
 
 %%Set values for spike sorting, and do spike sorting
 neuronIds=[4058 4656 3457];

@@ -1,4 +1,4 @@
-function [Output]=DoSpikeSortingLargeScale(pathToPreparation,pathToEi,patternNo,neuronIds,params,varargin)
+function [Output]=DoSpikeSortingLargeScale(pathToPreparation,pathToEi,patternNo,neuronIds,params,templates,varargin)
 %Gonzalo Mena, 03/2016
 
 Dif1=params.global.Dif1;
@@ -13,7 +13,7 @@ nTrial=params.global.nTrial;
 
  
 
-if(nargin==6)
+if(nargin==7)
    FoldersNames=varargin{1}; 
 else
     
@@ -60,13 +60,12 @@ pathToAnalysisData=path;
 
 
 if(params.global.sortData)
-[TracesAll Art var0 listAmps listCurrents onset onsetC pval stimElecs]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,nTrial,params);
+[TracesAll Art var0 listAmps listCurrents onset onsetC pval Res stimElecs]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,nTrial,params);
 
 else
-    [TracesAll Art var0 listAmps listCurrents onset onsetC pval stimElecs]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrial,params);
+    [TracesAll Art var0 listAmps listCurrents onset onsetC pval Res stimElecs]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrial,params);
 
 end
-
 
 if(length(stimElecs)>1)
     Output=1;
@@ -76,7 +75,7 @@ else
     stimElec=stimElecs;
 end
 
-[theta,rho] = cart2pol(positions(:,1)-positions(patternNo,1),positions(:,2)-positions(patternNo,2));
+[theta,rho] = cart2pol(positions(:,1)-positions(stimElec,1),positions(:,2)-positions(stimElec,2));
 
 
 ind=setdiff([1:512],find(rho==0));
@@ -88,8 +87,6 @@ for i=1:length(listAmps)
 Dif3(i,j)=abs(listAmps(i)-listAmps(j));
 end
 end
-
-
 Difs{2}=Dif2(ind,ind)/max(max(Dif2(ind,ind)));
 Difs{3}=Dif3;
 Difs{3}=Difs{3}/max(max(Difs{3}));
@@ -128,11 +125,10 @@ params.patternInfo.Diags=Diags;
 params.patternInfo.Difs=Difs;
 params.patternInfo.stimElec=stimElec;
 
-
 params.bundle.onsBundle=onsetC;
 params.bundle.onset=onset;
 
-templates=makeTemplatesFromEiShift(pathToEi, neuronIds,[1:512]);
+%templates=makeTemplatesFromEiShift(pathToEi, neuronIds,[1:512]);
 params.neuronInfo.templates = templates;
 if(~useStimElec&&(~useBundleAlg))
 [spikes Log params]=SpikeSortingNoBundleNoStim(params,TracesAll);
@@ -180,4 +176,3 @@ Output.stimInfo.useStimElec=useStimElec;
 Output.stimInfo.Residuals=Res;
 Output.arrayInfo=params.arrayInfo;
 end
-

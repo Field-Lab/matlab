@@ -1,14 +1,14 @@
-function [TracesAll Art var0 listAmps listCurrents onset onsetC pval]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrials,varargin)
+function [TracesAll Art var0 listAmps listCurrents onset onsetC pval Res stimElecs]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrial,varargin)
 %load data from a pattern in a given folder
 %also loads stimulus data and construct a firt artifact estimate (means
-%accross trials). nTrials is the maximum number of trials
+%accross trials). nTrial is the maximum number of trials
 %Gonzalo Mena,3/2016
 findBundle=0;
 
 if(nargin==5)
     params=varargin{1};
     Tmax=params.global.Tmax;
-    nTrials=params.global.nTrials;
+    nTrial=params.global.nTrial;
     findBundle=params.bundle.findBundle;
     findBundleTimes=params.bundle.findBundleTimes;
     nNeighborsExclude=params.bundle.nNeighborsExclude;
@@ -21,7 +21,7 @@ movieNos  = sort(movieNos);
 
 
 
-TracesAll=NaN*zeros(length(movieNos),nTrials,512,Tmax);
+TracesAll=NaN*zeros(length(movieNos),nTrial,512,Tmax);
 
 
 for m=1:length(movieNos);
@@ -32,8 +32,10 @@ for m=1:length(movieNos);
     [amps channelsWithStim stimAmpVectors channelsConnected elecCurrentStep currentRangesUsed] = ...
         getStimAmps(pathToAnalysisData, patternNo, movieNos(m));
     
-    listAmps(m)=abs(amps(1));
-    listCurrents(m,:)=currentRangesUsed(1);
+    listAmps(m)           =      abs(amps(1));
+    listCurrents(m,:)     =      currentRangesUsed;
+    listStimElecs(m,:)         = channelsWithStim;
+    
     if(m==1)
         firstArt=mean(dataTraces(:,:,1:Tmax),1);
         
@@ -41,14 +43,17 @@ for m=1:length(movieNos);
     end
     
     TracesAll(m,1:size(dataTraces,1),:,:)=dataTraces(:,:,1:Tmax)-repmat(firstArt,size(dataTraces,1),1,1);
-    TracesAll2(m,1:size(dataTraces,1),:,:)=dataTraces(:,:,1:Tmax);
+    
     
     a=TracesAll(m,:,setdiff([1:512],patternNo),:);
+    if(m<=5)
     varm(m)=nanvar(a(:));
-    Art(m,:,:)=squeeze(nanmean(TracesAll(m,:,:,:)));
-   
-   
+    
+    
+    end
+   Art(m,:,:)=squeeze(nanmean(TracesAll(m,:,:,:)));
 end
+stimElecs=unique(listStimElecs);
 var0=nanmean(varm(1:5));
 
 if(findBundle)

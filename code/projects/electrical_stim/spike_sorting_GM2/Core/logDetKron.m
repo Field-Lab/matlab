@@ -1,4 +1,4 @@
-function [val grad]=logDetKron(Art,var,Difs,varsactive,types,Diags,nvar)
+function [val grad]=logDetKron(Art,var,Difs,varsactive,types,Diags,nvar,varargin)
 %Artifact: CXEXTimes, excluding stimulating electrode
 %var= vector having all variables (for each kernel + variance)
 % Difs= array of matrices with 
@@ -29,9 +29,11 @@ krondiag=1;
 
 for k=1:3
     
-    
+    if(types(k)>=5)
+    [Ker KerD]=evalKernels(Difs{k},Diags{k},var(nvarcum(k)+1:nvarcum(k+1)),types(k),varargin{1});
+    else
     [Ker KerD]=evalKernels(Difs{k},Diags{k},var(nvarcum(k)+1:nvarcum(k+1)),types(k));
-    
+    end
     [a b]=eig(Ker);
     Q{k}=a';
     Qt{k}=a;
