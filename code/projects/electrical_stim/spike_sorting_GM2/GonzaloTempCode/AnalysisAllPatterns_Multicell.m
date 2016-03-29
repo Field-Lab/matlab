@@ -108,8 +108,7 @@ if(length(aux)>0)
         path=pathAux;
     end
 end
-end
-end
+
 
 reps=[];
 for i=1:length(pattern)
@@ -161,11 +160,12 @@ for g=1:8
 end
 neuronIdwr=neuronId(setdiff([1:805],reps(:,2)));
 
-
+p=17;
 %% SPIKE SORTING
 patternI=[474 351 3 292 367 93 140 99];
 for g=setdiff([1:8],[2 3 6])
-    
+   for g=24
+    %for g=1
     %to avoid undesided 'aliasing' effects.
     
     IndFolderInitial=dire{g};  %look for the pattern in data003,data004,data005,data006. If empty, will look at all folderes
@@ -183,35 +183,37 @@ for g=setdiff([1:8],[2 3 6])
     %it is optional, but if not stated, it may use
     
     pathToPreparation=pathToPreparationInitial;
-    
+    %patss=unique(patsind);
     for p=1:length(pat)
         patternNo=pat(p);
         patind=find(patternNo==patternwr(:,1));
         patind=intersect(find(nstimElecwr==1),intersect(patind,find(groupwr==g)));
-        patternNo1=RespAlg1{patind(1)}.stimInfo.listStimElecs(1);
+        %patternNo1=RespAlg1{patind(1)}.stimInfo.listStimElecs(1);
         
         %information of an undesired folder.
         
         params.global.sortData=1;
         params.global.nTrial=80;
          params.bundle.findBundle=1;
-%         params.bundle.useBundleAlg=0;
-%         
-%         tic
-%         [Output]=DoSpikeSortingLargeScaleNOEi(pathToPreparation,pathToEi,patternNo,patternNo1,neuronIds,params,templates2{g},IndFolder);
-%         RespAllFast{g}{p}=Output;
-%         
-%         
-%         RespAllFast{g}{p}.times=toc;
-%         
-        params.bundle.useBundleAlg=1;
-        params.bundle.updateFreq=1;
+        params.bundle.useBundleAlg=0;
+        params.global.useStimElec=1;
+        
         tic
         [Output]=DoSpikeSortingLargeScaleNOEi(pathToPreparation,pathToEi,patternNo,neuronIds,params,templates2{g},IndFolder);
-        RespAllFastBundle{g}{p}=Output;
-        RespAllFastBundle{g}{p}.times=toc;
+        RespAllFastStim{g}{p}=Output;
         
         
+        RespAllFastStim{g}{p}.times=toc;
+        
+%         params.bundle.useBundleAlg=1;
+%         params.bundle.updateFreq=1;
+%         params.global.useStimElec=1;
+%         tic
+%         [Output]=DoSpikeSortingLargeScaleNOEi(pathToPreparation,pathToEi,patternNo,neuronIds,params,templates2{g},IndFolder);
+%         RespAllFastBundleStim{g}{p}=Output;
+%         RespAllFastBundleStim{g}{p}.times=toc;
+%         
+%         
     end
 end
 
@@ -220,7 +222,7 @@ g=3;
 SimTem=CorrTemplates(templates{g},RespAll{g}{1}.neuronInfo.ActiveElectrodesAll);
 rects{1}=[5 5];
 rects{2}=[3 2];
-rects{3}=[5 4];;
+rects{3}=[5 4];
 rects{4}=[5 4];
 rects{5}=[3 3];
 rects{6}=[4 4];
@@ -290,7 +292,7 @@ for num=1:12
         subplot(rects{g}(1),rects{g}(2),numneu)
         pathToAnalysisData=RespAlg1{b1(1)}.path;
         aa=find(pathToAnalysisData=='/');
-        pathToAnalysisData=['/Volumes/MAC OS/Research/EJBigData/Datasetsvisitjun15/' pathToAnalysisData(aa(end-2)+1:end)]
+        pathToAnalysisData=['/Volumes/MAC OS/Research/EJBigData/Datasetsvisitjun15/' pathToAnalysisData(aa(end-2)+1:end)];
         
         name=['elecResp_n' num2str(nneu) '_p' num2str(patternNo) '.mat'];
         load([pathToAnalysisData name]);
@@ -408,13 +410,13 @@ for g=setdiff([1:8],6)
         
         errorFast{g}(i,1)= nansum(nansum(abs(difFast{g}{i})));
         errorFast{g}(i,2)= nansum(nansum(abs(difBundleFast{g}{i})));
-         errorFast{g}(i,3)= nansum(nansum(abs(difFastO{g}{i})));
+        errorFast{g}(i,3)= nansum(nansum(abs(difFastO{g}{i})));
         errorFast{g}(i,4)= nansum(nansum(abs(difBundleFastO{g}{i})));
     end
 end
 
 
-g=2
+g=2;
 clear patError
 aaa=unique(patternwr(indwr{g}(find(errorFast{g}(:,2)>errorFast{g}(:,1)))));
 pat=unique(patternwr(indwr{g},1));

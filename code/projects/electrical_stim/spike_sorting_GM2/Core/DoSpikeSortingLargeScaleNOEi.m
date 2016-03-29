@@ -54,10 +54,7 @@ for f=1:length(FoldersNames)
         end
 end
 
-pathToAnalysisData=path;
-
-
-
+pathToAnalysisData=[path '/'];
 
 if(params.global.sortData)
 [TracesAll Art var0 listAmps listCurrents onset onsetC pval Res stimElecs]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,nTrial,params);
@@ -147,6 +144,7 @@ if(useStimElec)
     Output.stimInfo.ActiveElectrodes=[1:512];
     Output.stimInfo.KersStim=params.patternInfo.KersStim;
     Output.stimInfo.breakpoints=params.patternInfo.breakpoints;
+    Output.stimInfo.xStim=params.patternInfo.xStim;
 else
     Output.stimInfo.ActiveElectrodes=ind;
 end
