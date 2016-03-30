@@ -2,7 +2,7 @@
 clear
 close all
 monkey_dates = cell(0);
-cell_types = [1 2 3 4];
+cell_types = [1 2];
 %% read spreadsheet
 [~,~,RAW]=xlsread('/Volumes/Lab/Users/crhoades/Database spreadsheet.xlsx', 'Animal');
 
@@ -290,10 +290,10 @@ for i = 1:size(parameters,1)
             
             if param_choices(p,3) < 12 % ecc < 10mm
                 param_choices(param_choices(:,1) <= 1,:) = inf; %implement stixel_choices based on ecc?
-                param_choices(param_choices(:,1) >= 8,:) = inf;
+                param_choices(param_choices(:,1) >= 10,:) = inf;
             else % ecc >= 8
-                param_choices(param_choices(:,1) <= 1,:) = inf; %implement stixel_choices based on ecc?
-                param_choices(param_choices(:,1) >= 8,:) = inf;
+                param_choices(param_choices(:,1) <= 2,:) = inf; %implement stixel_choices based on ecc?
+                param_choices(param_choices(:,1) >= 14,:) = inf;
             end
             
             if param_choices(p,4) > 0.6 % NDF larger than 0.6
