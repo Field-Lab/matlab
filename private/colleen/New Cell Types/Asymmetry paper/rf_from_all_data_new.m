@@ -666,3 +666,7 @@ figure; plot(inter_cell_distance(:,1), rf_cell_type(:,1), 'ko', 'markerfacecolor
 ylabel('RF Diameter (\mum)')
 xlabel('Center to Center Spacing (ON parasols in pixels)')
 title('Mosaic Spacing Correlated with RF Size')
+
+[~,git_hash_string] = system('git rev-parse HEAD');
+fprintf('Git Hash: %s \n', git_hash_string);
+
