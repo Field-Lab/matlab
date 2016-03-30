@@ -43,8 +43,9 @@ function [sta] = compute_jitter_sta_20160217(datarun, mdf_file, num_frames, spik
 % jitter_y = zeros(size(jitter_y));
 %% ---------------------------------- Process movie ------------------------------
  %onsets of the stimulus presentation
-triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 300*mean(diff(datarun.triggers))]'];
+datarun.triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 300*mean(diff(datarun.triggers))]'];
 % 
+triggers = datarun.triggers;
 % [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
 %     triggers, 1,2);
 bw = 0;
@@ -54,6 +55,13 @@ bw = 0;
 % test = [repmat([1;2;3],800,1), repmat([4;5;6],800,1),repmat([7;8;9],800,1),repmat([10;11;12],800,1)]
 % inputs = test;
 % real_frame(:,1) = inputs(1:(25));
+
+
+%% account for dropped frames
+triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
+jitter_x_new = [jitter_x(1:92851); jitter_x(92900:end)];
+jitter_y_new = [jitter_y(1:92851); jitter_y(92900:end)];
+inputs = [inputs(:,1:92851), inputs(:,92900:end)];
 
 image_width = 40;
 image_height = 20;
@@ -176,7 +184,7 @@ else
                     sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
                     movie(:,:,1,i) = sized_frame;
                     sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                    position = [jitter_x(frames_needed{cel}(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y(frames_needed{cel}(1,start_points(j)-1 + i))+1+stixel_size/2];
+                    position = [jitter_x_new(frames_needed{cel}(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y_new(frames_needed{cel}(1,start_points(j)-1 + i))+1+stixel_size/2];
                     %         x and y might be reversed
                     true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
                     movie(:,:,1,i) = true_frame;
@@ -218,7 +226,10 @@ else
                 %         end
                 
             end
+            
         end
+        
+        save('/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Jitter/temp_sta', 'sta'); 
         
         for m = 1:10000/200
             current_movie = movie(:,:,:,200*(m-1)+1:200*(m-1)+200);
