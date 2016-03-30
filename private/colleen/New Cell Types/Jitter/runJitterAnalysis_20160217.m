@@ -7,7 +7,7 @@ close all
 dataparam.date='2016-02-17-6';
 dataparam.concatname='data026';
 dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-22222-119.5.xml';
-fitparam.num_frames = 30;
+fitparam.num_frames = 15;
 frame_width = 640/16;
 frame_height = 320/16;
 stixels_per_frame = frame_width*frame_height;
@@ -17,9 +17,11 @@ stixels_per_frame = frame_width*frame_height;
 dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
 dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.date, '/', dataparam.concatname, '/'];
 % list specific cell (1), or run for a whole cell type (0)
-select_cells = 0;
+select_cells = 1;
 if select_cells == 1
-    dataparam.cell_specification = [481] %ON parasol
+%    dataparam.cell_specification = [184] %ON parasol
+     dataparam.cell_specification = [241 1386 1759 1788 1936 1937 2014 2331 2405 3048 3903 3908 4113 4981 5013 5522 5915 6110 6529 7054 7461 7462 440 481 485 545 813 816 1441 1534 1786 2103 2137 2163 2165 2166 2167 2431 3288 3436 3816 3888 4280 4937 5071 6211 6336 6337 6512 6513] %ON parasol
+
 end
 dataparam.cell_type = {'all'};
 %% END OF INPUT
@@ -115,8 +117,8 @@ for j = 1:length(cell_indices)
 % 
 %     save ('jitterX', 'jitterX');
 %      save ('jitterY', 'jitterY');
+
 % 
-% % 
 
 
 end
