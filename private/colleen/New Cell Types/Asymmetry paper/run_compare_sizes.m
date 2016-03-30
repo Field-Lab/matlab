@@ -227,7 +227,7 @@ array_size = cell2mat(array_size(2:end,4));
 %% compare pieces directly
 
 % pieces = [1, 2, 4,5,7,8,9,12,13, 15 16 19:22];
-pieces = [2,  5,6,9, 17 20:22 24 26 27 29:31 33 34];
+pieces = [2,  5,6,9, 17 20:22 24 26 27 29:31 34];
 
 
 
@@ -646,6 +646,9 @@ pec_inc_off_large = median(off_large_increase);
 title(['OFF smooth are large than ON smooth on average by ', num2str(round(pec_inc_off_large*1000)/10-100), '%'])
 xlabel('ON smooth RF diameter (\mum)')
 ylabel('OFF smooth RF diameter (\mum)')
+
+[~,git_hash_string] = system('git rev-parse HEAD');
+fprintf('Git Hash: %s \n', git_hash_string);
 
 % hold on
 % plot(ones(size(t_zc_parasol), t_zc_parasol, 'o-')
