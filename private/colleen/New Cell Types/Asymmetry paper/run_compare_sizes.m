@@ -227,7 +227,7 @@ array_size = cell2mat(array_size(2:end,4));
 %% compare pieces directly
 
 % pieces = [1, 2, 4,5,7,8,9,12,13, 15 16 19:22];
-pieces = [2,  5,6,9, 16 20:22 24 26 27 29:31 33];
+pieces = [2,  5,6,9, 17 20:22 24 26 27 29:31 33 34];
 
 
 
@@ -359,7 +359,7 @@ on_ratio = large_rf./parasol_rf;
 % clear bi_ind_midget
 clearvars -except area array_size match txt fig1 on_pieces fig2 on_ratio
 % Compare directly with OFF smooth
-pieces = [5:7 11 12 15 17 18 20 24 25 27 31 32]
+pieces = [5:7 11 12 15 17 18 20 24 25 27 31 32 34]
 % pieces = [9];
 
 for j= 1:length(pieces)
