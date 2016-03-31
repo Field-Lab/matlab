@@ -358,7 +358,8 @@ for i = 1:size(parameters,1)
                     
                 end
             catch
-                disp('error loading params')
+                disp([RAW_piece{i,1}, '/', parameters{i,1}{o,1}])
+                
             end
             
         end
@@ -381,6 +382,8 @@ for i = 1:size(parameters,1)
         try
         datarun = load_data([RAW_piece{i,1}, '/', parameters{i,1}{k,1}]);
         datarun = load_params(datarun);
+datarun = load_globals(datarun);
+                        datarun = load_ei(datarun, 'all');
 
         
         %                 datarun = load_sta(datarun, 'load_sta', datarun.cell_ids(1), 'verbose', 0);
@@ -425,7 +428,9 @@ for i = 1:size(parameters,1)
 %                                                         rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*stixel_size*5*6.5/scale;
                     
                 end
-%                 D = pdist(cell_type_mean1); 
+%                 D = pdist(cell_type_mean1);                      
+                spacing{counter}{r} = ei_center(datarun,cell_index);
+                
                 [~,d] = knnsearch(cell_type_mean1, cell_type_mean1, 'K', 5, 'IncludeTies', true);
                 me = zeros(size(d,1),1);
                 for ii = 1:size(d,1)

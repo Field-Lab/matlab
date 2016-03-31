@@ -548,6 +548,7 @@ fig5= figure;
 set(gca, 'xtick', [0 1,2 3 4 5])
 set(gca, 'xticklabel', {'','ON Parasol', 'OFF Parasol','ON Smooth', 'OFF Smooth',''})
 set(gca, 'xlim', [0.5 4.5])
+% both ON and OFF
 pieces = [5 6 17 20 24 27 31 34]
 
 % Compare directly with OFF smooth
