@@ -429,7 +429,7 @@ datarun = load_globals(datarun);
                     
                 end
 %                 D = pdist(cell_type_mean1);                      
-                spacing{counter}{r} = ei_center(datarun,cell_index);
+                spacing(counter,r) = ei_center(datarun,cell_index);
                 
                 [~,d] = knnsearch(cell_type_mean1, cell_type_mean1, 'K', 5, 'IncludeTies', true);
                 me = zeros(size(d,1),1);
@@ -671,6 +671,18 @@ figure; plot(inter_cell_distance(:,1), rf_cell_type(:,1), 'ko', 'markerfacecolor
 ylabel('RF Diameter (\mum)')
 xlabel('Center to Center Spacing (ON parasols in pixels)')
 title('Mosaic Spacing Correlated with RF Size')
+
+
+figure; plot(spacing(:,1), inter_cell_distance(:,1),'o')
+title('ON parasol')
+xlabel('EI center to center spacing')
+ylabel('STA center to center spacing')
+
+figure; plot(spacing(:,2), inter_cell_distance(:,2),'o')
+title('OFF parasol')
+xlabel('EI center to center spacing')
+ylabel('STA center to center spacing')
+
 
 [~,git_hash_string] = system('git rev-parse HEAD');
 fprintf('Git Hash: %s \n', git_hash_string);
