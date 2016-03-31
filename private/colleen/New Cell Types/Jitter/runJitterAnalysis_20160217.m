@@ -138,3 +138,7 @@ for i = 1:size(spikes,2)
 end
 
 toc
+
+[~,git_hash_string] = system('git rev-parse HEAD');
+fprintf('Git Hash: %s \n', git_hash_string);
+
