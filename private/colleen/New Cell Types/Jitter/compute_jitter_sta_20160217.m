@@ -58,13 +58,20 @@ bw = 0;
 
 
 %% account for dropped frames
-triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
-jitter_x_new = [jitter_x(1:92851); jitter_x(92900:end)];
-jitter_y_new = [jitter_y(1:92851); jitter_y(92900:end)];
-inputs = [inputs(:,1:92851), inputs(:,92900:end)];
+%% data026
+%% 1857 is x coordinate of sharp peak in diff(triggers) graph
+% triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
+% jitter_x_new = [jitter_x(1:92851); jitter_x(92900:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
+% jitter_y_new = [jitter_y(1:92851); jitter_y(92900:end)];
+% inputs = [inputs(:,1:92851), inputs(:,92900:end)];
 
-image_width = 40;
-image_height = 20;
+%% data024
+triggers = [triggers(1:392); triggers(393:end) - mean(diff(triggers(1:392)))];
+jitter_x_new = [jitter_x(1:19601); jitter_x(19650:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
+jitter_y_new = [jitter_y(1:19601); jitter_y(19650:end)];
+inputs = [inputs(:,1:19601), inputs(:,19650:end)];
+image_width = 80;
+image_height = 40;
 
 real_frame = zeros(image_width, image_height, 3);
 real_frame(:,:,1,1) = reshape(inputs(1:3:image_width*image_height*3)',image_width, image_height);
@@ -166,8 +173,8 @@ if movie_exist ~= 0
     
     
 else
-    height = 20;
-    width = 40;
+    height = 40;
+    width = 80;
     for j = 1:length(start_points)-1
         for cel = 1:size(spikes,2)
             for i = 1:start_points(j+1)-1 - start_points(j)
