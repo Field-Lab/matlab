@@ -22,7 +22,7 @@ function varargout = clusterSorting(varargin)
 
 % Edit the above text to modify the response to help clusterSorting
 
-% Last Modified by GUIDE v2.5 11-Mar-2016 16:25:11
+% Last Modified by GUIDE v2.5 01-Apr-2016 16:42:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -290,6 +290,15 @@ for m = 1:size(movieNos,2)
         subMeanTrace = clusterTraces; % hack to test using surrounding electrodes
     end
     
+    % Align the minimum value in the traces
+    [~,minIdx]=(min(subMeanTrace,[],2));
+    Y = zeros(size(subMeanTrace)); 
+    for j = 1:length(minIdx)
+        Y(j,:) = circshift(subMeanTrace(j,:),10-minIdx(j),2);
+    end
+    if get(handles.alignSpikes,'Value')
+        subMeanTrace = Y; 
+    end
     % Do PCA
     [~,score] = pca(subMeanTrace);
     
@@ -864,3 +873,12 @@ if str2double(get(hObject,'String'))<2
 end
 
 % go_Callback(hObject, eventdata, handles)
+
+
+% --- Executes on button press in alignSpikes.
+function alignSpikes_Callback(hObject, eventdata, handles)
+% hObject    handle to alignSpikes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of alignSpikes
