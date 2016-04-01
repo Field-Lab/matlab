@@ -2,7 +2,7 @@
 clear
 close all
 monkey_dates = cell(0);
-cell_types = [1 2 3 4];
+cell_types = [1 2];
 %% read spreadsheet
 [~,~,RAW]=xlsread('/Volumes/Lab/Users/crhoades/Database spreadsheet.xlsx', 'Animal');
 
@@ -180,7 +180,7 @@ for i = 1:size(RAW_piece,1)
                 parameters{i,1}{j,9} = RAW_data{RAW_piece{i,12}+j-1, 14}; % RGB or BW
                 parameters{i,1}{j,10} = RAW_data{RAW_piece{i,12}+j-1, 17}; % seed
                 parameters{i,1}{j,11} = RAW_data{RAW_piece{i,12}+j-1, 31}; % jitter
-
+                
             else
                 parameters{i,1}{j,1} = nan;
                 parameters{i,1}{j,2} = nan;
@@ -193,7 +193,7 @@ for i = 1:size(RAW_piece,1)
                 parameters{i,1}{j,9} = nan;
                 parameters{i,1}{j,10} = nan;
                 parameters{i,1}{j,11} = nan;
-
+                
             end
             
         end
@@ -211,7 +211,7 @@ for i = 1:size(parameters,1)
     
     clear datarun
     clear param_choices
-
+    
     test = [];
     for j = 1:size(parameters{i,1},1)
         test(j) = ~isnan(parameters{i,1}{j,1}(1));
@@ -252,11 +252,11 @@ for i = 1:size(parameters,1)
             param_choices(t,6) = str2double(parameters{i,1}{t,8}); % array size
             if strcmp(parameters{i,1}{t,9}, 'BW')
                 param_choices(t,7) = 1; % BW
-
+                
             else
                 param_choices(t,7) = 3; % RGB
             end
-           
+            
             if ischar(parameters{i,1}{t,10})
                 param_choices(t,8) = nan;
             else
@@ -265,9 +265,9 @@ for i = 1:size(parameters,1)
             end
             
             param_choices(t,9) = parameters{i,1}{t,2}; % Interval
-
             
-           
+            
+            
             if strcmp(parameters{i,1}{t,11}, 'T')
                 param_choices(t,10) = 1;
             else
@@ -279,9 +279,9 @@ for i = 1:size(parameters,1)
         
         for p = 1:size(param_choices,1)
             
-%             if param_choices(p,9) <4 % interval
-%                 param_choices(p,:) = inf;
-%             end
+            %             if param_choices(p,9) <4 % interval
+            %                 param_choices(p,:) = inf;
+            %             end
             
             if param_choices(p,2) == 2 % OLED
                 param_choices(p,:) = inf;
@@ -290,10 +290,10 @@ for i = 1:size(parameters,1)
             
             if param_choices(p,3) < 12 % ecc < 10mm
                 param_choices(param_choices(:,1) <= 1,:) = inf; %implement stixel_choices based on ecc?
-                param_choices(param_choices(:,1) >= 8,:) = inf;
+                param_choices(param_choices(:,1) >= 10,:) = inf;
             else % ecc >= 8
-                param_choices(param_choices(:,1) <= 1,:) = inf; %implement stixel_choices based on ecc?
-                param_choices(param_choices(:,1) >= 8,:) = inf;
+                param_choices(param_choices(:,1) <= 2,:) = inf; %implement stixel_choices based on ecc?
+                param_choices(param_choices(:,1) >= 14,:) = inf;
             end
             
             if param_choices(p,4) > 0.6 % NDF larger than 0.6
@@ -303,10 +303,10 @@ for i = 1:size(parameters,1)
             if param_choices(p,5) < 6.5 &&  param_choices(p,5) ~= 0 % objective only 6.5
                 param_choices(p,:) = inf;
             end
-% 
-%              if param_choices(p,5) == 2 % obejective only 6.5 and 4
-%                 param_choices(p,:) = inf;
-%             end
+            %
+            %              if param_choices(p,5) == 2 % obejective only 6.5 and 4
+            %                 param_choices(p,:) = inf;
+            %             end
             
             if param_choices(p,5) == 10 % obejective not 10
                 param_choices(p,:) = inf;
@@ -332,19 +332,19 @@ for i = 1:size(parameters,1)
                         datarun = load_params(datarun);
                         
                         
-%                         if size(datarun.cell_types{1}.cell_ids,2) > 0 && size(datarun.cell_types{2}.cell_ids,2) > 0 && size(datarun.cell_types{3}.cell_ids,2) > 0 && size(datarun.cell_types{4}.cell_ids,2) > 0
+                        %                         if size(datarun.cell_types{1}.cell_ids,2) > 0 && size(datarun.cell_types{2}.cell_ids,2) > 0 && size(datarun.cell_types{3}.cell_ids,2) > 0 && size(datarun.cell_types{4}.cell_ids,2) > 0
                         for z = 1:length(cell_types) % has 10 of all targeted cell types
-                            if size(datarun.cell_types{cell_types(z)}.cell_ids,2) > 10 
-                                        % do nothing
+                            if size(datarun.cell_types{cell_types(z)}.cell_ids,2) > 10
+                                % do nothing
                             else
-
+                                
                                 param_choices(o,:) = inf;
-
+                                
                             end
                         end
                     else
                         param_choices(o,:) = inf;
-                       
+                        
                         if strcmp(parameters{i,1}{o,9}, 'RGB')
                             type = 'RGB';
                         else
@@ -376,19 +376,19 @@ for i = 1:size(parameters,1)
             continue;
         end
         
-
+        
         k = interval;
         
         try
-        datarun = load_data([RAW_piece{i,1}, '/', parameters{i,1}{k,1}]);
-        datarun = load_params(datarun);
-datarun = load_globals(datarun);
-                        datarun = load_ei(datarun, 'all');
-
-        
-        %                 datarun = load_sta(datarun, 'load_sta', datarun.cell_ids(1), 'verbose', 0);
-        
-%         if ~strcmp(cell2mat([RAW_piece(i,1), parameters{i,1}{k,1}]), '2008-04-30-2data007') && ~strcmp(cell2mat([RAW_piece(i,1), parameters{i,1}{k,1}]), '2012-04-13-5data001') && ~strcmp(cell2mat([RAW_piece(i,1), parameters{i,1}{k,1}]), '2008-07-07-3data004')% this one is messed up RF sizes
+            datarun = load_data([RAW_piece{i,1}, '/', parameters{i,1}{k,1}]);
+            datarun = load_params(datarun);
+            datarun = load_globals(datarun);
+            datarun = load_ei(datarun, 'all');
+            
+            
+            %                 datarun = load_sta(datarun, 'load_sta', datarun.cell_ids(1), 'verbose', 0);
+            
+            %         if ~strcmp(cell2mat([RAW_piece(i,1), parameters{i,1}{k,1}]), '2008-04-30-2data007') && ~strcmp(cell2mat([RAW_piece(i,1), parameters{i,1}{k,1}]), '2012-04-13-5data001') && ~strcmp(cell2mat([RAW_piece(i,1), parameters{i,1}{k,1}]), '2008-07-07-3data004')% this one is messed up RF sizes
             RAW_piece(i,14:14+size(parameters{i,1}(k,:),2)-1) = parameters{i,1}(k,:); % add the datarun number picked
             pieces_to_include = [pieces_to_include ; RAW_piece(i,:)];
             
@@ -399,53 +399,54 @@ datarun = load_globals(datarun);
             xstart = prctile(x_mean,10);
             xend = prctile(x_mean,90);
             rf_area = xend-xstart; %rf_area in stixel units,  should be approx 2mm
-%          
-
-%             center_spacing
-
-%             if isnan(param_choices(k,5))
-%                 param_choices(k,5) = 6.5;
-%             end
+            %
             
-
+            %             center_spacing
+            
+            %             if isnan(param_choices(k,5))
+            %                 param_choices(k,5) = 6.5;
+            %             end
+            
+            
             for r = cell_types
                 cell_index = get_cell_indices(datarun, datarun.cell_types{r}.cell_ids);
                 cell_type_mean1 = [];
                 for c = 1:length(cell_index)
-                        cell_type_mean1(c,1) = datarun.vision.sta_fits{cell_index(c)}.mean(1);
-                        cell_type_mean1(c,2) = datarun.vision.sta_fits{cell_index(c)}.mean(2);
-                        
-                        
-
-                      rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*RAW_piece{i,16}*5.5; %2 radii/diameter*pixels/stixel*5.5um/pixel
-                      tc_r{counter}{r}(c,:) =  datarun.vision.timecourses(cell_index(c)).r;
-                      tc_g{counter}{r}(c,:) =  datarun.vision.timecourses(cell_index(c)).g;
-                      tc_b{counter}{r}(c,:) =  datarun.vision.timecourses(cell_index(c)).b;
-
-
-%                     rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*2/rf_area*1000; %rf_area/2mm*1000um/mm
+                    cell_type_mean1(c,1) = datarun.vision.sta_fits{cell_index(c)}.mean(1);
+                    cell_type_mean1(c,2) = datarun.vision.sta_fits{cell_index(c)}.mean(2);
                     
-%                                                         rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*stixel_size*5*6.5/scale;
+                    
+                    
+                    rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*RAW_piece{i,16}*5; %2 radii/diameter*pixels/stixel*5um/pixel
+                    tc_r{counter}{r}(c,:) =  datarun.vision.timecourses(cell_index(c)).r;
+                    tc_g{counter}{r}(c,:) =  datarun.vision.timecourses(cell_index(c)).g;
+                    tc_b{counter}{r}(c,:) =  datarun.vision.timecourses(cell_index(c)).b;
+                    
+                    
+                    %                     rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*2/rf_area*1000; %rf_area/2mm*1000um/mm
+                    
+                    %                                                         rfs{counter}{r}(c) = sqrt(datarun.vision.sta_fits{cell_index(c)}.sd(1)*datarun.vision.sta_fits{cell_index(c)}.sd(2))*2*stixel_size*5*6.5/scale;
                     
                 end
-%                 D = pdist(cell_type_mean1);                      
+                %                 D = pdist(cell_type_mean1);
                 spacing(counter,r) = ei_center(datarun,cell_index);
                 
                 [~,d] = knnsearch(cell_type_mean1, cell_type_mean1, 'K', 5, 'IncludeTies', true);
                 me = zeros(size(d,1),1);
                 for ii = 1:size(d,1)
-                        me(ii) = mean(d{ii}(2:end));
+                    me(ii) = mean(d{ii}(2:end));
                 end
-                inter_cell_distance(counter, r) =median(me)*RAW_piece{i,16}; %units of pixels
+                inter_cell_distance(counter, r) =median(me)*RAW_piece{i,16}*5; %units of um
                 tc{counter}{r}(1,:) = median(tc_r{counter}{r});
-                tc{counter}{r}(2,:) = median(tc_g{counter}{r});             
+                tc{counter}{r}(2,:) = median(tc_g{counter}{r});
                 tc{counter}{r}(3,:) = median(tc_b{counter}{r});
                 
             end
             counter= counter +1;
-%         end
-        
-                catch
+            %         end
+            
+        catch
+                disp([RAW_piece{i,1}, '/', parameters{i,1}{o,1}])
         end
     end
 end
@@ -458,33 +459,33 @@ end
 
 for i = cell_types
     for j = 1:size(tc,2)
-       [a, max_ind] = max(tc{j}{i}(2,:)); % max of green channel
-       [b, min_ind] = min(tc{j}{i}(2,:)); % min of green channel
-       biphasic(j,i) = max(abs(a),abs(b))/ min(abs(a),abs(b));
-       
-
-    if max_ind > min_ind
-        peak_ind = max_ind;       
-    else
-        peak_ind = min_ind;
-    end
-    
-    [t_ind,t0] = crossing(tc{j}{i}(2,:));
-    
-    less_than = find(t_ind < peak_ind == 1);
-    if isempty(less_than)
-        t_zc = nan;
-    else
+        [a, max_ind] = max(tc{j}{i}(2,:)); % max of green channel
+        [b, min_ind] = min(tc{j}{i}(2,:)); % min of green channel
+        biphasic(j,i) = max(abs(a),abs(b))/ min(abs(a),abs(b));
         
-        ind = less_than(end);
-        % [~,ind] = min(abs(t0 - run_opts.num_frames/2)); % find the frame that closest to the middle of num_frames
-        t0 = t0(ind);
-        refresh =pieces_to_include{j,15}/120*1000;
-        t_zc(j,i) = abs((30-t0)*refresh); % 30 frames in STA
-    end
-    
-    
-    
+        
+        if max_ind > min_ind
+            peak_ind = max_ind;
+        else
+            peak_ind = min_ind;
+        end
+        
+        [t_ind,t0] = crossing(tc{j}{i}(2,:));
+        
+        less_than = find(t_ind < peak_ind == 1);
+        if isempty(less_than)
+            t_zc = nan;
+        else
+            
+            ind = less_than(end);
+            % [~,ind] = min(abs(t0 - run_opts.num_frames/2)); % find the frame that closest to the middle of num_frames
+            t0 = t0(ind);
+            refresh =pieces_to_include{j,15}/120*1000;
+            t_zc(j,i) = abs((30-t0)*refresh); % 30 frames in STA
+        end
+        
+        
+        
     end
 end
 
@@ -493,7 +494,7 @@ end
 on_parasol_increase = biphasic(biphasic(:,1)<7,1)./biphasic(biphasic(:,1)<7,2);
 pec_inc_parasol = median(on_parasol_increase);
 
-figure; 
+figure;
 plot(biphasic(biphasic(:,1)<7,1),biphasic(biphasic(:,1)<7,2), 'ok', 'MarkerFaceColor', 'k')
 hold on
 xlim = get(gca, 'xlim');
@@ -507,7 +508,7 @@ title(['ON parasols have a biphasic index that is on average ', num2str(round(pe
 on_midget_increase = biphasic(:,4)./biphasic(:,3);
 pec_inc_midget = median(on_midget_increase);
 
-figure; 
+figure;
 plot(biphasic(:,3),biphasic(:,4), 'ok', 'MarkerFaceColor', 'k')
 hold on
 xlim = get(gca, 'xlim');
@@ -520,11 +521,11 @@ title(['OFF midgets have a biphasic index that is on average ', num2str(round(pe
 
 
 
-% Parasol zero crossing 
+% Parasol zero crossing
 on_parasol_increase = t_zc(t_zc(:,1)<150,2)./t_zc(t_zc(:,1)<150,1);
 pec_inc_parasol = median(on_parasol_increase);
 
-figure; 
+figure;
 plot(t_zc(t_zc(:,1)<150,1),t_zc(t_zc(:,1)<150,2), 'ok', 'MarkerFaceColor', 'k')
 hold on
 xlim = get(gca, 'xlim');
@@ -538,7 +539,7 @@ title(['ON parasols are faster than OFF parasols on average by ', num2str(round(
 on_midget_increase = t_zc(t_zc(:,3)<200,4)./t_zc(t_zc(:,3)<200,3);
 pec_inc_midget = median(on_midget_increase);
 
-figure; 
+figure;
 plot(t_zc(t_zc(:,3)<200,3),t_zc(t_zc(:,3)<200,4), 'ok', 'MarkerFaceColor', 'k')
 hold on
 xlim = get(gca, 'xlim');
@@ -597,7 +598,7 @@ title(['ON midgets are larger than OFF midgets on average by ', num2str(round(pe
 %     else
 %         ecc(i) = good_data_sets{i,6};
 %     end
-%     
+%
 % end
 
 % ecc_include = ecc(~any(isnan(rf_cell_type),2)');
@@ -664,24 +665,77 @@ legend('ON midget', 'OFF midget');
 
 figure; plot(cell2mat(pieces_to_include(:, 18)), inter_cell_distance(:,1), 'ko', 'markerfacecolor', 'k') % on parasol intracell distance
 xlabel('Temporal equivalent eccentricity')
-ylabel('Center to Center Spacing (ON parasols in pixels)')
-title('Variability in center-to-center spacing')
+ylabel('STA Center to Center Spacing (ON parasols in \mum)')
+title('Variability in STA center-to-center spacing')
+
+figure; plot(cell2mat(pieces_to_include(:, 18)), inter_cell_distance(:,2), 'ko', 'markerfacecolor', 'k') % on parasol intracell distance
+xlabel('Temporal equivalent eccentricity')
+ylabel('STA Center to Center Spacing (OFF parasols in \mum)')
+title('Variability in STA center-to-center spacing')
+
 
 figure; plot(inter_cell_distance(:,1), rf_cell_type(:,1), 'ko', 'markerfacecolor', 'k') % on parasol intracell distance
+hold on 
+xaxis = get(gca, 'xlim');
+yaxis = get(gca, 'ylim');
+plot([min(xaxis(1), yaxis(1)), max(xaxis(2), yaxis(2))], [ min(xaxis(1), yaxis(1)) , max(xaxis(2), yaxis(2))], '--k')
 ylabel('RF Diameter (\mum)')
-xlabel('Center to Center Spacing (ON parasols in pixels)')
+xlabel('STA Center to Center Spacing (ON parasols in \mum)')
 title('Mosaic Spacing Correlated with RF Size')
 
 
-figure; plot(spacing(:,1), inter_cell_distance(:,1),'o')
-title('ON parasol')
-xlabel('EI center to center spacing')
-ylabel('STA center to center spacing')
+figure; plot(spacing(:,1), rf_cell_type(:,1), 'ko', 'markerfacecolor', 'k') % on parasol intracell distance
+hold on 
+xaxis = get(gca, 'xlim');
+yaxis = get(gca, 'ylim');
+plot([min(xaxis(1), yaxis(1)), max(xaxis(2), yaxis(2))], [ min(xaxis(1), yaxis(1)) , max(xaxis(2), yaxis(2))], '--k')
+ylabel('RF Diameter (\mum)')
+xlabel('EI Center to Center Spacing (ON parasols in \mum)')
+title('Mosaic Spacing Correlated with RF Size')
 
-figure; plot(spacing(:,2), inter_cell_distance(:,2),'o')
+
+figure; plot(spacing(:,1), inter_cell_distance(:,1),'ko', 'markerfacecolor', 'k')
+hold on 
+xaxis = get(gca, 'xlim');
+yaxis = get(gca, 'ylim');
+plot([min(xaxis(1), yaxis(1)), max(xaxis(2), yaxis(2))], [ min(xaxis(1), yaxis(1)) , max(xaxis(2), yaxis(2))], '--k')
+
+title('ON parasol')
+xlabel('EI center to center spacing (\mum)')
+ylabel('STA center to center spacing (\mum)')
+
+scale_factor_on = inter_cell_distance(:,1)./spacing(:,1);
+scale_factor_off = inter_cell_distance(:,2)./spacing(:,2);
+
+figure;
+hold on
+plot(cell2mat(pieces_to_include(rf_cell_type(:,1)>20, 18)), rf_cell_type(rf_cell_type(:,1)>20,1)./scale_factor_on, 'ko', 'MarkerFaceColor', 'w')
+plot(cell2mat(pieces_to_include(rf_cell_type(:,1)>20, 18)), rf_cell_type(rf_cell_type(:,1)>20,2)./scale_factor_off, 'ko', 'MarkerFaceColor', 'k')
+xlabel('Temporal equivalent eccentricity (mm)')
+ylabel('RF diameter (\mum)')
+title('Parasols')
+legend('ON parasol', 'OFF parasol');
+
+figure; plot(spacing(:,2), inter_cell_distance(:,2), 'ko', 'markerfacecolor', 'k')
+hold on 
+xaxis = get(gca, 'xlim');
+yaxis = get(gca, 'ylim');
+plot([min(xaxis(1), yaxis(1)), max(xaxis(2), yaxis(2))], [ min(xaxis(1), yaxis(1)) , max(xaxis(2), yaxis(2))], '--k')
 title('OFF parasol')
-xlabel('EI center to center spacing')
-ylabel('STA center to center spacing')
+xlabel('EI center to center spacing (\mum)')
+ylabel('STA center to center spacing (\mum)')
+
+
+figure; plot(cell2mat(pieces_to_include(:, 18)), spacing(:,1), 'ko', 'markerfacecolor', 'k') % on parasol intracell distance
+xlabel('Temporal equivalent eccentricity')
+ylabel('EI Center to Center Spacing (ON parasols in \mum)')
+title('Variability in EI center-to-center spacing')
+
+figure; plot(cell2mat(pieces_to_include(:, 18)), spacing(:,2), 'ko', 'markerfacecolor', 'k') % on parasol intracell distance
+xlabel('Temporal equivalent eccentricity')
+ylabel('EI Center to Center Spacing (OFF parasols in \mum)')
+title('Variability in EI center-to-center spacing')
+
 
 
 [~,git_hash_string] = system('git rev-parse HEAD');
