@@ -127,7 +127,7 @@ end
 
 
 %% Compute movie
-movie = zeros(40*stixel_size, 20*stixel_size, 3,10000);
+movie = zeros(80*stixel_size, 40*stixel_size, 3,10000);
 
 sta = cell(size(spikes,2));
 for i = 1:size(spikes,2)
@@ -240,6 +240,9 @@ else
         
         for m = 1:10000/200
             current_movie = movie(:,:,:,200*(m-1)+1:200*(m-1)+200);
+            if ~exist(save_path)
+                mkdir(save_path)
+            end
             save([save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
         end
     end
