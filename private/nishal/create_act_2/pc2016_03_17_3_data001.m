@@ -8,13 +8,13 @@ startup_bertha
 
 startup_rooster
 
-datafile='2016-02-17-8/streamed/data011/data011';%'nishal/2014-08-20-2/data001/data001';
+datafile='2016-03-17-3/streamed/data001/data001';%'nishal/2014-08-20-2/data001/data001';
 
 % type_name_inp = 'userCellList' for a list of cells.
 
 no_images_per_movie=10;
 start_image=10;
-tag='pc2016_02_17_8_data011';
+tag='pc2016_03_17_3_data001';
 destination_mat=['/Volumes/Lab/Users/bhaishahster/',tag];
 if(~exist(destination_mat,'dir'))
 mkdir(destination_mat);
@@ -45,8 +45,8 @@ mov_params.movie_time=120*10/2;
 mov_params.mean=0.5*255;
 mov_params.deviation=0.24*255;
 
-mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-2-0.48-11111.xml';
-mov_params.stixel=8;
+mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-25-2-0.48-11111-32x24-60.35.xml';
+mov_params.stixel=25;
 
 mov_params.interval = 2; % Not important to have this parameter. Default is 1. When we want repeated frames, just set this interval (This just controls the blank Frames), and select the movie_time appropriately.
 
@@ -86,8 +86,8 @@ mov_params.movie_time=120*10/2;
 mov_params.mean=0.5*255; 
 mov_params.deviation=0.24*255;
 
-mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-8-2-0.48-11111.xml';
-mov_params.stixel=8;
+mov_params.mdf_file = '/Volumes/Analysis/stimuli/white-noise-xml/BW-25-2-0.48-11111-32x24-60.35.xml';
+mov_params.stixel=25;
 
 mov_params.interval = 2; % Not important to have this parameter. Default is 1. When we want repeated frames, just set this interval (This just controls the blank Frames), and select the movie_time appropriately.
 
