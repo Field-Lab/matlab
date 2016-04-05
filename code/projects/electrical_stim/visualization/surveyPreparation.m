@@ -322,8 +322,18 @@ for n = 1:1:size(table_data,1)
     eiAmps = max(ei) - min(ei); 
     sum = sum + eiAmps';
 end
-figure; axis image; surf(ei2matrix(sum)); 
-figure; axis image; contourf(ei2matrix(sum),24); axis ij; 
+[xc,yc] = getElectrodeCoords512();
+xq = min(xc):30:max(xc); 
+yq = min(yc):30:max(yc); 
+vq = griddata(xc,yc,sum,xq,yq');
+
+figure; 
+subplot(3,1,1); imagesc(xq,yq,vq); axis xy; axis image;
+colorbar; title('interpolated sum of all EIs'); 
+subplot(3,1,2); imagesc(xq,yq,log(vq)); axis xy; axis image;
+colorbar; title('log(interpolated sum of all EIs)'); 
+subplot(3,1,3);  contourf(vq,24); axis xy; axis image; axis off; colorbar; 
+title('contour of the sum of EIs'); 
  
  
 % --- Executes on button press in deselectall.
