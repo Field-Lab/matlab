@@ -1,4 +1,4 @@
-function model=model_LNLN()
+function model=model_LNLN_fewSU()
 %% Model cell
 
 %% Model parameters
@@ -17,7 +17,7 @@ stix = 8 * 3;
 
 % Cone parameters
 
-nCones = 64;
+nCones = 25;
 coneSpacing = 30; % in grid units
 coneLocSd = 1.5; 
 coneLatticeOrientation = pi/3; % in radians
@@ -27,7 +27,7 @@ coneGaussSd = 2; % the cone gaussian input profile
 
 
 % Sub-unit parameters
-nSU = 12; % ~10 in center and 50 in surround
+nSU = 4; % ~10 in center and 50 in surround
 avgConeperSU = 5; % should be 5-10 
 
 % Cone to SU weights 
@@ -35,7 +35,7 @@ cone_to_SU_Wt = 1*ones(nSU,nCones)/(45);
 
 % sample from bipolar to ganglion weights from uniform distribution.
 % SU_gang_weights = 0.5+(rand(nSU,1)/2);
-sdSUweights = 0.5;
+sdSUweights = 2; % ideally 0.5
 
 % Sub-unit NL
 fs = @(x) exp(x);

@@ -15,7 +15,7 @@ h= figure;
 plotSpikeRaster(response~=0,'PlotType','vertline');
 %print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/sample_firing.pdf'));
 
-Tlen = 120*60*30;
+Tlen = 120*30*30;
 movie = (randn(sz,sz,Tlen)>0)-0.5;
 dt=1/120;
 nTrials=1;
@@ -25,6 +25,7 @@ idx = 1:Tlen;
 spktm = idx(response~=0 & idx >30);
 
 STA= zeros(sz,sz,30);
+
 
 for itime=spktm
 STA = STA + movie(:,:,itime-29:itime);
@@ -53,7 +54,7 @@ axis image
 title('STA 30 scale');
 set(gca,'xTick',[]);
 set(gca,'yTick',[]);
-print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/STA30.pdf'));
+%print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/STA30.pdf'));
 
 h=figure;
 imagesc( repelem(sum(model.totalConeMap3D,3)==0,1,1,3).*ssf*20 + model.totalConeMap3D);
@@ -61,7 +62,7 @@ axis image
 title('STA 20 scale');
 set(gca,'xTick',[]);
 set(gca,'yTick',[]);
-print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/STA20.pdf'));
+%print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/STA20.pdf'));
 %% fit GMLM
 
  mask2 = logical(ones(size(movie,1),size(movie,2)));
@@ -77,11 +78,11 @@ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN
  %[fitGMLM,output] = fitGMLM_MEL_EM(binnedResponses,maskedMov2,8,4,interval);   
  
  fitGMLM1=cell(15,1); 
- for nSU=1:15
+ for nSU=1:5%1:15
  nSU
  fitGMLM_log = cell(50,1);
  fval_log = zeros(50,1);
- for ifit = 1:50
+ for ifit = 1%1:50
      ifit
      close all
  [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,filteredStimDim,nSU,interval); 
@@ -91,7 +92,7 @@ print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN
  
  end
  fitGMLM1{nSU} = fitGMLM_log;
- save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU),'fitGMLM_log','fval_log','model','mask2');
+ %save(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/stix 16, 90 min/fit_nSU_%d.mat',nSU),'fitGMLM_log','fval_log','model','mask2');
  end
   
 
@@ -113,7 +114,7 @@ szz =[1,1;
     4,4];
 
 for nSU=4%1:8
- fitGMLM{1} =fitGMLM1{7};   
+ fitGMLM{1} =fitGMLM1{nSU}{1};   
 sta_dim1 = size(mask2,1);
 sta_dim2 = size(mask2,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
@@ -152,7 +153,7 @@ end
 
 % plot weights
 figure;
-plot(sort(model.SU_gang_weights.*sqrt(sum(model.cone_to_SU_connection,2)),'descend'),'*')
+plot(model.SU_gang_weights.*sqrt(sum(model.cone_to_SU_connection,2)),'*')
 title('SU to ganglion Weight distribution');
 
 fitSUwt = [];
