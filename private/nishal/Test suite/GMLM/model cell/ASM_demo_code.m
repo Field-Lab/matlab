@@ -82,11 +82,11 @@ fd = @(x) exp(x);
 lam = (f(k1*x) + f(k2*x))/10;
 spk =poissrnd(lam);
 
-k1_0 = [0.8,0];k2_0=[0.3,0];
+k1_0 = [0.8,0.2];k2_0=[0.3,1];
 
 xcnt=0;
 ll=[];ll_ub_full=[];ll_ub_batch=[];
-range = -2:0.1:2; k1_fixed=0;k2_fixed=0;
+range = -2:0.1:2; k1_fixed=0.2;k2_fixed=1;
 for k1_ctr=range
     xcnt=xcnt+1;
     ycnt=0;
@@ -113,11 +113,11 @@ for k1_ctr=range
 end
 npts = length(range);
 figure;
-surf(repelem(range',1,npts),repelem(range,npts,1),ll);
+contourf(repelem(range',1,npts),repelem(range,npts,1),ll);
 
 
 figure;
-surf(repelem(range',1,npts),repelem(range,npts,1),ll_ub_full);
+contourf(repelem(range',1,npts),repelem(range,npts,1),ll_ub_full);
 
 figure;
 contourf(repelem(range',1,npts),repelem(range,npts,1),abs(ll_ub_full-ll));
@@ -126,7 +126,7 @@ plot(k1_0(1),k2_0(1),'r.','MarkerSize',20);
 caxis([-1.5,1.5]);
 
 figure;
-contourf(repelem(range',1,npts),repelem(range,npts,1),(ll_ub_batch-ll)>-0.02);
+contourf(repelem(range',1,npts),repelem(range,npts,1),(ll_ub_batch-ll));
 hold on;
 plot(k1_0(1),k2_0(1),'r.','MarkerSize',20);
 caxis([-1.5,1.5]);
@@ -136,4 +136,51 @@ figure;
 contourf(repelem(range',1,npts),repelem(range,npts,1),(ll_ub_batch-ll_ub_full),100);
 hold on;
 plot(k1_0(1),k2_0(1),'r.','MarkerSize',20);
+
+
+%% plot distance metric
+nsamples = 100000;
+nsample_batch=500;
+x = randn(2,nsamples);
+x_batch = x(:,1:nsample_batch);spk_batch = spk(1:nsample_batch);
+
+k1 = [1,0.2];
+k2 = [0.2,1];
+
+f = @(x) exp(x);
+fd = @(x) exp(x);
+lam = (f(k1*x) + f(k2*x))/10;
+spk =poissrnd(lam);
+
+k1_0 = [0.8,0.2];k2_0=[0.3,1];
+
+k1_ref = [1,0.2];k2_ref = [0.2,1];
+xcnt=0;
+dist=[];
+range = -2:0.1:2; k1_fixed=0.2;k2_fixed=1;
+x_spk = x(:,spk>0);
+lam_ref =  (f(k1_ref*x_spk) + f(k2_ref*x_spk))/10;
+weight_ref = [fd(k1_ref*x_spk)/10;fd(k2_ref*x_spk)/10]./repelem(lam_ref,2,1);
+        
+for k1_ctr=range
+    xcnt=xcnt+1;
+    ycnt=0;
+    for k2_ctr=range
+        ycnt=ycnt+1;
+        
+        k1_grid = [k1_ctr,k1_fixed];
+        k2_grid = [k2_ctr,k2_fixed];
+        
+        lam_grid =  (f(k1_grid*x_spk) + f(k2_grid*x_spk))/10;
+        weight_grid = [fd(k1_grid*x_spk)/10;fd(k2_grid*x_spk)/10]./repelem(lam_grid,2,1);
+         
+        dist(xcnt,ycnt) = mean(sum(abs(weight_ref-weight_grid),1),2);
+    end
+end
+
+figure;
+contourf(repelem(range',1,npts),repelem(range,npts,1),dist);
+hold on;
+plot(k1_ref(1),k2_ref(1),'r.','MarkerSize',20);
+%caxis([-1.5,1.5]);
 

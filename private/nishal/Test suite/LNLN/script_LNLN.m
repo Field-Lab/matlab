@@ -114,7 +114,7 @@ szz =[1,1;
     4,4];
 
 for nSU=4%1:8
- fitGMLM{1} =fitGMLM1{nSU}{1};   
+ fitGMLM(1) =fitGMLM1{nSU}{1};   
 sta_dim1 = size(mask2,1);
 sta_dim2 = size(mask2,2);
 indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
