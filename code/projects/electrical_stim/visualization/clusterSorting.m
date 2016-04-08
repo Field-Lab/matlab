@@ -621,6 +621,13 @@ activationThresholds = activationResults.pattern(str2double(get(handles.patternN
 activationThresholds(handles.tempRecElec)= handles.tempActThresh;
 activationResults.pattern(str2double(get(handles.patternNo,'String'))).thresholds = activationThresholds; 
 activationResults.pattern(str2double(get(handles.patternNo,'String'))).userAccepted(handles.tempRecElec) = 1;  %#ok<STRNU>
+reply = inputdlg({'Input the active neuron ID or cancel'},'neuronID',1,{''});
+
+if isempty(reply)
+   disp('did not input an active neuron i.d.');
+else
+    activationResults.pattern(str2double(get(handles.patternNo,'String'))).activeNeuronID = str2double(reply{1}); 
+end
 
 save(resultsFile,'activationResults'); 
 handles.actThresh = handles.tempActThresh; 
