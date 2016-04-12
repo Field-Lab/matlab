@@ -22,7 +22,7 @@ function varargout = clusterSorting(varargin)
 
 % Edit the above text to modify the response to help clusterSorting
 
-% Last Modified by GUIDE v2.5 01-Apr-2016 16:42:26
+% Last Modified by GUIDE v2.5 11-Apr-2016 14:06:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -252,6 +252,7 @@ end
 if isfield(handles,'responseRate')
     handles = rmfield(handles,'responseRate'); 
 end
+set(handles.neuronid,'String',''); 
 guidata(hObject,handles); 
 pathToAnalysisData = get(handles.datapath,'String'); 
 patternNo = str2double(get(handles.patternNo,'String'));
@@ -425,6 +426,9 @@ if exist(resultsFile,'file')
     tmp = load(resultsFile); 
     activationResults = tmp.activationResults; 
 end
+
+neuronid = activationResults.pattern(str2double(handles.patternNo.String)).activeNeuronID; 
+handles.neuronid.String = num2str(neuronid); 
 toPlot = zeros(512,1); 
 for e = 1:512
     toPlot(e) = activationResults.pattern(e).thresholds(e);
@@ -475,7 +479,7 @@ end
 
 % Check waveforms on electrode of interest.
 waveformsOn1Elec = squeeze(eiMatrix(:,:,tempRecElec));
-[rowIdx,~]= find(waveformsOn1Elec<-30);
+[rowIdx,~]= find(waveformsOn1Elec<-10);
 % templates = waveformsOn1Elec(unique(rowIdx),sampleRange);
 clusterElecs = getCluster512(tempRecElec); 
 figure; set(gcf, 'Position', [60 956 1670 150]); 
@@ -707,8 +711,7 @@ if idx <= size(handles.tempData,2)
     axis off;
     
     handles.tempData(idx).spikes = spikes;
-    handles.tempData(idx).misses = misses;
-    
+    handles.tempData(idx).misses = misses;   
     handles.responseRate(idx) = size(spikes,2)/(size(spikes,2)+size(misses,2));
 else
     disp('no distinct spikes / misses');
@@ -889,3 +892,48 @@ function alignSpikes_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of alignSpikes
+
+
+
+function neuronid_Callback(hObject, eventdata, handles)
+% hObject    handle to neuronid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of neuronid as text
+%        str2double(get(hObject,'String')) returns contents of neuronid as a double
+
+% Check for activation results file
+dirname = get(handles.datapath,'String');
+resultsFile = fullfile(dirname,'activationResults.mat');
+if ~exist(resultsFile,'file')
+    pattern = struct('thresholds',4*ones(512,1),'activeNeuronID',[],'userAccepted',zeros(512,1)); 
+    activationResults = struct('pattern',repmat(pattern,512,1)); 
+    save(resultsFile,'activationResults'); 
+else
+    tmp = load(resultsFile); 
+    activationResults = tmp.activationResults; 
+end
+
+neuronid = str2double(get(hObject,'String')); 
+if isfinite(neuronid)
+    activationResults.pattern(str2double(get(handles.patternNo,'String'))).activeNeuronID = neuronid;
+    save(resultsFile,'activationResults'); 
+    disp('neuron i.d. saved'); 
+else
+    warndlg('must enter a number for the neuron string'); 
+end
+
+
+
+% --- Executes during object creation, after setting all properties.
+function neuronid_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to neuronid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
