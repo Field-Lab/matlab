@@ -20,7 +20,7 @@ mov_small = cell(model.nCones,1);
 
 step=60;
 for iframe=1:step:size(movie,3)
-    if(rem(iframe,1000)==1)
+    if(rem(iframe,100)==1)
     iframe
     end
 movie_sc = repelem(movie(:,:,iframe:iframe+step-1),scale,scale,1);

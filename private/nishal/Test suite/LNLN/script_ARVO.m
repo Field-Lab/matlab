@@ -4,7 +4,7 @@ model = model_LNLN();
 
 %% Generate test response
 
-pixelSz=2;
+pixelSz=8;
 sz = model.gridSzX/ (pixelSz*3);
 
 % 
@@ -275,9 +275,9 @@ end
 
 %% compute value of cutting metric
 
-for imc=1:100
+for imc=1
     imc
-    true_nSU = 6;
+    true_nSU = 12;
 model = model_LNLN_parameterized(true_nSU);
 pixelSz=16;
 model = setup_cutting_metric(model,pixelSz);
@@ -412,7 +412,7 @@ end
 suptitle(sprintf('Metrics 1: %0.02f, 2: %0.02f',metric(1),metric(2)));
 
 %% calculate cutting metric baseline
-noise=21;
+%noise=21;
 metric_log=[];
 for imc=1:100
 imc
@@ -461,18 +461,20 @@ nSU_fit = 4;
 nSU_true = model.nSU;
 ntrue_per_fit = ceil(nSU_true/nSU_fit);
 togo=1;
-% while togo==1
-%     nSUi=[];
-%     for isu =[1:nSU_fit-1]
-%         nSUi = [nSUi;poissrnd(ntrue_per_fit-1)];
-%     end
-%     nSUi = [nSUi;nSU_true-sum(nSUi)];
-%     nSUi(nSUi<=0)=1;
-%     if(sum(nSUi)==true_nSU)
-%         togo=0;
-%     end
-% end
-nSUi = ones(nSU_fit,1)*ntrue_per_fit;
+while togo==1
+    nSUi=[];
+    for isu =[1:nSU_fit-1]
+        nSUi = [nSUi;poissrnd(ntrue_per_fit-1)];
+    end
+    nSUi = [nSUi;nSU_true-sum(nSUi)];
+    nSUi(nSUi<=0)=1;
+    if(sum(nSUi)==true_nSU)
+        togo=0;
+    end
+end
+
+% evenly spread the SU
+%nSUi = ones(nSU_fit,1)*ntrue_per_fit;
 
 % randomly (in future, prefer near ones?) select sub-units
 select_matrix =zeros(nSU_fit,nSU_true);
@@ -483,6 +485,8 @@ perms = randperm(nSU_true);
 select_matrix = select_matrix(:,perms);
 
 u_spatial_log = (select_matrix * model.su_lowres')';
+noise = norm(sum(u_spatial_log,2))/(10*sqrt(sum(abs(sum(u_spatial_log,2))>0.01)));
+
 u_spatial_log = u_spatial_log+ noise*randn(size(u_spatial_log));
 [metric,metric_sus] = cutting_metric(model,u_spatial_log);
 nSU = nSU_fit
@@ -535,29 +539,130 @@ histogram(metric_log(:,2),20);
 legend('fitting output','fitting output permuted','baseline');
 
 
-%% fine Res, long WN
-
+%% fine Res , long WN - LNL spikes, fit
+% as its fine resolution, we do not need to take into account stixels! -
+% excite cones independently with gaussian noise.
 
 model = model_LNLN_fineRes();
 
 % Generate test response
 
-pixelSz=4;
-sz = model.gridSzX/ (pixelSz*3);
-
 
 Tlen = 120*10;
-movie = (randn(sz,sz,Tlen)>0)-0.5;
+conemovie = 25*(randn(Tlen,model.nCones));
 dt=1/120;
 nTrials=30;
-[response,~] = generateResp_LNLN(model,movie,dt,nTrials);
+[response,su_inp,conefilteredMov] = generateResp_LNLN_coneMov(model,conemovie,dt,nTrials);
+h= figure;
+plotSpikeRaster(response~=0,'PlotType','vertline');
+%print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/sample_firing.pdf'));
+
+Tlen = 120*60*180;
+conemovie = 25*(randn(Tlen,model.nCones));
+dt=1/120;
+nTrials=1;
+[response,~,conefilteredMov] = generateResp_LNLN_coneMov(model,conemovie,dt,nTrials);
+
+% cone sub-units. 
+
+maskedMov = conefilteredMov/1000;
+binnedResponses = response';
+filteredStimDim =size(maskedMov,1);
+interval=1; 
+nSU=12;
+[fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,filteredStimDim,nSU,interval); 
+
+% plot sub-units
+cols = distinguishable_colors(nSU+1);
+figure;
+for isu_fitted=1:nSU
+    subplot(3,4,isu_fitted);
+    for isu_true = 1:model.nSU
+        cones = (model.cone_su_idx==isu_true);
+        scatter(model.conesX(cones),model.conesY(cones),7*abs(fitGMLM.Linear.filter{isu_fitted}(cones)),cols(isu_true,:),'filled');
+        hold on;
+        xlim([min(model.conesX),max(model.conesX)]);
+        ylim([min(model.conesY),max(model.conesY)]);
+        axis square
+        set(gca,'xTick',[]);set(gca,'yTick',[]);
+        title(sprintf('fitted SU#',isu_fitted));
+    end
+     set(gca,'visible','off');
+end
+%
+
+figure;
+for isu_true = 1:model.nSU
+        cones = (model.cone_su_idx==isu_true);
+        scatter(model.conesX(cones),model.conesY(cones),250,cols(isu_true,:),'filled');
+        hold on;
+        xlim([min(model.conesX),max(model.conesX)]);
+        ylim([min(model.conesY),max(model.conesY)]);
+        axis square
+        set(gca,'xTick',[]);set(gca,'yTick',[]);
+end
+ set(gca,'visible','off');
+ 
+ %% fine Res , long WN - LNLN spikes, LNL fit
+% as its fine resolution, we do not need to take into account stixels! -
+% excite cones independently with gaussian noise.
+
+model = model_LNLN_fineRes_fancyNL();
+
+% Generate test response
+Tlen = 120*10;
+conemovie = 25*(randn(Tlen,model.nCones));
+dt=1/120;
+nTrials=30;
+[response,su_inp,conefilteredMov] = generateResp_LNLN_coneMov_nl(model,conemovie,dt,nTrials);
 h= figure;
 plotSpikeRaster(response~=0,'PlotType','vertline');
 %print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/modelCellLNLN/model1/sample_firing.pdf'));
 
 Tlen = 120*60*30;
-movie = (randn(sz,sz,Tlen)>0)-0.5;
+conemovie = 25*(randn(Tlen,model.nCones));
 dt=1/120;
 nTrials=1;
-[response,~] = generateResp_LNLN(model,movie,dt,nTrials);
+[response,~,conefilteredMov] = generateResp_LNLN_coneMov_nl(model,conemovie,dt,nTrials);
 
+% cone sub-units. 
+
+maskedMov = conefilteredMov/1000;
+binnedResponses = response';
+filteredStimDim =size(maskedMov,1);
+interval=1; 
+nSU=12;
+[fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,filteredStimDim,nSU,interval); 
+
+% plot sub-units
+cols = distinguishable_colors(nSU+1);
+figure;
+for isu_fitted=1:nSU
+    subplot(3,4,isu_fitted);
+    for isu_true = 1:model.nSU
+        cones = (model.cone_su_idx==isu_true);
+        scatter(model.conesX(cones),model.conesY(cones),7*abs(fitGMLM.Linear.filter{isu_fitted}(cones)),cols(isu_true,:),'filled');
+        hold on;
+        xlim([min(model.conesX),max(model.conesX)]);
+        ylim([min(model.conesY),max(model.conesY)]);
+        axis square
+        set(gca,'xTick',[]);set(gca,'yTick',[]);
+        title(sprintf('fitted SU#',isu_fitted));
+    end
+     set(gca,'visible','off');
+end
+%
+
+figure;
+for isu_true = 1:model.nSU
+        cones = (model.cone_su_idx==isu_true);
+        scatter(model.conesX(cones),model.conesY(cones),250,cols(isu_true,:),'filled');
+        hold on;
+        xlim([min(model.conesX),max(model.conesX)]);
+        ylim([min(model.conesY),max(model.conesY)]);
+        axis square
+        set(gca,'xTick',[]);set(gca,'yTick',[]);
+end
+ set(gca,'visible','off');
+ 
+ 

@@ -1,4 +1,4 @@
-function model=model_LNLN()
+function model=model_LNLN_fineRes_fancyNL()
 %% Model cell
 
 %% Model parameters
@@ -35,14 +35,30 @@ cone_to_SU_Wt = 1*ones(nSU,nCones)/(45);
 
 % sample from bipolar to ganglion weights from uniform distribution.
 % SU_gang_weights = 0.5+(rand(nSU,1)/2);
-sdSUweights = 0.5;
+sdSUweights = 1;
 
 % Sub-unit NL
-fs = @(x) exp(x);
+%fs = @(x) exp(x);
+fs = @(x) log(1+exp(110*x-380));
 
 % ganglion cell NL
-g = @(x) x - min(x);
+g = @(x) 2*log(1+exp(3*x - 3.2));
 
+% % how to set these NL?
+% x=[3:0.1:6];
+% y = log (exp(exp(x))-1);
+% figure;
+% plot(x,y,'-*')
+% 
+% x=[0.1:0.1:6];
+% y = log (exp((x))-1);
+% figure;
+% plot(x,y,'-*')
+% 
+% x=[-6:0.1:6];
+% plot(x,exp(x));
+% hold on;
+% plot(x,log(1+exp(110*x-380)));
 %% Generate cone mosaic
 d = coneSpacing;
 
