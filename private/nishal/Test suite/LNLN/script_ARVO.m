@@ -666,3 +666,90 @@ end
  set(gca,'visible','off');
  
  
+ %% smoothness/spatial locality metric
+ 
+for imc=1:10
+    imc
+    true_nSU = 12;
+model = model_LNLN_parameterized(true_nSU);
+pixelSz=16;
+model = setup_cutting_metric(model,pixelSz);
+
+close all
+% generate stimuli
+
+sz = model.gridSzX/ (pixelSz*3);
+
+Tlen = 120*30*30;
+movie = (randn(sz,sz,Tlen)>0)-0.5;
+dt=1/120;
+nTrials=1;
+[response,~] = generateResp_LNLN(model,movie,dt,nTrials);
+
+
+% fit sub-units
+mask2 = logical(ones(size(movie,1),size(movie,2)));
+sta_dim1 = size(mask2,1);
+sta_dim2 = size(mask2,2);
+indexedframe = reshape(1:sta_dim1*sta_dim2,[sta_dim1,sta_dim2]);
+masked_frame = indexedframe(logical(mask2));
+
+ maskedMov= filterMov(movie,mask2,squeeze(model.ttf));
+ maskedMov2=[maskedMov;ones(1,size(maskedMov,2))];
+ binnedResponses = response';
+
+ Tlen = size(maskedMov,2);
+ times = randperm(Tlen);
+ testtimes = times(1:5000);
+ traintimes = times(5001:end);
+ mm_train = maskedMov(:,traintimes); mm_test = maskedMov(:,testtimes);
+ binnedResponses_train = binnedResponses(traintimes); binnedResponses_test = binnedResponses(testtimes);
+ filteredStimDim =size(maskedMov,1);
+ 
+ %  EM like Max Expected Likelihood .. 
+ interval=1;
+ nSU = 4;
+ close all
+ [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses_train,mm_train,filteredStimDim,nSU,interval); 
+ nTrails=1;
+ [predictedResponse,lam,kx] = predictGMLM_bias_lr(fitGMLM,mm_test,nTrials,interval);lam=lam*120;
+ testLL = (sum(lam)/120 - binnedResponses_test'*log(lam))/length(lam);
+ 
+u_spatial_log = zeros(filteredStimDim,nSU);
+
+%h=figure;
+for ifilt=1:nSU
+%subplot(szz(nSU,1),szz(nSU,2),ifilt)
+u_spatial_log(:,ifilt) =fitGMLM.Linear.filter{ifilt}(1:length(masked_frame));
+end
+
+u_spatial_log_perm = 0*u_spatial_log;
+for idim = 1:filteredStimDim
+    perm = randperm(nSU);
+u_spatial_log_perm(idim,:)  = u_spatial_log(idim,perm);
+end
+
+spatial_scale=2;
+[metric,metric_sus] = smoothness_metric(u_spatial_log,logical(ones(10,10)),spatial_scale);
+[metric_perm,metric_sus_perm] = smoothness_metric(u_spatial_log_perm,logical(ones(10,10)),spatial_scale);
+
+[metric,metric_sus] = smoothness_metric2(u_spatial_log,logical(ones(10,10)),spatial_scale);
+[metric_perm,metric_sus_perm] = smoothness_metric2(u_spatial_log_perm,logical(ones(10,10)),spatial_scale);
+
+
+mc_data(imc).metric=metric;
+mc_data(imc).metric_perm=metric_perm;
+mc_data(imc).metric_sus=metric_sus;
+mc_data(imc).metric_sus_perm=metric_sus_perm;
+end
+
+metric=[];metric_perm=[];
+for imc=1:length(mc_data)
+metric = [metric;mc_data(imc).metric];
+metric_perm = [metric_perm;mc_data(imc).metric_perm];
+end
+ 
+figure;
+histogram(metric,10);
+hold on;
+histogram(metric_perm,10);
