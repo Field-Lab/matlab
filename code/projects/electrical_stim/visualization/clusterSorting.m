@@ -290,6 +290,12 @@ for m = 1:size(movieNos,2)
         clusterTraces = reshape(permute(subMeanTraceCluster,[1 3 2]),size(dataTraces,1),[]);
         subMeanTrace = clusterTraces; % hack to test using surrounding electrodes
     end
+    clusterRecElecs = getCluster512(tempRecElec);
+    testTraceCluster = squeeze(dataTraces(:,clusterRecElecs,sampleRange));
+    subMeanTraceCluster = testTraceCluster - repmat(mean(testTraceCluster),size(testTraceCluster,1),1);
+    clusterTraces = reshape(permute(subMeanTraceCluster,[1 3 2]),size(dataTraces,1),[]);
+    
+    subMeanTraceCluster = clusterTraces;
     
     % Align the minimum value in the traces
     [~,minIdx]=(min(subMeanTrace,[],2));
@@ -350,7 +356,8 @@ for m = 1:size(movieNos,2)
             title(sprintf('movie %d',movieNos(m)));
             handles.tempData(subplotIdx).spikes = subMeanTrace(index1,:)';
             handles.tempData(subplotIdx).misses = subMeanTrace(index2,:)';
-            
+            handles.tempData(subplotIdx).clusterSpikes = subMeanTraceCluster(index1,:)'; 
+            handles.tempData(subplotIdx).clusterMisses = subMeanTraceCluster(index2,:)'; 
             responseStimAmps(subplotIdx) = stimAmp;
             responseRate(subplotIdx) = length(index1)/size(testTrace,1);
         else
@@ -360,6 +367,8 @@ for m = 1:size(movieNos,2)
             title(sprintf('movie %d',movieNos(m)));
             handles.tempData(subplotIdx).spikes = subMeanTrace(index2,:)';
             handles.tempData(subplotIdx).misses = subMeanTrace(index1,:)';
+             handles.tempData(subplotIdx).clusterSpikes = subMeanTraceCluster(index2,:)'; 
+            handles.tempData(subplotIdx).clusterMisses = subMeanTraceCluster(index1,:)'; 
             responseStimAmps(subplotIdx) = stimAmp;
             responseRate(subplotIdx) = length(index2)/size(testTrace,1);
         end
@@ -479,7 +488,7 @@ end
 
 % Check waveforms on electrode of interest.
 waveformsOn1Elec = squeeze(eiMatrix(:,:,tempRecElec));
-[rowIdx,~]= find(waveformsOn1Elec<-10);
+[rowIdx,~]= find(waveformsOn1Elec<-15);
 % templates = waveformsOn1Elec(unique(rowIdx),sampleRange);
 clusterElecs = getCluster512(tempRecElec); 
 figure; set(gcf, 'Position', [60 956 1670 150]); 
@@ -705,13 +714,16 @@ idx = str2double(tag(end));
 if idx <= size(handles.tempData,2)
     spikes = handles.tempData(idx).misses;
     misses = handles.tempData(idx).spikes;
-    
+    clusterSpikes = handles.tempData(idx).clusterMisses;
+    clusterMisses = handles.tempData(idx).clusterSpikes;
     eval(sprintf('cla(handles.axes%d); axes(handles.axes%d);',idx,idx));
     plot(misses,'Color',0.7*[1 1 1]); hold on; plot(spikes,'red');
     axis off;
     
     handles.tempData(idx).spikes = spikes;
-    handles.tempData(idx).misses = misses;   
+    handles.tempData(idx).misses = misses;
+    handles.tempData(idx).clusterSpikes = clusterSpikes;
+    handles.tempData(idx).clusterMisses = clusterMisses;
     handles.responseRate(idx) = size(spikes,2)/(size(spikes,2)+size(misses,2));
 else
     disp('no distinct spikes / misses');
@@ -730,10 +742,17 @@ function subtract_Callback(hObject, eventdata, handles)
 tag =  get(hObject,'Tag');
 idx = str2double(tag(end));
 if idx <= size(handles.tempData,2)
-    spikes = handles.tempData(idx).spikes;
-    misses = handles.tempData(idx).misses;
-    figure; plot(mean(spikes,2) - mean(misses,2));
-    title('Spikes - misses');
+    spikes = handles.tempData(idx).clusterSpikes;
+    misses = handles.tempData(idx).clusterMisses;
+    clusterElecs = getCluster512(str2double(handles.patternNo.String)); 
+    diffVal = mean(spikes,2) - mean(misses,2);
+    elecTraces = reshape(diffVal,[],length(clusterElecs)); 
+    figure; set(gcf,'Position',[57         638        1674         242]); 
+    for subplotIdx = 1:length(clusterElecs)
+        subplot(1,length(clusterElecs),subplotIdx);
+        plot(elecTraces(:,subplotIdx)); title(num2str(clusterElecs(subplotIdx)));
+    end
+    suptitle('Spikes - misses');
 else
     disp('no distinct spikes / misses'); 
 end
