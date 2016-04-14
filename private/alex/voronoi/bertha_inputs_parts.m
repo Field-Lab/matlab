@@ -106,6 +106,9 @@ for kkk =  [541 1921 3031 3721 4022 4353 4396 4486 4876 5056]
     center_cones = find(cone_table(datarunID,:));
     length(center_cones)
     
+    % get duration and refresh
+    load('/Volumes/Analysis/2016-02-17-4/subunits/indiv_cone_inputs/cone_1.mat')
+    
     spikes=ceil((datarun.spikes{datarunID}-datarun.triggers(1))*1000/(refresh)); % spikes in frames
     spikes(spikes<10)=[];
     spikes(spikes>duration) = [];
@@ -138,9 +141,7 @@ for kkk =  [541 1921 3031 3721 4022 4353 4396 4486 4876 5056]
         filt_inputs = zeros(length(center_cones), duration);
         cnt = 1;
         for current_cone=center_cones
-            tmp_noise = noise_sta(cone_coords(cnt,2)-1:cone_coords(cnt,2)+1,cone_coords(cnt,1)-1:cone_coords(cnt,1)+1);
-            
-            tmp_coord = [cone_coords(cnt,1)-1:cone_coords(cnt,1)+1 cone_coords(cnt,2)+k];
+            tmp_noise = noise_sta(cone_coords(cnt,2)-1:cone_coords(cnt,2)+1,cone_coords(cnt,1)-1:cone_coords(cnt,1)+1);            
             tmp_inputs = center_cones_inputs{cnt} - repmat(tmp_noise(:),1, size(center_cones_inputs{cnt},2));
             tmp_sta = raw_sta(cone_coords(cnt,2)-1:cone_coords(cnt,2)+1,cone_coords(cnt,1)-1:cone_coords(cnt,1)+1);
             
