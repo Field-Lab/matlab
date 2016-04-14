@@ -96,8 +96,14 @@ for i=1:length(cones)
     end
 end
 
+% for kkk =  [1921 3031 3721 4022 4353 4396 4486 4876 5056]
+%     datarunID = find(datarun.cell_ids==kkk);
+%      center_cones = find(cone_table(datarunID,:));
+%     length(center_cones)
+% end
 
-for kkk =  [541 1921 3031 3721 4022 4353 4396 4486 4876 5056]
+
+for kkk =  [3031 3721 4022 4353 4396 4486 4876 5056]
     
     kkk
     
@@ -130,9 +136,14 @@ for kkk =  [541 1921 3031 3721 4022 4353 4396 4486 4876 5056]
         % load inputs
         cnt = 1;
         for i = center_cones
-            p = int2str(floor(i/10)*10+1);
+            if mod(i,10)==0
+                tt = floor(i/10)*10+1-10;
+            else
+                tt = floor(i/10)*10+1;
+            end
+            p = int2str(tt);            
             load(['/Volumes/Analysis/2016-02-17-4/subunits/indiv_cone_inputs/cone_',p,'.mat'])
-            center_cones_inputs{cnt} = reshape(inputs{mod(i,10)}, 9, duration);
+            center_cones_inputs{cnt} = reshape(inputs{i-tt+1}, 9, duration);
             cnt=cnt+1;
         end
         
@@ -165,14 +176,13 @@ for kkk =  [541 1921 3031 3721 4022 4353 4396 4486 4876 5056]
         %         end
         
         err =[];
-        try  loglikratio = fit_normal_cdfs(filt_inputs, spike_rate, center_cones');
+        try  [loglikratio, res] = fit_normal_cdfs(filt_inputs, spike_rate, center_cones');
         catch err
         end
         
         if isempty(err)
-            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cell_', int2str(kkk), '.mat'], 'loglikratio');
+            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cell_', int2str(kkk), '.mat'], 'loglikratio', 'res');
         end
     end
-    cnt1 = cnt1+1;
 end
 

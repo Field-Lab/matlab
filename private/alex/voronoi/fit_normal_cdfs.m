@@ -1,4 +1,4 @@
-function loglikratio = fit_normal_cdfs(inputs, spikes, center_cones)
+function [loglikratio, res] = fit_normal_cdfs(inputs, spikes, center_cones)
 
 if length(spikes)==size(inputs,2)
     spike_rate = spikes;
@@ -77,7 +77,7 @@ end
 
 %% NORMAL CDF 2-D
 loglikratio =[];
-
+res = [];
 n_inps = size(inputs,2);
 
 if 1
@@ -88,7 +88,7 @@ if 1
             cone2
             % re-sampling
             tic
-            for sample = 1:9                
+            for sample = 1:25                
                 resampled_inds=round(rand(n_inps,1)*n_inps);
                 resampled_inds(resampled_inds==0)=1;
                 resampled_inds(resampled_inds>n_inps)=n_inps;
@@ -100,6 +100,10 @@ if 1
                 [mllparams_x, fval_x, mllparams_y, fval_y] = ...
                     fit_norm_cdf_2d_mll(inputs(cone1, resampled_inds),inputs(cone2, resampled_inds), ...
                     spike_rate(resampled_inds), start_points_x, start_points_y);
+                
+                res(cone1, cone2, sample).x = mllparams_x;
+                res(cone1, cone2, sample).y = mllparams_y;
+                res(cone1, cone2, sample).inds = resampled_inds;
                 
 %                 save_2d_plots(inputs(cone1, resampled_inds)', inputs(cone2, resampled_inds)',...
 %                     spike_rate(resampled_inds), mllparams_x, mllparams_y, ...

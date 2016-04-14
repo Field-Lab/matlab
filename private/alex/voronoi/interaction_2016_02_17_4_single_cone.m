@@ -67,13 +67,21 @@ cone_table = zeros(length(datarun.cell_ids), length(cones));
 for i=1:length(cones)
     a = round(cones(i,:)/2);
     tmp = squeeze(comb_sta(a(2),a(1),:))';
-    a=find( abs(tmp)>max_pix*0.4 & abs(tmp)>thresh);
+    a=find( abs(tmp)>max_pix*0.3 & abs(tmp)>thresh);
     if ~isempty(a)
         cone_table(a,i) = 1;
     end
 end
 
 tmp = raw_sta * pol;
+
+figure
+colormap gray
+imagesc(raw_sta)
+hold on
+for i = center_cones
+    text(cones(i,1), cones(i,2), int2str(i), 'color', 'r')
+end
 
 for kkk=  541 
 
@@ -90,6 +98,7 @@ for kkk=  541
     
     
     center_cones = find(cone_table(datarunID,:));
+    center_cones = [477 478]
     length(center_cones)
    
     spikes=ceil((datarun.spikes{datarunID}-datarun.triggers(1))*1000/(refresh)); % spikes in frames
@@ -152,7 +161,7 @@ for kkk=  541
 end
 
 
-datarunID = find(vorrun.cell_ids==3736);
+datarunID = find(datarun.cell_ids==5056);
 center_cones = find(cone_table(datarunID,:))'
 
 
@@ -175,13 +184,13 @@ k = 10;
 tmp = ones(size(tmp))./(1+exp(-k*(tmp-x0)));
 figure
 set(gcf, 'position', [-1822         131        1033         974]);
-subplot('position', [0 0 1 1])
+% subplot('position', [0 0 1 1])
 imagesc(tmp);
 set(gca, 'xtick', 0,'xticklabel','')
 set(gca, 'ytick', 0,'yticklabel','')
-set(gca, 'visible', 'off')
-% set(gca, 'xtick', 2:4:length(center_cones)*4,'xticklabel',int2str(center_cones))
-% set(gca, 'ytick', 2:4:length(center_cones)*4,'yticklabel',int2str(center_cones))
+% set(gca, 'visible', 'off')
+set(gca, 'xtick', 2:4:length(center_cones)*4,'xticklabel',int2str(center_cones'))
+set(gca, 'ytick', 3:4:length(center_cones)*4,'yticklabel',int2str(center_cones'))
 xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
@@ -198,57 +207,16 @@ saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2
 line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
 
 
-
-for kkk= vorrun.cell_types{1}.cell_ids(1:end)  %vorrun.cell_ids(22:end)
-    datarunID = find(vorrun.cell_ids==kkk);
-    
-    for i=1:length(vorrun.cell_types)
-        if ~isempty(find(vorrun.cell_types{i}.cell_ids==kkk, 1))
-            cell_type = vorrun.cell_types{i}.name;
-            break
-        end
-    end
-    
-    visionID = vorrun.cell_ids(datarunID);
-    raw_sta = squeeze(vorrun.stas.stas{datarunID})-noise_vor;
-    thresh = mean([robust_std(raw_sta(:,5)),robust_std(raw_sta(:,10))])*5;
-    
-    a = min(raw_sta(:));
-    b = max(raw_sta(:));
-    if abs(a)>abs(b) % OFF cell
-        pol = -1;
-        [~,pos] = find(raw_sta==a,1);
-    else % ON cell
-        pol = 1;
-        [~,pos] = find(raw_sta==b,1);
-        a = b;
-    end
-    tmp = raw_sta * pol;
-    
-    center_cones = find(sum(tmp(:,pos-1:pos+1)>max(tmp(:))*0.3,2));
-    center_cones(isnan(cones(center_cones,1)))=[];
-%     center_cones = find(sum(tmp(:,pos-1:pos+1)>thresh,2));
-%     center_cones(isnan(cones(center_cones,1)))=[];
-    if ~isempty(find(center_cones==441,1)) & ~isempty(find(center_cones==389,1))
-        kkk
-    end
-end
-
-find(vorrun.cell_ids==6991)
-
-
-
-
-
-
-center_cones = [390,441]';
+a = find(cone_table(:,347))
+datarun.cell_ids(a)
+center_cones = [346, 478]';
 cone_cells = find(sum(cone_table(:,center_cones),2)==2);
 all_cell_type(cone_cells);
 cnt1 = 1;
 clear comb_loglikratio
-for kkk=  vorrun.cell_ids(cone_cells)
+for kkk=  datarun.cell_ids(cone_cells)
     kkk
-    datarunID = find(vorrun.cell_ids==kkk);
+    datarunID = find(datarun.cell_ids==kkk);
     raw_sta = squeeze(vorrun.stas.stas{datarunID})-noise_vor;
     thresh = mean([robust_std(raw_sta(:,5)),robust_std(raw_sta(:,10))])*5;
     
