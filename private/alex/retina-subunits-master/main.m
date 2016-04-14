@@ -166,11 +166,15 @@ batchAnal(workstation,dataset,cellTypeName,'subunit-local',1,0,0.5, rgcs)
 toc
 
 disp('now running figures')
-batchAnal(workstation,dataset,cellTypeName,'subunit-local',0,1,0.5, rgcs)
+batchAnal(workstation,dataset,cellTypeName,'subunit-local',0,1,0.3, rgcs)
 
 
 dataset='2011-06-30-0/data003';
 cellTypeName='ON parasol';
+
+dataset='2011-12-13-2/data008_2';
+rgcs=[3736]; %cellType 4, 'OFF midget'
+cellTypeName='OFF midget';
 
 
 workstation='bertha';

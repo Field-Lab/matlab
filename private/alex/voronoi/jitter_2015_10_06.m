@@ -82,19 +82,19 @@ for kkk = 1:parts:length(datarun.cell_ids)
     
 end
 % 
-% 
-% load('/Volumes/Analysis/2015-10-06-2/jitter/correct_jitter_sta_cells_1.mat')
-% 
-% for j=1:3
-%     figure
-%     for i=1:6
-%         tmp = sta(:,:,i,j);
-%         tmp = tmp/max(abs(tmp(:)))/2+0.5;
-%         subplot(2,3,i)
-%         imagesc(tmp);
-%     end
-% end
-% 
+
+load('/Volumes/Analysis/2015-10-06-2/jitter/correct_jitter_sta_cells_1.mat')
+
+for j=1:3
+    figure
+    for i=1:6
+        tmp = sta(:,:,i,j);
+        tmp = tmp/max(abs(tmp(:)))/2+0.5;
+        subplot(2,3,i)
+        imagesc(tmp);
+    end
+end
+
 % 
 % for j=21:20
 %     figure
@@ -106,3 +106,21 @@ end
 % end
 % 
 % 
+sta = zeros(322,322,5,128);
+for i=1:128
+    sta(:,:,:,i) = all_sta{i};
+end
+tmp = mean(sta(:,:,2,:),4);
+figure
+imagesc(tmp)
+
+tmpsta = sta(:,:,2,3);
+tmpstadenoise = tmpsta-tmp;
+
+figure
+subplot(1,2,1)
+colormap gray
+imagesc(tmpsta)
+subplot(1,2,2)
+colormap gray
+imagesc(tmpstadenoise)

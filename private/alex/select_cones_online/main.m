@@ -6,12 +6,13 @@ clear
 
 global cones cone_regions new_cones new_regions
 
-date = '2016-03-17-2';
-run = 'data005';
-path2load = ['/Volumes/Acquisition/Analysis/',date,'/',run,'/',run];
+date = '2011-12-13-2';
+run = 'data011';
+% path2load = ['/Volumes/Acquisition/Analysis/',date,'/',run,'/',run];
+path2load = ['/Volumes/Analysis/', date, '/d08-11-norefit/',run,'/',run];
 % path2load = ['/Volumes/Analysis/',date, '/d00-05-norefit/',run,'/',run];
-field_size = [200, 265];
-scale = 3;
+field_size = [300, 300];
+scale = 2;
 
 datarun = load_data(path2load);
 datarun = load_params(datarun,'verbose',1);
@@ -197,7 +198,7 @@ end
 cones = cone_centers*2;
 cones(del_cones, :) = [];
 radius = 3
-select_cells(all_sta, pols, radius, 20);
+select_cells(all_sta, pols, radius, 1);
 
 
 % eliminate absolute duplicates
@@ -220,11 +221,11 @@ while flag
     end
 end
 
-path2save=['/Volumes/Analysis/', date, '/stimuli/maps/map_', run, '_test_20160303_full'];
+path2save=['/Volumes/Analysis/', date, '/cone_data/manual/'];
 if ~isdir(path2save)
     mkdir(path2save);
 end
-save([path2save '_info_delete'],'cell_indices', 'ic', 'cones', 'cone_regions')
+save([path2save, 'map_data011_preproc'],'cell_indices', 'ic', 'cones', 'cone_regions')
 
 %% control: repeat until no double cones
 
@@ -369,7 +370,7 @@ imagesc(tmp)
 
 
 %% save map
-path2save=['/Volumes/Analysis/2016-03-17-2/cone_data/map_data005_manual_postexp'];
+path2save=['/Volumes/Analysis/',date,'/cone_data/manual/map_data011_manual_postexp'];
 dlmwrite([path2save '.txt'], map, 'delimiter', '\t', 'newline', 'pc');
 save([path2save '_info'],'cell_indices', 'ic', 'cones', 'cone_regions')
 
@@ -382,7 +383,7 @@ imagesc(savedMap)
 a = load('/Volumes/Analysis/2016-03-17-2/cone_data/data001/denoised_bayes-msf_20/map_data001.txt')
 % map1 = a;
 savedMap = a;
-for i=31:50
+for i=1:20
     figure
     set(gcf, 'position', [-1384         287        1067         812])
     set(gca, 'dataaspectratio', [1 1 1])
@@ -416,6 +417,17 @@ for i=21:40
     hold on
     plot(a(:,2)*2, a(:,3)*2, 'xr')
 end
+
+%% stability check
+a = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data005_manual_postexp_info.mat')
+b = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data001_manual_postexp_info.mat')
+map = load('/Volumes/Analysis/2016-02-17-4/stimuli/maps/map_data001_from_data000_600_1500.txt');
+figure
+imagesc(map)
+hold on
+plot(b.cones(:,1), b.cones(:,2), 'r+');
+plot(a.cones(:,1), a.cones(:,2), 'bx');
+
 
 
 

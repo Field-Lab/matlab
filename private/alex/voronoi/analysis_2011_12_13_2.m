@@ -2,12 +2,12 @@
 
 local_path = '/Volumes/Analysis/';
 
-datarun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data008-from-d08_11/data008-from-d08_11']);
+datarun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data008/data008']);
 datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun);
 datarun = set_polarities(datarun);
 
-datarun1 = load_data([local_path, '2011-12-13-2/d08-11-norefit/data011-from-d08_11/data011-from-d08_11']);
+datarun1 = load_data([local_path, '2011-12-13-2/d08-11-norefit/data011/data011']);
 datarun1 = load_params(datarun1,'verbose',1);
 datarun1 = load_sta(datarun1);
 
@@ -17,7 +17,7 @@ colormap gray
 imagesc(vormap)
 
 
-vorrun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data009-from-d08_11/data009-from-d08_11']);
+vorrun = load_data([local_path, '2011-12-13-2/d08-11-norefit/data009/data009']);
 vorrun = load_params(vorrun,'verbose',1);
 vorrun = load_sta(vorrun);
 vorrun = load_neurons(vorrun);
@@ -36,8 +36,8 @@ toc
 find(datarun.cell_ids==6577)
 
 % off midgets
-datarunID = 168; % 2 pairs? thresh -0.07
-datarunID = 162; % 4 pairs (but beware of voronoi): 1/2 (714/718), 2/5 (718/721), 3/8 (719/759), 6/7 (727/729). Threshold -0.08
+datarunID = 168; % ID 3736, 2 pairs? thresh -0.07
+datarunID = 162; % ID 3586, 4 pairs (but beware of voronoi): 1/2 (714/718), 2/5 (718/721), 3/8 (719/759), 6/7 (727/729). Threshold -0.08
 datarunID = 52; % ID 1321; bad movement
 datarunID = 69; % ID 1741; bad voronoi
 datarunID = 103; % ID 2476; bad voronoi
