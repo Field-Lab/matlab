@@ -693,23 +693,68 @@ colormap gray
 axis image
 title('Sub-unit')
 end
-print(h,'-clipboard','-dpdf');
-%     if(ifgmlm==1)
-%        
-% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU),'dir');
-%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/',cellID,nSU));
-% end
-%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/gmlm/SU_%d/gmlm_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
-%     else
-% if ~exist(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU),'dir');
-%     mkdir(sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/',cellID,nSU));
-% end
-%    print(h,'-dpdf',sprintf('/Volumes/Lab/Users/bhaishahster/GMLM_fits/pc2015_03_09_2/data038/Off parasol/detailed_subset/CellID_%d/nnmf/SU_%d/nnmf_%d_su_%d_fit_%d.pdf',cellID,nSU,cellID,nSU,ifit));
-%    
-%     end
+%print(h,'-clipboard','-dpdf');
+
+% Add smoothness metric
+filters = fitGMLM.Linear.filter;
+
+u_spatial_log = zeros(sum(mask(:)),nSU);
+for isu=1:nSU
+    u_spatial_log(:,isu) =filters{isu};
+end
+[metric,metric_sus] = smoothness_metric2(u_spatial_log,mask);
+suptitle(sprintf('Non-smoothness metric: %f',metric));
 
 
+% plot randomly permuted sub-units.
 
+
+u_spatial_log_perm = 0*u_spatial_log;
+for idim = 1:size(u_spatial_log,1)
+    perm = randperm(nSU);
+    u_spatial_log_perm(idim,:)  = u_spatial_log(idim,perm);
+end
+figure;
+ 
+    subplot(1,nSU+1,1);
+    xxsta =-repelem(sta(x_coord,y_coord),20,20);
+%     xxsta = xxsta - mean(mean(xxsta((abs(xxsta)<0.2*max(abs(xxsta(:)))))));
+    B = bwboundaries(abs(xxsta)>0.2*max(abs(xxsta(:))));
+    hullidx = convhull(B{1}(:,1),B{1}(:,2),'simplify',true);
+    xxsta = xxsta/max(abs(xxsta(:)));
+    imagesc((1-repmat(xxsta,[1,1,3]))/2);
+    hold on;
+    plot(B{1}(hullidx,2),B{1}(hullidx,1),'LineWidth',lw);
+    title('sta');
+    set(gca,'xTick',[]);
+    set(gca,'yTick',[]);
+
+    colormap gray
+      caxis([0,1]);
+  % colorbar
+    axis image
     
+for ifilt=1:nSU
+subplot(1,nSU+1,ifilt+1);
+u_spatial = reshape_vector(u_spatial_log_perm(:,ifilt),masked_frame,indexedframe);
+%subplot(ceil((nSU+1)/2),ceil((nSU+1)/2),ifilt)
+xxu = repelem(u_spatial(x_coord,y_coord),20,20);
+xxu = xxu/max(abs(xxu(:)));
+
+imagesc(-xxu);
+   hold on;
+    plot(B{1}(hullidx,2),B{1}(hullidx,1),'LineWidth',lw);
+     caxis([-1,1]);
+    set(gca,'xTick',[]);
+    set(gca,'yTick',[]);
+colormap gray
+%colorbar
+%title(sprintf('asm Filter: %d',ifilt));
+axis image
+title('Sub-unit')
+end
+print(h,'-clipboard','-dpdf');
 
 
+[metric_perm,metric_sus_perm] = smoothness_metric2(u_spatial_log_perm,mask);
+suptitle(sprintf('Permuted sub-units non-smoothness metric: %f',metric_perm));

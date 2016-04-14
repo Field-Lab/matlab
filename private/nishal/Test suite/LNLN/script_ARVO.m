@@ -733,8 +733,8 @@ spatial_scale=2;
 [metric,metric_sus] = smoothness_metric(u_spatial_log,logical(ones(10,10)),spatial_scale);
 [metric_perm,metric_sus_perm] = smoothness_metric(u_spatial_log_perm,logical(ones(10,10)),spatial_scale);
 
-[metric,metric_sus] = smoothness_metric2(u_spatial_log,logical(ones(10,10)),spatial_scale);
-[metric_perm,metric_sus_perm] = smoothness_metric2(u_spatial_log_perm,logical(ones(10,10)),spatial_scale);
+[metric,metric_sus] = smoothness_metric2(u_spatial_log,logical(ones(10,10)));
+[metric_perm,metric_sus_perm] = smoothness_metric2(u_spatial_log_perm,logical(ones(10,10)));
 
 
 mc_data(imc).metric=metric;
@@ -753,3 +753,4 @@ figure;
 histogram(metric,10);
 hold on;
 histogram(metric_perm,10);
+legend('Extracted sub-units','Permuted sub-units');
