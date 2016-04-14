@@ -9,6 +9,9 @@ datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun);
 datarun = load_neurons(datarun);
 
+a = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data001_manual_postexp_info.mat');
+cones = round(a.cones/2);
+
 if 0
     tic
     [full_inputs, refresh, duration] = get_wn_movie_ath(datarun, 'BW-2-6-0.48-11111-400x300-60.35.xml');
