@@ -543,6 +543,8 @@ legend('fitting output','fitting output permuted','baseline');
 % as its fine resolution, we do not need to take into account stixels! -
 % excite cones independently with gaussian noise.
 
+for imc=1:100
+    imc
 model = model_LNLN_fineRes();
 
 % Generate test response
@@ -571,6 +573,35 @@ filteredStimDim =size(maskedMov,1);
 interval=1; 
 nSU=12;
 [fitGMLM,f_val] = fitGMLM_MEL_EM_bias(binnedResponses,maskedMov,filteredStimDim,nSU,interval); 
+
+
+
+u_spatial_log = zeros(filteredStimDim,nSU);
+
+%h=figure;
+for ifilt=1:nSU
+%subplot(szz(nSU,1),szz(nSU,2),ifilt)
+u_spatial_log(:,ifilt) =fitGMLM.Linear.filter{ifilt}(1:length(masked_frame));
+end
+
+u_spatial_log_perm = 0*u_spatial_log;
+for idim = 1:filteredStimDim
+    perm = randperm(nSU);
+u_spatial_log_perm(idim,:)  = u_spatial_log(idim,perm);
+end
+
+[metric,metric_sus] = cutting_metric(model,u_spatial_log);
+
+[metric_perm,metric_sus_perm] = cutting_metric(model,u_spatial_log_perm);
+
+
+mc_data(imc).metric=metric;
+mc_data(imc).metric_perm=metric_perm;
+mc_data(imc).metric_sus=metric_sus;
+mc_data(imc).metric_sus_perm=metric_sus_perm;
+end
+
+
 
 % plot sub-units
 cols = distinguishable_colors(nSU+1);
