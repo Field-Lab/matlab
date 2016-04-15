@@ -50,6 +50,8 @@ else
     stim   = stim / double(fitmoviestats.span);
     if strcmp(GLMType.nullpoint, 'mean')
         stim = stim - double(fitmoviestats.normmean);
+    elseif strcmp(GLMType.nullpoint, 'min')
+        stim = stim - min(stim(:));
     else
         error('you need to fill in how to account for stimulus with a different nullpoint')
     end

@@ -36,7 +36,7 @@ fitframes = movie_size(3);
 
 for i = 1:length(fitspikes)
     sp_frame = floor(fitspikes(i)/tstim);
-    if sp_frame > 29 && sp_frame<fitframes
+    if sp_frame > 30 && sp_frame<fitframes
         STA = STA+double(fitmovie(:,:,(sp_frame-29):sp_frame));
     end
 end

@@ -7,7 +7,7 @@ model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neur
 dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
 
 %% ONLY CHANGE THINGS HERE
-cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
+cell_spec = get_cell_ids(datarun_class,'Off Parasol'); % cell ids to fit
 %cell_spec = [202];
 convergence = 1; % fraction of data to use
 
@@ -44,7 +44,7 @@ clear prepped_data
 monitor_refresh = 120;
 visual_check = 1;
 
-for i_stim = 2
+for i_stim = 1:2
     trial_idx = 1:10;
     tic;
     for i_block_trigger = blocks{i_stim}
@@ -179,7 +179,8 @@ for i_stim = 2
     n_cells = size(prepped_data.fitspikes,2);
     block_length = i_stim*[3600];
     n_blocks = size(prepped_data.fitspikes,1);
-    for i_cell=11:n_cells
+stimlength = size(fitmovie,3);    
+for i_cell=11:n_cells
         cell_savename = num2str(cell_spec(i_cell));
         fitspikes = [];
         for i_block = 1:n_blocks
