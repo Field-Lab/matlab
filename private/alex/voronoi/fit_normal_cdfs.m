@@ -87,15 +87,20 @@ if 1
         for cone2 = (cone1+1):length(center_cones)
             cone2
             % re-sampling
+            
+            [start_points_x, resn1, start_points_y, resn2] = ...
+                fit_norm_cdf_2d_lsq(inputs(cone1, :),inputs(cone2, :), spike_rate(:));
+            
             tic
             for sample = 1:25 
                 
                 resampled_inds=round(rand(n_inps,1)*n_inps);
                 resampled_inds(resampled_inds==0)=1;
                 resampled_inds(resampled_inds>n_inps)=n_inps;
-                [start_points_x, resn1, start_points_y, resn2] = ...
-                    fit_norm_cdf_2d_lsq(inputs(cone1, resampled_inds),inputs(cone2, resampled_inds), ...
-                    spike_rate(resampled_inds));
+                
+%                 [start_points_x, resn1, start_points_y, resn2] = ...
+%                     fit_norm_cdf_2d_lsq(inputs(cone1, resampled_inds),inputs(cone2, resampled_inds), ...
+%                     spike_rate(resampled_inds));
                 % maximize loglik
                 
                 [mllparams_x, fval_x, mllparams_y, fval_y] = ...

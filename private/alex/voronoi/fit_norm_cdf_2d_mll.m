@@ -13,13 +13,8 @@ opts.Display = 'off';
 % [mllparams_x, fval_x] = fminsearch(@tt1, start_points_x, opts);
 % [mllparams_y, fval_y] = fminsearch(@tt2, start_points_y, opts);
 
-tic
 [mllparams_x, fval_x] = fminsearch(@tt_log, start_points_x, opts);
-toc
-
-tic
 [mllparams_y, fval_y] = fminsearch(@tt1_log, start_points_y, opts);
-toc
 
 
 % LOGISTIC
