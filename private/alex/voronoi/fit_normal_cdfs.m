@@ -91,6 +91,10 @@ if 1
             [start_points_x, resn1, start_points_y, resn2] = ...
                 fit_norm_cdf_2d_lsq(inputs(cone1, :),inputs(cone2, :), spike_rate(:));
             
+            [start_points_x, fval_x, start_points_y, fval_y] = ...
+                fit_norm_cdf_2d_mll(inputs(cone1, :),inputs(cone2, :), ...
+                spike_rate(:), start_points_x, start_points_y);
+            
             tic
             for sample = 1:25 
                 
