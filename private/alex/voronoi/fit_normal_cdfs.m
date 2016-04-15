@@ -98,12 +98,12 @@ if 1
             tic
             for sample = 1:25 
                 
-                resampled_inds=randperm(n_inps);
-                resampled_inds(27000:end) = [];
+%                 resampled_inds=randperm(n_inps);
+%                 resampled_inds(27000:end) = [];
                 
-%                 resampled_inds=round(rand(n_inps,1)*n_inps);
-%                 resampled_inds(resampled_inds==0)=1;
-%                 resampled_inds(resampled_inds>n_inps)=n_inps;
+                resampled_inds=round(rand(n_inps,1)*n_inps);
+                resampled_inds(resampled_inds==0)=1;
+                resampled_inds(resampled_inds>n_inps)=n_inps;
                 
 %                 [start_points_x, resn1, start_points_y, resn2] = ...
 %                     fit_norm_cdf_2d_lsq(inputs(cone1, resampled_inds),inputs(cone2, resampled_inds), ...
