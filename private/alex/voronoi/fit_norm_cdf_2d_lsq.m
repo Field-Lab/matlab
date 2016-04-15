@@ -36,32 +36,32 @@ end
 opts.MaxFunEvals=1500;
 opts.Display = 'off';
 
-% lb = [0 0 0 -Inf 0];
-% ub = [20 20 5 Inf Inf];
-% inits = [(max(fr)-min(fr))*2    std(x1+x2)    0.5   min(fr) 1];
-% fitfunc = @tt;
-% [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-% 
-% 
-% lb = [0 0 0 -Inf 0];
-% ub = [50 50 10 Inf Inf];
-% inits = [(max(fr)-min(fr))*3    std(x1+x2)    0.25   0 1];
-% fitfunc = @tt1;
-% [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-
-
-
-lb = [0 0 0 0.1];
-ub = [50 20 5 Inf];
-inits = [20    5    1    1];
-fitfunc = @tt_log;
+lb = [0 0 0 -Inf 0];
+ub = [20 20 5 Inf Inf];
+inits = [(max(fr)-min(fr))*2    std(x1+x2)    0.5   min(fr) 1];
+fitfunc = @tt;
 [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 
-lb = [0 0 0 0.1];
-ub = [50 20 5 Inf];
-inits = [2    10    0.25    1];
-fitfunc = @tt1_log;
+
+lb = [0 0 0 -Inf 0];
+ub = [50 50 10 Inf Inf];
+inits = [(max(fr)-min(fr))*3    std(x1+x2)    0.25   0 1];
+fitfunc = @tt1;
 [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
+
+
+% 
+% lb = [0 0 0 0.1];
+% ub = [50 20 5 Inf];
+% inits = [20    5    1    1];
+% fitfunc = @tt_log;
+% [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
+% 
+% lb = [0 0 0 0.1];
+% ub = [50 20 5 Inf];
+% inits = [2    10    0.25    1];
+% fitfunc = @tt1_log;
+% [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 
 
 
