@@ -161,8 +161,8 @@ for kkk=  541
 end
 
 
-datarunID = find(datarun.cell_ids==5056);
-center_cones = find(cone_table(datarunID,:))'
+datarunID = find(datarun.cell_ids==199);
+% center_cones = find(cone_table(datarunID,:))'
 
 
 all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
@@ -189,8 +189,8 @@ imagesc(tmp);
 set(gca, 'xtick', 0,'xticklabel','')
 set(gca, 'ytick', 0,'yticklabel','')
 % set(gca, 'visible', 'off')
-set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones))
-set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones))
+set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones'))
+set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
 xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
