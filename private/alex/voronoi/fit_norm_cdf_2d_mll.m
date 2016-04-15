@@ -9,12 +9,17 @@ fact_precomp = factorial(ydata);
 
 opts.MaxFunEvals=1500;
 opts.Display = 'off';
+
 % [mllparams_x, fval_x] = fminsearch(@tt1, start_points_x, opts);
 % [mllparams_y, fval_y] = fminsearch(@tt2, start_points_y, opts);
 
+tic
 [mllparams_x, fval_x] = fminsearch(@tt_log, start_points_x, opts);
-[mllparams_y, fval_y] = fminsearch(@tt1_log, start_points_y, opts);
+toc
 
+tic
+[mllparams_y, fval_y] = fminsearch(@tt1_log, start_points_y, opts);
+toc
 
 
 % LOGISTIC
@@ -30,6 +35,7 @@ y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
 if isinf(y);y = 1000000;end
+
 
 function y = tt1_log(p) % y shift
 global ydata xdata1 xdata2 fact_precomp
