@@ -177,7 +177,6 @@ end
 all_array = all_array/max(abs(all_array(:)))/2+0.5;
 all_array = [ones(1,size(all_array,2))-0.5; all_array];
 all_array = repmat(all_array,1,1,3);
-% all_array(:,:,[1 3]) = 0;
 tmp = all_array;
 x0 = 0.5;
 k = 10;
@@ -189,55 +188,16 @@ imagesc(tmp);
 set(gca, 'xtick', 0,'xticklabel','')
 set(gca, 'ytick', 0,'yticklabel','')
 % set(gca, 'visible', 'off')
-set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones'))
-set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
+set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones))
+set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones))
 xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
 % saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
-% hold on
-% for i = 3.5:3:length(center_cones)*3
-%     line([0, length(center_cones)*3+1], [i, i], 'color', [1 1 1]*0.5, 'linewidth',10)
-%     line([i, i],[0, length(center_cones)*3+1], 'color', [1 1 1]*0.5, 'linewidth',10)
-% end
-% for i = 3.5:3:length(center_cones)*3
-%     line([0, length(center_cones)*3+1], [i, i], 'color', 'k' )
-%     line([i, i],[0, length(center_cones)*3+1], 'color', 'k')
-% end
+
 line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
 
 
-
-
-all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
-for cone1 = 1:length(center_cones)
-    
-    for cone2=cone1+1:length(center_cones)
-        tmp = loglikratio(cone1, cone2, :);
-        tmp=reshape(tmp,5,5);
-        all_array(cone1*6-5:cone1*6-1,cone2*6-5:cone2*6-1) = tmp;
-    end
-end
-all_array = all_array/max(abs(all_array(:)))/2+0.5;
-all_array = [ones(1,size(all_array,2))-0.5; all_array];
-all_array = repmat(all_array,1,1,3);
-% all_array(:,:,[1 3]) = 0;
-tmp = all_array;
-x0 = 0.5;
-k = 10;
-tmp = ones(size(tmp))./(1+exp(-k*(tmp-x0)));
-figure
-set(gcf, 'position', [-1822         131        1033         974]);
-% subplot('position', [0 0 1 1])
-imagesc(tmp);
-set(gca, 'xtick', 0,'xticklabel','')
-set(gca, 'ytick', 0,'yticklabel','')
-% set(gca, 'visible', 'off')
-set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones'))
-set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
-xlabel('cone 1')
-ylabel('cone 2')
-set(gca,'dataaspectratio', [1 1 1])
 
 
 
