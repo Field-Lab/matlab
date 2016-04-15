@@ -75,13 +75,6 @@ end
 
 tmp = raw_sta * pol;
 
-figure
-colormap gray
-imagesc(raw_sta)
-hold on
-for i = center_cones
-    text(cones(i,1), cones(i,2), int2str(i), 'color', 'r')
-end
 
 for kkk=  541 
 
@@ -188,16 +181,23 @@ imagesc(tmp);
 set(gca, 'xtick', 0,'xticklabel','')
 set(gca, 'ytick', 0,'yticklabel','')
 % set(gca, 'visible', 'off')
-set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones))
-set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones))
+set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones'))
+set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
 xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
 % saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
 
-line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
+% line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
 
 
+figure
+colormap gray
+imagesc(raw_sta)
+hold on
+for i = center_cones
+    text(cones(i,1), cones(i,2), int2str(i), 'color', 'r')
+end
 
 
 
