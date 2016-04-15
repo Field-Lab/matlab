@@ -61,7 +61,7 @@ p.addParameter('datarun_class', 0); % you need to include this if you use a cell
 p.addParameter('stimulus_name', 0)
 p.addParameter('seed', 11111)
 p.addParameter('variable_seed_start', 11111)
-p.addParameter('visual_check', 1)
+p.addParameter('visual_check', 0)
 p.addParameter('STA_check', 0)
 p.addParameter('RGN_params_A_M_C', [16807, 2^31 - 1, 0]); % Shouldn't really ever have to change this
 p.addParameter('activity_movie', 0); % this should be a string with the filename of where you want the movie saved

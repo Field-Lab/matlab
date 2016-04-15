@@ -1,5 +1,5 @@
  clear 
-params_201602171
+params_201602178
 n_reg = length(reg);
 mkdir(fig_save);
 
@@ -47,20 +47,28 @@ end
 
 %%
 % plot the PSTH for each condition for each cell
+start = 1;
 for subgroup = 1:n_subgroups
     for i_cell = cell_idx{subgroup}
         for i = 1:length(mask_conditions{subgroup})
-            color = [1 1 1]*(1-sigmas(mask_conditions{subgroup}(i))/12);
-            figure(1); hold on
-            IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', color);
-            figure(2); hold on
-            IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', color);
+            mask = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
+            %comp = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 100);
+            for fixation = 1:23
+                Firing(i_cell, fixation, i) = sum(mask(start:interval_frame(fixation)));
+                start = interval_frame(fixation);
+            end
+            start = 1;
+            %Firing(i_cell, i, 2) = sum(comp);
         end
-        figure(1); IDP_plot_PSTH(reg_data{1}, i_cell, 'color', [0 0 0], 'plot_offset', 0); title('Mask')
-        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
-        figure(2); title('Complement');
-        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
-        figure(1); clf; figure(2); clf;
     end
 end
-close all
+% plot([2 4 5 6], Firing(:,1))
+%save([fig_save '/Firing.mat'], 'Firing')
+
+%%
+for i = 1:100
+    load(['/Volumes/Lab/Users/Nora/new_stim_nora/NSEM intervals/matfiles/movie_chunk_' num2str(i) '.mat'])
+    interval(i) = size(movie_chunk, 3);
+end
+default_colors = get(gca,'ColorOrder');
+interval_frame = cumsum(interval);

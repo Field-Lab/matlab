@@ -30,9 +30,10 @@ fittedGLM = glm_fit_from_WN(cells, dataset, stim, varargin)
 	and passes everything needed for glm_fit, and returns the fittedGLM.
 	This is currently NOT set up for coupling!
 	
-[STA, center] = STA_Test(fitspikes, fitmovie)
+[STA, center] = STA_Test(fitspikes, fitmovie, center_verification, tstim)
 	Pass the same arguments as you would to glm_fit, and make sure you get an STA. It also returns 
-    the location of the cell. This checks timing and indexing.
+    the location of the cell, either by picking the highest value pixel, or by 
+    This checks timing and indexing.
 	
 plotfilters(fittedGLM)
 	Quick look at the fitted filters

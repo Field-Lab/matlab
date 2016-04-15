@@ -15,7 +15,7 @@ datarun_class = load_params(datarun_class);
 % load('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/fitmovie_2015_05_27_11_data002.mat')
 disp('loading test movie')
 load('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/testmovie_2015_05_27_11_data002.mat')
-
+testmovie = permute(testmovie, [2 1 3]);
 %% Find block starts
 % Finding block starts
 triggers = datarun.triggers;
@@ -48,12 +48,14 @@ testblocks = NSEM(1:2:end);
 testmovie_frames_per_block = 20*120;
 testmovie_seconds_per_block = testmovie_frames_per_block/120;
 
-cells = get_cell_indices(datarun_class, 'Off Amacrine');
-n_cells = length(cells);
-%% Load up cell info
+cell_type = {'On Parasol', 'Off Amacrine', 'Off Parasol'};
+for i_cell_type = 1:3
 
-res.spikes = zeros(n_cells, testmovie_frames_per_block);
-res.centers = zeros(n_cells, 2);
+cells = get_cell_indices(datarun_class, cell_type{i_cell_type});
+n_cells = length(cells);
+
+res{i_cell_type}.spikes = zeros(n_cells, testmovie_frames_per_block);
+res{i_cell_type}.centers = zeros(n_cells, 2);
 
 for i_cell = 1:n_cells
     
@@ -71,21 +73,43 @@ for i_cell = 1:n_cells
 %         start = start + fitmovie_seconds_per_block;
 %     end
 
-    %spikes_concat = [];
+    spikes_concat{i_cell_type}{i_cell} = [];
     for i = 1:length(testblocks)
         testspikes{i_cell, i} = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
-        %spikes_concat = [spikes_concat; trial_spikes];
+        spikes_concat{i_cell_type}{i_cell} = [spikes_concat{i_cell_type}{i_cell}; testspikes{i_cell, i}];
     end
-%     spikes_frame = floor(spikes_concat * 120);
-%     for i_frame = 1:testmovie_frames_per_block
-%        res.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame); 
-%     end
+%      spikes_frame = floor(spikes_concat{i_cell} * 120);
+%      for i_frame = 1:testmovie_frames_per_block
+%         res{i_cell_type}.spikes(i_cell, i_frame) = sum(spikes_frame == i_frame); 
+%      end
 
-%     res.centers(i_cell,:) = flip(datarun_class.vision.sta_fits{cells(i_cell)}.mean);
-    % center(2) = 40 - center(2);
+    res{i_cell_type}.centers(i_cell,:) = datarun_class.vision.sta_fits{cells(i_cell)}.mean;
+    %center(2) = 40 - center(2);
 
+end
 end
 
 %%
-% res_spikes_plot(testmovie, res, '/Users/Nora/Desktop/OFFPar_movie.avi')
+tic; res_spikes_plot(testmovie, res, ['/Users/Nora/Desktop/' cell_type{i_cell_type} '_movie.avi']); toc
 
+%%
+default_colors = get(gca,'ColorOrder');
+for i_cell_type = 1:3
+    subplot(3,1,i_cell_type)
+    for i_cell = 1:size(res{i_cell_type}.centers,1)
+        hold on; plot(spikes_concat{i_cell_type}{i_cell},res{i_cell_type}.centers(i_cell,1)*ones(size(spikes_concat{i_cell_type}{i_cell})), '.k');
+    end
+    title(cell_type{i_cell_type})
+end
+set(gcf, 'Position', [100 100 800 650])
+for i_saccade = 0:19
+    for i_cell_type = 1:3
+    subplot(3,1,i_cell_type)
+    xlim([i_saccade i_saccade+0.25])
+    end
+    %suptitle(['Saccade ' num2str(i_saccade)])
+    %hold on; subplot(2,1,2); plot(spikes, centers(2)*ones(length(spikes), 1), '.k')
+    %xlim([i_saccade i_saccade+0.25])
+    exportfig(gcf, ['/Users/Nora/Desktop/waves/Saccade' num2str(i_saccade)], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'opengl');
+end
+%%

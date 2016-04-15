@@ -1,4 +1,4 @@
-function [NSEM_Corr, loc, avg_profile, PSTH_ex_cells] = wide_field(dataruns, cell_type, stim_end, example_cells)
+function [NSEM_Corr, loc, avg_profile, PSTH_ex_cells] = wide_field_newnorm(dataruns, cell_type, stim_end, example_cells)
 
 %% datarun 1 = class, 2 = full_rep, 3 = split
 modu=[];
@@ -45,26 +45,31 @@ avg_profile = [slice, (1:201)'/(5*width)];
 
 %% Organize PSTH and calculate errors
 cid = get_cell_indices(dataruns{1}, cell_type);
+cells = get_cell_ids(dataruns{1}, cell_type);
+for i_run = 2:length(dataruns)
+        prepped_data{i_run} = interleaved_data_prep(dataruns{i_run}, 1800, 40, 'cell_spec', cells, 'visual_check', 0);
+end
 loc = zeros(length(cid),1);
 NSEM_Corr = zeros(length(cid), length(dataruns)-1);
 i_ex_cell = 0;
 for i_cell = 1:length(cid)
-    PSTH = cell(1, length(dataruns)-1); 
+    PSTH = cell(1, length(dataruns)-1);
     for i_run = 2:length(dataruns)
-        spikes_concat = [];
-        spikes = dataruns{i_run}.spikes{cid(i_cell)};
-        trial_starts = dataruns{i_run}.triggers([true; diff(dataruns{i_run}.triggers)>0.9]);
-        for i_trial = 1:length(trial_starts)
-            trial_spikes = spikes( (spikes>trial_starts(i_trial)) & (spikes<(trial_starts(i_trial) + 15)) ) - trial_starts(i_trial);
-            spikes_concat = [spikes_concat; trial_spikes];
-        end
-        spikes_concat = ceil(spikes_concat*100);
-        PSTH_temp = zeros(1500,1);
-        for i = 1:1500
-            PSTH_temp(i) = sum(spikes_concat == i);
-        end
-        PSTH{i_run} = 100*conv(PSTH_temp, gausswin(5), 'same')/(40*sum(gausswin(5))); % in hertz
-        NSEM_Corr(i_cell,i_run) = err(PSTH{2}, PSTH{i_run})/1500;
+        %         spikes_concat = [];
+        %         spikes = dataruns{i_run}.spikes{cid(i_cell)};
+        %         trial_starts = dataruns{i_run}.triggers([true; diff(dataruns{i_run}.triggers)>0.9]);
+        %         for i_trial = 1:length(trial_starts)
+        %             trial_spikes = spikes( (spikes>trial_starts(i_trial)) & (spikes<(trial_starts(i_trial) + 15)) ) - trial_starts(i_trial);
+        %             spikes_concat = [spikes_concat; trial_spikes];
+        %         end
+        %         spikes_concat = ceil(spikes_concat*100);
+        %         PSTH_temp = zeros(1500,1);
+        %         for i = 1:1500
+        %             PSTH_temp(i) = sum(spikes_concat == i);
+        %         end
+        %         PSTH{i_run} = 100*conv(PSTH_temp, gausswin(5), 'same')/(40*sum(gausswin(5))); % in hertz
+        PSTH{i_run} = IDP_plot_PSTH(prepped_data{i_run}, i_cell, 0, 1/120, 10);
+        NSEM_Corr(i_cell,i_run) = err(PSTH{2}, PSTH{i_run});
     end
     loc(i_cell) = (dataruns{1}.vision.sta_fits{cid(i_cell)}.mean(2)-stim_end(1))/width;
     
@@ -103,8 +108,10 @@ end
 % 
 if length(stim_end) == 2
     loc = [loc; loc-diff(stim_end)/width];
+elseif length(stim_end) == 3
+    loc = loc*width+stim_end(1);
+    loc = [(loc-stim_end(1))/width; (loc-stim_end(2))/width; (loc-stim_end(3))/width];
 end
-
 
 
 % temp

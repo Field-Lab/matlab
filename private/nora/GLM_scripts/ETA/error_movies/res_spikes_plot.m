@@ -37,7 +37,7 @@ for i_frame = 1:frames
     colors(response>0,:) = repmat(default_colors(2,:), pos, 1);
     
     scatter(res.centers(:,1), size(testmovie,1) - res.centers(:,2), 5+dot_scaling*abs(response), default_colors(1,:), 'filled');
-    F = getframe();%gcf, [73.8000 108.2  434.0000  216.6]);
+    F = getframe(gcf, [73.8000 108.2  434.0000  216.6]);
     writeVideo(writerObj, F);
     clf
 end

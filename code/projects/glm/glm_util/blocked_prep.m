@@ -1,5 +1,9 @@
 function [spikesconcat, concat_fitmovie] = blocked_prep(blockedspikes, blockedmoviecell)
 
+% WARNING: THIS CODE MIGHT NOT WORK. IT WAS WRITTEN AS AN EXAMPLE FUNCTION
+% AND WAS NEVER THOROUGHLY TESTED. THIS IS ONLY NECESSARY IF YOU RAN A
+% MOVIE IN BLOCKS. IF THE MOVIE WAS RUN STRAIGHT THROUGH, SKIP THIS.
+%
 % blocked spikes should be a cell of the spike times WITHIN each block
 %   so each block's time should start over from 0
 %

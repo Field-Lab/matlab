@@ -3,9 +3,9 @@ clear
 Corr_NS = [];
 Loc = [];
 Color_idx = [];
-modu=[];
-no_modu= [];
-default_colors = get(gca,'ColorOrder');
+% modu=[];
+% no_modu= [];
+% default_colors = get(gca,'ColorOrder');
 
 
 %%
@@ -18,7 +18,7 @@ for cell_type = {'On Parasol', 'Off Parasol'}
     datarun{2} = load_data('/Volumes/Analysis/2015-09-23-0/data012-data013-data017-norefit/data012-from-data012_data013_data017/data012-from-data012_data013_data017');
     datarun{3} = load_data('/Volumes/Analysis/2015-09-23-0/data012-data013-data017-norefit/data013-from-data012_data013_data017/data013-from-data012_data013_data017');
     
-    [NSEM_Corr,locations, prof1] = wide_field(datarun, cell_type, stim_end, 0);
+    [NSEM_Corr,locations, prof1] = wide_field_newnorm(datarun, cell_type, stim_end, 0);
     Corr_NS = [Corr_NS; NSEM_Corr(:,3)];  
     Loc = [Loc ; locations];
     Color_idx = [Color_idx; 1*ones(length(locations),1)];
@@ -67,7 +67,18 @@ for cell_type = {'On Parasol', 'Off Parasol'}
     Corr_NS = [Corr_NS; NSEM_Corr(:,3); NSEM_Corr(:,4)];
     Loc = [Loc ; locations];
     Color_idx = [Color_idx; 4*ones(length(locations),1)];
-
+    
+    clear datarun NSEM_Corr locations stim_end
+    stim_end = 40-[80, 40, 120]/4;
+    datarun{1} = load_data('/Volumes/Analysis/2015-12-18-2/data015-data021/data015/data015');
+    datarun{2} = load_data('/Volumes/Analysis/2015-12-18-2/data015-data021/data016/data016');
+    datarun{3} = load_data('/Volumes/Analysis/2015-12-18-2/data015-data021/data017/data017');
+    datarun{4} = load_data('/Volumes/Analysis/2015-12-18-2/data015-data021/data018/data018');
+    datarun{5} = load_data('/Volumes/Analysis/2015-12-18-2/data015-data021/data019/data019');
+    [NSEM_Corr,locations, prof1] = wide_field_newnorm(datarun, cell_type, stim_end, 0);
+    Corr_NS = [Corr_NS; NSEM_Corr(:,3); NSEM_Corr(:,4); NSEM_Corr(:,5)];
+    Loc = [Loc ; locations];
+    Color_idx = [Color_idx; 4*ones(length(locations),1)];
     
     
 end
@@ -138,3 +149,25 @@ ylim([-0.001 0.039])
 % [NSEM_Corr,locations] = wide_field(datarun, cell_type, 0);
 
 
+% datarun{1} = load_data('/Volumes/Analysis/2015-11-09-8/data002-data005/data004');
+% datarun{2} = load_data('/Volumes/Analysis/2015-11-09-8/data002-data005/');
+% datarun{3} = load_data('/Volumes/Analysis/2015-11-09-8/data002-data005/');
+
+%% test data
+clear
+Corr_NS = [];
+Loc = [];
+
+cell_types = {'On Parasol', 'Off Parasol'};
+cell_type = cell_types{2};
+clear datarun NSEM_Corr locations stim_end
+stim_end = 50 -[240, 320]/8;
+% datarun 1 = class, 2 = full_rep, 3 = left third, 4 = left two thirds
+datarun{1} = load_data('/Volumes/Analysis/2015-10-29-7/data008-data012/data012/data012');
+datarun{2} = load_data('/Volumes/Analysis/2015-10-29-7/data008-data012/data008/data008');
+datarun{3} = load_data('/Volumes/Analysis/2015-10-29-7/data008-data012/data009/data009');
+datarun{4} = load_data('/Volumes/Analysis/2015-10-29-7/data008-data012/data010/data010');
+[NSEM_Corr,locations, prof4] = wide_field_newnorm(datarun, cell_type, stim_end, 0);
+Corr_NS = [Corr_NS; NSEM_Corr(:,3); NSEM_Corr(:,4)];
+Loc = [Loc ; locations];
+plot(Loc, Corr_NS, '.')
