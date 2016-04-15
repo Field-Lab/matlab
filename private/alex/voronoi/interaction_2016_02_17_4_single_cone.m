@@ -165,13 +165,13 @@ datarunID = find(datarun.cell_ids==5056);
 center_cones = find(cone_table(datarunID,:))'
 
 
-all_array = zeros((length(center_cones)-1)*4,length(center_cones)*4);
+all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
 for cone1 = 1:length(center_cones)
     
     for cone2=cone1+1:length(center_cones)
         tmp = loglikratio(cone1, cone2, :);
-        tmp=reshape(tmp,3,3);
-        all_array(cone1*4-3:cone1*4-1,cone2*4-3:cone2*4-1) = tmp;
+        tmp=reshape(tmp,5,5);
+        all_array(cone1*6-5:cone1*6-1,cone2*6-5:cone2*6-1) = tmp;
     end
 end
 all_array = all_array/max(abs(all_array(:)))/2+0.5;
@@ -189,12 +189,12 @@ imagesc(tmp);
 set(gca, 'xtick', 0,'xticklabel','')
 set(gca, 'ytick', 0,'yticklabel','')
 % set(gca, 'visible', 'off')
-set(gca, 'xtick', 2:4:length(center_cones)*4,'xticklabel',int2str(center_cones'))
-set(gca, 'ytick', 3:4:length(center_cones)*4,'yticklabel',int2str(center_cones'))
+set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones))
+set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones))
 xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
-saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
+% saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
 % hold on
 % for i = 3.5:3:length(center_cones)*3
 %     line([0, length(center_cones)*3+1], [i, i], 'color', [1 1 1]*0.5, 'linewidth',10)

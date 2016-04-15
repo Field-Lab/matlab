@@ -90,7 +90,7 @@ end
 cone_table = zeros(length(datarun.cell_ids), length(cones));
 for i=1:length(cones)
     tmp = squeeze(comb_sta(cones(i,2),cones(i,1),:))';
-    a=find( abs(tmp)>max_pix*0.4 & abs(tmp)>thresh);
+    a=find( abs(tmp)>max_pix*0.3 & abs(tmp)>thresh);
     if ~isempty(a)
         cone_table(a,i) = 1;
     end
@@ -103,7 +103,7 @@ end
 % end
 
 
-for kkk =  [3031 3721 4022 4353 4396 4486 4876 5056]
+for kkk =  [199 46 541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
     
     kkk
     
@@ -181,7 +181,7 @@ for kkk =  [3031 3721 4022 4353 4396 4486 4876 5056]
         end
         
         if isempty(err)
-            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cell_', int2str(kkk), '.mat'], 'loglikratio', 'res');
+            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cell_', int2str(kkk), '.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
         end
     end
 end
