@@ -90,11 +90,12 @@ end
 cone_table = zeros(length(datarun.cell_ids), length(cones));
 for i=1:length(cones)
     tmp = squeeze(comb_sta(cones(i,2),cones(i,1),:))';
-    a=find( abs(tmp)>max_pix*0.3 & abs(tmp)>thresh);
+    a=find( abs(tmp)>max_pix*0.2 & abs(tmp)>thresh);
     if ~isempty(a)
         cone_table(a,i) = 1;
     end
 end
+
 
 % for kkk =  [1921 3031 3721 4022 4353 4396 4486 4876 5056]
 %     datarunID = find(datarun.cell_ids==kkk);
@@ -103,7 +104,7 @@ end
 % end
 
 
-for kkk =  3031%[541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
+for kkk =  3274%[541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
     
     kkk
     

@@ -74,7 +74,7 @@ y_interim = sat .* (normcdf(a*xdata1, mu, sigma) + normcdf(xdata2, mu, sigma)) +
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
-if isinf(y);y = 1000000;end
+if isinf(y);y = 10000000;end
 if a>10;y = 10000000;end
 
 
