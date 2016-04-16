@@ -95,15 +95,20 @@ if 1
                 fit_norm_cdf_2d_mll(inputs(cone1, :),inputs(cone2, :), ...
                 spike_rate(:), start_points_x, start_points_y);
             
+%             save_2d_plots(inputs(cone1, :)', inputs(cone2, :)',...
+%                 spike_rate(:), start_points_x, start_points_y, ...
+%                 center_cones(cone1), center_cones(cone2), 1)
+            
+%             
             tic
             for sample = 1:25 
                 
-                resampled_inds=randperm(n_inps);
-                resampled_inds(27000:end) = [];
+%                 resampled_inds=randperm(n_inps);
+%                 resampled_inds(27000:end) = [];
                 
-%                 resampled_inds=round(rand(n_inps,1)*n_inps);
-%                 resampled_inds(resampled_inds==0)=1;
-%                 resampled_inds(resampled_inds>n_inps)=n_inps;
+                resampled_inds=round(rand(n_inps,1)*n_inps);
+                resampled_inds(resampled_inds==0)=1;
+                resampled_inds(resampled_inds>n_inps)=n_inps;
                 
 %                 [start_points_x, resn1, start_points_y, resn2] = ...
 %                     fit_norm_cdf_2d_lsq(inputs(cone1, resampled_inds),inputs(cone2, resampled_inds), ...
@@ -117,11 +122,11 @@ if 1
                 res(cone1, cone2, sample).x = mllparams_x;
                 res(cone1, cone2, sample).y = mllparams_y;
                 res(cone1, cone2, sample).inds = resampled_inds;
-                
+%                 
 %                 save_2d_plots(inputs(cone1, resampled_inds)', inputs(cone2, resampled_inds)',...
 %                     spike_rate(resampled_inds), mllparams_x, mllparams_y, ...
 %                     center_cones(cone1), center_cones(cone2), sample)
-                
+%                 
                 loglikratio(cone1, cone2, sample) = fval_x-fval_y;
             end
             toc

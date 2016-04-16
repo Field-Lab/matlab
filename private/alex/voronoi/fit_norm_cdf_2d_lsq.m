@@ -25,7 +25,16 @@ end
 % yy = ones(size(xx,1),1).*sat./(1+ exp(-k*(xx - mu)));
 % hold on
 % plot(xx,yy)
-
+% tt = min(max(x1), max(x2));
+% tt1 = max(min(x1), min(x2));
+% tmp = linspace(tt1, tt, 7);
+% sat   = params1(1);
+% sigma = params1(2);
+% mu = params1(3);
+% sh = params1(4);
+% a = params1(5);
+% y = sat .* normcdf(a*tmp + tmp, mu, sigma) + sh;
+% [xtt1, xtt2] = meshgrid(tmp,tmp);
 
    
 % inits = [max(fr)-min(fr)    std(x1+x2)    mean(x1+x2)   min(fr) 1];
@@ -38,14 +47,15 @@ opts.Display = 'off';
 
 lb = [0 0 0 -Inf 0];
 ub = [20 20 5 Inf Inf];
-inits = [(max(fr)-min(fr))*2    std(x1+x2)    0.5   min(fr) 1];
+% inits = [(max(fr)-min(fr))*2    std(x1+x2)    0.5   min(fr) 1];
+inits = [1.8208    0.1292    0.2641    0.2666 1];
 fitfunc = @tt;
 [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 
 lb = [0 0 0 -Inf 0];
 ub = [50 50 10 Inf Inf];
-inits = [(max(fr)-min(fr))*5    std(x1+x2)*2    params1(3)*1.5   -params1(4) 1];
-% inits = [(max(fr)-min(fr))*3    std(x1+x2)    0.25   0 1];
+% inits = [(max(fr)-min(fr))*5    std(x1+x2)*2    params1(3)*1.5   -params1(4) 1];
+inits = [1.8208    0.1292    0.2641    0.2666 1];
 fitfunc = @tt1;
 [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 

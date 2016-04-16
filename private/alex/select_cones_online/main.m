@@ -6,12 +6,12 @@ clear
 
 global cones cone_regions new_cones new_regions
 
-date = '2011-12-13-2';
-run = 'data011';
+date = '2016-02-17-4';
+run = 'data001';
 % path2load = ['/Volumes/Acquisition/Analysis/',date,'/',run,'/',run];
-path2load = ['/Volumes/Analysis/', date, '/d08-11-norefit/',run,'/',run];
-% path2load = ['/Volumes/Analysis/',date, '/d00-05-norefit/',run,'/',run];
-field_size = [300, 300];
+% path2load = ['/Volumes/Analysis/', date, '/d08-11-norefit/',run,'/',run];
+path2load = ['/Volumes/Analysis/',date, '/d00-05-norefit/',run,'/',run];
+field_size = [300, 400];
 scale = 2;
 
 datarun = load_data(path2load);
@@ -225,7 +225,7 @@ path2save=['/Volumes/Analysis/', date, '/cone_data/manual/'];
 if ~isdir(path2save)
     mkdir(path2save);
 end
-save([path2save, 'map_data011_preproc'],'cell_indices', 'ic', 'cones', 'cone_regions')
+save([path2save, 'map_data001_preproc_1'],'cell_indices', 'ic', 'cones', 'cone_regions')
 
 %% control: repeat until no double cones
 
@@ -370,7 +370,7 @@ imagesc(tmp)
 
 
 %% save map
-path2save=['/Volumes/Analysis/',date,'/cone_data/manual/map_data011_manual_postexp'];
+path2save=['/Volumes/Analysis/',date,'/cone_data/manual/map_data011_manual_postexp1'];
 dlmwrite([path2save '.txt'], map, 'delimiter', '\t', 'newline', 'pc');
 save([path2save '_info'],'cell_indices', 'ic', 'cones', 'cone_regions')
 

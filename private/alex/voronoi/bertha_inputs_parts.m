@@ -9,7 +9,7 @@ datarun = load_params(datarun,'verbose',1);
 datarun = load_sta(datarun);
 datarun = load_neurons(datarun);
 
-a = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data001_manual_postexp_info.mat');
+a = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data001_manual_postexp1_info.mat');
 cones = round(a.cones/2);
 
 if 0
@@ -17,15 +17,15 @@ if 0
     [full_inputs, refresh, duration] = get_wn_movie_ath(datarun, 'BW-2-6-0.48-11111-400x300-60.35.xml');
     toc
     
-    full_inputs = reshape(full_inputs, 120000, duration);
-    
-    for i=1:1000:120000
-        inputs = full_inputs(i:i+999,:);
-        save(['/Volumes/Analysis/2016-02-17-4/subunits/inputs_parts/part_',int2str(i),'.mat'], 'inputs', 'refresh', 'duration')
-    end
-    
-    a = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data001_manual_postexp_info.mat');
-    cones = round(a.cones/2);
+%     full_inputs = reshape(full_inputs, 120000, duration);
+%     
+%     for i=1:1000:120000
+%         inputs = full_inputs(i:i+999,:);
+%         save(['/Volumes/Analysis/2016-02-17-4/subunits/inputs_parts/part_',int2str(i),'.mat'], 'inputs', 'refresh', 'duration')
+%     end
+%     
+%     a = load('/Volumes/Analysis/2016-02-17-4/cone_data/manual/map_data001_manual_postexp1_info.mat');
+%     cones = round(a.cones/2);
     
     
     full_inputs = reshape(full_inputs, 300,400, duration);
@@ -44,10 +44,10 @@ if 0
         save(['/Volumes/Analysis/2016-02-17-4/subunits/indiv_cone_inputs/cone_',int2str(i),'.mat'], 'inputs', 'refresh', 'duration')
     end
     
-    a = cones_inputs{474};
-    b = inputs{4};
-    tmp = b(:,:,1)';
-    
+    %     a = cones_inputs{474};
+    %     b = inputs{4};
+    %     tmp = b(:,:,1)';
+    %
 end
 %%
 
@@ -104,7 +104,7 @@ end
 % end
 
 
-for kkk =  3274%[541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
+for kkk =  [541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
     
     kkk
     
@@ -142,7 +142,7 @@ for kkk =  3274%[541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 43
             else
                 tt = floor(i/10)*10+1;
             end
-            p = int2str(tt);            
+            p = int2str(tt);
             load(['/Volumes/Analysis/2016-02-17-4/subunits/indiv_cone_inputs/cone_',p,'.mat'])
             center_cones_inputs{cnt} = reshape(inputs{i-tt+1}, 9, duration);
             cnt=cnt+1;
@@ -153,7 +153,7 @@ for kkk =  3274%[541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 43
         filt_inputs = zeros(length(center_cones), duration);
         cnt = 1;
         for current_cone=center_cones
-            tmp_noise = noise_sta(cone_coords(cnt,2)-1:cone_coords(cnt,2)+1,cone_coords(cnt,1)-1:cone_coords(cnt,1)+1);            
+            tmp_noise = noise_sta(cone_coords(cnt,2)-1:cone_coords(cnt,2)+1,cone_coords(cnt,1)-1:cone_coords(cnt,1)+1);
             tmp_inputs = center_cones_inputs{cnt} - repmat(tmp_noise(:),1, size(center_cones_inputs{cnt},2));
             tmp_sta = raw_sta(cone_coords(cnt,2)-1:cone_coords(cnt,2)+1,cone_coords(cnt,1)-1:cone_coords(cnt,1)+1);
             
@@ -186,4 +186,5 @@ for kkk =  3274%[541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 43
         end
     end
 end
+
 
