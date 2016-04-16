@@ -99,7 +99,7 @@ if 1
             for sample = 1:25 
                 
                 resampled_inds=randperm(n_inps);
-                resampled_inds(23000:end) = [];
+                resampled_inds(27000:end) = [];
                 
 %                 resampled_inds=round(rand(n_inps,1)*n_inps);
 %                 resampled_inds(resampled_inds==0)=1;

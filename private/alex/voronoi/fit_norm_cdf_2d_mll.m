@@ -7,7 +7,7 @@ xdata2 = x2';
 ydata = y;
 fact_precomp = factorial(ydata);
 
-opts.MaxFunEvals=1500;
+opts.MaxFunEvals=500;
 opts.Display = 'off';
 
 [mllparams_x, fval_x] = fminsearch(@tt1, start_points_x, opts);
@@ -58,7 +58,8 @@ y_interim = sat .* normcdf(a*xdata1 + xdata2, mu, sigma) + sh;
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
-if isinf(y);y = 1000000;end
+if isinf(y);y = 10000000;end
+if a>10;y = 10000000;end
 
 
 function y = tt2(p) % y shift
@@ -69,10 +70,11 @@ sigma = p(2);
 mu = p(3);
 sh = p(4);
 a = p(5);
-y_interim = sat .* normcdf(a*xdata1, mu, sigma) + sat .* normcdf(xdata2, mu, sigma) + sh;
+y_interim = sat .* (normcdf(a*xdata1, mu, sigma) + normcdf(xdata2, mu, sigma)) + sh;
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
 if isinf(y);y = 1000000;end
+if a>10;y = 10000000;end
 
 

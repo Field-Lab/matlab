@@ -40,15 +40,18 @@ lb = [0 0 0 -Inf 0];
 ub = [20 20 5 Inf Inf];
 inits = [(max(fr)-min(fr))*2    std(x1+x2)    0.5   min(fr) 1];
 fitfunc = @tt;
+tic
 [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-
+toc
 
 lb = [0 0 0 -Inf 0];
 ub = [50 50 10 Inf Inf];
-inits = [(max(fr)-min(fr))*3    std(x1+x2)    0.25   0 1];
+inits = [(max(fr)-min(fr))*5    std(x1+x2)*2    params1(3)*1.5   -params1(4) 1];
+% inits = [(max(fr)-min(fr))*3    std(x1+x2)    0.25   0 1];
 fitfunc = @tt1;
+tic
 [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-
+toc
 
 % 
 % lb = [0 0 0 0.1];
@@ -98,7 +101,7 @@ sigma = p(2);
 mu = p(3);
 sh = p(4);
 a = p(5);
-y = sat .* normcdf(a*x(:,1), mu, sigma) + sat .* normcdf(x(:,2), mu, sigma) + sh;
+y = sat .* (normcdf(a*x(:,1), mu, sigma) + normcdf(x(:,2), mu, sigma)) + sh;
 
 
 
