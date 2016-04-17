@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta] = compute_jitter_sta_20160217(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,save_path)
+function [sta] = compute_jitter_sta_20160217(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %     mglBltTexture(frametex, [stimulus.x_start+jitterX, stimulus.y_start+jitterY, stimulus.span_width, stimulus.span_height], -1, -1);
 dbstop if error
@@ -80,16 +80,17 @@ end
 % inputs = [inputs(:,1:19601), inputs(:,19650:end)];
 % for i = 1:size(spikes,2)
 %     ind = find(spikes{i} > 19601/60 & spikes{i} <= 19650/60);
-%     spikes{i}(ind(2)+1:end) = spikes{i}(ind(2)+1:end) - (19650/60-19601/60);
-%     spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(2)+1:end)];
-%
+%     if ~isempty(ind)
+%       spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (19650/60-19601/60);
+%       spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
+%     end
 % end
 
 
 
 
-image_width = 40;
-image_height = 20;
+image_width = 640/stixel_size;
+image_height = 320/stixel_size;
 
 real_frame = zeros(image_width, image_height, 3);
 real_frame(:,:,1,1) = reshape(inputs(1:3:image_width*image_height*3)',image_width, image_height);
@@ -145,7 +146,7 @@ end
 
 
 %% Compute movie
-movie = zeros(40*stixel_size, 20*stixel_size, 3,10000);
+movie = zeros(image_width*stixel_size, image_height*stixel_size, num_colors,10000);
 
 sta = cell(size(spikes,2),1);
 for i = 1:size(spikes,2)
@@ -155,12 +156,12 @@ end
 
 start_points = [1:10000:size(frames_needed{1},2) size(frames_needed{1},2)];
 
-movie_exist = exist([save_path, 'movie_block_1.mat']);
-if movie_exist == 100
+movie_exist = exist(['/Volumes/Lab/Users/crhoades/JitterMovie/',dataparam.date, '/', dataparam.concatname, '/', 'movie_block_1.mat']);
+if movie_exist ~=0
     for j = 1:length(start_points)-1
         
         for m = 1:10000/200
-            temp = load([save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
+            temp = load(['/Volumes/Lab/Users/crhoades/JitterMovie/',dataparam.date, '/', dataparam.concatname, '/', 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
             movie(:,:,:,200*(m-1)+1:200*(m-1)+200) = temp.current_movie;
         end
         
@@ -168,9 +169,9 @@ if movie_exist == 100
         %             save([save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
         for cel = 1:size(spikes,2)
             for i = 1:start_points(j+1)-1 - start_points(j)
-                if mod(i,1000) == 0
-                    fprintf('Phase: %d out of %d, %d out of %d \n', j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
-                end
+                 if mod(i,1000) == 0
+                fprintf('Cell: %d out of %d, Phase: %d out of %d, %d out of %d \n', cel, size(spikes,2), j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
+                 end
                 
                 
                 %         if start_points(j) -1+ i <= length(spikes_by_frame)
@@ -187,25 +188,23 @@ if movie_exist == 100
             end
             
         end
-        if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes'])
-            mkdir(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes']);
+        if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
+            mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
         end
-        if mod(j,5) == 0
+        if mod(j,10) == 0
             
-            save(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes/temp'], 'sta', '-v7.3');
+            save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
         end
     end
     
     
 else
-    height = 20;
-    width = 40;
+    height =image_height;
+    width = image_width;
     for j = 1:length(start_points)-1
         for i = 1:start_points(j+1)-1 - start_points(j)
             
-            if mod(i,1000) == 0
-                fprintf('Phase: %d out of %d, %d out of %d \n', j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
-            end
+       
             if start_points(j)-1 + i+num_frames < size(frames_needed{1},2) %&& start_points(j)_1 + i - num_frames>0
                 %             if sum(frames_needed(3,(start_points(j) + i:start_points(j) + i-1+num_frames)))~=0
                 %                 if i  <= (duration - 1)
@@ -245,6 +244,9 @@ else
                 
             end
             for cel = 1:size(spikes,2)
+               if mod(i,1000) == 0
+                fprintf('Cell: %d out of %d, Phase: %d out of %d, %d out of %d \n', cel, size(spikes,2), j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
+                 end
                 
                 %         if start_points(j) -1+ i <= length(spikes_by_frame)
                 if frames_needed{cel}(3,start_points(j)-1 + i) == 0
@@ -273,12 +275,12 @@ else
 %             save([save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
 %         end
         
-        if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes'])
-            mkdir(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes']);
+        if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
+            mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
         end
-        if mod(j,5) == 0
+        if mod(j,10) == 0
             
-            save(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes/temp'], 'sta', '-v7.3');
+            save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
         end
     end
 end
