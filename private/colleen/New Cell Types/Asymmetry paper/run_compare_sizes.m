@@ -370,9 +370,11 @@ for j= 1:length(pieces)
     run_opts.concatname=temp1; % Name (or modified name) of run, no slashes\
     run_opts.dataname = temp2;
     run_opts.file_name = [run_opts.date, '/', run_opts.concatname, '/',run_opts.dataname, '/',run_opts.dataname];
-    
+
+
     run_opts.save_location_root = '/Volumes/Lab/Users/crhoades/Cell Properties/';
     run_opts.filepath= [run_opts.save_location_root, run_opts.date, '/', run_opts.concatname, '/', run_opts.dataname];
+    
     
     output_large = load([run_opts.filepath, '/' 'OFF large 1','/output.mat']);
     
@@ -640,11 +642,11 @@ plot(large_rf(1,:), large_rf(2,:), 'ok','MarkerFaceColor', 'k', 'MarkerSize', 7)
 xlim = get(gca, 'xlim');
 ylim = get(gca, 'ylim');
 hold on
-plot([ 0 max([xlim(:); ylim(:)])+10], [0 max([xlim(:); ylim(:)])] + 10, 'k--')
-axis([ 0 max([xlim(:); ylim(:)])+10 0 max([xlim(:); ylim(:)])]+10)
+plot([ min([xlim(:); ylim(:)]) max([xlim(:); ylim(:)])], [min([xlim(:); ylim(:)]) max([xlim(:); ylim(:)])], 'k--')
+axis([ min([xlim(:); ylim(:)]) max([xlim(:); ylim(:)]), min([xlim(:); ylim(:)]) max([xlim(:); ylim(:)])])
 off_large_increase =large_rf(2,:)./large_rf(1,:);
 pec_inc_off_large = median(off_large_increase);
-title(['OFF smooth are large than ON smooth on average by ', num2str(round(pec_inc_off_large*1000)/10-100), '%'])
+title(['OFF smooth are larger than ON smooth on average by ', num2str(round(pec_inc_off_large*1000)/10-100), '%'])
 xlabel('ON smooth RF diameter (\mum)')
 ylabel('OFF smooth RF diameter (\mum)')
 
