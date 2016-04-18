@@ -21,7 +21,7 @@ else
     inputs=zeros(height*width*3,duration-1);
     cnt=1;
     for j=0:duration-1
-        F = round(mvi.getFrame(j).getBuffer);
+        F = mvi.getFrame(j).getBuffer;
         myFrames = reshape(F(1:3:end),width,height); %return movie with opposite orientation 
         to_add(:,1) = myFrames(:);
         
@@ -38,4 +38,4 @@ else
     end
 end
 
-inputs=(inputs*0.96)-0.48;
+% inputs=(inputs*mvi.contrastValue*2)-mvi.contrastValue;
