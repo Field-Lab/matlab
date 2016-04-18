@@ -2,7 +2,7 @@
 clear
 close all
 monkey_dates = cell(0);
-cell_types = [1 2];
+cell_types = [1 2 3 4];
 %% read spreadsheet
 [~,~,RAW]=xlsread('/Volumes/Lab/Users/crhoades/Database spreadsheet.xlsx', 'Animal');
 
@@ -293,7 +293,7 @@ for i = 1:size(parameters,1)
                 param_choices(param_choices(:,1) >= 10,:) = inf;
             else % ecc >= 8
                 param_choices(param_choices(:,1) <= 2,:) = inf; %implement stixel_choices based on ecc?
-                param_choices(param_choices(:,1) >= 14,:) = inf;
+                param_choices(param_choices(:,1) >= 12,:) = inf;
             end
             
             if param_choices(p,4) > 0.6 % NDF larger than 0.6
@@ -579,6 +579,8 @@ ylim = get(gca,'ylim');
 plot([0 max(xlim(2), ylim(2))], [0 max(xlim(2), ylim(2))], '--k')
 xlabel('ON parasol RF diameter (\mum)')
 ylabel('OFF parasol RF diameter (\mum)')
+axis equal
+axis square
 title(['ON parasols are larger than OFF parasols on average by ', num2str(round(pec_inc_parasol*1000)/10-100), '%'])
 
 
@@ -590,7 +592,7 @@ plot([0 max(xlim(2), ylim(2))], [0 max(xlim(2), ylim(2))], '--k')
 xlabel('ON midget RF diameter (\mum)')
 ylabel('OFF midget RF diameter (\mum)')
 title(['ON midgets are larger than OFF midgets on average by ', num2str(round(pec_inc_midget*1000)/10-100), '%'])
-
+axis equal
 
 % for i = 1:size(good_data_sets(:,6),1)
 %     if isnumeric(good_data_sets{i,6}) == 0
