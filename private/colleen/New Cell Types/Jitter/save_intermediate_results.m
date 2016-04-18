@@ -1,0 +1,10 @@
+% load('/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026_spikes/temp.mat')
+save_path = '/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes/';
+% dataparam.cell_specification = [241 440 481 485 545 813 816 1386 1441 1534 1759 1786 1788 1936 1937 1940 2014 2103 2137 2162 2163 2165 2166 2167 2331 2405 2431 3048 3288 3436 3816 3888 3903 3907 3908 4113 4280 4937 4981 5013 5071 5522 5915 6110 6211 6336 6337 6512 6513 6529 7054 7460 7461 7462 ];
+   dataparam.cell_specification = [184 241 437 481 545 811 1386 1531 1786 1936 2011 2041 2103 2161 2331 2431 3048 3110 3166 3288 3436 3816 3886 3901 4113 4280 4550 4892 4937 4981 5012 5062 5071 5523 5915 6211 6331 6511 6526 7051 7456] %ON parasol
+
+for i = 1:length(dataparam.cell_specification)
+    temp = sta{i};
+    save([save_path, 'Cell ', num2str(dataparam.cell_specification(i)),'.mat'], 'temp')
+end
+
