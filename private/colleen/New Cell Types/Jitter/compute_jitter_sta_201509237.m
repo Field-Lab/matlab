@@ -43,7 +43,7 @@ dbstop if error
 % jitter_y = zeros(size(jitter_y));
 %% ---------------------------------- Process movie ------------------------------
 %onsets of the stimulus presentation
-datarun.triggers = [datarun.triggers'];
+% datarun.triggers = [datarun.triggers'];
 %
 triggers = datarun.triggers;
 % [mov,height,width,duration,refresh] = get_movie_ath(mdf_file,...
@@ -220,7 +220,7 @@ else
                 sized_frame = imresize(double(shaped_frame), stixel_size, 'nearest');
                 movie(:,:,1,i) = sized_frame;
                 sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                position = [jitter_x_new(frames_needed{1}(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y_new(frames_needed{1}(1,start_points(j)-1 + i))+1+stixel_size/2];
+                position = [jitter_x(frames_needed{1}(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y(frames_needed{1}(1,start_points(j)-1 + i))+1+stixel_size/2];
                 %         x and y might be reversed
                 true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
                 movie(:,:,1,i) = true_frame;
@@ -254,10 +254,10 @@ else
                  end
                 
                 %         if start_points(j) -1+ i <= length(spikes_by_frame)
-                if frames_needed{cel}(3,start_points(j)-1 + i) == 0
-                else
-                    if i <= num_frames
-                    else
+                if frames_needed{cel}(3,start_points(j)-1 + i) ~= 0
+                
+                    if i > num_frames
+                    
                         for t = 1:num_frames
                             subtract = num_frames - t +1;
                             sta{cel}(:,:, :,subtract) = sta{cel}(:,:, :, subtract) + movie(:,:,:,i-t) * frames_needed{cel}(3,start_points(j)-1 + i);

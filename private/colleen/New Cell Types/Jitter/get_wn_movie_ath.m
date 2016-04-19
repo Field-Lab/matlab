@@ -38,4 +38,4 @@ else
     end
 end
 
-% inputs=(inputs*mvi.contrastValue*2)-mvi.contrastValue;
+inputs=inputs-0.5;
