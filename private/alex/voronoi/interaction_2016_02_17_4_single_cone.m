@@ -177,7 +177,7 @@ all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
 for cone1 = 1:length(center_cones)
     
     for cone2=cone1+1:length(center_cones)
-        tmp = real(loglikratio(llr_subset(cone1), llr_subset(cone2), :));
+        tmp = loglikratio(llr_subset(cone1), llr_subset(cone2), :);
         tmp=reshape(tmp,5,5);
         all_array(cone1*6-5:cone1*6-1,cone2*6-5:cone2*6-1) = tmp;
     end
@@ -202,7 +202,7 @@ xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
 % saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
-title('cdf redup')
+title('cdf')
 % line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
 
 
