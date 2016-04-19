@@ -548,7 +548,7 @@ for imc=1:100
 model = model_LNLN_fineRes();
 
 % Generate test response
-
+close all
 
 Tlen = 120*10;
 conemovie = 25*(randn(Tlen,model.nCones));
@@ -581,7 +581,7 @@ u_spatial_log = zeros(filteredStimDim,nSU);
 %h=figure;
 for ifilt=1:nSU
 %subplot(szz(nSU,1),szz(nSU,2),ifilt)
-u_spatial_log(:,ifilt) =fitGMLM.Linear.filter{ifilt}(1:length(masked_frame));
+u_spatial_log(:,ifilt) =fitGMLM.Linear.filter{ifilt};
 end
 
 u_spatial_log_perm = 0*u_spatial_log;
@@ -590,9 +590,9 @@ for idim = 1:filteredStimDim
 u_spatial_log_perm(idim,:)  = u_spatial_log(idim,perm);
 end
 
-[metric,metric_sus] = cutting_metric(model,u_spatial_log);
+[metric,metric_sus] = cutting_metric_coneres(model,u_spatial_log);
 
-[metric_perm,metric_sus_perm] = cutting_metric(model,u_spatial_log_perm);
+[metric_perm,metric_sus_perm] = cutting_metric_coneres(model,u_spatial_log_perm);
 
 
 mc_data(imc).metric=metric;
@@ -601,6 +601,19 @@ mc_data(imc).metric_sus=metric_sus;
 mc_data(imc).metric_sus_perm=metric_sus_perm;
 end
 
+
+
+
+m_log=[];m_perm_log=[];
+for imc =1:length(mc_data)
+m_log = [m_log;mc_data(imc).metric(2)];
+m_perm_log = [m_perm_log;mc_data(imc).metric_perm(2)];
+end
+
+figure;
+histogram(m_log);
+hold on;
+histogram(m_perm_log);
 
 
 % plot sub-units
@@ -621,6 +634,7 @@ for isu_fitted=1:nSU
      set(gca,'visible','off');
 end
 %
+suptitle(sprintf('metric %0.02f, metric perm %0.02f',metric,metric_perm));
 
 figure;
 for isu_true = 1:model.nSU
