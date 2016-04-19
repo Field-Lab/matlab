@@ -108,7 +108,11 @@ b = p(2);
 x0 = p(3);
 yshift = p(4);
 a = p(5);
-y = sat*((a*x(:,1) + x(:,2) - x0).^b) + yshift;
+tmp = real((a*x(:,1) + x(:,2) - x0).^b);
+y = sat*(tmp) + yshift;
+if ~isreal(sat)
+    y = zeros(size(x(:,1)));
+end
 
 
 function y = tt1_power(p,x) % y shift
@@ -117,7 +121,11 @@ b = p(2);
 x0 = p(3);
 yshift = p(4);
 a = p(5);
-y = sat*((a*x(:,1) - x0).^b + (x(:,2) - x0).^b) + yshift;
+tmp = real((a*x(:,1) - x0).^b) + real((x(:,2) - x0).^b);
+y = sat*(tmp) + yshift;
+if ~isreal(sat)
+    y = zeros(size(x(:,1)));
+end
 
 
 % LOGISTIC

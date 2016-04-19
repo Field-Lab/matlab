@@ -82,7 +82,7 @@ n_inps = size(inputs,2);
 
 if 1
     for cone1 = 1:length(center_cones)-1
-%         cone1        
+        cone1        
         for cone2 = (cone1+1):length(center_cones)
 %             cone2
             [start_points_x, resn1, start_points_y, resn2] = ...
@@ -124,7 +124,7 @@ if 1
                     res(cone1, cone2, sample).inds = resampled_inds;
                     loglikratio(cone1, cone2, sample) = fval_x-fval_y;
                     
-%                     sample = 16;
+%                     sample = 1;
 %                     resampled_inds = res(cone1,cone2, sample).inds;
 %                     mllparams_x = res(cone1,cone2, sample).x;
 %                     mllparams_y = res(cone1,cone2, sample).y;

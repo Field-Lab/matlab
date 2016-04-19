@@ -177,7 +177,7 @@ all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
 for cone1 = 1:length(center_cones)
     
     for cone2=cone1+1:length(center_cones)
-        tmp = loglikratio(llr_subset(cone1), llr_subset(cone2), :);
+        tmp = real(loglikratio(llr_subset(cone1), llr_subset(cone2), :));
         tmp=reshape(tmp,5,5);
         all_array(cone1*6-5:cone1*6-1,cone2*6-5:cone2*6-1) = tmp;
     end

@@ -29,11 +29,13 @@ b = p(2);
 x0 = p(3);
 yshift = p(4);
 a = p(5);
-y_interim = sat*((a*xdata1 + xdata2 - x0).^b) + yshift;
+y_interim = real((a*xdata1 + xdata2 - x0).^b);
+y_interim = sat*(y_interim) + yshift;
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
-if isinf(y);y = 1000000;end
+if isinf(y);y = 10000000;end
+if ~isreal(y);y = 10000000;end
 
 
 
@@ -45,11 +47,13 @@ b = p(2);
 x0 = p(3);
 yshift = p(4);
 a = p(5);
-y_interim = sat*((a*xdata1 - x0).^b + (xdata2 - x0).^b) + yshift;
+y_interim = real((a*xdata1 - x0).^b) + real((xdata2 - x0).^b);
+y_interim = sat*(y_interim) + yshift;
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
-if isinf(y);y = 1000000;end
+if isinf(y);y = 10000000;end
+if ~isreal(y);y = 10000000;end
 
 
 % LOGISTIC
