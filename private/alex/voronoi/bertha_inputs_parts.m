@@ -103,8 +103,8 @@ end
 %     length(center_cones)
 % end
 
-
-for kkk =  [541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
+% [541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
+for kkk =  4876
     
     kkk
     
@@ -161,29 +161,75 @@ for kkk =  [541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 44
             cnt=cnt+1;
         end
         
-        %         figure
-        %         tmp = -0.15:0.05:0.15;
-        %         for j = 1:14
-        %             tmp_inps = filt_inputs(j,:);
-        %             clear fr
-        %             for i = 2:length(tmp)
-        %                 inds = find(tmp_inps>tmp(i-1) & tmp_inps<=tmp(i));
-        %                 inds(inds>duration)=[];
-        %                 inds(inds<1) = [];
-        %                 fr(i-1) = mean(spike_rate(inds));
-        %             end
-        %             hold on
-        %             plot(fr)
-        %         end
-        
+%         path2save = ['/Volumes/Analysis/2016-02-17-4/subunits/surface_plots/cell_', int2str(kkk),'/'];
+%         if ~isdir(path2save)
+%             mkdir(path2save);
+%         end
+%         
+%         err1 = [];
+%         try load(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cell_',int2str(kkk),'.mat'])
+%         catch err1
+%         end
+%         LLR = loglikratio;
+       
         err =[];
-        try  [loglikratio, res] = fit_normal_cdfs(filt_inputs, spike_rate, center_cones');
+        try  [loglikratio, res] = fit_normal_cdfs(filt_inputs, spike_rate, center_cones');%, kkk, LLR);
         catch err
         end
-        
         if isempty(err)
-            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cell_', int2str(kkk), '.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
+            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/power/cell_', int2str(kkk), '.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
         end
+        
+
+        if 0
+            figure
+            colormap gray
+            imagesc(raw_sta)
+            hold on
+            for i = center_cones
+                text(cones(i,1), cones(i,2), int2str(i), 'color', 'r', 'fontsize', 12)
+            end
+            axis([min(cones(center_cones,1))-10 max(cones(center_cones,1))+10 ...
+                min(cones(center_cones,2))-10 max(cones(center_cones,2))+10]);
+            saveas(gcf, [path2save, 'raw_sta.bmp']);
+            close all
+            
+            
+            if isempty(err1)
+                llr_subset = 1:length(center_cones);
+                all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
+                
+                for cone1 = 1:length(center_cones)
+                    
+                    for cone2=cone1+1:length(center_cones)
+                        tmp = LLR(llr_subset(cone1), llr_subset(cone2), :);
+                        tmp=reshape(tmp,5,5);
+                        all_array(cone1*6-5:cone1*6-1,cone2*6-5:cone2*6-1) = tmp;
+                    end
+                end
+                all_array = all_array/max(abs(all_array(:)))/2+0.5;
+                all_array = [ones(1,size(all_array,2))-0.5; all_array];
+                all_array = repmat(all_array,1,1,3);
+                tmp = all_array;
+                x0 = 0.5;
+                k = 10;
+                tmp = ones(size(tmp))./(1+exp(-k*(tmp-x0)));
+                figure
+                set(gcf, 'position', [-1822         131        1033         974]);
+                imagesc(tmp(:,6:end,:));
+                set(gca, 'xtick', 0,'xticklabel','')
+                set(gca, 'ytick', 0,'yticklabel','')
+                set(gca, 'xtick', 4:6:length(center_cones(2:end))*6,'xticklabel',int2str(center_cones(2:end)'), 'fontsize', 10)
+                set(gca, 'ytick', 4:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
+                xlabel('cone 1')
+                ylabel('cone 2')
+                set(gca,'dataaspectratio', [1 1 1])
+                title('cdf, resampling with duplication')
+                saveas(gcf, [path2save, 'LLR.bmp']);
+                close all
+            end
+        end
+
     end
 end
 

@@ -10,11 +10,46 @@ fact_precomp = factorial(ydata);
 opts.MaxFunEvals=500;
 opts.Display = 'off';
 
-[mllparams_x, fval_x] = fminsearch(@tt1, start_points_x, opts);
-[mllparams_y, fval_y] = fminsearch(@tt2, start_points_y, opts);
+[mllparams_x, fval_x] = fminsearch(@tt_power, start_points_x, opts);
+[mllparams_y, fval_y] = fminsearch(@tt1_power, start_points_y, opts);
 
+% [mllparams_x, fval_x] = fminsearch(@tt1, start_points_x, opts);
+% [mllparams_y, fval_y] = fminsearch(@tt2, start_points_y, opts);
+% 
 % [mllparams_x, fval_x] = fminsearch(@tt_log, start_points_x, opts);
 % [mllparams_y, fval_y] = fminsearch(@tt1_log, start_points_y, opts);
+
+
+% POWER
+function y = tt_power(p) % x shift
+global ydata xdata1 xdata2 fact_precomp
+
+sat   = p(1);
+b = p(2);
+x0 = p(3);
+yshift = p(4);
+a = p(5);
+y_interim = sat*((a*xdata1 + xdata2 - x0).^b) + yshift;
+y_interim(y_interim<=0) = 1e-6;
+y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
+y = -sum(log(y_interim));
+if isinf(y);y = 1000000;end
+
+
+
+function y = tt1_power(p) % y shift
+global ydata xdata1 xdata2 fact_precomp
+
+sat   = p(1);
+b = p(2);
+x0 = p(3);
+yshift = p(4);
+a = p(5);
+y_interim = sat*((a*xdata1 - x0).^b + (xdata2 - x0).^b) + yshift;
+y_interim(y_interim<=0) = 1e-6;
+y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
+y = -sum(log(y_interim));
+if isinf(y);y = 1000000;end
 
 
 % LOGISTIC

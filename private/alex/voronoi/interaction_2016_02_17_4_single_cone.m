@@ -158,11 +158,26 @@ datarunID = find(datarun.cell_ids==3031);
 % center_cones = find(cone_table(datarunID,:))'
 
 
+
+figure
+colormap gray
+imagesc(raw_sta)
+hold on
+for i = center_cones
+    text(cones(i,1), cones(i,2), int2str(i), 'color', 'r', 'fontsize', 12)
+end
+
+
+% only cone subset
+% center_cones = [212 265 268];
+% llr_subset = [1 3 5];
+llr_subset = 1:length(center_cones);
 all_array = zeros((length(center_cones)-1)*6,length(center_cones)*6);
+
 for cone1 = 1:length(center_cones)
     
     for cone2=cone1+1:length(center_cones)
-        tmp = loglikratio(cone1, cone2, :);
+        tmp = loglikratio(llr_subset(cone1), llr_subset(cone2), :);
         tmp=reshape(tmp,5,5);
         all_array(cone1*6-5:cone1*6-1,cone2*6-5:cone2*6-1) = tmp;
     end
@@ -177,31 +192,18 @@ tmp = ones(size(tmp))./(1+exp(-k*(tmp-x0)));
 figure
 set(gcf, 'position', [-1822         131        1033         974]);
 % subplot('position', [0 0 1 1])
-imagesc(tmp);
+imagesc(tmp(:,6:end,:));
 set(gca, 'xtick', 0,'xticklabel','')
 set(gca, 'ytick', 0,'yticklabel','')
 % set(gca, 'visible', 'off')
-set(gca, 'xtick', 3:6:length(center_cones)*6,'xticklabel',int2str(center_cones'))
+set(gca, 'xtick', 3:6:length(center_cones(2:end))*6,'xticklabel',int2str(center_cones(2:end)'), 'fontsize', 24)
 set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
 xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
 % saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
-title('cdf no redup 23000')
+title('cdf redup')
 % line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
-
-
-figure
-colormap gray
-imagesc(raw_sta)
-hold on
-for i = center_cones
-    text(cones(i,1), cones(i,2), int2str(i), 'color', 'r')
-end
-
-
-
-
 
 
 
