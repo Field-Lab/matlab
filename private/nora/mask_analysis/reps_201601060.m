@@ -7,17 +7,17 @@ regB{1} = 'data007';
 sigma4{1} = 'data008';
 cells{1} = 'Maskin2';
 
-regA{2} = 'data007'; cells = [275;2343;3483;4420;5717];
-sigma2{2} = 'data010'; cells = [345;2464;3379;4413;5716];
-regB{2} = 'data011'; cells = [275;2341;3377;4412;5719];
-sigma4{2} = 'data012'; cells = [202;2465;3481;4411;5717];
+regA{2} = 'data007'; %cells = [275;2343;3483;4420;5717];
+sigma2{2} = 'data010'; %cells = [345;2464;3379;4413;5716];
+regB{2} = 'data011'; %cells = [275;2341;3377;4412;5719];
+sigma4{2} = 'data012'; %cells = [202;2465;3481;4411;5717];
 cells{2} = 'Maskin';
 
 classification = 'data001';
 
 Analysis_Path = '/Volumes/Analysis/2016-01-05-0/map-from-data001/';
 fig_save = '/Users/Nora/Desktop/Fig_Output';
-mkdir(fig_save);
+%mkdir(fig_save);
 
 set(0, 'defaultFigurePaperPositionMode', 'auto')
 set(0, 'defaultFigurePaperOrientation', 'landscape')
@@ -57,22 +57,22 @@ end
 %% load NSinterval: only for GS!
 if GS
     i_chunk = 1;
-    load(['/Users/Nora/Desktop/Data/matfiles/movie_chunk_' num2str(i_chunk) '.mat']);
+    load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSinterval/matfiles/movie_chunk_' num2str(i_chunk) '.mat']);
     NSmovie = movie_chunk;
     i_chunk = 2;
     
     % mask movie
     while size(NSmovie,3) < 1200
-        load(['/Users/Nora/Desktop/Data/matfiles/movie_chunk_' num2str(i_chunk) '.mat']);
+        load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSinterval/matfiles/movie_chunk_' num2str(i_chunk) '.mat']);
         NSmovie = cat(3,NSmovie, movie_chunk);
         if size(NSmovie,3) > 1200
             NSmovie = NSmovie(:,:,1:1200);
         end
         i_chunk = i_chunk + 1;
     end
-    %NSmovie = imresize(NSmovie, 1/8, 'box');
+    NSmovie = imresize(NSmovie, 1/8, 'box');
     NSmovie = permute(NSmovie, [2 1 3]);
-    %NSmovie = NSmovie - 64;
+    NSmovie = NSmovie - 64;
 end
 
 %% load LES movie: only for GS
@@ -82,14 +82,14 @@ if GS
     if sigma == 2
         datarun = load_data([Analysis_Path sigma2{maskin} '/' sigma2{maskin}]);
         if maskin == 1
-            mask_file = load('/Users/Nora/Desktop/Data/2016-01-05-0-Visual/2016-01-05-0/testmask_1922_stix2/mask_and_filter.mat');
+            mask_file = load('/Volumes/Data/2016-01-05-0/Visual/2016-01-05-0/testmask_1922_stix2/mask_and_filter.mat');
         else
             mask_file = load('/Volumes/Data/2016-01-05-0/Visual/2016-01-05-0/mask_320_sigma2/mask_and_filter.mat');
         end
     else
         datarun = load_data([Analysis_Path sigma4{maskin} '/' sigma4{maskin}]);
         if maskin == 1
-            mask_file = load('/Users/Nora/Desktop/Data/2016-01-05-0-Visual/2016-01-05-0/testmask_1922_sigma4/mask_and_filter.mat');
+            mask_file = load('/Volumes/Data/2016-01-05-0/Visual/2016-01-05-0/testmask_1922_sigma4/mask_and_filter.mat');
         else
             mask_file = load('/Volumes/Data/2016-01-05-0/Visual/2016-01-05-0/mask_320_sigma4/mask_and_filter.mat');
         end
@@ -109,11 +109,11 @@ if GS
         end
     end
     i_chunk = 1;
-    load(['/Volumes/Lab/Users/Nora/new_stim_nora/mask_NSEM/' movie_file '/LES/movie_chunk_' num2str(i_chunk) '.mat']);
+    load(['/Volumes/Lab/Users/Nora/new_stim_nora/mask_NSEM/masks/' movie_file '/LES/movie_chunk_' num2str(i_chunk) '.mat']);
     LESmovie = movie_chunk;
     i_chunk = 2;
     while size(LESmovie,3) < 1200
-        load(['/Volumes/Lab/Users/Nora/new_stim_nora/mask_NSEM/' movie_file '/LES/movie_chunk_' num2str(i_chunk) '.mat']);
+        load(['/Volumes/Lab/Users/Nora/new_stim_nora/mask_NSEM/masks/' movie_file '/LES/movie_chunk_' num2str(i_chunk) '.mat']);
         LESmovie = cat(3,LESmovie, movie_chunk);
         if size(LESmovie,3) > 1200
             LESmovie = LESmovie(:,:,1:1200);
@@ -121,10 +121,11 @@ if GS
         i_chunk = i_chunk + 1;
     end
     
+    
     LESmovie = imresize(LESmovie, 1/8, 'box');
     LESmovie = permute(LESmovie, [2 1 3]);
     LESmovie = LESmovie - 64;
-    
+
     mask = imresize(mask_file.final_mask, 1/8, 'box');
     mask = repmat(mask, 1, 1, 1200);
     mask_movie = NSmovie .* mask;
@@ -239,7 +240,7 @@ if GS
             sta = squeeze(sum(class_datarun.stas.stas{ids(i_cell)},3));
             sta = flip(sta,1);
             sta = flip(sta,2);
-            sta = flip(sta,3);
+            sta = flip(sta,3); 
             figure(2); imagesc(mask_movie(:,:,1));
             figure(3); imagesc(LESmovie(:,:,1));
             figure(4)
@@ -251,7 +252,7 @@ if GS
             drive(drive<0) = 0;
             plot(-drive(1:1071), 'Color', default_colors(1,:)-[0 0.2 0.2]);
             hold on
-            drive = squeeze(convn(LESmovie, sta, 'valid'));
+            drive = squeeze(convn(LESmovie,  sta, 'valid'));
             %drive = drive+100;
             drive(drive<0) = 0;
             plot(-drive(1:1071), 'Color', default_colors(2,:)-[0.2 0.2 0]);
@@ -260,7 +261,7 @@ if GS
             hold off
         end
         
-        exportfig(gcf, [fig_save '/maskin2_sigma2_LESmaskdrive_cell_' num2str(i_cell)], 'Bounds', 'loose', 'Color', 'rgb')
+        % exportfig(gcf, [fig_save '/maskin2_sigma2_LESmaskdrive_cell_' num2str(i_cell)], 'Bounds', 'loose', 'Color', 'rgb')
         
         pause()
         %     plot(drive(1:1071), response(30:1100), '.');

@@ -15,12 +15,12 @@ fits_dsave = [dsave piece '/WN/'];
 
 %%
 monitor_refresh = 119.5;
-cells = [167 1082 2359 3271 5478 6648];
+cells = [2359 3271 5478 6648]; %167 1082
 fit_data = 'data012';
 test_datarun = load_data('2015-12-18-2/data002-data015/data013/data013');
 test_datarun = load_neurons(test_datarun);
 repeats = interleaved_data_prep(test_datarun, 1100, 30, 'cell_spec', cells,'visual_check', 0, 'stimulus_name', 'BW-8-1', 'seed', 11111);
-glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-11111', 'testmovie', repeats.testmovie, 'testspikes', repeats.testspikes, 'd_save', fits_dsave, 'monitor_refresh', monitor_refresh, 'stim_length', 1800, 'center_verification', true);
+glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-11111', 'testmovie', repeats.testmovie, 'testspikes', repeats.testspikes, 'd_save', fits_dsave, 'monitor_refresh', monitor_refresh, 'stim_length', 1800, 'center_verification', 1);
 
 %%
 %test_datarun = load_data('2015-12-18-2/data002-data015/data013/data013');
@@ -28,6 +28,8 @@ glm_fit_from_WN(cells, [Analysis_Path '/' fit_data '/' fit_data], 'BW-8-1-0.48-1
 %repeats = interleaved_data_prep(test_datarun, 1100, 30, 'cell_spec', cells,'visual_check', 0, 'stimulus_name', 'BW-8-1', 'seed', 11111);
 
 %%
+
+%{
 n_cells = length(cells);
 BPS = zeros(2, n_cells);
 for i_cell = 1:n_cells
@@ -44,5 +46,5 @@ for i_cell = 1:n_cells
 end
 figure; plot(BPS(1,:), BPS(2,:), '.')
 % save([dsave piece 'BPSOn.mat'], 'BPS')
-
+%}
 

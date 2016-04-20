@@ -3,11 +3,14 @@
 
 piece = '2016-02-17-8';
 Analysis_Path = ['/Volumes/Analysis/' piece '/mVision/'];
-fig_save = ['/Users/Nora/Desktop/Fig_Output/' piece '/mVision/'];
+fig_save = ['/Volumes/Lab/Users/Nora/Fig_Output/' piece '/mVision/'];
+
+
 masking = 'data002';
 split = 'data001';
 reg{1} = 'data003';
 reg{2} = 'data005';
+class = ['/Volumes/Analysis/' piece '/streamed/data000/data000'];
 
 cells_orig = [917, 2731, 3452, 4876, 5973, 7250];
 

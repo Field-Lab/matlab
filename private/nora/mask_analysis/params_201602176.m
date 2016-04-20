@@ -3,10 +3,10 @@
 
 piece = '2016-02-17-6';
 Analysis_Path = ['/Volumes/Analysis/' piece '/mVision/'];
-fig_save = ['/Users/Nora/Desktop/Fig_Output/' piece '/mVision/'];
+fig_save = ['/Volumes/Lab/Users/Nora/Fig_Output/' piece '/mVision/'];
 
 % dataruns
-class = 'data000';
+class =['/Volumes/Analysis/' piece '/streamed/data000/data000'];
 % split = 'data005';
 reg{1} = 'data003';
 
@@ -16,7 +16,7 @@ fig_save = [fig_save 'A'];
 masking = 'data002';
 cells_orig = [6023, 1052, 3421, 7522, 4653, 2221];
 %cells_reg{1} = cells_orig;
-cells_masking = cells_orig;
+%cells_masking = cells_orig;
 cells_reg{1} = [6017;1052;3423;7518;4652;2222];
 cells_masking = [6139; 1053; 3423; 7521; 4653; 2222];
 n_masks = 7;
