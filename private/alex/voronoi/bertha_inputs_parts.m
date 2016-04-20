@@ -177,7 +177,7 @@ for kkk =  4876
         catch err
         end
         if isempty(err)
-            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/power/cell_', int2str(kkk), '.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
+            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cdf/cell_', int2str(kkk), '_data_inits.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
         end
         
 %         save('/Volumes/Analysis/2016-02-17-4/subunits/data_for_nishal_4876.mat', 'filt_inputs', 'spike_rate', 'cone_coords', 'center_cones')
