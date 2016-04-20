@@ -208,6 +208,7 @@ for i_cell = 1:length(cells)
     if isstr(d_save)
         eval(sprintf('save %s/%s.mat fittedGLM', d_save, glm_cellinfo.cell_savename));
         close all
+        %{
         plotfilters(fittedGLM);
         set(gcf, 'Position', [100 100 800 250])
         exportfig(gcf, [d_save '/' glm_cellinfo.cell_savename '_filters'], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'opengl');
@@ -215,6 +216,7 @@ for i_cell = 1:length(cells)
             plotrasters(fittedGLM.xvalperformance, fittedGLM);
             exportfig(gcf, [d_save '/' glm_cellinfo.cell_savename '_rasters'], 'Bounds', 'loose', 'Color', 'rgb');
         end
+        %}
         close all
     end
     

@@ -3,10 +3,10 @@
 
 piece = '2016-02-17-1';
 Analysis_Path = ['/Volumes/Analysis/' piece '/mVision/'];
-fig_save = ['/Users/Nora/Desktop/Fig_Output/' piece '/'];
+fig_save = ['/Volumes/Lab/Users/Nora/Fig_Output/' piece '/mVision/'];
 
 % dataruns
-class = 'data019';
+class = ['/Volumes/Analysis/' piece '/streamed/data019/data019'];
 split = 'data020';
 reg{1} = 'data022';
 
