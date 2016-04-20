@@ -202,7 +202,7 @@ xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
 % saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
-title('cdf')
+title('log')
 % line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
 
 

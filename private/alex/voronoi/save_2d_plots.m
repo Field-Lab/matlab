@@ -5,7 +5,7 @@ figure;
 set(gcf, 'position', [-1886         164        1048         930]);
 
 clear fr
-wei = mean([mllparams_x(5), mllparams_y(5)]);
+wei = mean([mllparams_x(end), mllparams_y(end)]);
 xdata1_tmp = xdata1*wei;
 % tt = min(max(xdata1_tmp), max(xdata2));
 % tt1 = max(min(xdata1_tmp), min(xdata2));
@@ -68,11 +68,17 @@ if 1
     x2 = x2_new;
     
     sat   = p(1);
-    sigma = p(2);
+    k = p(2);
     mu = p(3);
-    sh = p(4);
-    a = p(5);
-    y_interim = sat .* normcdf(a*x1 + x2, mu, sigma) + sh;
+    a = p(4);
+    y_interim = ones(size(x1)).*sat./(1+ exp(-k*(a*x1 + x2 - mu)));
+    
+%     sat   = p(1);
+%     sigma = p(2);
+%     mu = p(3);
+%     sh = p(4);
+%     a = p(5);
+%     y_interim = sat .* normcdf(a*x1 + x2, mu, sigma) + sh;
     subplot(2,2,1)
     surface(x1, x2, y_interim);
     view(3)
@@ -80,12 +86,18 @@ if 1
 
     
     p = mllparams_y;
+    
     sat   = p(1);
-    sigma = p(2);
+    k = p(2);
     mu = p(3);
-    sh = p(4);
-    a = p(5);
-    y_interim = sat .* (normcdf(a*x1, mu, sigma) + normcdf(x2, mu, sigma)) + sh;
+    a = p(4);
+    y_interim = ones(size(x1)).*sat./(1+ exp(-k*(a*x1 - mu))) + ones(size(x1)).*sat./(1+ exp(-k*(x2 - mu)));
+%     sat   = p(1);
+%     sigma = p(2);
+%     mu = p(3);
+%     sh = p(4);
+%     a = p(5);
+%     y_interim = sat .* (normcdf(a*x1, mu, sigma) + normcdf(x2, mu, sigma)) + sh;
     
     subplot(2,2,2)
     surface(x1, x2, y_interim);

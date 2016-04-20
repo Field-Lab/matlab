@@ -76,15 +76,17 @@ opts.Display = 'off';
 % [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 % 
 % % 
-lb = [0 0 0 0.1];
-ub = [50 20 5 Inf];
-inits = [20    5    1    1];
+lb = [0 0 0 -1 0.1];
+ub = [50 20 5 1 10];
+% inits = [20    5    1    1 0];
+inits = [3  7  0.3  0 1];
 fitfunc = @tt_log;
 [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
+% [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, [],[],opts);
 
-lb = [0 0 0 0.1];
-ub = [50 20 5 Inf];
-inits = [2    10    0.25    1];
+lb = [0 0 0 -1 0.1];
+ub = [50 20 5 1 10];
+inits = [10 8 0.5 0 1];
 fitfunc = @tt1_log;
 [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 % 
@@ -133,16 +135,18 @@ function y = tt_log(p,x) % x shift
 sat   = p(1);
 k = p(2);
 mu = p(3);
-a = p(4);
-y = ones(size(x,1),1).*sat./(1+ exp(-k*(a*x(:,1) + x(:,2) - mu)));
+c = p(4);
+a = p(5);
+y = ones(size(x,1),1).*sat./(1 + exp(-k*(a*x(:,1) + x(:,2) - mu))) + c;
 
 
 function y = tt1_log(p,x) % y shift
 sat   = p(1);
 k = p(2);
 mu = p(3);
-a = p(4);
-y = ones(size(x,1),1).*sat./(1+ exp(-k*(a*x(:,1) - mu))) + ones(size(x,1),1).*sat./(1+ exp(-k*(x(:,2) - mu)));
+c = p(4);
+a = p(5);
+y = ones(size(x,1),1).*sat./(1+ exp(-k*(a*x(:,1) - mu))) + ones(size(x,1),1).*sat./(1+ exp(-k*(x(:,2) - mu))) + c;
 
 
 % CDF

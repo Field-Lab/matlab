@@ -63,8 +63,9 @@ global ydata xdata1 xdata2 fact_precomp
 sat   = p(1);
 k = p(2);
 mu = p(3);
-a = p(4);
-y_interim = ones(size(xdata1,1),1).*sat./(1+ exp(-k*(a*xdata1 + xdata2 - mu)));
+c = p(4);
+a = p(5);
+y_interim = ones(size(xdata1,1),1).*sat./(1+ exp(-k*(a*xdata1 + xdata2 - mu))) + c;
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
@@ -77,8 +78,9 @@ global ydata xdata1 xdata2 fact_precomp
 sat   = p(1);
 k = p(2);
 mu = p(3);
-a = p(4);
-y_interim = ones(size(xdata1,1),1).*sat./(1+ exp(-k*(a*xdata1 - mu))) + ones(size(xdata2,1),1).*sat./(1+ exp(-k*(xdata2 - mu)));
+c = p(4);
+a = p(5);
+y_interim = ones(size(xdata1,1),1).*sat./(1+ exp(-k*(a*xdata1 - mu))) + ones(size(xdata2,1),1).*sat./(1+ exp(-k*(xdata2 - mu))) + c;
 y_interim(y_interim<=0) = 1e-6;
 y_interim = y_interim .^ ydata .*exp(-y_interim) ./ fact_precomp;
 y = -sum(log(y_interim));
