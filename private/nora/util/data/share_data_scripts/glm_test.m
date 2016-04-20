@@ -1,4 +1,4 @@
-piece = '2013-10-10-0';
+piece = '2013-08-19-3';
 stim_type = 'NSEM';
 cell = 5;
 tstim = .00832750;
