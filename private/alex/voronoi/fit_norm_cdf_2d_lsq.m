@@ -76,31 +76,31 @@ opts.Display = 'off';
 % [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
 % 
 % % 
-lb = [0 0 0 -1 0.1];
-ub = [50 20 5 1 10];
-% inits = [20    5    1    1 0];
-inits = [3  7  0.3  0 1];
-fitfunc = @tt_log;
-[params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-% [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, [],[],opts);
-
-lb = [0 0 0 -1 0.1];
-ub = [50 20 5 1 10];
-inits = [10 8 0.5 0 1];
-fitfunc = @tt1_log;
-[params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-% 
-% lb = [0 0.1 -10 0 0];
-% ub = [50 7 1 2 Inf];
-% inits = [6 3 -0.36 min(fr) 1];
-% fitfunc = @tt_power;
+% lb = [0 0 0 -1 0.1];
+% ub = [50 20 5 1 10];
+% % inits = [20    5    1    1 0];
+% inits = [3  7  0.3  0 1];
+% fitfunc = @tt_log;
 % [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
-% % 
-% lb = [0 0.1 -10 -2 0];
-% ub = [10 10 1 2 Inf];
-% inits = [1 5 -1 0 1];
-% fitfunc = @tt1_power;
-% [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb, ub,opts);
+% % [params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, [],[],opts);
+% 
+% lb = [0 0 0 -1 0.1];
+% ub = [50 20 5 1 10];
+% inits = [10 8 0.5 0 1];
+% fitfunc = @tt1_log;
+% [params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
+% 
+lb = [0 0.1 -10 0 0];
+ub = [50 7 1 2 Inf];
+inits = [6 3 -0.36 min(fr) 1];
+fitfunc = @tt_power;
+[params1, resnorm1] = lsqcurvefit(fitfunc, inits, x, y, lb,ub,opts);
+% 
+lb = [0 0.1 -10 -2 0];
+ub = [10 10 1 2 Inf];
+inits = [1 5 -1 0 1];
+fitfunc = @tt1_power;
+[params2, resnorm2] = lsqcurvefit(fitfunc, inits, x, y, lb, ub,opts);
 
 
 % POWER

@@ -70,8 +70,9 @@ if 1
     sat   = p(1);
     k = p(2);
     mu = p(3);
-    a = p(4);
-    y_interim = ones(size(x1)).*sat./(1+ exp(-k*(a*x1 + x2 - mu)));
+    c = p(4);
+    a = p(5);
+    y_interim = ones(size(x1)).*sat./(1+ exp(-k*(a*x1 + x2 - mu)))+c;
     
 %     sat   = p(1);
 %     sigma = p(2);
@@ -90,8 +91,9 @@ if 1
     sat   = p(1);
     k = p(2);
     mu = p(3);
-    a = p(4);
-    y_interim = ones(size(x1)).*sat./(1+ exp(-k*(a*x1 - mu))) + ones(size(x1)).*sat./(1+ exp(-k*(x2 - mu)));
+    c = p(4);
+    a = p(5);
+    y_interim = ones(size(x1)).*sat./(1+ exp(-k*(a*x1 - mu))) + ones(size(x1)).*sat./(1+ exp(-k*(x2 - mu))) + c;
 %     sat   = p(1);
 %     sigma = p(2);
 %     mu = p(3);
