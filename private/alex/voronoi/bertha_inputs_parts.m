@@ -104,7 +104,7 @@ end
 % end
 
 % [541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
-for kkk =  4876
+for kkk =  [541 571 586 783 1921 2012 2091 2149 3031 3274 3721 4022 4353 4396 4486 4489 4774 4876 4924 4925  5056 5898 6889]
     
     kkk
     
@@ -177,7 +177,7 @@ for kkk =  4876
         catch err
         end
         if isempty(err)
-            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/cdf/cell_', int2str(kkk), '_data_inits.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
+            save(['/Volumes/Analysis/2016-02-17-4/cone_data/manual/logistic/cell_', int2str(kkk), '_standard_inits.mat'], 'loglikratio', 'res', 'center_cones', 'raw_sta');
         end
         
 %         save('/Volumes/Analysis/2016-02-17-4/subunits/data_for_nishal_4876.mat', 'filt_inputs', 'spike_rate', 'cone_coords', 'center_cones')

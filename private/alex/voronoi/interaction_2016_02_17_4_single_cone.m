@@ -193,8 +193,8 @@ figure
 set(gcf, 'position', [-1822         131        1033         974]);
 % subplot('position', [0 0 1 1])
 imagesc(tmp(:,6:end,:));
-set(gca, 'xtick', 0,'xticklabel','')
-set(gca, 'ytick', 0,'yticklabel','')
+% set(gca, 'xtick', 0,'xticklabel','')
+% set(gca, 'ytick', 0,'yticklabel','')
 % set(gca, 'visible', 'off')
 set(gca, 'xtick', 3:6:length(center_cones(2:end))*6,'xticklabel',int2str(center_cones(2:end)'), 'fontsize', 24)
 set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
@@ -202,9 +202,31 @@ xlabel('cone 1')
 ylabel('cone 2')
 set(gca,'dataaspectratio', [1 1 1])
 % saveas(gcf, '/Users/alexth/Dropbox/Lab/Transfer/Alex_to_EJ/new_talk/2011-12-13-2/offm_3736/loglik_2d_matrix.svg')
-title('cdf data inits')
+title('cdf standard inits first resamplings')
 % line([0, length(center_cones)*3+1], [0, length(center_cones)*3+1], 'color', 'k')
 
+tmp_cdf = all_array;
+tmp_log = all_array;
+tmp_pow = all_array;
+
+x0 = 0.5;
+k = 10;
+tmp_cdf = ones(size(tmp_cdf))./(1+exp(-k*(tmp_cdf-x0)));
+tmp_log = ones(size(tmp_log))./(1+exp(-k*(tmp_log-x0)));
+tmp_pow = ones(size(tmp_pow))./(1+exp(-k*(tmp_pow-x0)));
+
+comb = zeros([size(tmp_log) 3]);
+comb(:,:,1) = tmp_cdf;
+comb(:,:,2) = tmp_log;
+comb(:,:,3) = tmp_pow;
+figure
+imagesc(comb(:,6:end,:))
+set(gca, 'xtick', 3:6:length(center_cones(2:end))*6,'xticklabel',int2str(center_cones(2:end)'), 'fontsize', 24)
+set(gca, 'ytick', 3:6:length(center_cones)*6,'yticklabel',int2str(center_cones'))
+xlabel('cone 1')
+ylabel('cone 2')
+set(gca,'dataaspectratio', [1 1 1])
+title('LLR combo: norm CDF (red channel); log (green); power (blue)')
 
 
 
