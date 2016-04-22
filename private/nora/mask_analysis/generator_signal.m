@@ -1,5 +1,5 @@
 clear 
-params_201602178
+params_201602176
 n_reg = length(reg);
 mkdir(fig_save);
 
@@ -39,6 +39,27 @@ end
 % load classification run 
 datarun_class = load_data(class);
 datarun_class = load_params(datarun_class);
+% avg RF
+datarun_class = load_sta(datarun_class);
+avg_rf = sum(get_average_rf(datarun_class, 'On Parasol', 'scale', 5),3);
+
+n_angles = 10;
+slice = zeros(201,1);
+range = -100:100;
+
+for i = 1:n_angles
+    figure(1); imagesc(avg_rf); axis image; title(i)
+    prof = improfile;
+    prof = [zeros(100,1); prof; zeros(100,1)];
+    [~,center] = max(prof);
+    slice = slice + prof(center+range);
+end
+slice = slice/n_angles;
+plot(slice)
+
+a = fit((1:201)'/5,slice, fittype('gauss2'));
+width = a.c1/sqrt(2);
+avg_profile = [slice, (1:201)'/(5*width)];
 
 %% load movie
 if GS
@@ -68,8 +89,9 @@ end
 
 for subgroup = 1:n_subgroups
     for i_cell = cell_idx{subgroup}
+        disp(cells_orig(i_cell))
         master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
-        [reg, time] = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0);
+        [reg{i_cell}, time] = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0, 'smoothing', 10);
         %sta = squeeze(sum(datarun_class.stas.stas{master_idx},3));
         %%{
         sta_fit = datarun_class.vision.sta_fits{master_idx}; 
@@ -79,7 +101,7 @@ for subgroup = 1:n_subgroups
             datarun_class.vision.timecourses(master_idx).g ...
             datarun_class.vision.timecourses(master_idx).b],2);
         sta_center = reshape((ideal_center(:))*time_course', [40 80 30]);
-        sta_surround = reshape((ideal_surround(:))*time_course', [40 80 30]);
+        sta_surround = reshape((ideal_surround(:))*[time_course(3:end);0; 0]', [40 80 30]);
         %}
         sta_center = flip(sta_center,1);  
         sta_center = flip(sta_center,2); 
@@ -92,8 +114,9 @@ for subgroup = 1:n_subgroups
             if s==2
                 load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_allcells_sigma' num2str(s) '.mat'])
             else
-                load(['/Volumes/Data/2016-02-17-1/Visual/masks/Maskin/Maskin_cells' num2str(subgroup) '_sigma' num2str(s) '.mat']);
+                load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_cells' num2str(subgroup) '_sigma' num2str(s) '.mat']);
             end
+           
             comp_mask = mod(mask+1,2);  
             mask = imresize(mask, 1/sta_scale, 'box');
             mask = repmat(mask, 1, 1, 1200);
@@ -102,11 +125,63 @@ for subgroup = 1:n_subgroups
             mask_movie = NSmovie .* mask;
             mask_gen_signal_center = squeeze(convn(mask_movie, sta_center, 'valid')); 
             mask_gen_signal_surround = squeeze(convn(mask_movie, sta_surround, 'valid')); 
+            reg_gen_signal_center = squeeze(convn(NSmovie, sta_center, 'valid')); 
+            reg_gen_signal_surround = squeeze(convn(NSmovie, sta_surround, 'valid')); 
             comp_gen_signal_center = squeeze(convn(NSmovie.*comp_mask, sta_center, 'valid')); 
             comp_gen_signal_surround = squeeze(convn(NSmovie.*comp_mask, sta_surround, 'valid')); 
-            mask = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0);
-            comp = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0);
+            mask_PSTH(i_cell, i, :) = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
+            comp(i_cell, i, :) = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
+            
             close all
+                        
+            model_arch = 'y~log(1+exp(b1*x1+b2*x2))';
+            init = [6 -1.5]/4;
+            responses = reg{i_cell}(30:end);
+            data_matrix = [reg_gen_signal_center(1:1166) reg_gen_signal_surround(1:1166)];
+            model = fitnlm(data_matrix, responses, model_arch, init);
+            %NLN_model = fitnlm(data_matrix, responses, 'y~log(1+exp(b1*x1))+log(1+exp(b2*x2))', [6 -1.5]);
+            %figure; hold on; plot([responses, predict(model, data_matrix)]);
+            %Coeff(i_cell, i,1, :) = model.Coefficients.Estimate;
+            %Corr(i_cell, i,1, :) = model.Rsquared.Ordinary;
+            reg_gen_signal(i_cell, i, :) = data_matrix*model.Coefficients.Estimate;
+            
+            responses = squeeze(mask_PSTH(i_cell, i, 30:end));
+            data_matrix = [mask_gen_signal_center(1:1166) mask_gen_signal_surround(1:1166)];
+            model = fitnlm(data_matrix, responses, model_arch, init);
+            %figure; plot([responses, predict(model, data_matrix)]);
+            %Coeff(i_cell, i,2, :) = model.Coefficients.Estimate;
+            %Corr(i_cell, i,2, :) = model.Rsquared.Ordinary;
+            mask_gen_signal(i_cell, i, :) = data_matrix*model.Coefficients.Estimate;
+            
+            responses = squeeze(comp(i_cell, i, 30:end));
+            data_matrix = [comp_gen_signal_center(1:1166) comp_gen_signal_surround(1:1166)];
+            model = fitnlm(data_matrix, responses, model_arch, init);
+            %figure; plot([responses, predict(model, data_matrix)]);
+            %Coeff(i_cell, i,3, :) = model.Coefficients.Estimate;
+            %Corr(i_cell, i,3, :) = model.Rsquared.Ordinary;
+            comp_gen_signal(i_cell, i, :) = data_matrix*model.Coefficients.Estimate;
+            
+
+            %{
+            pos = reg > 50;
+            model_arch = 'y~exp(b1*log(x1)+b2*log(x2))';
+            data_matrix = [mask(pos) comp(pos)];
+            responses = reg(pos);
+            init = [6 -1.5]/4;
+            model = fitnlm(data_matrix, responses, model_arch, init);
+            figure; plot([responses, predict(model, data_matrix)]);
+%}
+            %{
+            figure; plot(log(1+exp(mask_gen_signal))); hold on; plot(mask(30:end)); title('mask')
+            figure; plot(log(1+exp(comp_gen_signal))); hold on; plot(comp(30:end)); title('comp')
+            figure; plot(log(1+exp(mask_gen_signal+comp_gen_signal))); hold on; plot(reg(30:end)); title('mask+comp')
+            figure; plot(log(1+exp(reg_gen_signal))); hold on; plot(reg(30:end)); title('reg')
+            pause() 
+            %}
+            
+            %pause()
+            close all
+            %{
             figure(1); hold on
             plot(time(1:1166), mask(30:end), 'Color', default_colors(1,:));
             plot(time(1:1171), mask_gen_signal_center-0.25*mask_gen_signal_surround, 'Color', default_colors(2,:)); 
@@ -127,6 +202,7 @@ for subgroup = 1:n_subgroups
             %exportfig(gcf, [fig_save '/mask_suppress_' 'cell' num2str(i_cell) '_sigma_' num2str(sigmas(mask_conditions{subgroup}(i)))], 'Bounds', 'loose', 'Color', 'rgb')
              pause()
             close all
+            %}
         end
     end
 end 

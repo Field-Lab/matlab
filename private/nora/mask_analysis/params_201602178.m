@@ -30,10 +30,12 @@ cells_masking = [918;2732;3471;4877;5962;7143];% cell ids for mVision data002, m
 n_masks = 7;
 sigmas = [2 2 4 4 5 5 6 6 4 4 5 5 6 6];
 % subgroup 1
+% off
 cell_idx{1} = 1:2:5;
 mask_conditions{1} = [1 3 5 7];
 comp_conditions{1} = [2 4 6 8];
 % subgroup 1
+% on
 cell_idx{2} = 2:2:6;
 mask_conditions{2} = [1 9 11 13];
 comp_conditions{2} = [2 10 12 14];
