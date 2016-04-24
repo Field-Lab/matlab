@@ -47,7 +47,7 @@ datarun_class = load_sta(datarun_class);
 %{
 avg_rf = sum(get_average_rf(datarun_class, 'On Parasol', 'scale', 5),3);
 
-n_angles = 10;
+n_angles = 4;
 slice = zeros(201,1);
 range = -100:100;
 
@@ -61,7 +61,7 @@ end
 slice = slice/n_angles;
 plot(slice)
 
-a = fit((1:201)'/5,slice, fittype('gauss2'));
+a = fit((1:201)'/5,slice, fittype('gauss1'));
 width = a.c1/sqrt(2);
 avg_profile = [slice, (1:201)'/(5*width)];
 

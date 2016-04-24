@@ -2,7 +2,7 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
- GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true; % The spatial part is taken from the STA
+GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true; % The spatial part is taken from the STA
 %GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; % Both the spatial and temporal parts are fit, rank 1
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false; % Two spatial and temporal parts are fit, rank 2
 

@@ -22,10 +22,12 @@ n_masks = 7;
 sigmas = [2 2 4 4 5 5 6 6 4 4 5 5 6 6];
 % subgroup 1
 cell_idx{1} = 1:3;
+cell_type{1} = 'on';
 mask_conditions{1} = [1 3 5 7];
 comp_conditions{1} = [2 4 6 8];
 % subgroup 1
 cell_idx{2} = 4:6;
+cell_type{2} = 'off';
 mask_conditions{2} = [1 9 11 13];
 comp_conditions{2} = [2 10 12 14];
 %}
