@@ -1,4 +1,4 @@
-function [fit_info , sta, sig_stixels] = fit_sta(sta, varargin)
+function [fit_info , sta_fit, sig_stixels] = fit_sta(sta, varargin)
 %
 % fit_sta.m fits a spatial-temporal-chromatic STA with a differences of
 % Gaussians (in space), a difference of a cascade of filters (in time), and
