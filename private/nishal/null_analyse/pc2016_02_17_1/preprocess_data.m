@@ -1,39 +1,22 @@
-%% pc2016-02-17-6
+%% pc2016-02-17-1
 
 % Condition strings
 nConditions=3;
-condDuration=1200/4;
+condDuration=2400/4;
 cond_str=cell(nConditions,1);
 cond_str{1}='Original';
 cond_str{2}='Null ';
 
 interestingConditions=[1,2,3];
 
-dataRuns_OFF_additivity = [10,11];
-dataRuns_ON_additivity = [10,12];
-movies_OFF_addivitiy =[5,6];
-movies_ON_additivity = [5,8];
-
-WN_datafile = '/Volumes/Analysis/2016-02-17-6/d07,10_12-norefit/data007/data007';
-WN_datafile_streamed = '/Volumes/Analysis/2016-02-17-6/streamed/data007/data007';
-location = '/Volumes/Analysis/2016-02-17-6/d07,10_12-norefit';
+dataRuns_OFF_additivity = [31,32,34,38];
+dataRuns_ON_additivity = [31,33,35,38];
 
 
-%% Condition strings
-nConditions=3;
-condDuration=1200/4;
-cond_str=cell(nConditions,1);
-cond_str{1}='Original';
-cond_str{2}='Null ';
+WN_datafile = '/Volumes/Analysis/2016-02-17-1/d28_51-norefit/data028/data028';
+WN_datafile_streamed = '/Volumes/Analysis/2016-02-17-1/streamed/data028/data028';
+location = '/Volumes/Analysis/2016-02-17-1/d28_51-norefit';
 
-interestingConditions=[1,2,3];
-
-dataRuns_OFF_additivity = [30,31,35,38];
-dataRuns_ON_additivity = [30,32,36];
-
-WN_datafile = '/Volumes/Analysis/2016-02-17-6/d28_44-norefit/data028/data028';
-WN_datafile_streamed = '/Volumes/Analysis/2016-02-17-6/streamed/data028/data028';
-location = '/Volumes/Analysis/2016-02-17-6/d28_44-norefit';
 %%
 
 
@@ -53,7 +36,7 @@ datarun = load_sta(datarun);
 InterestingCell_vis_id=datarun.cell_types{cellTypeId}.cell_ids; 
 cellTypeUsed=cellTypeId*ones(length(InterestingCell_vis_id),1);
 
-condDuration=10;
+condDuration=20;
 nConditions=1;
 conda=1;condb=2;
 

@@ -154,6 +154,53 @@ movie_params.movie_time=movie_time;
 end
 end
 
+% BW noise used in before
+if(strcmp(movie_params.mov_type,'bw-precomputed2'))
+movie_time=movie_params.movie_time;
+var64=movie_params.var64;
+var32=movie_params.var32;
+
+if(~isfield(movie_params,'mdf_file'))
+mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/BW-10-1-0.48-11111.xml';
+else
+    mdf_file=movie_params.mdf_file;
+end
+mov=zeros(var64,var32,movie_time);
+triggers=[0:100/120:movie_time*10/120]; % Or maybe, movie_time/120 ?? Doubt!
+[mvi] = load_movie(mdf_file,triggers);
+[~,height,width,duration,refresh] = get_movie_ath(mdf_file,...
+    triggers, 1,2);
+
+    for itime=1:movie_time
+        F=mvi.getFrame(itime-1).getBuffer;
+        mov(:,:,itime)=double(reshape(F(1:3:size(mov,1)*size(mov,2)*3),size(mov,1),size(mov,2))); % Flip in each direction ? Doubt!
+
+    end
+mov=mov-0.5;
+mov=mov*movie_params.deviation/max(abs(mov(:)));
+
+
+% Add 
+% Add one second of dark screen in front and back of movie .. 
+% This will take care of initial and final conditions and make proper
+% buffers
+if(isfield(movie_params,'interval'))
+blankFrames = double(uint8(0/movie_params.interval));
+
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
+movie_params.movie_time=movie_time;
+else
+    
+blankFrames = 0;
+mov_buffered=zeros(var64,var32,movie_time+2*blankFrames);
+mov_buffered(:,:,blankFrames+1:end-blankFrames)=mov;
+movie_time=movie_time+2*blankFrames;
+movie_params.movie_time=movie_time;
+end
+end
+
 
 if(strcmp(movie_params.mov_type,'userProvided'))
     mov = movie_params.movProvided;
