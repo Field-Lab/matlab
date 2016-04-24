@@ -168,8 +168,6 @@ for subgroup = 1:n_subgroups
             %Corr(i_cell, i,3, :) = model.Rsquared.Ordinary;
             comp_gen_signal = data_matrix*model.Coefficients.Estimate;
             
-            plot(mask_gen_signal(1:1166), comp(30:end), '.');
-            
 
             %{
             pos = reg > 50;
@@ -180,13 +178,16 @@ for subgroup = 1:n_subgroups
             model = fitnlm(data_matrix, responses, model_arch, init);
             figure; plot([responses, predict(model, data_matrix)]);
 %}
-            %{
-            model_corr(i_cell, 1, i) = corr(log(1+exp(mask_gen_signal)), mask_PSTH(30:end));
-            model_corr(i_cell, 2, i) = corr(log(1+exp(comp_gen_signal)), comp(30:end));
-            model_corr(i_cell, 3, i) = corr(log(1+exp(reg_gen_signal)), reg(30:end));
+            %%{
+            model_Corr = (log(1+exp(mask_gen_signal))); hold on; plot(mask_PSTH(30:end)); title('mask')
+            figure; plot(log(1+exp(comp_gen_signal))); hold on; plot(comp(30:end)); title('comp')
+            figure; plot(log(1+exp(mask_gen_signal+comp_gen_signal))); hold on; plot(reg(30:end)); title('mask+comp')
+            figure; plot(log(1+exp(reg_gen_signal))); hold on; plot(reg(30:end)); title('reg')
+            pause() 
             %}
             
             %pause()
+            close all
             %{
             figure(1); hold on
             plot(time(1:1166), mask(30:end), 'Color', default_colors(1,:));
