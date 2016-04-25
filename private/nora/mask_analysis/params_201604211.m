@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Stuff to change for each piece
-
+clear reg
 piece = '2016-04-21-1';
-Analysis_Path = ['/Volumes/Analysis/' piece '/'];
+Analysis_Path = ['/Volumes/Analysis/' piece '/mVision/'];
 fig_save = ['/Volumes/Lab/Users/Nora/Fig_Output/' piece '/'];
 
 % dataruns
@@ -13,8 +13,8 @@ reg{1} = 'data018';
 %%{
 masking = 'data017';
 cells_orig = [811 3169 6047 2281 2341 5401];
-cells_reg{1} = [7172;4805;2416;5972;1053;3437];
-cells_masking = [816;3290;6052;2283;2342;4504];
+cells_reg{1} = [812;3170;6054;2286;2347;4624];
+cells_masking = [813;3287;6048;NaN;2341;4501];
 n_masks = 7;
 sigmas = [2 2 4 4 6 6 8 8 10 10 8 8 10 10];
 % subgroup 1

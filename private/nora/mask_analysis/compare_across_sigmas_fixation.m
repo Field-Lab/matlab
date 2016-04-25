@@ -1,14 +1,26 @@
- clear 
-params_201602176
-n_reg = length(reg);
-mkdir(fig_save);
+clear
+total_mask = [];
+total_reg = [];
+celltype_idx = [];
 
 set(0, 'defaultFigurePaperPositionMode', 'auto')
 set(0, 'defaultFigurePaperOrientation', 'landscape')
 set(0, 'defaultFigureUnits', 'inches')
-set(0, 'defaultFigurePosition', [2 2 15 4])
+set(0, 'defaultFigurePosition', [2 2 8 4])
 
-n_subgroups = length(cell_idx);
+params_list
+total_firing = [];
+total_reg_firing = [];
+
+%%
+for exp = exps
+    disp(exp{1})
+    eval(exp{1})
+    n_reg = length(reg);
+    mkdir(fig_save);
+    
+    
+    n_subgroups = length(cell_idx);
 
 %%
 %%{
@@ -21,7 +33,7 @@ for i_reg = 1:n_reg
 end
 %}
 
-%%{
+%{
     % plot reg repeats for stability check
     for i_cell = 1:size(reg_data{1}.testspikes,2)
         figure; hold on
@@ -60,25 +72,29 @@ interval_frame = cumsum(interval);
 start = 1;
 for subgroup = 1:n_subgroups
     for i_cell = cell_idx{subgroup}
+        reg_psth = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0, 'smoothing', 10);
         for i = 1:length(mask_conditions{subgroup})
             mask = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
-            %comp = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 100);
             for fixation = 1:23
-                Firing(i_cell, fixation, i) = sum(mask(start:interval_frame(fixation)));
+                Firing(i_cell, fixation, i) = max(mask(start:interval_frame(fixation)));
+                reg_firing(i_cell, fixation) =  max(reg_psth(start:interval_frame(fixation)));
                 start = interval_frame(fixation);
             end
             start = 1;
-            %Firing(i_cell, i, 2) = sum(comp);
         end
     end
 end
-% plot([2 4 5 6], Firing(:,1))
-%save([fig_save '/Firing.mat'], 'Firing')
 
-%%
-diff_by_fix = Firing(:,:,1) - Firing (:,:,4);
-plot(diff_by_fix')
+total_firing = [total_firing; Firing(:,:,1)];
+total_reg_firing = [total_reg_firing; reg_firing];
 
+
+end
+
+plot(total_firing, total_reg_firing, 'k.')
+hold on; plot([0 300], [0 300])
+
+%{
 %%
 idx = -10:10;
 outer_idx = -100:100;
@@ -110,3 +126,4 @@ for subgroup = 1:n_subgroups
         pause()
     end
 end
+%}

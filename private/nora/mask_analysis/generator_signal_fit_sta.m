@@ -120,8 +120,8 @@ for subgroup = 1:n_subgroups
             mask_PSTH = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
             comp = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
             
-            
-            
+            model = fitnlm(reg_gen_signal_center(1:1166), reg(30:end), 'y~b1*log(1+exp(b2*x1-b3))', [1 1 1]);
+
         end
     end
 end 

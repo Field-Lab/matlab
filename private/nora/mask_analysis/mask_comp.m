@@ -1,5 +1,5 @@
  clear 
-params_201602171
+params_201604211
 n_reg = length(reg);
 mkdir(fig_save);
 
@@ -21,7 +21,7 @@ for i_reg = 1:n_reg
 end
 %}
 
-%%{
+%{
     % plot reg repeats for stability check
     for i_cell = 1:size(reg_data{1}.testspikes,2)
         figure; hold on
@@ -50,16 +50,17 @@ end
 for subgroup = 1:n_subgroups
     for i_cell = cell_idx{subgroup}
         for i = 1:length(mask_conditions{subgroup})
-            color = [1 1 1]*(1-sigmas(mask_conditions{subgroup}(i))/12);
+            color = [1 1 1]*(1-sigmas(mask_conditions{subgroup}(i))/20);
             figure(1); hold on
-            IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', color);
+            IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', color, 'smoothing', 10);
             figure(2); hold on
-            IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', color);
+            IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', color, 'smoothing', 10);
         end
-        figure(1); IDP_plot_PSTH(reg_data{1}, i_cell, 'color', [0 0 0], 'plot_offset', 0); title('Mask')
-        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
+        figure(1); IDP_plot_PSTH(reg_data{1}, i_cell, 'color', [0 0 0], 'plot_offset', 0, 'smoothing', 10); title('Mask')
+        %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
         figure(2); title('Complement');
-        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
+        %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
+        pause()
         figure(1); clf; figure(2); clf;
     end
 end

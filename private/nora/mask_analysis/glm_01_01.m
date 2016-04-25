@@ -21,7 +21,7 @@ load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat');
 stim_length = (3600)*convergence;
 %fitmov_orig = fitmovie(:,:,1:ceil(stim_length*monitor_refresh));
 fitmovie = uint8(double(fitmovie).*repmat(mask, [1 1 size(fitmovie,3)]) + 64*ones(size(fitmovie)).*(1-repmat(mask, [1 1 size(fitmovie,3)])));
-load('/Volumes/Data/2016-01-05-0/Visual/timestamps/2016-01-05-0/data009_time_stamps.mat');
+%load('/Volumes/Data/2016-01-05-0/Visual/timestamps/2016-01-05-0/data009_time_stamps.mat');
 
 %%
 for i = 1:4
@@ -29,7 +29,7 @@ for i = 1:4
     glm_cellinfo.cid           = cells(i);
     glm_cellinfo.cell_savename = num2str(cells(i));
     master_idx         = find(fit_datarun.cell_ids == cells(i));
-    fitspikes = align_spikes_triggers(fit_datarun.spikes{master_idx}, time_stamps{1}, 1, monitor_refresh);    
+    fitspikes = align_spikes_triggers(fit_datarun.spikes{master_idx}, fit_datarun, 100, monitor_refresh);    
     fitspikes = fitspikes(fitspikes < stim_length);
     % eval(sprintf('load %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
     % BPS(i,1) = fittedGLM.xvalperformance.glm_normedbits;
