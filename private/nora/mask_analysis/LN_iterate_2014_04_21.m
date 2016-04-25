@@ -6,6 +6,7 @@ Analysis_Path = '/Volumes/Analysis/2016-04-21-1/';
 datarun_class = load_data([Analysis_Path 'streamed/data015/data015'], struct('load_neurons', 0, 'load_params', 1));
 dsave = '/Volumes/Lab/Users/Nora/GLMFits_masking/2016-04-21-1';
 monitor_refresh = 119.5;
+cells_orig = [811 3169 2341 6047 4501];
 cells_fit = [1053, 3288, 2341, 6049, 4624];
 cells_test = [813 3287 2341 6048 4501];
 load('/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_allcells_sigma2.mat');
@@ -32,7 +33,13 @@ for i = 1
     [STA, center] = STA_Test(fitspikes, fitmovie, 1, 1/monitor_refresh);
    
     fittedGLM     = glm_fit(fitspikes, fitmovie,center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
-    gen_signal = glm_gen_signal_TEST(fittedGLM, fitmovie);
+    [gen_signal, firing_rate] = glm_fit_NL_TEST(fittedGLM, fitspikes, fitmovie, 10);
+    %[gen_signal, firing_rate] = glm_gen_signal_TEST(fittedGLM, fitmovie);
+	model = fitnlm(gen_signal, firing_rate, 'y~b1/(b2+exp(b3*x1))', [1 1 -1]);
+    t_init = fittedGLM.linearfilters.Stimulus.time_rk1;
+    gen_signal_spatial = glm_gen_signal_spatial(fittedGLM, fitmovie);
+    new_timecourse = fminunc(@(time_course)timecourse_error_function(time_course, firing_rate, model.Coefficients.Estimate, gen_signal_spatial), t_init); 
+
     %eval(sprintf('load %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
     fittedGLM.xvalperformance = glm_predict(fittedGLM, testmovie,'testspikes', repeats.testspikes(:,i));
     eval(sprintf('save %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));

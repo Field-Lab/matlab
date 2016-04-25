@@ -3,10 +3,10 @@ function [gen_signal, firing_rate] = glm_fit_NL_TEST(fittedGLM, fitspikes, fitmo
 
 gen_signal = glm_gen_signal_TEST(fittedGLM, fitmovie);
 bins = length(gen_signal);
-home_spbins  = ceil(fitspikes / fittedGLM.t_bin);
+home_spbins  = ceil(fitspikes / (fittedGLM.bins_per_frame*fittedGLM.t_bin));
 home_spbins = home_spbins(find(home_spbins < bins) );
 firing = zeros(size(gen_signal));
 firing(home_spbins) = 1;
-firing_rate = conv(firing, gausswin(window), 'same')/sum(gausswin(window));
+firing_rate = conv(firing, gausswin(window), 'same')/(sum(gausswin(window))*(fittedGLM.bins_per_frame*fittedGLM.t_bin));
 
 end

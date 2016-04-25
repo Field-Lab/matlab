@@ -204,6 +204,7 @@ if iscell(testspikes)
     xvalperformance.glm_normedbits       =  glm_bits_persecond / uop_bits_persecond;
     xvalperformance.rasters.recorded = logicalspike;
     xvalperformance.glm_rateperbin  = params.bindur * glm_ratepersec;
+    xvalperformance.glm_ratepersec = glm_ratepersec;
 end
 
 %%
