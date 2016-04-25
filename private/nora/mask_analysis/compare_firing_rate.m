@@ -3,24 +3,23 @@ total_mask = [];
 total_reg = [];
 celltype_idx = [];
 
-for i_exp = 1:3
-    disp(i_exp)
-    switch i_exp
-        case 1
-            params_201602171
-        case 2
-            params_201602176
-        case 3
-            params_201602178
-    end
+set(0, 'defaultFigurePaperPositionMode', 'auto')
+set(0, 'defaultFigurePaperOrientation', 'landscape')
+set(0, 'defaultFigureUnits', 'inches')
+set(0, 'defaultFigurePosition', [2 2 8 4])
+
+params_list
+
+%sigma_idx = [0 1 0 2 3 4 0 5 0 6];
+
+%%
+for exp = exps
+    disp(exp{1})
+    eval(exp{1})
+    
     n_reg = length(reg);
     mkdir(fig_save);
-    
-    set(0, 'defaultFigurePaperPositionMode', 'auto')
-    set(0, 'defaultFigurePaperOrientation', 'landscape')
-    set(0, 'defaultFigureUnits', 'inches')
-    set(0, 'defaultFigurePosition', [2 2 15 4])
-    
+
     n_subgroups = length(cell_idx);
     
     %%
@@ -46,7 +45,6 @@ for i_exp = 1:3
     %}
     % close all
     
-    %%
     datarun = load_data([ Analysis_Path masking '/' masking]);
     datarun = load_neurons(datarun);
     mask_data = interleaved_data_prep(datarun, 1100, n_masks*2*30, 'cell_spec', cells_masking, 'visual_check', 0);
@@ -57,16 +55,17 @@ for i_exp = 1:3
     for count = 1:(n_masks*2)
         condition{count}.testspikes = mask_data.testspikes(idx,:); idx = idx+30;
     end
-    %%
+%
     % plot the PSTH for each condition for each cell
     for subgroup = 1:n_subgroups
         for i_cell = cell_idx{subgroup}
             disp(i_cell)
             reg_psth = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0);
-            reg_spike_count(i_cell) = sum(reg_psth)/length(reg_psth);
+            reg_spike_count(i_cell) = var(reg_psth)/length(reg_psth);
             for i = 1:length(mask_conditions{subgroup})
+                s = sigmas(mask_conditions{subgroup}(i));
                 mask_psth =IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0);
-                mask_spike_count(i_cell, i) = sum(mask_psth)/length(reg_psth); 
+                mask_spike_count(i_cell, i) = var(mask_psth)/length(reg_psth); 
             end
         end
         if strcmp(cell_type{subgroup}, 'on')
@@ -96,8 +95,10 @@ axis square
 end
 
 %%
-total_mask = total_mask([1:2 4:end], :);
-total_reg = total_reg([1:2 4:end]);
+total_mask = total_mask([1:2, 4:end], :);
+total_reg = total_reg([1:2, 4:end]);
+celltype_idx = celltype_idx([1:2, 4:end]);
+
 plot([2 4 5 6], total_mask'./repmat(total_reg, [1 4])','Color', [1 1 1]*0.75)
 hold on; plot([2 4 5 6], mean(total_mask./repmat(total_reg, [1 4])),'k', 'LineWidth', 2)
 
