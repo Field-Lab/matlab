@@ -16,7 +16,7 @@ GLMT.debug      = false; % this just increases the tolerance so the fitting stop
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
 GLMT.TonicDrive = true; % background firing rate
 GLMT.StimFilter = true;
-GLMT.PostSpikeFilter = true;
+GLMT.PostSpikeFilter = false;
 GLMT.nullpoint  = 'mean';
 GLMT.map_type   = 'mapPRJ';
 GLMT.specialchange = false;
