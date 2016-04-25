@@ -6,8 +6,8 @@ Analysis_Path = '/Volumes/Analysis/2016-04-21-1/';
 datarun_class = load_data([Analysis_Path 'streamed/data015/data015'], struct('load_neurons', 0, 'load_params', 1));
 dsave = '/Volumes/Lab/Users/Nora/GLMFits_masking/2016-04-21-1';
 monitor_refresh = 119.5;
-cells_fit = [1053, 3288, 6049, 4624];
-cells_test = [816 3290 6052 4504];
+cells_fit = [1053, 3288, 2341, 6049, 4624];
+cells_test = [813 3287 2341 6048 4501];
 load('/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_allcells_sigma2.mat');
 mask = imresize(mask,1/4, 'box');
 %}
@@ -15,7 +15,7 @@ mask = imresize(mask,1/4, 'box');
 fit_data = 'data019';
 test_data = 'data017';
 fit_datarun = load_data([Analysis_Path '/' fit_data '/' fit_data], struct('load_neurons', 1, 'load_params', 1));
-test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
+test_datarun = load_data([Analysis_Path '/mVision/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
 load('/Volumes/Lab/Users/Nora/downsampledNSinterval.mat');
 stim_length = (3600)*convergence;
 fitmovie = uint8(double(fitmovie).*repmat(mask, [1 1 size(fitmovie,3)]) + 64*ones(size(fitmovie)).*(1-repmat(mask, [1 1 size(fitmovie,3)])));
@@ -32,6 +32,7 @@ for i = 1
     [STA, center] = STA_Test(fitspikes, fitmovie, 1, 1/monitor_refresh);
    
     fittedGLM     = glm_fit(fitspikes, fitmovie,center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
+    gen_signal = glm_gen_signal_TEST(fittedGLM, fitmovie);
     %eval(sprintf('load %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
     fittedGLM.xvalperformance = glm_predict(fittedGLM, testmovie,'testspikes', repeats.testspikes(:,i));
     eval(sprintf('save %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));

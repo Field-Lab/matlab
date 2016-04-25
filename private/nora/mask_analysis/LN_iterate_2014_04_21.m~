@@ -7,7 +7,7 @@ datarun_class = load_data([Analysis_Path 'streamed/data015/data015'], struct('lo
 dsave = '/Volumes/Lab/Users/Nora/GLMFits_masking/2016-04-21-1';
 monitor_refresh = 119.5;
 cells_fit = [1053, 3288, 6049, 4624];
-cells_test = [816 3290 6052 4504];
+cells_test = [831 328 6052 4504];
 load('/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_allcells_sigma2.mat');
 mask = imresize(mask,1/4, 'box');
 %}
@@ -32,6 +32,7 @@ for i = 1
     [STA, center] = STA_Test(fitspikes, fitmovie, 1, 1/monitor_refresh);
    
     fittedGLM     = glm_fit(fitspikes, fitmovie,center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
+    gen_signal = glm_gen_signal_TEST(fittedGLM, fitmovie);
     %eval(sprintf('load %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
     fittedGLM.xvalperformance = glm_predict(fittedGLM, testmovie,'testspikes', repeats.testspikes(:,i));
     eval(sprintf('save %s/%sNSEM.mat fittedGLM', dsave, glm_cellinfo.cell_savename));
