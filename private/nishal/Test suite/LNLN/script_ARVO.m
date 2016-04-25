@@ -414,6 +414,7 @@ suptitle(sprintf('Metrics 1: %0.02f, 2: %0.02f',metric(1),metric(2)));
 %% calculate cutting metric baseline
 %noise=21;
 metric_log=[];
+
 for imc=1:100
 imc
     true_nSU = 12;
@@ -474,7 +475,7 @@ while togo==1
 end
 
 % evenly spread the SU
-%nSUi = ones(nSU_fit,1)*ntrue_per_fit;
+% % nSUi = ones(nSU_fit,1)*ntrue_per_fit;
 
 % randomly (in future, prefer near ones?) select sub-units
 select_matrix =zeros(nSU_fit,nSU_true);
@@ -484,6 +485,9 @@ end
 perms = randperm(nSU_true);
 select_matrix = select_matrix(:,perms);
 
+% add noise to weights!
+select_matrix = select_matrix + 0.1*randn(size(select_matrix,1),size(select_matrix,2));
+
 u_spatial_log = (select_matrix * model.su_lowres')';
 noise = norm(sum(u_spatial_log,2))/(10*sqrt(sum(abs(sum(u_spatial_log,2))>0.01)));
 
@@ -492,7 +496,8 @@ u_spatial_log = u_spatial_log+ noise*randn(size(u_spatial_log));
 nSU = nSU_fit
 
 metric_log = [metric_log;metric];
-
+mc_data(imc).metric = metric;
+mc_data(imc).metric_sus = metric_sus;
 end
 
 figure;
@@ -500,7 +505,7 @@ histogram(metric_log(:,1))
 
 %% plot histograms
 data = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric.mat');
-baseline = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric_baseline2.mat');
+baseline = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric_baseline3.mat');
 mc_data = data.mc_data;
 metric_log = baseline.metric_log;
 
@@ -799,3 +804,36 @@ histogram(metric,10);
 hold on;
 histogram(metric_perm,10);
 legend('Extracted sub-units','Permuted sub-units');
+
+
+%% top/bottom 25 percentile of spillover for random smooth partition and output of model.
+
+dat1 = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric.mat');
+dat2 = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric_baseline5_equal#SU_noise added.mat');
+
+m_log=[];m_log_baseline=[];m_log_perm =[];
+for imc =1:length(dat1.mc_data)
+    cell_metric_sus = dat1.mc_data(imc).metric_sus(:,2);
+    cell_metric_sus1 = dat1.mc_data(imc).metric_sus(:,1);
+    thr = prctile(cell_metric_sus,0);
+    m_log = [m_log;mean(cell_metric_sus1(cell_metric_sus>thr))];
+    
+    cell_metric_sus_perm = dat1.mc_data(imc).metric_sus_perm(:,2);
+    cell_metric_sus_perm1 = dat1.mc_data(imc).metric_sus_perm(:,1);
+    thr = prctile(cell_metric_sus_perm,0);
+    m_log_perm = [m_log_perm;mean(cell_metric_sus_perm1(cell_metric_sus_perm>thr))];
+    
+    cell_metric_sus_control = dat2.mc_data(imc).metric_sus(:,2);
+    cell_metric_sus_control1 = dat2.mc_data(imc).metric_sus(:,1);
+    thr = prctile(cell_metric_sus_control,0);
+    m_log_baseline = [m_log_baseline;mean(cell_metric_sus_control1(cell_metric_sus_control>thr))];
+end
+
+figure;
+histogram(m_log,20);
+hold on;
+histogram(m_log_perm,20);
+hold on;
+histogram(m_log_baseline,20);
+ax = legend('simulation ','permuted subunits','aggregation hypothesis');
+ax.FontSize=20;
