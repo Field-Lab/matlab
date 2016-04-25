@@ -1,6 +1,6 @@
 function makeConditionMovies(cond_str,condMovies,datarun,CellID,CondsToWrite)
 for icond=1:2
-writerObj = VideoWriter(sprintf('/Volumes/Analysis/nishal/Presentations/Figures for EJ/Null_figures_for_EJ/Movie_cell_%d_cond_%d.avi',CellID,icond));
+writerObj = VideoWriter(sprintf('/Volumes/Lab/bhaishahster/Presentations/Figures for EJ/Null_figures_for_EJ/Movie_cell_%d_cond_%d.avi',CellID,icond));
 writerObj.FrameRate=120;
 
 scale=10;

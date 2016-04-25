@@ -758,3 +758,10 @@ print(h,'-clipboard','-dpdf');
 
 [metric_perm,metric_sus_perm] = smoothness_metric2(u_spatial_log_perm,mask);
 suptitle(sprintf('Permuted sub-units non-smoothness metric: %f',metric_perm));
+
+% non-overlapping
+
+ [fits,clog] = nonoverlapping_metric3_plots(u_spatial_log,mask,sta);
+ 
+ [fits,clog] = nonoverlapping_metric3_plots(u_spatial_log_perm,mask,sta);
+ 
