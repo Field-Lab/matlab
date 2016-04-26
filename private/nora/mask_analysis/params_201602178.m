@@ -11,7 +11,7 @@ split = 'data001';
 reg{1} = 'data003';
 reg{2} = 'data005';
 class = ['/Volumes/Analysis/' piece '/streamed/data000/data000'];
-
+long = 'data007';
 cells_orig = [917, 2731, 3452, 4876, 5973, 7250];
 
 %{

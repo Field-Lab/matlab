@@ -1,5 +1,5 @@
 clear 
-params_201602176
+params_201604211
 n_reg = length(reg);
 mkdir(fig_save);
 

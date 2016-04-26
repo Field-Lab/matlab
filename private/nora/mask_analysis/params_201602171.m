@@ -9,6 +9,7 @@ fig_save = ['/Volumes/Lab/Users/Nora/Fig_Output/' piece '/mVision/'];
 class = ['/Volumes/Analysis/' piece '/streamed/data019/data019'];
 split = 'data020';
 reg{1} = 'data022';
+long = 'data025';
 
 % Maskin
 %%{

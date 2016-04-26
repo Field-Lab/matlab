@@ -14,7 +14,7 @@ reg{1} = 'data018';
 masking = 'data017';
 cells_orig = [811 3169 6047 2281 2341 5401];
 cells_reg{1} = [812;3170;6054;2286;2347;4624];
-cells_masking = [813;3287;6048;NaN;2341;4501];
+cells_masking = [813;3287;6048;94;2341;4501];
 n_masks = 7;
 sigmas = [2 2 4 4 6 6 8 8 10 10 8 8 10 10];
 % subgroup 1
