@@ -13,7 +13,7 @@ GS = 0;
 sta_scale = 4;
 colors = colormap(parula(20));
 
-
+the_chosen_one = 1;
 
 %%
 % load classification run 
@@ -35,13 +35,13 @@ end
 %%
 
 for subgroup = 1%1:n_subgroups
-    for i_cell = 2%cell_idx{subgroup}
+    for i_cell = the_chosen_one%cell_idx{subgroup}
         master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
         sta = squeeze(sum(datarun_class.stas.stas{master_idx},3));
         [U,~,~] = svd(reshape(sta, [40*80, 30]));
         sta = reshape(U(:,2), 40, 80);
-        imagesc(sta)
-        for i = 1:length(mask_conditions{subgroup})
+        imagesc(-sta)
+        for i = 1:4%length(mask_conditions{subgroup})
             s = sigmas(mask_conditions{subgroup}(i));
             the_fit = datarun_class.stas.fits{master_idx};
             ctr = the_fit.mean;
@@ -52,20 +52,22 @@ for subgroup = 1%1:n_subgroups
         colormap gray
         axis image
         axis off
-        %xlim([93 240]/4);ylim([0 93]/4)
+        xlim([26 48]);ylim([18 40])
         %exportfig(gcf, [fig_save '/mask_plot_' 'cell' num2str(i_cell)], 'Bounds', 'loose', 'Color', 'rgb')
         %close all
         
     end
     figure;
-    load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_cells' num2str(subgroup) '_sigma4.mat']);
+    %load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_cells' num2str(subgroup) '_sigma4.mat']);
+    load('/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_allcells_sigma4.mat');  
+
     mask_frame = NSmovie(:,:,2).*mask;
     imagesc(mask_frame)
     axis image
     colormap gray
     axis off
     caxis([0 255]-64)
-    %xlim([93 240]);ylim([0 93])
+    xlim([26 48]*4);ylim([18 40]*4)
     %exportfig(gcf, [fig_save '/spot_plot_sigma4'], 'Bounds', 'loose', 'Color', 'rgb')
     
     figure;
@@ -76,15 +78,18 @@ for subgroup = 1%1:n_subgroups
     colormap gray
     axis off
     caxis([0 255]-64)
-    %xlim([93 240]);ylim([0 93])
+    xlim([26 48]*4);ylim([18 40]*4)
    % exportfig(gcf, [fig_save '/gap_plot_sigma4'], 'Bounds', 'loose', 'Color', 'rgb')
 end
+
+pause();
+close all
 
 %%
 for i_reg = 1:n_reg
     datarun{i_reg} = load_data([ Analysis_Path reg{i_reg} '/' reg{i_reg}]);
     datarun{i_reg} = load_neurons(datarun{i_reg});
-    reg_data{i_reg} = interleaved_data_prep(datarun{i_reg}, 1100, 30, 'cell_spec', cells_reg{i_reg}, 'visual_check', 1);
+    reg_data{i_reg} = interleaved_data_prep(datarun{i_reg}, 1100, 30, 'cell_spec', cells_reg{i_reg}, 'visual_check', 0);
     clear datarun
 end
 reg_data{1}.testspikes = reg_data{1}.testspikes([1:6 8:end],:);
@@ -117,9 +122,9 @@ end
 %%
 % plot the PSTH for each condition for each cell
 set(0, 'defaultFigurePosition', [2 2 10 2])
-for subgroup = 1:2
-    for i_cell = cell_idx{subgroup} 
-        for i = 1:length(mask_conditions{subgroup})
+for subgroup = 1%:2
+    for i_cell = the_chosen_one%cell_idx{subgroup} 
+        for i = 1:4%length(mask_conditions{subgroup})
             s = sigmas(mask_conditions{subgroup}(i)); 
             figure(1); hold on
             IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', colors(s,:), 'smoothing', 10);
@@ -129,14 +134,14 @@ for subgroup = 1:2
         figure(1); IDP_plot_PSTH(reg_data{1}, i_cell, 'color', colors(20,:), 'plot_offset', 0, 'smoothing', 10);
         axis([0 8 0 250])
         axis off
-        %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
+        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
         figure(2); 
         axis([0 8 0 250])
         axis off
-        %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
+        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
         
-        disp(i_cell);pause();
-        figure(1); clf; figure(2); clf;
+        disp(i_cell);%pause();
+        %figure(1); clf; figure(2); clf;
     end
 end
-close all
+%close all

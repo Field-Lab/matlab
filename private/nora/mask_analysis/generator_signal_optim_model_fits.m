@@ -42,13 +42,13 @@ interval_frame = cumsum(interval);
 
 
 %%
-params_list 
-for exp = [2]% 3 5]
+params_list
+for exp = [2 3 5]
     eval(exps{exp}) % 2 3 5
     n_reg = length(reg);
     mkdir(fig_save);
     n_subgroups = length(cell_idx);
-
+    
     %% load and organize repeats
     
     % load reg repeats
@@ -78,7 +78,7 @@ for exp = [2]% 3 5]
     %datarun_class = load_sta(datarun_class);
     
     
-
+    
     
     %%
     % plot the PSTH for each condition for each cell
@@ -91,96 +91,96 @@ for exp = [2]% 3 5]
     %%
     % 1 = center, 2 = surround
     % 1 = reg, 2 = spot, 3 = gap
-    for subgroup = 2%1:n_subgroups
-        for i_cell = 5%cell_idx{subgroup}
+    for subgroup = 1:n_subgroups
+        for i_cell = 1%cell_idx{subgroup}
             disp(cells_orig(i_cell))
             master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
             [PSTH{1}, time] = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0, 'smoothing', 10);
+            if strcmp(piece, '2016-04-21-1')
+                load(['/Volumes/Lab/Users/Nora/GLMFits_masking/2016-04-21-1/NSEM_full_opt/' glm_files(glm_fit_idx(i_cell)).name]);
+            else
+                load(['/Volumes/Lab/Users/Nora/GLMFits_masking/' piece '/NSEM_full_opt/' num2str(cells_orig(i_cell)) 'NSEM_optmodel.mat']);
+            end
+            
+            sta_fit = opt_model.sta_fit.params;
+            
+            spatial{1} = make_Gaussian_two_d('center_point_x', sta_fit.center_point_x, 'center_point_y', sta_fit.center_point_y, 'sd_x', sta_fit.center_sd_x, 'sd_y',  sta_fit.center_sd_y, 'rotation_angle', sta_fit.center_rotation_angle, 'x_dim', 80, 'y_dim', 40);
+            spatial{2} = make_Gaussian_two_d('center_point_x', sta_fit.center_point_x, 'center_point_y', sta_fit.center_point_y, 'sd_x', sta_fit.surround_sd_scale*sta_fit.center_sd_x, 'sd_y',sta_fit.surround_sd_scale*sta_fit.center_sd_y, 'rotation_angle', sta_fit.center_rotation_angle, 'x_dim', 80, 'y_dim', 40);
+            
+            for i = 1:2
+                spatial{i} = flip(spatial{i},1);
+                spatial{i} = flip(spatial{i},2);
+            end
+            if strcmp(cell_type{subgroup}, 'on')
+                time_course{1}= -opt_model.new_time;
+            else
+                time_course{1}= opt_model.new_time;
+            end
+            
+            %time_course{1}=flip(mean([datarun_class.vision.timecourses(master_idx).r ...
+            %    datarun_class.vision.timecourses(master_idx).g ...
+            %    datarun_class.vision.timecourses(master_idx).b],2));
+            time_course{2} = [time_course{1}(1:(end-surround_offset)); zeros(surround_offset,1)];
+            
+            for i = 1%1:length(mask_conditions{subgroup})
+                s = sigmas(mask_conditions{subgroup}(i));
                 if strcmp(piece, '2016-04-21-1')
-                    load(['/Volumes/Lab/Users/Nora/GLMFits_masking/2016-04-21-1/NSEM_full_opt/' glm_files(glm_fit_idx(i_cell)).name]);
-                else
-                    load(['/Volumes/Lab/Users/Nora/GLMFits_masking/' piece '/NSEM_full_opt/' num2str(cells_orig(i_cell)) 'NSEM_optmodel.mat']);
-                end
-                
-                sta_fit = opt_model.sta_fit.params;
-                
-                spatial{1} = make_Gaussian_two_d('center_point_x', sta_fit.center_point_x, 'center_point_y', sta_fit.center_point_y, 'sd_x', sta_fit.center_sd_x, 'sd_y',  sta_fit.center_sd_y, 'rotation_angle', sta_fit.center_rotation_angle, 'x_dim', 80, 'y_dim', 40);
-                spatial{2} = make_Gaussian_two_d('center_point_x', sta_fit.center_point_x, 'center_point_y', sta_fit.center_point_y, 'sd_x', sta_fit.surround_sd_scale*sta_fit.center_sd_x, 'sd_y',sta_fit.surround_sd_scale*sta_fit.center_sd_y, 'rotation_angle', sta_fit.center_rotation_angle, 'x_dim', 80, 'y_dim', 40);
-                
-                for i = 1:2
-                    spatial{i} = flip(spatial{i},1);
-                    spatial{i} = flip(spatial{i},2);
-                end
-                if strcmp(cell_type{subgroup}, 'on')
-                    time_course{1}= -opt_model.new_time;
-                else
-                    time_course{1}= opt_model.new_time;
-                end
-                
-                %time_course{1}=flip(mean([datarun_class.vision.timecourses(master_idx).r ...
-                %    datarun_class.vision.timecourses(master_idx).g ...
-                %    datarun_class.vision.timecourses(master_idx).b],2));
-                time_course{2} = [time_course{1}(1:(end-surround_offset)); zeros(surround_offset,1)];
-                
-                for i = 1:length(mask_conditions{subgroup})
-                    s = sigmas(mask_conditions{subgroup}(i));
-                    if strcmp(piece, '2016-04-21-1')
-                        if s<8
-                            load(['/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_allcells_sigma' num2str(s) '.mat'])
-                        else
-                            load(['/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_cells' num2str(subgroup) '_sigma' num2str(s) '.mat'])
-                        end
+                    if s<8
+                        load(['/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_allcells_sigma' num2str(s) '.mat'])
                     else
-                        if s==2
-                            load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_allcells_sigma' num2str(s) '.mat'])
-                        else
-                            load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_cells' num2str(subgroup) '_sigma' num2str(s) '.mat']);
-                        end
+                        load(['/Volumes/Data/2016-04-21-1/Visual/2016-04-21-1_NJB_Masks/Maskin_cells' num2str(subgroup) '_sigma' num2str(s) '.mat'])
                     end
-                    
-                    % organize the masks
-                    comp_mask = mod(mask+1,2);
-                    mask = imresize(mask, 1/sta_scale, 'box');
-                    mask = repmat(mask, 1, 1, 1200);
-                    comp_mask = imresize(comp_mask, 1/sta_scale, 'box');
-                    comp_mask = repmat(comp_mask, 1, 1, 1200);
-                    movie{1} = NSmovie;
-                    movie{2} = NSmovie .* mask;
-                    movie{3} = NSmovie.*comp_mask;
-                    
-                    % find the generator signals
-                    
-                    for i_sta_part = 1:2
-                        for i_movie_type = 1:3
-                            spatial_GS = squeeze(convn(movie{i_movie_type}, spatial{i_sta_part}, 'valid'));
-                            gen_signal{i_movie_type}{i_sta_part} = conv(spatial_GS, time_course{i_sta_part}, 'valid');
-                        end
+                else
+                    if s==2
+                        load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_allcells_sigma' num2str(s) '.mat'])
+                    else
+                        load(['/Volumes/Data/' piece '/Visual/masks/Maskin/Maskin_cells' num2str(subgroup) '_sigma' num2str(s) '.mat']);
                     end
-                    
-                    PSTH{2} = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
-                    PSTH{3} = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
-
-                    model_arch = 'y~b1/(b2+exp(b3*(x1+b4*x2+b5)))';
-                    init = [opt_model.model.Coefficients.Estimate; -sta_fit.surround_amp_scale; opt_model.orig_glm.linearfilters.TonicDrive.Filter];
+                end
+                
+                % organize the masks
+                comp_mask = mod(mask+1,2);
+                mask = imresize(mask, 1/sta_scale, 'box');
+                mask = repmat(mask, 1, 1, 1200);
+                comp_mask = imresize(comp_mask, 1/sta_scale, 'box');
+                comp_mask = repmat(comp_mask, 1, 1, 1200);
+                movie{1} = NSmovie;
+                movie{2} = NSmovie .* mask;
+                movie{3} = NSmovie.*comp_mask;
+                
+                % find the generator signals
+                
+                for i_sta_part = 1:2
                     for i_movie_type = 1:3
-                        
-                        % get the correlation and the generator signal for
-                        % later
-                        data_matrix = [gen_signal{i_movie_type}{1}(1:1166) gen_signal{i_movie_type}{2}(1:1166)];
-                        responses = PSTH{i_movie_type}(30:end);
-                        model = fitnlm(data_matrix, responses, model_arch, init);
-
-                        %total_gen_signal{i_movie_type} = model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
-                        Corr{exp}(i_cell, i,i_movie_type) = model.Rsquared.Ordinary;
-                        Model_Coeff{exp}(i_cell, i,i_movie_type, :) = model.Coefficients.Estimate;
-
-                        total_gen_signal{i_movie_type} = model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
-
-                        
-                        %raster plotting
-                        %plot(predict(model, data_matrix)); hold on; plot(responses);
-                        %pause()
-                        %{
+                        spatial_GS = squeeze(convn(movie{i_movie_type}, spatial{i_sta_part}, 'valid'));
+                        gen_signal{i_movie_type}{i_sta_part} = conv(spatial_GS, time_course{i_sta_part}, 'valid');
+                    end
+                end
+                
+                PSTH{2} = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
+                PSTH{3} = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
+                
+                model_arch = 'y~b1/(b2+exp(b3*(x1+b4*x2+b5)))';
+                init = [opt_model.model.Coefficients.Estimate; -sta_fit.surround_amp_scale; opt_model.orig_glm.linearfilters.TonicDrive.Filter];
+                for i_movie_type = 1:3
+                    
+                    % get the correlation and the generator signal for
+                    % later
+                    data_matrix = [gen_signal{i_movie_type}{1}(1:1166) gen_signal{i_movie_type}{2}(1:1166)];
+                    responses = PSTH{i_movie_type}(30:end);
+                    model = fitnlm(data_matrix, responses, model_arch, init);
+                    
+                    %total_gen_signal{i_movie_type} = model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
+                    Corr{exp}(i_cell, i,i_movie_type) = model.Rsquared.Ordinary;
+                    Model_Coeff{exp}(i_cell, i,i_movie_type, :) = model.Coefficients.Estimate;
+                    
+                    total_gen_signal{i_movie_type} = -model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
+                    
+                    
+                    %raster plotting
+                    %plot(predict(model, data_matrix)); hold on; plot(responses);
+                    %pause()
+                    %{
                     firing_rate = predict(model, data_matrix);
                     switch i_movie_type
                         case 1
@@ -192,20 +192,20 @@ for exp = [2]% 3 5]
                     end
                    
                     axis off
-                        %}
-                        
-                        % compare model performance
-
-                        %sum((responses-predict(model, data_matrix)).^2);
-                         
-                        
-                        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) 'sigma' num2str(i) '_raster_' num2str(i_movie_type)], 'Bounds', 'loose', 'Color', 'rgb')
-                        close all
-                    end
+                    %}
+                    
+                    % compare model performance
+                    
+                    %sum((responses-predict(model, data_matrix)).^2);
                     
                     
-                    
-                    %{
+                    %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) 'sigma' num2str(i) '_raster_' num2str(i_movie_type)], 'Bounds', 'loose', 'Color', 'rgb')
+                    close all
+                end
+                
+                
+                
+                %{
                 % Generator signals correlated vs anticorrelated
             start = 1;
             for i_interval = 1:24
@@ -224,26 +224,34 @@ for exp = [2]% 3 5]
             TMF = [TMF; mask_firing];
             TMG = [TMG; mask_gen];
             TCG = [TCG; comp_gen];
-                    %}
-                    %{
-            plot(time(30:end),comp(30:end))
+                %}
+                %%{
+                default_colors = get(gca,'ColorOrder');
+                figure;
+            plot(time(30:end),PSTH{3}(30:end))
             hold on;
-            plot(time(30:end), mask_gen_signal(1:1166))
-            xlim([1 9])
+            plot(time(30:end), 10*total_gen_signal{2}(1:1166))
+            xlim([1 3])
             axis off
+            plot(time(30:end),PSTH{1}(30:end), 'Color', default_colors(4,:))
+            set(gcf,'Position', [2 2 4 4])
             exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) 'sigma' num2str(i) '_compVSmaskGS'], 'Bounds', 'loose', 'Color', 'rgb')
-            close all
+            %close all
             
-            plot(time(30:end),reg(30:end))
+            figure;
             hold on;
-            plot(time(30:end),mask_PSTH(30:end))
-            plot(time(30:end), comp_gen_signal(1:1166))
-            xlim([1 9])
+            plot(time(30:end),PSTH{2}(30:end))
+            plot(time(30:end), 10*total_gen_signal{3}(1:1166))
+            plot(time(30:end),PSTH{1}(30:end), 'Color', default_colors(4,:))
+            xlim([1 3])
             axis off
+            set(gcf,'Position', [2 2 4 4])
             exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) 'sigma' num2str(i) '_maskVScompGS'], 'Bounds', 'loose', 'Color', 'rgb')
-                    %}
-                    
-                end
+            pause()
+            close all
+                %}
+                
+            end
         end
         
     end
@@ -252,11 +260,11 @@ end
 
 %% Plot Correlation across spot size
 default_colors = get(gca,'ColorOrder');
-figure; hold on; 
+figure; hold on;
 plot([2 4 5 6 12], [squeeze(Corr{2}(:,:,2)) squeeze(Corr{2}(:,1,1))]','-', 'Color', [1 1 1]*0.75);
 plot([2 4 5 6 12], [squeeze(Corr{3}(:,:,2)) squeeze(Corr{3}(:,1,1))]','-', 'Color', [1 1 1]*0.75);
 plot([2 4 6 8 10 12], [squeeze(Corr{5}([1:3 5:6],1:5,2)) squeeze(Corr{5}([1:3 5:6],1,1))]','-', 'Color', [1 1 1]*0.75);
-i_cell = 5; plot([2 4 5 6 12], [squeeze(Corr{2}(i_cell,:,2)) squeeze(Corr{2}(i_cell,1,1))]','-', 'Color', default_colors(1,:), 'LineWidth', 2);
+%i_cell = 5; plot([2 4 5 6 12], [squeeze(Corr{2}(i_cell,:,2)) squeeze(Corr{2}(i_cell,1,1))]','-', 'Color', default_colors(1,:), 'LineWidth', 2);
 
 clear mean_corr
 for sigma = [2 4 6]
@@ -270,7 +278,7 @@ set(gcf, 'Position', [2 2 5 6])
 set(gca, 'XTick', [2 4 6 8 10 12])
 set(gca, 'XTickLabels', {'2', '4', '6', '8', '10', 'Full'})
 set(gca, 'YTick', 0.4:0.2:0.8)
-exportfig(gcf, [fig_save '/Corr_across_spot_size.eps'], 'Bounds', 'loose', 'Color', 'rgb')
+%exportfig(gcf, [fig_save '/Corr_across_spot_size.eps'], 'Bounds', 'loose', 'Color', 'rgb')
 
 %%
 %{
@@ -279,5 +287,5 @@ for i = [2 3 5]
 plot(Corr{i}(:,4,2), Corr{i}(:,1,1),'.k')
 end
 hold on; plot([0 1], [0 1])
-axis square 
+axis square
 %}

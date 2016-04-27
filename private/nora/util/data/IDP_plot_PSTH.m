@@ -6,12 +6,14 @@ p.addParameter('bin', 1/119.5)
 p.addParameter('smoothing', 1)
 p.addParameter('duration', 10)
 p.addParameter('plot_offset', 0)
+p.addParameter('negative', 0)
 p.parse(varargin{:});
 color = p.Results.color;
 bin = p.Results.bin;
 smoothing = p.Results.smoothing;
 duration = p.Results.duration;
 plot_offset = p.Results.plot_offset;
+negative = p.Results.negative;
 clear p
 
 if length(color)==1 && color ~= 0
@@ -34,10 +36,11 @@ end
 
 spike_rate = conv(spikes_per_bin, gausswin(smoothing), 'same'); % smooth the PSTH
 spike_rate = spike_rate/(bin*trials*sum(gausswin(smoothing))); % spike count to spike rate
-
+if negative; spike_rate = -spike_rate;end
 % plotting if that's your thing
 
 time = (1:bins)*bin+plot_offset;
+
 if length(color)==3
     plot(time, spike_rate, 'Color' , color)
     %set(gcf, 'Position', [ 500 500 800 200])
