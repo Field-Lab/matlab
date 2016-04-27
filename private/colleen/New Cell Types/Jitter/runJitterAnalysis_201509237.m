@@ -1,15 +1,12 @@
 % runJitterAnalysis
 % git hash 75ce3d76b7b20220cd94d83eb96e8e3ec90dd20e
 
-clear
-close all
-% dbstop if error
-dataparam.date='2015-09-23-7/';
-dataparam.concatname='data031';
-dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-20-8-0.48-11111.xml';
-dataparam.stixel_size = 20;
+dataparam.date='2016-04-21-8/';
+dataparam.concatname='data022';
+dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-40-1-0.48-11111-20x15-119.5.xml';
+dataparam.stixel_size = 40;
 dataparam.seed = 11111;
-fitparam.num_frames = 20;
+fitparam.num_frames = 40;
 frame_width = 640/dataparam.stixel_size;
 frame_height = 320/dataparam.stixel_size;
 stixels_per_frame = frame_width*frame_height;
@@ -22,8 +19,7 @@ dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.dat
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;
 if select_cells == 1
-%        dataparam.cell_specification = [184] %ON parasol
-   dataparam.cell_specification = [185 306 413 996 1058 1759 1821 2061 3396 3830 4656 5342 5733 6064 6213 6831 7148 7628 2613 3215 532 1022 1568 2376 3186 4041 4703 5239 6788 7101 917 1026 3931 7216]; %ON parasol
+  dataparam.cell_specification = [154 408 903 1953 3137 3259 3319 3721 3813 3861 4490 4565 4773 4778 5912 1711 3077 4337 4761 5888 3078 3381 4248 4653 5886 7507 7508] %ON parasol
 
 end
 dataparam.cell_type = {'all'};
@@ -98,7 +94,7 @@ for j = 1:length(cell_indices)
     
 end
 
-if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterX.mat']) ~=0 & exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterY.mat']) ~=0
+if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterX.mat']) ~=0 && exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterY.mat']) ~=0
         
         jitterX = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterX.mat']);
         jitterX = jitterX.jitterX;
@@ -131,7 +127,7 @@ if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dat
 
 
 
-[sta] = compute_jitter_sta_201509237(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
+[sta] = compute_jitter_sta_201604218(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
 for i = 1:size(spikes,2)
     temp = sta{i};
     if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date,'/', dataparam.concatname])
