@@ -1,7 +1,7 @@
 %% Error Calculations
 load Results
 for g=setdiff([1:7],[6])
-    Outputs=RespAllFast{g};
+    Outputs=RespStimBundle{g};
     neuronTemplates=templates{g};
     thresAct=0.6;
     thresHolds=[-200:-5];
@@ -10,6 +10,8 @@ for g=setdiff([1:7],[6])
     contActivationT{g}=zeros(length(Outputs{1}.neuronInfo.neuronIds),length(thresHolds));
     contSameElectrode{g}=zeros(1,length(Outputs{1}.neuronInfo.neuronIds));
     indSameElectrode{g}=[];
+   pat=unique(patternwr(indwr{g},1));
+        
     for i=1:length(indwr{g})
         nTrialsAll{g}(i)=0;
         nTrialsAllT{g}(i,:)=zeros(1,length(thresHolds));
@@ -18,7 +20,6 @@ for g=setdiff([1:7],[6])
         
         nneu=find(neuron==neuronIds);
         contNeurons{g}(nneu)=contNeurons{g}(nneu)+1;
-        pat=unique(patternwr(indwr{g},1));
         patternNo=patternwr(indwr{g}(i));
         patindex=find(patternNo==pat);
         listAmps=Outputs{patindex}.stimInfo.listAmps;
@@ -30,7 +31,7 @@ for g=setdiff([1:7],[6])
             indSameElectrode{g}=[indSameElectrode{g} i];
         end
         
-        pathToAnalysisData=[Outputs{patindex}.path.pathToAnalysisData '/'];
+        pathToAnalysisData=[Outputs{patindex}.path.pathToAnalysisData ];
         name=['elecResp_n' num2str(neuron) '_p' num2str(patternNo) '.mat'];
         load([pathToAnalysisData name]);
         dif{g}{i}=NaN*zeros(length(elecResp.analysis.latencies),max(Outputs{patindex}.stimInfo.nTrials));
@@ -207,18 +208,18 @@ end
 
 g=1;
 error1=find(1-errorT{g}(:,end)./nTrialsAllT{g}(:,end)<0.95);
-for g=7
+%for g=1:
     
-%for i=1:length(indSameElectrode{g})
-    %pat=unique(patternwr(indwr{g},1));
-    %patternNo=patternwr(indwr{g}(indSameElectrode{g}(i)));
-   for patindex=26:50
-    %patindex=find(patternNo==pat);
-    SummaryPattern(RespAllFastBundle{g}{patindex},params,patindex,1,RespAllFastStim{g}{patindex})
+for i=1:length(indSameElectrode{g})
+    pat=unique(patternwr(indwr{g},1));
+    patternNo=patternwr(indwr{g}(indSameElectrode{g}(i)));
+   %for patindex=26:50
+    patindex=find(patternNo==pat);
+    SummaryPattern(RespAllFastStim{g}{patindex},params,patindex)
     [isSame distance] = distStimSomaElectrode(templates{g},RespAllFastStim{g}{patindex}.stimInfo.stimElec);
     isSames(i,:)=isSame;
 end
-end
+
 
 [a b]=sort(distances{9});
 

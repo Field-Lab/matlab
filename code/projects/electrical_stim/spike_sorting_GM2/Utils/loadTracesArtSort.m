@@ -1,14 +1,14 @@
-function [TracesAll Art var0 listAmps listCurrents onset onsetC pval Res stimElecs]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,nTrial,varargin)
+function [TracesAll Art var0 listAmps listCurrents stimElecs onset onsetC pval Res  sampledTrials]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,nTrial,subSampleRate,varargin)
 %load data from a pattern in a given folder
 %also loads stimulus data and construct a firt artifact estimate (means
 %accross trials). nTrial is the maximum number of trials
 %It authomatically sorts traces increasingly with amplitude
 %Gonzalo Mena,3/2016
-
+Res=NaN;
 nTrial=250;
 findBundle=0;
 
-if(nargin==5)
+if(nargin==6)
     params=varargin{1};
     Tmax=params.global.Tmax;
     findBundle=params.bundle.findBundle;
@@ -90,18 +90,26 @@ for m=1:length(movieNos);
     
 end
 
-    stimElecs=unique(listStimElecs);
+nTrialsSub=floor(nTrials*subSampleRate);
 
-TracesAll=TracesAll(1:length(listAmps),1:max(nTrials),:,:);
+stimElecs=unique(listStimElecs);
+TracesAllOld=TracesAll(1:length(listAmps),1:max(nTrials),:,:);
+TracesAll=NaN*zeros(length(listAmps),max(nTrialsSub),512,Tmax);
 
-firstArt=nanmean(TracesAll(1,:,:,:),2);
+
+sampledTrials=NaN*zeros(length(listAmps),max(nTrials));
 for m=1:length(listAmps)
-    
-    TracesAll(m,1:nTrials(m),:,:)=TracesAll(m,1:nTrials(m),:,:)-repmat(firstArt,1,nTrials(m),1);
+    sample=sort(randsample(nTrials(m),nTrialsSub(m)));
+     sampledTrials(m,sample)=1;
+    if(m==1)
+       firstArt=nanmean(TracesAllOld(1,sample,:,:),2);
+    end
+   
+    TracesAll(m,1:nTrialsSub(m),:,:)=TracesAllOld(m,sample,:,:)-repmat(firstArt,1,nTrialsSub(m),1);
     
     
     if(m<=5)
-        a=TracesAll(m,:,setdiff([1:512],patternNo),:);
+        a=TracesAll(m,sample,setdiff([1:512],stimElecs(1)),:);
         
         varm(m)=nanvar(a(:));
     end
@@ -113,12 +121,12 @@ var0=nanmean(varm(1:5));
 
 if(findBundle)
     
-    [Res]=ResidualsElectrodeSimple(Art,patternNo,findBundleTimes);
+    [Res]=ResidualsElectrodeSimple(Art,stimElecs(1),findBundleTimes);
     
     
     
     
-    pats=getNeighbors(patternNo,nNeighborsExclude);
+    pats=getNeighbors(stimElecs(1),nNeighborsExclude);
     nConds=size(Art,1);
     
     for k=1:nConds

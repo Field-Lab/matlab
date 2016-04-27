@@ -4,7 +4,7 @@ function [spikes Log params]=SpikeSortingNoBundleStim(params,TracesAll)
 Kers=params.patternInfo.Kers;
 KersSti=params.patternInfo.KersStim;
 dLSti=params.patternInfo.dLStim;
-QSti=params.patternInfo.QStim;;
+QSti=params.patternInfo.QStim;
 QtSti=params.patternInfo.QtStim;
 options=params.global.options;
 Q=params.patternInfo.Q;
@@ -77,10 +77,12 @@ elExtra=zeros(size(Art,1),1);
 br=intersect(unique(breakpoints{1}(2:end)+1),[1:size(Art,1)]);
 elExtra(br)=patternNo;
 
-indpat=find(max(elExtra)==els);
 
 for i=1:length(elExtra);
-    if(elExtra(i)==patternNo)
+    if(elExtra(i)>0)
+     
+indpat=find(elExtra(i)==els);
+   
         indels{i}=setdiff(1:Tmax*length(els),indpat:length(els):Tmax*length(els));
     else
         

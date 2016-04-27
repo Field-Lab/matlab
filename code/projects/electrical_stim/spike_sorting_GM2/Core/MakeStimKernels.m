@@ -5,6 +5,7 @@ Diags=params.patternInfo.Diags;
 listCurrents=params.patternInfo.listCurrents;
 Art=params.patternInfo.Art;
 patternNo=params.patternInfo.patternNo;
+stimElecs=params.patternInfo.stimElecs;
 var0=params.patternInfo.var0;
 
 DifsStim{1}=Difs{1};
@@ -48,7 +49,7 @@ DifsStimTemp=DifsStim;
 DifsStimTemp{2}=DifsStim{2}(inter,inter);
 DiagsStimTemp=DiagsStim;
 DiagsStimTemp{2}=DiagsStim{2}(br:br+1);
-f2 = @(Art,x)logDetKronStimElec(squeeze(Art(inter,patternNo,:)),[x log(var0)],DifsStimTemp,[1:5],[1 2],DiagsStimTemp,nVar);
+f2 = @(Art,x)logDetKronStimElec(squeeze(Art(inter,stimElecs(1),:)),[x log(var0)],DifsStimTemp,[1:5],[1 2],DiagsStimTemp,nVar);
 
 factor=1;
 xSti=100*ones(1,5);

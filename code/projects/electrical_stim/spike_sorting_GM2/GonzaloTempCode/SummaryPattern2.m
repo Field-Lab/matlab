@@ -1,6 +1,8 @@
-function SummaryPattern(Output,params,num,varargin)
+function SummaryPattern2(Output,params,num,varargin)
 
 h=figure(num);
+set(h,'units','normalized');
+set(h,'position',[0 0 0.2 0.3])
 templates=Output.neuronInfo.templates;
 neuronIds=Output.neuronInfo.neuronIds;
 listAmps=abs(Output.stimInfo.listAmps);
@@ -9,8 +11,9 @@ Residuals=Output.stimInfo.Residuals;
 pathToAnalysisData=[Output.path.pathToAnalysisData];
 patternNo=Output.stimInfo.patternNo;
 spikes=Output.neuronInfo.spikes;
-ArtEnd=squeeze(Output.stimInfo.Art(end,:,:));
 nTrials=Output.stimInfo.nTrials;
+cmap=distinguishable_colors(length(neuronIds));
+
 if(nargin==5)
 
             Output2=varargin{2};
@@ -45,7 +48,7 @@ end
     Residuals(:,neighbors)=NaN;
     Residuals(1,:)=NaN;
     
-    nPlots=length(neuronIds)+1;
+    nPlots=length(neuronIds);
     rects(1)=floor(sqrt(nPlots));
     rects(2)=floor(nPlots/rects(1))+1;
     tickAmp=[0 max(listAmps)/2 max(listAmps)+0.0001];
@@ -83,73 +86,83 @@ end
     
     
     for i=1:length(templates)
-        h2=subplot(rects(1),rects(2),i);
-        plot(listAmps,nansum(spikes{i}'>1)./nTrials,'linewidth',2,'color','blue')
+        [erfParams projectionComplete error] = erfFitter([listAmps(1:end); nansum(spikes{i}'>0)./nTrials; nTrials  ],2, -1);
+ 
+        h2=subplot(3,8,i);
+        h2.XColor=cmap(i,:);
+        h2.YColor=cmap(i,:);
+        box on
+        axis square
         hold on
-        axis([0 max(listAmps)+0.0001 0 1])
+       plot(listAmps,nansum(spikes{i}'>1)./nTrials,'o','markeredgecolor',cmap(i,:),'markersize',3,'markerfacecolor',cmap(i,:))
+       hold on 
+      axis([0 max(listAmps)+0.0001 0 1])
         
         if(nargin==5)
-              plot(listAmps,nansum(spikes2{i}'>1)./nTrials,'linewidth',2,'color','red')
+              plot(listAmps,nansum(spikes{i}'>0)./nTrials,'o','markeredgecolor',cmap(i,:),'markersize',3,'markerfacecolor',cmap(i,:)')
+        
         end
         neuronId=neuronIds(i);
         %plot(abs(Output.stimInfo.listAmps),nansum(spikes{i}'>1)./Output.stimInfo.nTrials,'linewidth',2,'color','blue')
-        title(['Neuron ' num2str(neuronId) 'p ' num2str(patternNo) ])
-        set(gca,'XTick',ticks)  % This automatically sets
-        set(gca,'XTickLabel',tickLabel)
+       %title(['Neuron ' num2str(neuronId) 'p ' num2str(patternNo) ])
+        %set(gca,'XTick',ticks)  % This automatically sets
+        %set(gca,'XTickLabel',tickLabel)
         set(gca,'fontsize',13)
         set(gca,'TickLength',[0.08 0.08])
         
          
         name=['elecResp_n' num2str(neuronId) '_p' num2str(patternNo) '.mat'];
         
-        
+       
         try
             load([pathToAnalysisData name]);
-            
+             [erfParams projectionComplete error] = erfFitter([listAmps(1:end); elecResp.analysis.successRates'; nTrials  ],2, -1);
+ 
             if(nargin>=4)
                 if(~isnan(onsetC))
-                plot(listAmps,elecResp.analysis.successRates(1:onsetC-1)','--','linewidth',3,'color','black')
+                plot(listAmps,elecResp.analysis.successRates(1:onsetC-1)','-','markeredgecolor','black','markersize',3,'markerfacecolor','black')
+               plot(projectionComplete(1,:),projectionComplete(2,:),'-','markeredgecolor','black','markersize',3,'markerfacecolor','black','linewidth',2)
+                  
+           h2.XColor=cmap(i,:);
+        h2.YColor=cmap(i,:);
                 else
-                    plot(listAmps,elecResp.analysis.successRates','--','linewidth',3,'color','black')
+                    plot(listAmps,elecResp.analysis.successRates','o','markeredgecolor','black','markersize',3,'markerfacecolor','black')
+                hold on
+                   plot(projectionComplete(1,:),projectionComplete(2,:),'-','markeredgecolor','black','markersize',3,'markerfacecolor','black','linewidth',2)
+                 
+           h2.XColor=cmap(i,:);
+        h2.YColor=cmap(i,:);
                 end
-                else
-                plot(listAmps,elecResp.analysis.successRates','--','linewidth',3,'color','black')
+            else
+                 plot(listAmps,elecResp.analysis.successRates','o','markeredgecolor','black','markersize',3,'markerfacecolor','black')
+              hold on
+               plot(projectionComplete(1,:),projectionComplete(2,:),'-','markeredgecolor','black','markersize',3,'markerfacecolor','black','linewidth',2)
+                 
+           h2.XColor=cmap(i,:);
+        h2.YColor=cmap(i,:);
             end
             
-            
+           plot(projectionComplete(1,:),projectionComplete(2,:),'-','color',cmap(i,:),'linewidth',2)
+        
+       
+          
         end
-        
-            pos=get(h2,'position');
-            yminnew=pos(2)+pos(4)/2+pos(4)/32;
-            h3=axes('position',[pos(1)+pos(3)/64 yminnew pos(3)/3 pos(4)/2-pos(4)/16]);
-            mat=nanmax(abs(templates{i})');
-            mat(Output.stimInfo.stimElec)=100;
-            [~,EIm_view]   = ei2matrix(log(mat)');
-            imagesc(EIm_view,[0 log(100)])
-            box on
-            axis 'off'
-            axis square
+         h2.XColor=[0 0 0];
+        h2.YColor=[0 0 0];
+        ax2=h2;
+       % ax1_pos = h2.Position; % position of first axes
+set(ax2,'Position',h2.Position,...
+    'XColor',cmap(i,:),'YColor',cmap(i,:),'color',[1 1 1],'linewidth',2);
+box on
+axis square
+h2.XTick=[0 2 4.39];
+h2.YTick=[0 0.5 1];
+xlabel('stimulus (\muA)')
+ylabel('Probability')
     end
         
         
-        h2=subplot(rects(1),rects(2),nPlots);
-        
-        plot(listAmps,log(Residuals))
-        axis([0 max(listAmps)+0.0001 nanmin(nanmin(log(Residuals))) nanmax(nanmax(log(Residuals)))])
-        set(gca,'XTick',ticks)  % This automatically sets
-        set(gca,'XTickLabel',tickLabel)
-        set(gca,'fontsize',13)
-        set(gca,'TickLength',[0.08 0.08])
-        
-        pos=get(h2,'position');
-        yminnew=pos(2)+pos(4)/2+pos(4)/32;
-        h3=axes('position',[pos(1)+pos(3)/64 yminnew pos(3)/3 pos(4)/2-pos(4)/16]);
-        Varend=nanvar(ArtEnd');
-        [~,EIm_view]   = ei2matrix(log(Varend));
-        
-        imagesc(EIm_view)
-        axis 'off'
-        axis square
-        
-        set(h,'position',[100   100    1100   700])
-    end
+       
+        set(h,'position',[0 0 0.9 0.4])
+end
+    

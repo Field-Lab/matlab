@@ -1,4 +1,4 @@
-function [Output]=DoSpikeSortingLargeScale(pathToPreparation,pathToEi,patternNo,neuronIds,params,templates,varargin)
+function [Output simParams]=DoSimulateSortingLargeScale(pathToPreparation,patternNo,params,templatesAll,simParamsIn,varargin)
 %Gonzalo Mena, 03/2016
 
 Dif1=params.global.Dif1;
@@ -14,7 +14,7 @@ nTrial=params.global.nTrial;
 
  
 
-if(nargin==7)
+if(nargin==6)
    FoldersNames=varargin{1}; 
 else
     
@@ -57,13 +57,51 @@ end
 
 pathToAnalysisData=[path '/'];
 
-if(params.global.sortData)
 [TracesAll Art var0 listAmps listCurrents stimElecs onset onsetC pval Res  sampledTrials]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,nTrial,params.global.subSampleRate,params);
 
-else
-    [TracesAll Art var0 listAmps listCurrents onset onsetC pval Res stimElecs]=loadTracesArt(pathToAnalysisData,patternNo,Tmax,nTrial,params);
 
+
+TracesAll2=TracesAll;
+
+%% parameters
+pneu =simParamsIn.pneu; %amount of spiking neurons
+pspi =simParamsIn.pspi; %probability of neurons spiking
+xProj = listAmps;
+neuronIds=[];
+
+contneu=0;
+for n=1:length(templatesAll)
+    if(unifrnd(0,1)<pneu)
+        contneu=contneu+1;
+        neuronIds=[neuronIds n];
+        templatesLocal{contneu}=templatesAll{n};
+        if(unifrnd(0,1)<pspi)
+            
+            thresH=unifrnd(0,max(listAmps));
+            erfParams(1)=unifrnd(0,4);
+            erfParams(2)=-erfParams(1)*thresH;
+        else
+            thresH=2*max(listAmps);
+            erfParams(1)=unifrnd(0,4);
+            erfParams(2)=-erfParams(1)*thresH;
+        end
+        projection = 0.5 + 0.5*erf(erfParams(1)*xProj+erfParams(2));
+        projections(contneu,:)=projection;
+            for j=1:length(listAmps)
+                nTrials(j)=length(find(~isnan(TracesAll(j,:,1,1))));
+            end
+            spikesTrue{contneu}=NaN*zeros(length(listAmps),max(nTrials));
+            
+            for j=1:length(listAmps)
+                spikesTrue{contneu}(j,1:nTrials(j))=(unifrnd(0,1,1,nTrials(j))<projection(j)).*(unidrnd(30,1,nTrials(j))+6);
+             for i=1:nTrials(j)
+                 [ActionPotential]=makeActionPotential(contneu,spikesTrue{contneu}(j,i),templatesLocal,Tmax);
+                 TracesAll2(j,i,:,:)=TracesAll2(j,i,:,:)+reshape(ActionPotential,1,1,512,Tmax);
+            end
+            end
+    end
 end
+    
 
 if(length(stimElecs)>1)
     Output=1;
@@ -128,25 +166,16 @@ params.bundle.onsBundle=onsetC;
 params.bundle.onset=onset;
 
 %templates=makeTemplatesFromEiShift(pathToEi, neuronIds,[1:512]);
- params.neuronInfo.templates = templates;
-% if(~useStimElec&&(~useBundleAlg))
-% [spikes Log params]=SpikeSortingNoBundleNoStim(params,TracesAll);
-% elseif(~useStimElec&&(useBundleAlg))
-% [spikes Log params]=SpikeSortingBundleNoStim(params,TracesAll);    
-% elseif(useStimElec&&(~useBundleAlg))
-%     params = MakeStimKernels(params);
-% [spikes Log params]=SpikeSortingNoBundleStim(params,TracesAll);    
-%   elseif(useStimElec&&(useBundleAlg))
-%        params = MakeStimKernels(params);
-% [spikes Log params]=SpikeSortingBundleStim(params,TracesAll);    
-% 
-% end
+ params.neuronInfo.templates = templatesLocal;
 
+ 
+ 
 if(useStimElectrodeAfterBundle+useStimElectrodeBeforeBundle>=1)
      params = MakeStimKernels(params);
 end
 
-[spikes Log params]=SpikeSortingAllCases(params,TracesAll); 
+[spikes Log params]=SpikeSortingAllCases(params,TracesAll2);
+   
 if(useStimElectrodeAfterBundle+useStimElectrodeBeforeBundle>=1)
     Output.stimInfo.ActiveElectrodes=[1:512];
     Output.stimInfo.KersStim=params.patternInfo.KersStim;
@@ -165,13 +194,12 @@ Output.stimInfo.patternNo=patternNo;
 Output.stimInfo.stimElec=stimElec;
 Output.stimInfo.listAmps=listAmps;
 Output.stimInfo.listCurrents=listCurrents;
-Output.stimInfo.var0=var0;
 %Output.stimInfo.Art=params.patternInfo.Art;
 Output.stimInfo.nTrials=params.patternInfo.nTrials;
 Output.stimInfo.Kers=params.patternInfo.Kers;
 Output.stimInfo.rho=rho;
 Output.Log=Log;
-Output.path.pathToEi=pathToEi;
+
 Output.path.pathToPreparation=pathToPreparation;
 Output.path.pathToAnalysisData=pathToAnalysisData;
 Output.bundle=params.bundle;
@@ -183,4 +211,9 @@ Output.stimInfo.useStimElectrodeAfterBundle=useStimElectrodeAfterBundle;
 
 Output.stimInfo.Residuals=Res;
 Output.arrayInfo=params.arrayInfo;
+simParams.spikesTrue=spikesTrue;
+simParams.projections=projections;
+simParams.neuronIds=neuronIds;
+simParams.pneu = pneu; %amount of spiking neurons
+simParams.pspi=pspi;
 end

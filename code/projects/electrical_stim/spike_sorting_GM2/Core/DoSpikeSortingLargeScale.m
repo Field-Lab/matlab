@@ -163,6 +163,7 @@ Output.neuronInfo.neuronIds=neuronIds;
 Output.neuronInfo.spikes=spikes;
 
 Output.stimInfo.patternNo=patternNo;
+Output.stimInfo.var0=var0;
 Output.stimInfo.stimElec=stimElec;
 Output.stimInfo.listAmps=listAmps;
 Output.stimInfo.listCurrents=listCurrents;

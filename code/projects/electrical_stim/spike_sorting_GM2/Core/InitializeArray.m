@@ -1,9 +1,9 @@
-function params=InitializeArray(pathToPreparation,varargin)
+function params=InitializeArray(pathToPreparation,subSampleRate,varargin)
 %Gonzalo Mena, 03/2016
 load arrayPositions512
 
-params.global.Tmax=40;
-params.global.tarray=[0 [7:32]];
+params.global.Tmax=55;
+params.global.tarray=[0 [7:40]];
 params.global.options=optimoptions('fminunc','Algorithm','trust-region','GradObj','on');
 params.global.nTrial = 50;
 params.global.x0=[2.6766    2.6729    1.5639    2.5233    1.9566  -20.7433    0.3893 32.0274];
@@ -31,11 +31,11 @@ path=[];
 patternNo=[];
 
 
-if(nargin==2)
+if(nargin>=3)
     patternNo=varargin{1};
 end
 
-if(nargin<=2)
+if(nargin<=3)
     
     dirs=dir(pathToPreparation);
     cont=1;
@@ -51,7 +51,7 @@ if(length(dirs(i).name)>=4)
     end
     end
     
-elseif(nargin==3)
+elseif(nargin==4)
     FoldersNames=varargin{2};
 end
 
@@ -65,7 +65,7 @@ for f=1:length(FoldersNames)
         
         aux=find(dirs(i).name(1)=='p');
         if(length(aux)>0)
-            if(nargin==1)
+            if(nargin==2)
                 if(~isequal(dirs(i).name(2),'a'))
                     patternNo=str2num(dirs(i).name(2:end));
                 end
@@ -87,9 +87,12 @@ end
  
   
 
-[TracesAll Art var0 listAmps listCurrent]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,params.global.nTrial);%Knn2(ind,:)=squeeze(Knn(22,:,:))
-
-Tmax=40;
+[TracesAll Art var0 listAmps listCurrents stimElecs]=loadTracesArtSort(pathToAnalysisData,patternNo,Tmax,params.global.nTrial,subSampleRate);%Knn2(ind,:)=squeeze(Knn(22,:,:))
+if(length(stimElecs)>1)
+    disp('only one stimulating electrode supported')
+    return
+end
+Tmax=params.global.Tmax;
     times=[1:Tmax]';
     
     
@@ -114,7 +117,7 @@ params.global.Dif1 = Dif1;
  params.global.Dif2 = Dif2;;
   
 
-[theta,rho] = cart2pol(positions(:,1)-positions(patternNo,1),positions(:,2)-positions(patternNo,2));
+[theta,rho] = cart2pol(positions(:,1)-positions(stimElecs,1),positions(:,2)-positions(stimElecs,2));
 
 ind=setdiff([1:512],find(rho==0));
 
@@ -143,6 +146,6 @@ Diags{3}=listAmps'/max(listAmps);
 
  params.arrayInfo.x= x;
  params.arrayInfo.patternNo =patternNo;
- 
+ params.arrayInfo.stimElecs= stimElecs;
  params.patternInfo.Difs=Difs;
  params.patternInfo.Diags=Diags;
