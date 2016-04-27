@@ -1,6 +1,6 @@
 %% NB 2015-05-04
 
-function [lcif] = glm_gen_signal_TEST(fittedGLM,testmovie)
+function [lcif] = glm_gen_signal_TEST(fittedGLM,testmovie,incl_mu)
 %%
 
 params.bins       = size(testmovie,3);
@@ -35,8 +35,12 @@ lcif_kx_frame = sum(KX,1);
 
 %display('binning the lcif components')
 %lcif_kx0 = reshape( repmat(lcif_kx_frame, bpf, 1) , 1 , params.bins);
-lcif_mu0 = MU * ones (1,params.frames);
-lcif = lcif_kx_frame+lcif_mu0;
+if incl_mu
+    lcif_mu0 = MU * ones (1,params.frames);
+    lcif = lcif_kx_frame+lcif_mu0;
+else
+    lcif = lcif_kx_frame;
+end
 
 end
 

@@ -35,7 +35,7 @@ end
 %%
 
 for subgroup = 1%1:n_subgroups
-    for i_cell = 1%cell_idx{subgroup}
+    for i_cell = 2%cell_idx{subgroup}
         master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
         sta = squeeze(sum(datarun_class.stas.stas{master_idx},3));
         [U,~,~] = svd(reshape(sta, [40*80, 30]));
@@ -117,8 +117,8 @@ end
 %%
 % plot the PSTH for each condition for each cell
 set(0, 'defaultFigurePosition', [2 2 10 2])
-for subgroup = 1%:2
-    for i_cell = 1%cell_idx{subgroup} 
+for subgroup = 1:2
+    for i_cell = cell_idx{subgroup} 
         for i = 1:length(mask_conditions{subgroup})
             s = sigmas(mask_conditions{subgroup}(i)); 
             figure(1); hold on
@@ -129,11 +129,11 @@ for subgroup = 1%:2
         figure(1); IDP_plot_PSTH(reg_data{1}, i_cell, 'color', colors(20,:), 'plot_offset', 0, 'smoothing', 10);
         axis([0 8 0 250])
         axis off
-        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
+        %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_mask'], 'Bounds', 'loose', 'Color', 'rgb')
         figure(2); 
         axis([0 8 0 250])
         axis off
-        exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
+        %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
         
         disp(i_cell);pause();
         figure(1); clf; figure(2); clf;

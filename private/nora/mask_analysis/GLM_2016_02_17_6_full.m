@@ -4,7 +4,7 @@ clear
 convergence = 1;
 Analysis_Path = '/Volumes/Analysis/2016-02-17-6/';
 datarun_class = load_data([Analysis_Path 'streamed/data000/data000'], struct('load_neurons', 0, 'load_params', 1));
-dsave = '/Volumes/Lab/Users/Nora/GLMFits_masking/2016-06-17-6/NSEM_full_opt';
+dsave = '/Volumes/Lab/Users/Nora/GLMFits_masking/2016-06-17-6/NSEM_full_opt_refitMU';
 mkdir(dsave)
 monitor_refresh = 119.5;
 cells_orig = [6023 1052 3421  7522 4653  2221 5929 1113 3668 7414 4592 2342];
@@ -37,7 +37,7 @@ for i = 1:12
     
     %%
     t_init = fittedGLM.linearfilters.Stimulus.time_rk1;
-    NL_init = [0.1 0 -4];
+    NL_init = [0.1 0 -4 fittedGLM.linearfilters.TonicDrive.Filter];
     [model, t_init, increments] = fit_NL_and_time(2, fittedGLM, fitspikes, fitmovie, t_init, NL_init);
 
     % new predictions

@@ -169,13 +169,13 @@ for exp = [2 3]% 5]
                         data_matrix = [gen_signal{i_movie_type}{1}(1:1166) gen_signal{i_movie_type}{2}(1:1166)];
                         responses = PSTH{i_movie_type}(30:end);
                         model = fitnlm(data_matrix, responses, model_arch, init);
-                        %total_gen_signal{i_movie_type} = model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
+                        total_gen_signal{i_movie_type} = model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
                         
                         
                         %raster plotting
                         %plot(predict(model, data_matrix)); hold on; plot(responses);
                         %pause()
-                        %%{
+                        %{
                     firing_rate = predict(model, data_matrix);
                     switch i_movie_type
                         case 1
@@ -190,7 +190,7 @@ for exp = [2 3]% 5]
                         %}
                         
                         % compare model performance
-                        Corr{exp}(i_cell, i,i_movie_type) = model.Rsquared.Ordinary;
+                        %Corr{exp}(i_cell, i,i_movie_type) = model.Rsquared.Ordinary;
                         %sum((responses-predict(model, data_matrix)).^2);
                          
                         
