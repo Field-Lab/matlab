@@ -45,11 +45,11 @@ addpath('../../../utilities')
 javaaddpath('/Volumes/Lab/Development/vision7/Vision.app/Contents/Resources/Java/Vision.jar');
 
 % matlab code paths 
-addpath(genpath('/Users/colleen/matlab/code'));
+addpath(genpath('/Volumes/Lab/Users/crhoades/Colleen/matlab/code'));
 addpath(genpath('~/matlab'));
 
 % Add utilities so that you have genpath2.m available
-addpath(genpath('/Users/colleen/matlab/utilities'))
+addpath(genpath('/Volumes/Lab/Users/crhoades/Colleen/matlab/utilities'))
 
 % Use genpath2 to recursively add everything in matlab-standard to your path, but exclude .svn directories
 addpath(genpath(['../../../code']));
@@ -64,7 +64,7 @@ set(0, 'DefaultAxesFontSize', 14, 'DefaultAxesFontName', 'Helvetica')
 get(0, 'Factory');
 set(0, 'defaultfigurecolor', [1,1,1]);
 
-addpath(genpath('/Users/colleen/matlab/private/colleen'));
+addpath(genpath('/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen'));
 
 
 
