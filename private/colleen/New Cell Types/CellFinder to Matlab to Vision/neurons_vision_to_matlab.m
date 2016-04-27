@@ -43,6 +43,7 @@ specify_cells = 1;
 cell_type = {'OFF parasol'};
 
 % if specify_cell = 0, list cell ids here (these are Vision IDs)
+%% TODO SORT IT BY NUMBER
 toKeep = [
 437
 481
@@ -87,7 +88,7 @@ toKeep = [
 5062
 
     ];
-
+toKeep = sort(toKeep);
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load Data
