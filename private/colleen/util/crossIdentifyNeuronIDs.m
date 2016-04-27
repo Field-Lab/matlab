@@ -1,5 +1,5 @@
 function neuronPairsRefVsNew = crossIdentifyNeuronIDs(dataFolderRef, dataFolderNew,...
-                                refNeuronIDs, newNeuronIDs, autoClassify)
+                                refNeuronIDs, newNeuronIDs, autoClassify, useThreshold)
 % crossIdentifyNeuronIDs(dataFolderRef,dataFolderNew,...
 %                        refNeuronIDs,newNeuronIDs)
 %
@@ -202,10 +202,14 @@ for kk=1:nNeuronsRef
     
     % Storing the nearest neighbor into the neuronPairs matrix
     neuronPairsRefVsNew(kk,:) = [refNeuronIDs(kk), newNeuronIDs(pos(1:nSim)).'];
-    if l2dist(pos(1)) > threshold
-        neuronPairsRefVsNew(kk,2) = nan;
-        counter = counter +1;
+    if useThreshold
+        if l2dist(pos(1)) > threshold
+            neuronPairsRefVsNew(kk,2) = nan;
+            counter = counter +1;
+        end
+
     end
+    
 end
 
 if autoClassify
