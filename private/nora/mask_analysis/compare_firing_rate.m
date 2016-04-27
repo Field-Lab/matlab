@@ -6,7 +6,7 @@ celltype_idx = [];
 set(0, 'defaultFigurePaperPositionMode', 'auto')
 set(0, 'defaultFigurePaperOrientation', 'landscape')
 set(0, 'defaultFigureUnits', 'inches')
-set(0, 'defaultFigurePosition', [2 2 8 4])
+set(0, 'defaultFigurePosition', [2 2 5 4])
 
 params_list
 
@@ -61,11 +61,12 @@ for exp = exps
         for i_cell = cell_idx{subgroup}
             disp(i_cell)
             reg_psth = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0);
-            reg_spike_count(i_cell) = var(reg_psth)/length(reg_psth);
-            for i = 1:length(mask_conditions{subgroup})
+            reg_spike_count(i_cell) = sum(reg_psth)/length(reg_psth);
+            for i = 1%:length(mask_conditions{subgroup})
                 s = sigmas(mask_conditions{subgroup}(i));
                 mask_psth =IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0);
-                mask_spike_count(i_cell, i) = var(mask_psth)/length(reg_psth); 
+                %mask_spike_count(i_cell,i) = sum(mask_psth.*reg_psth)/norm(reg_psth)^2;
+                mask_spike_count(i_cell, i) = sum(mask_psth)/length(reg_psth); 
             end
         end
         if strcmp(cell_type{subgroup}, 'on')
@@ -75,6 +76,7 @@ for exp = exps
         end
     end
     
+    %total_CT  = [total_CT; celltype_idx];
     total_mask = [total_mask; mask_spike_count];
     total_reg = [total_reg; reg_spike_count'];
 
@@ -95,16 +97,24 @@ axis square
 end
 
 %%
-total_mask = total_mask([1:2, 4:end], :);
-total_reg = total_reg([1:2, 4:end]);
-celltype_idx = celltype_idx([1:2, 4:end]);
+plot(total_mask(:,1), total_reg(:,1),'.k', 'MarkerSize', 10);
+hold on; plot([0 30], [0 30],'k' )
+axis([0 30 0 30])
+axis square
+exportfig(gcf, [fig_save '/firing_rate_comparison.eps'], 'Bounds', 'loose', 'Color', 'rgb')
 
-plot([2 4 5 6], total_mask'./repmat(total_reg, [1 4])','Color', [1 1 1]*0.75)
-hold on; plot([2 4 5 6], mean(total_mask./repmat(total_reg, [1 4])),'k', 'LineWidth', 2)
+
+%%
+%total_mask = total_mask([1:2, 4:end], :);
+%total_reg = total_reg([1:2, 4:end]);
+%celltype_idx = celltype_idx([1:2, 4:end]);
+
+%plot([2 4 5 6], total_mask,'Color', [1 1 1]*0.75)
+%hold on; plot([2 4 5 6], mean(total_mask) ,'k', 'LineWidth', 2)
 
 %a = fitlm(mask_spike_count,reg_spike_count);
 %plot(a)
 %exportfig(gcf, [fig_save '/' 'cell' num2str(i_cell) '_comp'], 'Bounds', 'loose', 'Color', 'rgb')
 
-ylim([0.5 2.5])
-plot([2 6], [1 1], '--')
+%ylim([0.5 2.5])
+%plot([2 6], [1 1], '--')

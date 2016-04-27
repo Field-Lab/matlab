@@ -83,10 +83,5 @@ for s = 1:6
    mean_surr(s) = mean(mean_cell_surr{all_sigmas(s)}); 
 end
 figure(1); hold on; plot(all_sigmas, mean_corr, 'k', 'LineWidth', 2)
-set(0, 'defaultFigurePosition', [2 2 4 4])
-axis square
-
 figure(2); hold on; plot(all_sigmas, mean_surr, 'k', 'LineWidth', 2)
-set(0, 'defaultFigurePosition', [2 2 4 4])
-axis square
 
