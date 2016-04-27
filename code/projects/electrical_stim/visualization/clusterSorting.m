@@ -22,7 +22,7 @@ function varargout = clusterSorting(varargin)
 
 % Edit the above text to modify the response to help clusterSorting
 
-% Last Modified by GUIDE v2.5 11-Mar-2016 16:25:11
+% Last Modified by GUIDE v2.5 11-Apr-2016 14:06:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -252,6 +252,7 @@ end
 if isfield(handles,'responseRate')
     handles = rmfield(handles,'responseRate'); 
 end
+set(handles.neuronid,'String',''); 
 guidata(hObject,handles); 
 pathToAnalysisData = get(handles.datapath,'String'); 
 patternNo = str2double(get(handles.patternNo,'String'));
@@ -289,7 +290,22 @@ for m = 1:size(movieNos,2)
         clusterTraces = reshape(permute(subMeanTraceCluster,[1 3 2]),size(dataTraces,1),[]);
         subMeanTrace = clusterTraces; % hack to test using surrounding electrodes
     end
+    clusterRecElecs = getCluster512(tempRecElec);
+    testTraceCluster = squeeze(dataTraces(:,clusterRecElecs,sampleRange));
+    subMeanTraceCluster = testTraceCluster - repmat(mean(testTraceCluster),size(testTraceCluster,1),1);
+    clusterTraces = reshape(permute(subMeanTraceCluster,[1 3 2]),size(dataTraces,1),[]);
     
+    subMeanTraceCluster = clusterTraces;
+    
+    % Align the minimum value in the traces
+    [~,minIdx]=(min(subMeanTrace,[],2));
+    Y = zeros(size(subMeanTrace)); 
+    for j = 1:length(minIdx)
+        Y(j,:) = circshift(subMeanTrace(j,:),10-minIdx(j),2);
+    end
+    if get(handles.alignSpikes,'Value')
+        subMeanTrace = Y; 
+    end
     % Do PCA
     [~,score] = pca(subMeanTrace);
     
@@ -340,7 +356,8 @@ for m = 1:size(movieNos,2)
             title(sprintf('movie %d',movieNos(m)));
             handles.tempData(subplotIdx).spikes = subMeanTrace(index1,:)';
             handles.tempData(subplotIdx).misses = subMeanTrace(index2,:)';
-            
+            handles.tempData(subplotIdx).clusterSpikes = subMeanTraceCluster(index1,:)'; 
+            handles.tempData(subplotIdx).clusterMisses = subMeanTraceCluster(index2,:)'; 
             responseStimAmps(subplotIdx) = stimAmp;
             responseRate(subplotIdx) = length(index1)/size(testTrace,1);
         else
@@ -350,6 +367,8 @@ for m = 1:size(movieNos,2)
             title(sprintf('movie %d',movieNos(m)));
             handles.tempData(subplotIdx).spikes = subMeanTrace(index2,:)';
             handles.tempData(subplotIdx).misses = subMeanTrace(index1,:)';
+             handles.tempData(subplotIdx).clusterSpikes = subMeanTraceCluster(index2,:)'; 
+            handles.tempData(subplotIdx).clusterMisses = subMeanTraceCluster(index1,:)'; 
             responseStimAmps(subplotIdx) = stimAmp;
             responseRate(subplotIdx) = length(index2)/size(testTrace,1);
         end
@@ -416,6 +435,9 @@ if exist(resultsFile,'file')
     tmp = load(resultsFile); 
     activationResults = tmp.activationResults; 
 end
+
+neuronid = activationResults.pattern(str2double(handles.patternNo.String)).activeNeuronID; 
+handles.neuronid.String = num2str(neuronid); 
 toPlot = zeros(512,1); 
 for e = 1:512
     toPlot(e) = activationResults.pattern(e).thresholds(e);
@@ -466,7 +488,7 @@ end
 
 % Check waveforms on electrode of interest.
 waveformsOn1Elec = squeeze(eiMatrix(:,:,tempRecElec));
-[rowIdx,~]= find(waveformsOn1Elec<-30);
+[rowIdx,~]= find(waveformsOn1Elec<-15);
 % templates = waveformsOn1Elec(unique(rowIdx),sampleRange);
 clusterElecs = getCluster512(tempRecElec); 
 figure; set(gcf, 'Position', [60 956 1670 150]); 
@@ -612,6 +634,13 @@ activationThresholds = activationResults.pattern(str2double(get(handles.patternN
 activationThresholds(handles.tempRecElec)= handles.tempActThresh;
 activationResults.pattern(str2double(get(handles.patternNo,'String'))).thresholds = activationThresholds; 
 activationResults.pattern(str2double(get(handles.patternNo,'String'))).userAccepted(handles.tempRecElec) = 1;  %#ok<STRNU>
+reply = inputdlg({'Input the active neuron ID or cancel'},'neuronID',1,{''});
+
+if isempty(reply)
+   disp('did not input an active neuron i.d.');
+else
+    activationResults.pattern(str2double(get(handles.patternNo,'String'))).activeNeuronID = str2double(reply{1}); 
+end
 
 save(resultsFile,'activationResults'); 
 handles.actThresh = handles.tempActThresh; 
@@ -685,14 +714,16 @@ idx = str2double(tag(end));
 if idx <= size(handles.tempData,2)
     spikes = handles.tempData(idx).misses;
     misses = handles.tempData(idx).spikes;
-    
+    clusterSpikes = handles.tempData(idx).clusterMisses;
+    clusterMisses = handles.tempData(idx).clusterSpikes;
     eval(sprintf('cla(handles.axes%d); axes(handles.axes%d);',idx,idx));
     plot(misses,'Color',0.7*[1 1 1]); hold on; plot(spikes,'red');
     axis off;
     
     handles.tempData(idx).spikes = spikes;
     handles.tempData(idx).misses = misses;
-    
+    handles.tempData(idx).clusterSpikes = clusterSpikes;
+    handles.tempData(idx).clusterMisses = clusterMisses;
     handles.responseRate(idx) = size(spikes,2)/(size(spikes,2)+size(misses,2));
 else
     disp('no distinct spikes / misses');
@@ -711,10 +742,17 @@ function subtract_Callback(hObject, eventdata, handles)
 tag =  get(hObject,'Tag');
 idx = str2double(tag(end));
 if idx <= size(handles.tempData,2)
-    spikes = handles.tempData(idx).spikes;
-    misses = handles.tempData(idx).misses;
-    figure; plot(mean(spikes,2) - mean(misses,2));
-    title('Spikes - misses');
+    spikes = handles.tempData(idx).clusterSpikes;
+    misses = handles.tempData(idx).clusterMisses;
+    clusterElecs = getCluster512(str2double(handles.patternNo.String)); 
+    diffVal = mean(spikes,2) - mean(misses,2);
+    elecTraces = reshape(diffVal,[],length(clusterElecs)); 
+    figure; set(gcf,'Position',[57         638        1674         242]); 
+    for subplotIdx = 1:length(clusterElecs)
+        subplot(1,length(clusterElecs),subplotIdx);
+        plot(elecTraces(:,subplotIdx)); title(num2str(clusterElecs(subplotIdx)));
+    end
+    suptitle('Spikes - misses');
 else
     disp('no distinct spikes / misses'); 
 end
@@ -864,3 +902,57 @@ if str2double(get(hObject,'String'))<2
 end
 
 % go_Callback(hObject, eventdata, handles)
+
+
+% --- Executes on button press in alignSpikes.
+function alignSpikes_Callback(hObject, eventdata, handles)
+% hObject    handle to alignSpikes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of alignSpikes
+
+
+
+function neuronid_Callback(hObject, eventdata, handles)
+% hObject    handle to neuronid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of neuronid as text
+%        str2double(get(hObject,'String')) returns contents of neuronid as a double
+
+% Check for activation results file
+dirname = get(handles.datapath,'String');
+resultsFile = fullfile(dirname,'activationResults.mat');
+if ~exist(resultsFile,'file')
+    pattern = struct('thresholds',4*ones(512,1),'activeNeuronID',[],'userAccepted',zeros(512,1)); 
+    activationResults = struct('pattern',repmat(pattern,512,1)); 
+    save(resultsFile,'activationResults'); 
+else
+    tmp = load(resultsFile); 
+    activationResults = tmp.activationResults; 
+end
+
+neuronid = str2double(get(hObject,'String')); 
+if isfinite(neuronid)
+    activationResults.pattern(str2double(get(handles.patternNo,'String'))).activeNeuronID = neuronid;
+    save(resultsFile,'activationResults'); 
+    disp('neuron i.d. saved'); 
+else
+    warndlg('must enter a number for the neuron string'); 
+end
+
+
+
+% --- Executes during object creation, after setting all properties.
+function neuronid_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to neuronid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
