@@ -1,16 +1,16 @@
 clear
 close all
 %number{1} = [481 811 1531 2103 2161 3288 3816 3886 4280 4937 6331 6511];
-number{2} = [1936 2011 3166 3901 4113 4981 5012 6526 7051 7456];
-number{2} = [ 4113 4981 5012 ];
+number{2} = [185 306 413 996 1058 1759 1821 2061 3396 3593 3830 4656 5342 5733 6064 6213 7148];
+number{1} = [532 1022 1568 2376 3186 4041 4703 5239 6788 7101];
 
-threshold = 0.2;
+threshold = 0.15;
 for types = 1:size(number,2)
 fig(types) = figure;
 for i = 1:size(number{types},2)
     i
     clear size_test
-    load(['/Volumes/Lab/Users/crhoades/Jitter/2016-02-17-6/data026cf_spikes/Cell ', num2str(number{types}(i)), '.mat'])
+    load(['/Volumes/Lab/Users/crhoades/Jitter/2015-09-23-7/data031/Cell ', num2str(number{types}(i)), '.mat'])
     sta = temp;
     
     
