@@ -49,7 +49,7 @@ for imov=nmov:-1:1
         PSTH=PSTH_str.PSTH_pred_log{imov};PSTH = PSTH-mean(PSTH(:));PSTH =( PSTH/max(abs(PSTH(:)))*max(yy{imov}(:))/2)+max(yy{imov}(:))/2;
         plot([0:dt:(length(PSTH)-1)*dt],jump+PSTH,col(icnt+1),'LineWidth',2);
     end
-    jump=jump+max(yy{imov});
+    jump=jump+30.5;%max(yy{imov});
     
 
     % Recorded 

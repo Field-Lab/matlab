@@ -650,7 +650,10 @@ for imcell=1:length(mcellid)
             
             R2_log(imcell,nSU,icnt)=R2_pl(end);
             
-            metrics(imcell,nSU,icnt,:) = compute_raster_metrics(realResp,pred{icnt});
+            m
+            
+            
+            etrics(imcell,nSU,icnt,:) = compute_raster_metrics(realResp,pred{icnt});
             p{1} =pred{icnt};
             pred_log(imcell,nSU,icnt) =p;
             icnt=icnt+1;
@@ -779,19 +782,35 @@ end
 title(sprintf('# SU %d:',isu));
 
 
+% be more selective about which cells to plot!
+cell_bin2 = cell_bin'  &  sum(data_pred.metrics(:,:,1,1)~=0,2)>0 & sum(data_pred.metrics(:,:,1,3)~=0,2)>0 &  sum(data_pred.metrics(:,:,2,1)~=0,2)>0 & sum(data_pred.metrics(:,:,2,3)~=0,2)>0 ;  
+
 
 figure;
+    cols = distinguishable_colors(6);
 for icond=1:2;
-cols = distinguishable_colors(2);
-for iisu=1:length(data_pred.sus_list(1:end-1))
-    isu = data_pred.sus_list(iisu);
-    jsu = data_pred.sus_list(iisu+1);
-    metric_ori = data_pred.metrics(cell_bin,isu,icond,1)./data_pred.metrics(cell_bin,isu,icond,3);
-    metric_end = data_pred.metrics(cell_bin,jsu,icond,1)./data_pred.metrics(cell_bin,jsu,icond,3);
-    for icell=1:sum(cell_bin)
-        plot([isu+(icond-1)*0.1,jsu+(icond-1)*0.1],[metric_ori(icell),metric_end(icell)],'-*','Color',cols(icond,:));
+
+    for iisu=1:length(data_pred.sus_list(1:end-1))
+        isu = data_pred.sus_list(iisu);
+        jsu = data_pred.sus_list(iisu+1);
+        metric_ori = data_pred.metrics(cell_bin2,isu,icond,1)./data_pred.metrics(cell_bin2,isu,icond,3);
+        metric_end = data_pred.metrics(cell_bin2,jsu,icond,1)./data_pred.metrics(cell_bin2,jsu,icond,3);
+        for icell=1:sum(cell_bin2)
+            a=plot([isu+(icond-1)*0.1,jsu+(icond-1)*0.1],[metric_ori(icell),metric_end(icell)],'-*','Color',cols(icond,:));
+            a.Color(4) = 0.5;
+            hold on;
+        end
+        
+    end
+    
+    for iisu=1:length(data_pred.sus_list(1:end-1))
+        isu = data_pred.sus_list(iisu);
+        jsu = data_pred.sus_list(iisu+1);
+        metric_ori = data_pred.metrics(cell_bin2,isu,icond,1)./data_pred.metrics(cell_bin2,isu,icond,3);
+        metric_end = data_pred.metrics(cell_bin2,jsu,icond,1)./data_pred.metrics(cell_bin2,jsu,icond,3);
+        plot([isu+(icond-1)*0.1,jsu+(icond-1)*0.1],[mean(metric_ori(~isnan(metric_ori))),mean(metric_end(~isnan(metric_end)))],'-*','Color',cols(icond+2,:),'LineWidth',3);
         hold on;
     end
-end
+    
 end
 

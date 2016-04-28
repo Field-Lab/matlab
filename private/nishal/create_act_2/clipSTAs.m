@@ -10,7 +10,7 @@ clippedSTAs=cell(nCells,1);
 for icell=1:nCells
     icell
     
-    close all
+%     close all
 dummySTA= stas{icell};
 
 if(isfield(cell_params,'thres'))
@@ -110,8 +110,8 @@ clippedSTAs{icell}=fastClipSTA;
 end
 
 CellSNR=CellMaxSTA./CellNoiseSigmas;
-figure;
-hist(CellSNR,20);
+% figure;
+% hist(CellSNR,20);
 
 threshold=-1%input('Select SNR threshold to eliminate cells?');
 
@@ -136,14 +136,14 @@ for icell=1:nCells
     end
     
 end
-
-figure('Color','w');
-subplot(1,2,1)
-imagesc(totalMaskReject);
-title('Rejected RFs');
-subplot(1,2,2)
-imagesc(totalMaskAccept);
-title('Accepted RFs');
+% 
+% figure('Color','w');
+% subplot(1,2,1)
+% imagesc(totalMaskReject);
+% title('Rejected RFs');
+% subplot(1,2,2)
+% imagesc(totalMaskAccept);
+% title('Accepted RFs');
 
 new_stas=newSTAs;
 %totalMaskAccept=double(totalMaskAccept~=0);
