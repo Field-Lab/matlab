@@ -38,9 +38,11 @@ elseif(type==2)
     ind=zeros(size(Dif,1));
     for k=1:length(lambda)
         ma=zeros(size(Dif,1));
-        ma(x(k)+1:x(k+1),x(k)+1:x(k+1))=lambda(k);
+        %ma(x(k)+1:x(k+1),x(k)+1:x(k+1))=lambda(k);
+        ma(1:x(2)-x(1),1:x(2)-x(1))=lambda(k);
         lambdas=lambdas+ma;
-        ind(x(k)+1:x(k+1),x(k)+1:x(k+1))=1;
+        %ind(x(k)+1:x(k+1),x(k)+1:x(k+1))=1;
+        ind(1:x(2)-x(1),1:x(2)-x(1))=1;
         KerD{k}=-3*ma.*exp(-sqrt(3)*(Dif).*ma).*ma.*(Dif).^2;
         
     end

@@ -58,12 +58,12 @@ var0=nanmean(varm(1:5));
 
 if(findBundle)
 
-[Res]=ResidualsElectrodeSimple(Art,patternNo,findBundleTimes);
+[Res]=ResidualsElectrodeSimple(Art,stimElecs(1),findBundleTimes);
 
 
     
     
-pats=getNeighbors(patternNo,nNeighborsExclude);
+pats=getNeighbors(stimElecs(1),nNeighborsExclude);
 nConds=size(Art,1);
 
 for k=1:nConds

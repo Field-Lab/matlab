@@ -54,10 +54,10 @@ for n=1:length(templates)
         [ActionPotential]=makeActionPotential(n,tarray2(t),templates,Tmax);
         
         Knn(n,t,:,:)=ActionPotential(:,:);
-        Kn{n}(:,t)=reshape(ActionPotential(els,:),Tmax*length(ind(els)),1)';
+        Aux(:,t)=reshape(ActionPotential(els,:),Tmax*length(ind(els)),1)';
        
     end
-     KnAll=[KnAll Kn{n}];
+     KnAll=[KnAll Aux];
 end
 
 KnnReshaped=reshape(Knn,size(Knn,1)*size(Knn,2),size(Knn,3),size(Knn,4));
@@ -141,7 +141,8 @@ Log.Iter(1)=cont;
 for i=2:maxCond
     
     
-i    
+i  
+
     
     krondiaginv=(exp(x(end))*krondiag0*Kers{3}(i,i)+var0).^(-1);
     
