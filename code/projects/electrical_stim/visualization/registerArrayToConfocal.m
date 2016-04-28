@@ -1,7 +1,7 @@
 %% This script registers two images using control point selection
 % LG 10/2015
 
-experiment_id = '2015-10-06-6'; 
+experiment_id = '2015-10-06-3'; 
 
 switch experiment_id
     case '2016-01-05-4'
@@ -12,7 +12,7 @@ switch experiment_id
         vasculature_confocal = imread('/Volumes/Transfer/2015-01-05-4/Imaging/confocal/vasc-2016-01-05-4.tif');
     case '2015-10-06-6'
         % Load the alignment image containing the array and the vasculature
-        alignment_image = imread('/Volumes/Data/2015-10-06-6/Imaging/vasculature_alignment_with_array/2015-10-06-6_stitched_sm.jpg (blue).jpg');
+        alignment_image = imread('/Volumes/Data/2015-10-06-6/Imaging/vasculature_alignment_with_array/2015-10-06-6_stitched_sm.jpg');
 
         % Choose the channel containing vasculature only.
         vasculature_array = alignment_image(:,:,3);
