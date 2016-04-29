@@ -1,5 +1,5 @@
 clear
-match = crossIdentifyNeuronIDs('/Volumes/Analysis/2016-02-17-6/streamed/data007','/Volumes/Analysis/2016-02-17-6/data015', [],[], 0,1 )
+match = crossIdentifyNeuronIDs('/Volumes/Analysis/2016-02-17-6/streamed/data007','/Volumes/Analysis/2016-02-17-6/data015', [],[], 1,1 )
 
 datarun.names.rrs_neurons_path = '/Volumes/Analysis/2016-02-17-6/streamed/data007_colleen/data007.neurons';
 datarun.names.rrs_params_path = '/Volumes/Analysis/2016-02-17-6/streamed/data007_colleen/data007.params';
@@ -35,9 +35,10 @@ cell_indices = get_cell_indices(datarun, 'ON parasol');
 cell_ids = get_cell_ids(datarun, 'ON parasol');
 
 for i = 1:length(match2(:,2))
-        cell_indices = get_cell_indices(datarun, match2(i,2));
 
     if ~isnan(match2(i,2))
+                cell_indices = get_cell_indices(datarun, match2(i,2));
+
             FR_on(i,4) = length(datarun.spikes{cell_indices})./600;
     else
                     FR_on(i,4) = nan;
@@ -108,3 +109,6 @@ legend('ON', 'OFF')
 title({'2016-02-17-6'; ['ON parasol: n = ', num2str(size(FR_on(~isnan(FR_on(:,5)),1),1))];[ 'OFF parasol: n = ', num2str(size(FR_off(~isnan(FR_off(:,5)),1),1))]})
 xlabel('% decrease in FR with gaussian mask stimulus centered on each parasol')
 ylabel('Number of cells')
+
+[~,git_hash_string] = system('git rev-parse HEAD');
+fprintf('Git Hash: %s \n', git_hash_string);
