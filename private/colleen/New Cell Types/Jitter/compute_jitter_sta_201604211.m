@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta] = compute_jitter_sta_201604218(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
+function [sta] = compute_jitter_sta_201604211(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %     mglBltTexture(frametex, [stimulus.x_start+jitterX, stimulus.y_start+jitterY, stimulus.span_width, stimulus.span_height], -1, -1);
 dbstop if error
@@ -63,21 +63,21 @@ end
 
 
 %% account for dropped frames
-%% data026
-%% 1857 is x coordinate of sharp peak in diff(triggers) graph
-% triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
-% jitter_x_new = [jitter_x(1:92851); jitter_x(92900:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
-% jitter_y_new = [jitter_y(1:92851); jitter_y(92900:end)];
-% inputs = [inputs(:,1:92851), inputs(:,92900:end)];
-% for i = 1:size(spikes,2)
-%     ind = find(spikes{i} > 92851/60 & spikes{i} <= 92900/60);
-%     if ~isempty(ind)
-%         spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (92900/60-92851/60);
-%         spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
-%     end
-%
-%
-% end
+%% data005
+%% 1787 is x coordinate of sharp peak in diff(triggers) graph
+triggers = [triggers(1:1787); triggers(1788:end) - mean(diff(triggers(1:1787)))];
+jitter_x = [jitter_x(1:89351); jitter_x(89400:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
+jitter_y= [jitter_y(1:89351); jitter_y(89400:end)];
+inputs = [inputs(:,1:89351), inputs(:,89400:end)];
+for i = 1:size(spikes,2)
+    ind = find(spikes{i} > 89351/60 & spikes{i} <= 89400/60);
+    if ~isempty(ind)
+        spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (89400/60-89351/60);
+        spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
+    end
+
+
+end
 %% data024
 % triggers = [triggers(1:392); triggers(393:end) - mean(diff(triggers(1:392)))];
 % jitter_x_new = [jitter_x(1:19601); jitter_x(19650:end)]; %392*100/2 (refresh is 2)+1 : 392*100/2 (refresh is 2)+50

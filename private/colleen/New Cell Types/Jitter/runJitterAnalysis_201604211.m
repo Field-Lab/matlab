@@ -4,16 +4,16 @@
 clear
 close all
 % dbstop if error
-dataparam.date='2016-04-21-8/';
-dataparam.concatname='data022';
-dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-40-1-0.48-11111-20x15-60.35.xml';
-dataparam.stixel_size = 40;
-dataparam.interval = 1;
-dataparam.seed = 11111;
-dataparam.refresh_rate = 60.35;
+dataparam.date='2016-04-21-1/';
+dataparam.concatname='data005';
+dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-22222-119.5.xml';
+dataparam.stixel_size = 16;
+dataparam.interval = 2;
+dataparam.seed = 22222;
+dataparam.refresh_rate = 120;
 fitparam.num_frames = 30;
-dataparam.x_dim = 800;
-dataparam.y_dim = 600;
+dataparam.x_dim = 640;
+dataparam.y_dim = 320;
 frame_width = dataparam.x_dim/dataparam.stixel_size;
 frame_height = dataparam.y_dim/dataparam.stixel_size;
 stixels_per_frame = frame_width*frame_height;
@@ -26,7 +26,7 @@ dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.dat
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;
 if select_cells == 1
-    dataparam.cell_specification = [154 408 903 1953 3137 3259 3319 3721 3813 3861 4490 4565 4773 4778 5912 1711 3077 4337 4761 5888 3078 3381 4248 4653 5886 7507 7508] %ON parasol
+    dataparam.cell_specification = [1279 2403 2584 2587 3380 5074 5104 5211 6128 6562 7326 7432 3124 4609 4684 4866 7028 7055 7221 1955 2990 4207 5852 6106 6391 6438 7187 396 992 4208 5194 6771 6968 7595 752 3318 4163] %ON parasol
 
 end
 dataparam.cell_type = {'all'};
@@ -135,7 +135,7 @@ end
 
 
 
-[sta] = compute_jitter_sta_201604218(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
+[sta] = compute_jitter_sta_201604211(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
 for i = 1:size(spikes,2)
     temp = sta{i};
     if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date,'/', dataparam.concatname])
