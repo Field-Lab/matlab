@@ -1,4 +1,4 @@
-function [spikes Log params]=SpikeSortingNoBundleStim(params,TracesAll)
+function [spikes Log params Apreds]=SpikeSortingNoBundleStim(params,TracesAll)
 %Gonzalo Mena, 3/2016
 
 Kers=params.patternInfo.Kers;
@@ -368,7 +368,10 @@ end
 else
      Apred2=ArtF(end,stimElec,:);
 end
+
 Apred(:,stimElec,:)=Apred2;
+
+Apreds(i-1,:,:)=Apred;
 
     flag=1;
     cont=1;

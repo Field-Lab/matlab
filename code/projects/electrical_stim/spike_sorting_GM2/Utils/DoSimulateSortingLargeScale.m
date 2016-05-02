@@ -174,7 +174,7 @@ if(useStimElectrodeAfterBundle+useStimElectrodeBeforeBundle>=1)
      params = MakeStimKernels(params);
 end
 
-[spikes Log params]=SpikeSortingAllCases(params,TracesAll2);
+[spikes Log params Apreds]=SpikeSortingAllCases(params,TracesAll2);
    
 if(useStimElectrodeAfterBundle+useStimElectrodeBeforeBundle>=1)
     Output.stimInfo.ActiveElectrodes=[1:512];
@@ -211,6 +211,8 @@ Output.stimInfo.useStimElectrodeAfterBundle=useStimElectrodeAfterBundle;
 
 Output.stimInfo.Residuals=Res;
 Output.arrayInfo=params.arrayInfo;
+Output.stimInfo.Apreds = Apreds;
+Output.stimInfo.Art = Art;
 simParams.spikesTrue=spikesTrue;
 simParams.projections=projections;
 simParams.neuronIds=neuronIds;

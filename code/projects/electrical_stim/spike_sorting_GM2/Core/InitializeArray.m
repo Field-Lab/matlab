@@ -35,7 +35,7 @@ if(nargin>=3)
     patternNo=varargin{1};
 end
 
-if(nargin<3)
+if(nargin<=3)
     
     dirs=dir(pathToPreparation);
     cont=1;
