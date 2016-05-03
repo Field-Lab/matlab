@@ -275,7 +275,7 @@ end
 
 %% compute value of cutting metric
 
-for imc=1
+for imc=1:30
     imc
     true_nSU = 12;
 model = model_LNLN_parameterized(true_nSU);
@@ -339,14 +339,21 @@ end
 [metric,metric_sus] = cutting_metric(model,u_spatial_log);
 
 [metric_perm,metric_sus_perm] = cutting_metric(model,u_spatial_log_perm);
+wts_log = weights_ratio(u_spatial_log,model)
 
-
+mc_data(imc).wts_log = wts_log;
 mc_data(imc).metric=metric;
 mc_data(imc).metric_perm=metric_perm;
 mc_data(imc).metric_sus=metric_sus;
 mc_data(imc).metric_sus_perm=metric_sus_perm;
 end
 
+wts_l=[];
+for imc=1:length(mc_data)
+wts_l = [wts_l;mc_data(imc).wts_log(:)];
+end
+figure;
+histogram(wts_l)
 %%
 m_log=[];m_perm_log=[];
 for imc =1:length(mc_data)
@@ -809,7 +816,7 @@ legend('Extracted sub-units','Permuted sub-units');
 %% top/bottom 25 percentile of spillover for random smooth partition and output of model.
 
 dat1 = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric.mat');
-dat2 = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric_baseline5_equal#SU_noise added.mat');
+dat2 = load('~/Google Drive/Presentations/Presentations/ASM_figures/modelCell_metric_baseline4_unequal#SU_noise added.mat');
 
 m_log=[];m_log_baseline=[];m_log_perm =[];
 for imc =1:length(dat1.mc_data)
