@@ -204,7 +204,7 @@ end
 legend('Null','WN+Null var controlled','WN+Null var not controlled','WN again')
 
 figure;
-open anafor jcond=jcond_list
+for jcond=jcond_list
     hold on;
   histogram(var_cond(jcond).m_log(:,1));
    hold on;

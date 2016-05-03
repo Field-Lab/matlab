@@ -3,7 +3,7 @@
 list = dir('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/SUs_data001/');
 
 icell=0;
-for ifile = 81:length(list)
+for ifile = 3:length(list)
     data = load(sprintf('/Volumes/Lab/Users/bhaishahster/pc2015_10_29_2_analysis_fits/SUs_data001/%s',list(ifile).name),'fitGMLM_log','mask');
     nSU=4;
     filters = data.fitGMLM_log{nSU}.Linear.filter;
@@ -191,6 +191,8 @@ for imc = 1:length(mc_data)
      
 end
 
+% all pairs
+
 cl=[];
 for imc=1:length(mc_data)
 cl = [cl;mc_data(imc).clog.cc_ratio];    
@@ -199,3 +201,34 @@ cl_d = -2*log( cl);
 cl_dist = sqrt(cl_d(cl_d>0));
 figure;
 histogram(real(cl_dist));
+set(gca,'yTick',[]);
+
+% nearest neighbors
+figure
+for nn=1:3
+cl = [];
+
+for imc=1:length(mc_data)
+    for isu=1:length(mc_data(imc).clog.center_log2)
+        center = mc_data(imc).clog.center_log2(isu);
+        sort_centers =  sort(mc_data(imc).clog.other_centers(isu,:),'descend');
+        nearest_center = sort_centers(nn);
+        cl = [cl;nearest_center/center];
+    end
+end
+
+cl_d = -2*log( cl);
+cl_dist = sqrt(cl_d(cl_d>0));
+hold on;
+histogram(real(cl_dist));
+end
+
+% plot 2D gaussians
+[X,Y] = meshgrid([-4:0.1:4],[-4:0.1:5]);
+figure;
+Z = normpdf(X,0,1).*normpdf(Y,0,1);
+surf(X,Y,Z);
+hold on;
+Z = normpdf(X,0,1).*normpdf(Y,1.5,1);
+surf(X,Y,Z);
+set(gca,'visible','off')
