@@ -4,18 +4,14 @@
 clear
 close all
 % dbstop if error
-dataparam.date='2016-04-21-1/data005-cf/edited';
-dataparam.concatname='data005-cf';
+dataparam.date='2016-02-17-6/data026_cf_split/edited';
+dataparam.concatname='data026_cf_split';
 dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-22222-119.5.xml';
 dataparam.stixel_size = 16;
-dataparam.interval = 2;
 dataparam.seed = 22222;
-dataparam.refresh_rate = 120;
 fitparam.num_frames = 30;
-dataparam.x_dim = 640;
-dataparam.y_dim = 320;
-frame_width = dataparam.x_dim/dataparam.stixel_size;
-frame_height = dataparam.y_dim/dataparam.stixel_size;
+frame_width = 640/dataparam.stixel_size;
+frame_height = 320/dataparam.stixel_size;
 stixels_per_frame = frame_width*frame_height;
 
 num_colors =3;
@@ -26,14 +22,8 @@ dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.dat
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;
 if select_cells == 1
-    dataparam.cell_specification = [  
-  993
- 4201
- 5194
- 6771
- 6968
-
- ] %ON parasol
+  dataparam.cell_specification = [1021 1022 1023 1027 1028 1741 1742 1743 1744 2751 2752 2753 3066 3067 3068 3466 3468 3469 3470 4296 4297 4298 4299 4300 4327 4328 4329 4330 4332 5026 5027 5028 5176 5177 5178 5179 5180 5536 5537 5538 5539] %ON parasol
+  %ON parasol
 
 end
 dataparam.cell_type = {'all'};

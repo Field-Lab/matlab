@@ -54,19 +54,30 @@ else
     bw= 1;
 end
 
-[inputs, refresh, duration] = get_wn_movie_ath(datarun, mdf_file, bw);
-
-% inputs = uint8(255*(inputs-min(inputs(:)))/(max(inputs(:))-min(inputs(:))));
-% test = reshape(1:800*85000, 800, 85000);
-
-% test = [repmat([1;2;3],800,1), repmat([4;5;6],800,1),repmat([7;8;9],800,1),repmat([10;11;12],800,1)]
-% inputs = test;
-% real_frame(:,1) = inputs(1:(25));
+[inputs, ~, ~] = get_wn_movie_ath(datarun, mdf_file, bw);
 
 
 %% account for dropped frames
-%% data005
-%% 1787 is x coordinate of sharp peak in diff(triggers) graph
+
+%% 2016-02-17-6 data026
+% 1857 is x coordinate of sharp peak in diff(triggers) graph
+triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
+jitter_x_new = [jitter_x(1:92851); jitter_x(92900:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
+jitter_y_new = [jitter_y(1:92851); jitter_y(92900:end)];
+inputs = [inputs(:,1:92851), inputs(:,92900:end)];
+for i = 1:size(spikes,2)
+    ind = find(spikes{i} > 92851/60 & spikes{i} <= 92900/60);
+    if ~isempty(ind)
+        spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (92900/60-92851/60);
+        spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
+    end
+    
+    
+end
+
+
+%% 2016-04-21-1 data005
+% 1787 is x coordinate of sharp peak in diff(triggers) graph
 triggers = [triggers(1:1787); triggers(1788:end) - mean(diff(triggers(1:1787)))];
 jitter_x = [jitter_x(1:89351); jitter_x(89400:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
 jitter_y= [jitter_y(1:89351); jitter_y(89400:end)];
@@ -77,8 +88,8 @@ for i = 1:size(spikes,2)
         spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (89400/60-89351/60);
         spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
     end
-
-
+    
+    
 end
 %% data024
 % triggers = [triggers(1:392); triggers(393:end) - mean(diff(triggers(1:392)))];
@@ -106,7 +117,7 @@ if num_colors == 3
     real_frame(:,:,3,1) = reshape(inputs(3:3:image_width*image_height*3)',image_width, image_height);
 else
     real_frame(:,:,1,1) = reshape(inputs(1:image_width*image_height)',image_width, image_height);
-
+    
 end
 
 
@@ -127,13 +138,6 @@ while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1
     i = i+1;
 end
 
-% a = reshape(real, 20, 40, size(real,2));
-
-%inputs is 800x85000
-
-% [mvi] = load_movie(mdf_file, triggers);
-% mvi = squeeze(mvi(:,:,1,:));
-% Compute the time each stimulus frame occurred
 
 bt_triggers = triggers(2:end) - [triggers(1:end-1)];
 avg_bt_triggers = mean(bt_triggers);
@@ -143,19 +147,14 @@ upsampled_num_frames = ceil(length_of_time*dataparam.refresh_rate);
 
 upsample_factor = dataparam.interval; % should be interval
 
-%     frames_needed = zeros(3,upsampled_num_frames ); %% assume triggers every 100 frames
-    frames_needed = uint8(kron(1:ceil(upsampled_num_frames/upsample_factor), ones(1,upsample_factor)));
-%     frames_needed = a(1:upsampled_num_frames);
-    
-    %     frames_needed{j}(1,:) = kron(1:upsampled_num_frames/upsample_factor, ones(1,upsample_factor));
-    
-    frame_spacing = zeros(1, size(frames_needed,2));
-    for i= 1:length(triggers)-1
-        spacing = linspace(triggers(i), triggers(i+1),101);
-        frame_spacing(1, (i-1)*100+1:(i-1)*100+100)= spacing(1:end-1); %% assume triggers every 100 frames
-    end
-    
-% triggers = [triggers; triggers(end) + avg_bt_triggers]; % add one more trigger
+frames_needed = uint8(kron(1:ceil(upsampled_num_frames/upsample_factor), ones(1,upsample_factor)));
+
+frame_spacing = zeros(1, size(frames_needed,2));
+for i= 1:length(triggers)-1
+    spacing = linspace(triggers(i), triggers(i+1),101);
+    frame_spacing(1, (i-1)*100+1:(i-1)*100+100)= spacing(1:end-1); %% assume triggers every 100 frames
+end
+
 binned_spikes = uint8(zeros(size(spikes,2), size(frames_needed,2)-1));
 for j = 1:size(spikes,2)
     for i = 1:size(frames_needed,2)-1
@@ -165,187 +164,105 @@ end
 
 
 %% Compute movie
-movie = int8(zeros(image_width*stixel_size, image_height*stixel_size, num_colors,10000));
 
-sta = cell(int32(size(spikes,2)),1);
+sta = cell(size(spikes,2),1);
 for i = 1:size(spikes,2)
-    sta{i} =int32(zeros(size(movie,1),size(movie,2),num_colors, num_frames));
+    sta{i} =double(zeros(image_width*stixel_size, image_height*stixel_size,num_colors, num_frames));
 end
 
 
 start_points = [1:10000:size(frames_needed,2) size(frames_needed,2)];
 
-movie_exist = exist(['/Volumes/Lab/Users/crhoades/JitterMovie/',dataparam.date, '/', dataparam.concatname, '/', 'movie_block_1.mat']);
-movie_exist= 0;
 try
-    if movie_exist ~=0
-%         tic
-%         for j = 1%:length(start_points)-1
-%             
-%             for m = 1:10000/200
-%                 temp = load(['/Volumes/Lab/Users/crhoades/JitterMovie/',dataparam.date, '/', dataparam.concatname, '/', 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
-%                 movie(:,:,:,200*(m-1)+1:200*(m-1)+200) = temp.current_movie;
-%             end
-%             
-%             %             current_movie = movie(:,:,:,200*(m-1)+1:200*(m-1)+200);
-%             %             save([save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
-%             for cel = 1:size(spikes,2)
-%                 for i = 1:start_points(j+1)-1 - start_points(j)
-%                     if mod(i,1000) == 0
-%                         fprintf('Cell: %d out of %d, Phase: %d out of %d, %d out of %d \n', cel, size(spikes,2), j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
-%                     end
-%                     
-%                     
-%                     %         if start_points(j) -1+ i <= length(spikes_by_frame)
-%                     if binned_spikes(cel,start_points(j)-1 + i) == 0
-%                     else
-%                         if i > num_frames
-% %                         else
-% %                             for t = 1:num_frames
-% %                                 subtract = num_frames - t +1;
-%                                 sta{cel} = sta{cel} + int32(movie(:,:,:,i-num_frames:i-1)) * int32(binned_spikes(cel,start_points(j)-1 + i));
-% %                             end
-%                         end
-%                     end
-%                 end
-%                 
-%             end
-% %             if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
-% %                 mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
-% %             end
-% %             if mod(j,10) == 0
-% %                 
-% %                 save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
-% %             end
-%         end
-%         
-%         toc
-    else
-       
-        height =image_height;
-        width = image_width;
-        for j = 1%:length(start_points)-1
-            tic
-            for i = 1:start_points(j+1)-1 - start_points(j)
+    height =image_height;
+    width = image_width;
+    
+    for j = 1:length(start_points)-1
+        
+        for i = 1:start_points(j+1)-1 - start_points(j)
+            
+            movie = int8(zeros(image_width*stixel_size, image_height*stixel_size, num_colors));
+            
+            if start_points(j)-1 + i+num_frames < size(frames_needed,2) %&& start_points(j)_1 + i - num_frames>0
+         
+                true_frame = int8(zeros(width*stixel_size, height*stixel_size));
+                F = real_frame(:,:,:,frames_needed(1,start_points(j)-1 + i));
+                shaped_frame = F(:,:,1);
+                %                 sized_frame = imresize(shaped_frame, stixel_size, 'nearest');
+                
+                scale = [stixel_size stixel_size]; % The resolution scale factors: [rows columns]
+                oldSize = size(shaped_frame); % Get the size of your image
+                newSize = scale.*oldSize;  % Compute the new image size
+                
+                % Compute an upsampled set of indices:
+                
+                rowIndex = min(round(((1:newSize(1))-0.5)./scale(1)+0.5),oldSize(1));
+                colIndex = min(round(((1:newSize(2))-0.5)./scale(2)+0.5),oldSize(2));
+                % Index old image to get new image:
+                sized_frame = shaped_frame(rowIndex,colIndex);
                 
                 
-                if start_points(j)-1 + i+num_frames < size(frames_needed,2) %&& start_points(j)_1 + i - num_frames>0
-                    %             if sum(frames_needed(3,(start_points(j) + i:start_points(j) + i-1+num_frames)))~=0
-                    %                 if i  <= (duration - 1)
-                    true_frame = int8(zeros(width*stixel_size, height*stixel_size));
-                    F = real_frame(:,:,:,frames_needed(1,start_points(j)-1 + i));
-                    %                     F = round(mvi.getFrame(frames_needed{cel}(1,start_points(j)-1 + i)).getBuffer);
-                    shaped_frame = F(:,:,1);
-                    sized_frame = imresize(shaped_frame, stixel_size, 'nearest');
-                    movie(:,:,1,i) = sized_frame;
+                
+                sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
+                position = int64([jitter_x(frames_needed(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y(frames_needed(1,start_points(j)-1 + i))+1+stixel_size/2]);
+                true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
+                movie(:,:,1) = true_frame;
+                if num_colors == 3
+                    shaped_frame = F(:,:,2);
+                    sized_frame = shaped_frame(rowIndex,colIndex);
                     sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                    position = int64([jitter_x(frames_needed(1,start_points(j)-1 + i))+1+stixel_size/2, jitter_y(frames_needed(1,start_points(j)-1 + i))+1+stixel_size/2]);
-                    %         x and y might be reversed
                     true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
-                    movie(:,:,1,i) = true_frame;
-                    if num_colors == 3
-                        shaped_frame = F(:,:,2);
-                        sized_frame = imresize(shaped_frame, stixel_size, 'nearest');
-                        sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                        % x and y might be reversed
-                        true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
-                        movie(:,:,2,i) =true_frame;
-                        
-                        shaped_frame = F(:,:,3);
-                        sized_frame = imresize(shaped_frame, stixel_size, 'nearest');
-                        sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                        % x and y might be reversed
-                        true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
-                        movie(:,:,3,i) = true_frame;
-                    end
-                    %                 else
-                    %                     continue
-                    %                 end
-                    %             else
-                    %                 counter = counter +1;
-                    %             end
-                    %
+                    movie(:,:,2) =true_frame;
                     
+                    shaped_frame = F(:,:,3);
+                    sized_frame = shaped_frame(rowIndex,colIndex);
+                    sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
+                    true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
+                    movie(:,:,3) = true_frame;
+                end
+                
+                
+                
                 
                 for cel = 1:size(spikes,2)
                     if mod(i,1000) == 0
                         fprintf('Cell: %d out of %d, Phase: %d out of %d, %d out of %d \n', cel, size(spikes,2), j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
                     end
                     
-                    %         if start_points(j) -1+ i <= length(spikes_by_frame)
                     for t = 1:num_frames
-                        if binned_spikes(cel,start_points(j)-1 + i) ~= 0
-
-                            if i > num_frames
-
-    %                             for t = 1:num_frames
-    %                                 subtract = num_frames - t +1;
-                                    sta{cel} = sta{cel} + int32(movie(:,:,:,i-num_frames:i-1)) * int32(binned_spikes(cel,start_points(j)-1 + i));
-
-                                    %                             end
+                        if binned_spikes(cel,start_points(j)-1 + i + t) ~= 0
+                            
+                            subtract = num_frames - t +1;
+                            if subtract < 0
+                                sta{cel}(:,:,:,subtract) = sta{cel}(:,:,:,subtract)  + double(movie) * double(binned_spikes(cel,start_points(j)-1 + i +t));
                             end
                         end
-                    %         end
+                    end
                     
                 end
-                end
+                
                 
                 
             end
             
-            % save('/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Jitter/temp_sta', 'sta');
-            toc
-%             for m = 1:10000/200
-%                 current_movie = movie(:,:,:,200*(m-1)+1:200*(m-1)+200);
-%                 if ~exist(dataparam.save_path)
-%                     mkdir(dataparam.save_path)
-%                 end
-%                 save([dataparam.save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie', '-v7.3');
-%             end
-%             
-%             if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
-%                 mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
-%             end
-%             if mod(j,10) == 0
-%                 
-%                 save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
-%             end
+            if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
+                mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
+            end
+            if mod(j,floor((length(start_points)-1)/3)) == 0 % save three times
+                
+                save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
+            end
         end
+        
     end
 catch
     disp('out of frames')
 end
-
-%     save(['/Volumes/Lab/Users/crhoades/JitterMovie/2008-04-22-5/data004/chuck_', num2str(counter)],'movie', '-v7.3');
-
-
-
-%% ---------------------- Use spike times to form STA --------------------------
-
-
-
-
-
-
-
-figure;
-for i = 1:num_frames
-    if size(sta{1},3) == 3
-        imagesc(sta{1}(10:end-10,10:end-10,2,i))
-    else
-        imagesc(sta{1}(:,:,1,i))
-    end
-    pause(0.25)
+for i = 1:size(binned_spikes,1)
+    sta{i}./sum(binned_spikes(i,:));
 end
-%
-%
-% axis equal
-% % sta = permute(sta,[1,2,4,3]);
-% sig_stixels = significant_stixels(sta);
-% rf = rf_from_sta(sta, 'sig_stixels', sig_stixels);
-% figure;
-% imagesc(norm_image(rf));
-% axis equal
+
+
 
 
 
