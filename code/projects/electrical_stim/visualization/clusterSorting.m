@@ -488,7 +488,7 @@ end
 
 % Check waveforms on electrode of interest.
 waveformsOn1Elec = squeeze(eiMatrix(:,:,tempRecElec));
-[rowIdx,~]= find(waveformsOn1Elec<-15);
+[rowIdx,~]= find(waveformsOn1Elec<-20);
 % templates = waveformsOn1Elec(unique(rowIdx),sampleRange);
 clusterElecs = getCluster512(tempRecElec); 
 figure; set(gcf, 'Position', [60 956 1670 150]); 
@@ -792,7 +792,7 @@ activationResults.pattern(str2double(get(handles.patternNo,'String'))).threshold
 activationResults.pattern(str2double(get(handles.patternNo,'String'))).userAccepted(handles.tempRecElec) = 1;  %#ok<STRNU>
 
 save(resultsFile,'activationResults'); 
-handles.actThresh = handles.tempActThresh; 
+handles.actThresh = manualThreshold; 
 if get(handles.displayCurrentElec,'Value');
     setElecColor(handles)
 elseif get(handles.allElectrodeDisplay,'Value');
