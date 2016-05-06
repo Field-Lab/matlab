@@ -11,7 +11,7 @@ function wholeArrayAutoAnalysisLargeScale(eiFilePath, pathToPreparation,folders,
 % GM 04/2016 (BASED ON wholeArrayAutoAnalysis LG 12/2015)
 
   
-    params=InitializeArray(pathToPreparation,1);
+    params=InitializeArray(pathToPreparation,1,folders);
     
     params.global.sortData=1;
     params.global.nTrial=80;
@@ -117,7 +117,7 @@ try
         elecStimSortingLargeScale(pathToPreparation,folders,pathSave,eiFilePath,e,cellIDs,templates,params)
            
              disp(['finished analyzing pattern '...
-                num2str(patternNo) ' neurons ' num2str(cellIDs) '. pattern ' num2str(e-startPattern+1) ' of ' num2str(endPattern-startPattern+1)']);
+                num2str(patternNo) ' neurons ' num2str(cellIDs') '. pattern ' num2str(e-startPattern+1) ' of ' num2str(endPattern-startPattern+1)']);
         end
     
 catch ME

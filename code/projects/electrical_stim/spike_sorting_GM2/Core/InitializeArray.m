@@ -31,11 +31,8 @@ path=[];
 patternNo=[];
 
 
-if(nargin>=3)
-    patternNo=varargin{1};
-end
 
-if(nargin<=3)
+if(nargin<3)
     
     dirs=dir(pathToPreparation);
     cont=1;
@@ -48,12 +45,19 @@ if(length(dirs(i).name)>=4)
         FoldersNames{cont}=dirs(i).name;
         cont=cont+1;
     end
-    end
-    end
-    
-elseif(nargin==4)
-    FoldersNames=varargin{2};
 end
+    end
+end
+
+if(nargin>=3)
+    FoldersNames=varargin{1};
+end
+
+if(nargin==4)
+    patternNo0=varargin{2};
+    
+end
+    
 
 for f=1:length(FoldersNames)
     pathAux=[pathToPreparation FoldersNames{f}];
@@ -65,17 +69,24 @@ for f=1:length(FoldersNames)
         
         aux=find(dirs(i).name(1)=='p');
         if(length(aux)>0)
-            if(nargin==2)
                 if(~isequal(dirs(i).name(2),'a'))
-                    patternNo=str2num(dirs(i).name(2:end));
+                    if(nargin<4)
+                        patternNo=str2num(dirs(i).name(2:end));
+                        path=pathAux;
+                    break
+                    else
+                        patternNo=str2num(dirs(i).name(2:end));
+                        if(patternNo0==patternNo);
+                            path=pathAux;
+                            break
+                        end
+                    end
                 end
-            end
-            if(isequal(dirs(i).name(2:end),num2str(patternNo)))
-                path=pathAux;
-            end
         end
         end
 end
+  
+
 
      if(isempty(path))
          disp('Could not find useful pattern')
