@@ -4,6 +4,12 @@
 experiment_id = '2015-10-06-3'; 
 
 switch experiment_id
+    case '2016-04-21-10'
+        im1=imread('/Volumes/Data/2016-04-21-10/Imaging/confocal/2016-04-21-10-tub-isolectin_MIP.jpg');
+        im2=imread('/Volumes/Data/2016-04-21-10/Imaging/confocal/2016-04-21-10-vasculature.jpg');
+        alignment_image = imread('/Volumes/Data/2016-04-21-10/Imaging/array_mosaic_crop.jpg'); 
+        vasculature_array = rot90(alignment_image,2);
+        vasculature_confocal = imresize(im2(:,:,1),'OutputSize',[2000 NaN]); 
     case '2016-01-05-4'
         alignment_image = imread('/Volumes/Transfer/2015-01-05-4/Imaging/vasculature_stitched.tif'); 
         % Choose the channel containing vasculature only.
