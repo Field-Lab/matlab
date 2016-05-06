@@ -117,7 +117,7 @@ try
         elecStimSortingLargeScale(pathToPreparation,folders,pathSave,eiFilePath,e,cellIDs,templates,params)
            
              disp(['finished analyzing pattern '...
-                num2str(patternNo) ' neurons ' num2str(cellIDs) '. pattern ' num2str(e-startPattern+1) ' of ' num2str(endPattern-startPattern+1)']);
+                num2str(patternNo) ' neurons ' num2str(cellIDs') '. pattern ' num2str(e-startPattern+1) ' of ' num2str(endPattern-startPattern+1)']);
         end
     
 catch ME
