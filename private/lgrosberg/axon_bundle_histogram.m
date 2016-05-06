@@ -166,3 +166,23 @@ for d = 1:length(datasets);
     title([dataset ' ' decision(H+1)]);
     legend([h1,h2,h3],{'Sample mean',sprintf('%2.0f%% CI',100*aa),'H0 mean'},'Location','NorthWest');
 end
+
+%% Histograms
+
+figure; 
+subplot(5,1,1); 
+histogram(axonBundleThresholds',13); xlim([0 5]); 
+title(sprintf('2015-04-09-2 n = %0.0f',length(axonBundleThresholds')))
+subplot(5,1,2);
+histogram(axonBundleThresholds_2015_09_23_2);xlim([0 5]); 
+title(sprintf('2015-09-23-2 n = %0.0f',length(axonBundleThresholds_2015_09_23_2))); 
+subplot(5,1,3);
+histogram(axonBundleThresholds_2015_10_6_3); xlim([0 5]); 
+title(sprintf('2015-10-06-3 n = %0.0f',length(axonBundleThresholds_2015_10_6_3)))
+subplot(5,1,4);
+histogram(bundleThresholds_2015_10_06_6); xlim([0 5]); 
+title(sprintf('2015-10-06-6 n = %0.0f',length(bundleThresholds_2015_10_06_6)))
+subplot(5,1,5);
+histogram(bundle_thresholds_2012_09_24); xlim([0 5]); 
+title(sprintf('2012-09-24-3 n = %0.0f',sum(isfinite(bundle_thresholds_2012_09_24))))
+xlabel('axon bundle threshold (\muA)'); 
