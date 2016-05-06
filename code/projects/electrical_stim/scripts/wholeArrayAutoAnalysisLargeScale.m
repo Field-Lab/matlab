@@ -11,7 +11,7 @@ function wholeArrayAutoAnalysisLargeScale(eiFilePath, pathToPreparation,folders,
 % GM 04/2016 (BASED ON wholeArrayAutoAnalysis LG 12/2015)
 
   
-    params=InitializeArray(pathToPreparation,1);
+    params=InitializeArray(pathToPreparation,1,folders);
     
     params.global.sortData=1;
     params.global.nTrial=80;
