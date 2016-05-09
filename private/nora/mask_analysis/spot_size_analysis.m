@@ -51,7 +51,14 @@ for exp = exps
     for subgroup = 1:n_subgroups
         for i_cell = cell_idx{subgroup}
             PSTH_full = IDP_plot_PSTH(reg_data{i_reg}, i_cell, 'color', 0);
-            for i = 1:length(mask_conditions{subgroup})
+            noise_floor_1.testspikes = reg_data{1}.testspikes(1:15,:);
+            if n_reg == 2
+                 noise_floor_2.testspikes = reg_data{2}.testspikes(1:15,:);
+            else
+                noise_floor_2.testspikes = reg_data{1}.testspikes(15:end,:);
+            end
+            noise_floor(i_cell) = err(IDP_plot_PSTH(noise_floor_1, i_cell, 'color', 0), IDP_plot_PSTH(noise_floor_2, i_cell, 'color', 0));
+                for i = 1:length(mask_conditions{subgroup})
                 PSTH_center = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0);
                 NSEM_Corr(i_cell,i) = err(PSTH_full, PSTH_center);
                 PSTH_surround = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0);
@@ -67,8 +74,8 @@ for exp = exps
         MSE =  NSEM_Corr(i,:);
         surr = surround_struct(i,:);
         if ~any(diff(MSE)>20) && ~any(diff(surr)>100)
-        figure(1); hold on; plot(sigma, MSE, 'Color', [1 1 1]*0.75); hold on
-        figure(2); hold on; plot(sigma, surr,  'Color', [1 1 1]*0.75); hold on
+        figure(1); hold on; plot([sigma], [MSE/noise_floor(i)], 'Color', [1 1 1]*0.75); hold on
+        %figure(2); hold on; plot(sigma, surr,  'Color', [1 1 1]*0.75); hold on
         for s = 1:length(sigma)
             mean_cell_corr{sigma(s)} = [mean_cell_corr{sigma(s)} MSE(s)];
             mean_cell_surr{sigma(s)} = [mean_cell_surr{sigma(s)} surr(s)];

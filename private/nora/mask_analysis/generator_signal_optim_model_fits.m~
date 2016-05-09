@@ -92,7 +92,7 @@ for exp = [2 3 5]
     % 1 = center, 2 = surround
     % 1 = reg, 2 = spot, 3 = gap
     for subgroup = 1:n_subgroups
-        for i_cell = 1%cell_idx{subgroup}
+        for i_cell = cell_idx{subgroup}
             disp(cells_orig(i_cell))
              master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
             [PSTH{1}, time] = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0, 'smoothing', 10);
