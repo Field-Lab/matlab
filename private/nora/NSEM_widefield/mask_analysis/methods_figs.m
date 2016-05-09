@@ -37,11 +37,28 @@ plot_rf(datarun_class, cells_orig(cell), 'fit', false);
 
 axis([28 53 15 40])
 axis off
-exportfig(gcf, ['ex_sta.eps'], 'Bounds', 'tight', 'Color', 'rgb', 'Renderer', 'zbuffer')
+%exportfig(gcf, ['ex_sta.eps'], 'Bounds', 'tight', 'Color', 'rgb', 'Renderer', 'zbuffer')
+
+load(['/Volumes/Lab/Users/Nora/GLMFits_masking/' piece '/NSEM_full_opt/' num2str(cells_orig(cell)) 'NSEM_optmodel.mat']);
+sta_fit = opt_model.sta_fit.params;
 
 
+spatial{1} = make_Gaussian_two_d('center_point_x', sta_fit.center_point_x, 'center_point_y', sta_fit.center_point_y, 'sd_x', 1.4403, 'sd_y',  1.1435, 'rotation_angle', sta_fit.center_rotation_angle, 'x_dim', 80, 'y_dim', 40);
+spatial{2} = make_Gaussian_two_d('center_point_x', sta_fit.center_point_x, 'center_point_y', sta_fit.center_point_y, 'sd_x', sta_fit.surround_sd_scale*sta_fit.center_sd_x, 'sd_y',sta_fit.surround_sd_scale*sta_fit.center_sd_y, 'rotation_angle', sta_fit.center_rotation_angle, 'x_dim', 80, 'y_dim', 40);
+
+spatial_total = spatial{1} - sta_fit.surround_amp_scale*spatial{2};
+spatial_total = cat(3, spatial_total*sta_fit.color_weight_a, spatial_total*sta_fit.color_weight_b, spatial_total*sta_fit.color_weight_c);
 %%
- for s = [2]% 4 6]
+
+figure;
+image(1.3*(norm_image(spatial_total)-0.1))
+axis([28 53 15 40]) 
+axis off
+
+%figure; surf(spatial{1} - sta_fit.surround_amp_scale*spatial{2})
+
+%
+ for s = [2 4 6 ]
             the_fit = datarun_class.stas.fits{datarun_class.cell_ids == cells_orig(cell)};
             ctr = the_fit.mean;
             rad = s*the_fit.sd;
@@ -49,7 +66,7 @@ exportfig(gcf, ['ex_sta.eps'], 'Bounds', 'tight', 'Color', 'rgb', 'Renderer', 'z
             hold on; plot(X,Y, 'k', 'LineWidth', 2)
  end
         
- exportfig(gcf, ['ex_sta_with_ellipse.eps'], 'Bounds', 'tight', 'Color', 'rgb', 'Renderer', 'zbuffer')
+ exportfig(gcf, ['ex_stafit_with_ellipse.eps'], 'Bounds', 'loose', 'Color', 'rgb', 'Renderer', 'zbuffer')
  
  %%
  figure;
@@ -62,7 +79,7 @@ exportfig(gcf, ['ex_sta.eps'], 'Bounds', 'tight', 'Color', 'rgb', 'Renderer', 'z
  axis off
  caxis([0 255]-64)
 axis([28 53 15 40]*4)
-exportfig(gcf, ['ex_sta_spot_plot.eps'], 'Bounds', 'loose', 'Color', 'rgb')
+%exportfig(gcf, ['ex_sta_spot_plot.eps'], 'Bounds', 'loose', 'Color', 'rgb')
  
  mask = mod(2, mask);
  mask_frame = NSmovie(:,:,2).*mask;
@@ -72,7 +89,7 @@ exportfig(gcf, ['ex_sta_spot_plot.eps'], 'Bounds', 'loose', 'Color', 'rgb')
  axis off
  caxis([0 255]-64)
 axis([28 53 15 40]*4)
-exportfig(gcf, ['ex_sta_gap_plot.eps'], 'Bounds', 'loose', 'Color', 'rgb')
+%exportfig(gcf, ['ex_sta_gap_plot.eps'], 'Bounds', 'loose', 'Color', 'rgb')
 
  mask_frame = NSmovie(:,:,2);
  imagesc(mask_frame)
@@ -81,7 +98,7 @@ exportfig(gcf, ['ex_sta_gap_plot.eps'], 'Bounds', 'loose', 'Color', 'rgb')
  axis off
  caxis([0 255]-64)
 axis([28 53 15 40]*4)
-exportfig(gcf, ['ex_sta_FF.eps'], 'Bounds', 'loose', 'Color', 'rgb')
+%exportfig(gcf, ['ex_sta_FF.eps'], 'Bounds', 'loose', 'Color', 'rgb')
 
 
      

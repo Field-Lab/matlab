@@ -68,32 +68,51 @@ for exp = exps
     end
         
     %%
-           sigma = sigmas(mask_conditions{subgroup})
-
+    sigma = sigmas(mask_conditions{subgroup});
+    
     for i = 1:length(cells_masking)
         MSE =  NSEM_Corr(i,:);
         surr = surround_struct(i,:);
         if ~any(diff(MSE)>20) && ~any(diff(surr)>100)
-        figure(1); hold on; plot([sigma], [MSE/noise_floor(i)], 'Color', [1 1 1]*0.75); hold on
-        %figure(2); hold on; plot(sigma, surr,  'Color', [1 1 1]*0.75); hold on
-        for s = 1:length(sigma)
-            mean_cell_corr{sigma(s)} = [mean_cell_corr{sigma(s)} MSE(s)];
-            mean_cell_surr{sigma(s)} = [mean_cell_surr{sigma(s)} surr(s)];
-        end
+
+
+
+
+
+
+
+
+            count = count +1;
+            figure(1); hold on; plot(sigma, MSE, 'Color', [1 1 1]*0.75); hold on
+            figure(2); hold on; plot(sigma, surr,  'Color', [1 1 1]*0.75); hold on
+            if strcmp(piece, '2016-04-21-1') && i == 1
+                example_Cell = {sigma, MSE, surr};
+            end
+            for s = 1:length(sigma)
+                mean_cell_corr{sigma(s)} = [mean_cell_corr{sigma(s)} MSE(s)];
+                mean_cell_surr{sigma(s)} = [mean_cell_surr{sigma(s)} surr(s)];
+            end
+
         end
     end
 end
 
+%%
+default_colors = get(gca,'ColorOrder');
 all_sigmas = [2 4 5 6 8 10];
 for s = 1:6
    mean_corr(s) = mean(mean_cell_corr{all_sigmas(s)}); 
    mean_surr(s) = mean(mean_cell_surr{all_sigmas(s)}); 
 end
 figure(1); hold on; plot(all_sigmas, mean_corr, 'k', 'LineWidth', 2)
-set(0, 'defaultFigurePosition', [2 2 4 4])
+%hold on; plot(example_Cell{1}, example_Cell{2}, 'Color', default_colors(1,:), 'LineWidth', 2)
+set(gcf, 'Position', [2 2 4 4])
 axis square
+xlim([2 10])
 
 figure(2); hold on; plot(all_sigmas, mean_surr, 'k', 'LineWidth', 2)
-set(0, 'defaultFigurePosition', [2 2 4 4])
+%hold on; plot(example_Cell{1}, example_Cell{3}, 'Color', default_colors(1,:), 'LineWidth', 2)
+set(gcf, 'Position', [2 2 4 4])
 axis square
+xlim([2 10])
 

@@ -99,9 +99,9 @@ end
 %%
 plot(total_mask(:,1), total_reg(:,1),'.k', 'MarkerSize', 10);
 hold on; plot([0 30], [0 30],'k' )
-axis([0 30 0 30])
+%axis([0 30 0 30])
 axis square
-exportfig(gcf, [fig_save '/firing_rate_comparison.eps'], 'Bounds', 'loose', 'Color', 'rgb')
+%exportfig(gcf, [fig_save '/firing_rate_comparison.eps'], 'Bounds', 'loose', 'Color', 'rgb')
 
 
 %%

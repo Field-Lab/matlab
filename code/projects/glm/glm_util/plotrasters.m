@@ -61,7 +61,7 @@ if p.Results.separate
     
     if ~predict_only
         hFig1=figure;
-        set(hFig1, 'Position', [100 100 800 250])
+        set(hFig1, 'Position', [1 1 8 3])
         hold on
         for i_trial = 1:trials
             rec1 = time(find(rec_rast(i_trial,:)));
@@ -77,7 +77,7 @@ if p.Results.separate
     end
     
     hFig2=figure;
-    set(hFig2, 'Position', [100 100 800 250])
+    set(hFig2, 'Position', [1 1 8 3])
     hold on
     runawaytrial=ones(trials,1);
     for i_trial = 1:trials
@@ -101,10 +101,10 @@ else
     hFig=figure;
     
     if p.Results.PSTH
-        set(hFig, 'Position', [100 100 1000 500])
+        set(hFig, 'Position', [1 1 10 3])
         subplot(2,1,1)
     else
-        set(hFig, 'Position', [100 100 1000 250])
+        set(hFig, 'Position', [1 1 10 3])
     end
     
     hold on
@@ -153,7 +153,7 @@ if p.Results.PSTH
     
     if p.Results.separate || ~p.Results.rasters
         hFig3=figure;
-        set(hFig3, 'Position', [100 100 800 250])
+        set(hFig3, 'Position', [1 1 8 3])
     else
         subplot(2,1,2)
     end
