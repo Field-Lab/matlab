@@ -1,1 +1,0 @@
-raw_movie = get_rawmovie('/Volumes/Data/Stimuli/');
