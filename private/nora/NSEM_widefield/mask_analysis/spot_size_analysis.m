@@ -67,6 +67,7 @@ for exp = exps
         MSE =  NSEM_Corr(i,:);
         surr = surround_struct(i,:);
         if ~any(diff(MSE)>20) && ~any(diff(surr)>100)
+            count = count +1;
             figure(1); hold on; plot(sigma, MSE, 'Color', [1 1 1]*0.75); hold on
             figure(2); hold on; plot(sigma, surr,  'Color', [1 1 1]*0.75); hold on
             if strcmp(piece, '2016-04-21-1') && i == 1

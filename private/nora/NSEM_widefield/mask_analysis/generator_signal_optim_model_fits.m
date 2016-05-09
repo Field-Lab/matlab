@@ -43,7 +43,7 @@ interval_frame = cumsum(interval);
 
 %%
 params_list
-for exp = [2 3 5]
+for exp = [2 3]
     eval(exps{exp}) % 2 3 5
     n_reg = length(reg);
     mkdir(fig_save);
@@ -92,7 +92,7 @@ for exp = [2 3 5]
     % 1 = center, 2 = surround
     % 1 = reg, 2 = spot, 3 = gap
     for subgroup = 1:n_subgroups
-        for i_cell = 1%cell_idx{subgroup}
+        for i_cell = cell_idx{subgroup}
             disp(cells_orig(i_cell))
             master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
             [PSTH{1}, time] = IDP_plot_PSTH(reg_data{1},i_cell, 'color', 0, 'smoothing', 10);
@@ -160,8 +160,8 @@ for exp = [2 3 5]
                 PSTH{2} = IDP_plot_PSTH(condition{mask_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
                 PSTH{3} = IDP_plot_PSTH(condition{comp_conditions{subgroup}(i)},i_cell, 'color', 0, 'smoothing', 10);
                 
-                model_arch = 'y~b1/(b2+exp(b3*(x1+b4*x2+b5)))';
-                init = [opt_model.model.Coefficients.Estimate; -sta_fit.surround_amp_scale; opt_model.orig_glm.linearfilters.TonicDrive.Filter];
+                model_arch = 'y~b1/(b2+exp(b3*(x1+b4*x2)))';
+                init = [opt_model.model.Coefficients.Estimate; -sta_fit.surround_amp_scale];
                 for i_movie_type = 1:3
                     
                     % get the correlation and the generator signal for
@@ -171,9 +171,7 @@ for exp = [2 3 5]
                     model = fitnlm(data_matrix, responses, model_arch, init);
                     
                     %total_gen_signal{i_movie_type} = model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
-                    Corr{exp}(i_cell, i,i_movie_type) = model.Rsquared.Ordinary;
-                    Model_Coeff{exp}(i_cell, i,i_movie_type, :) = model.Coefficients.Estimate;
-                    
+                    %Corr{exp}(i_cell, i,i_movie_type) = model.Rsquared.Ordinary;
                     total_gen_signal{i_movie_type} = -model.Coefficients.Estimate(3)*(gen_signal{i_movie_type}{1}(1:1166)+model.Coefficients.Estimate(4)*gen_signal{i_movie_type}{2}(1:1166));
                     
                     
@@ -205,7 +203,7 @@ for exp = [2 3 5]
                 
                 
                 
-                %{
+                %%{
                 % Generator signals correlated vs anticorrelated
             start = 1;
             for i_interval = 1:24
@@ -225,7 +223,7 @@ for exp = [2 3 5]
             TMG = [TMG; mask_gen];
             TCG = [TCG; comp_gen];
                 %}
-                %%{
+                %{
                 default_colors = get(gca,'ColorOrder');
                 figure;
             plot(time(30:end),PSTH{3}(30:end))
@@ -260,6 +258,8 @@ end
 
 %% Plot Correlation across spot size
 default_colors = get(gca,'ColorOrder');
+
+%{
 figure; hold on;
 plot([2 4 5 6 12], [squeeze(Corr{2}(:,:,2)) squeeze(Corr{2}(:,1,1))]','-', 'Color', [1 1 1]*0.75);
 plot([2 4 5 6 12], [squeeze(Corr{3}(:,:,2)) squeeze(Corr{3}(:,1,1))]','-', 'Color', [1 1 1]*0.75);
@@ -279,6 +279,10 @@ set(gca, 'XTick', [2 4 6 8 10 12])
 set(gca, 'XTickLabels', {'2', '4', '6', '8', '10', 'Full'})
 set(gca, 'YTick', 0.4:0.2:0.8)
 %exportfig(gcf, [fig_save '/Corr_across_spot_size.eps'], 'Bounds', 'loose', 'Color', 'rgb')
+%}
+
+%%
+
 
 %%
 %{
