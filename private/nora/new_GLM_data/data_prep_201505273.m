@@ -7,7 +7,7 @@ model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neur
 dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
 
 %% ONLY CHANGE THINGS HERE
-cell_spec = get_cell_ids(datarun_class,'Off Parasol'); % cell ids to fit
+cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
 %cell_spec = [202];
 convergence = 1; % fraction of data to use
 
@@ -23,28 +23,7 @@ visual_check = 1;
 
 
 %%
-% block frames is a vector of the different block lengths,
-% ex = [1200*3 1200] aka even fitting blocks first and odd testing blocks
-% second. Weird order is so that frames(block i) = block_frames(mod(i,2)+1)
-%
-% Output:
-% preppeddata structure, including start_time which has the starts of the
-% blocks and p which are the optional parameters you included
-% It can also include: fitspikes, testspikes, fitmovie, testmovie, etc
-% which depend on which options you choose. They will be in cells and each
-% cell corresponds to a block of data.
-%
-% cell_spec
-% Setting cell_specification will return the organized spikes for those
-% cells. Details for what cell_specification should be are detailed in the
-% get_cell_indices function
-
-%% Find Block Times
-clear prepped_data
-monitor_refresh = 120;
-visual_check = 1;
-
-for i_stim = 1:2
+for i_stim = 2 % WN is 1, NSEM is 2
     trial_idx = 1:10;
     tic;
     for i_block_trigger = blocks{i_stim}
@@ -174,13 +153,13 @@ for i_stim = 1:2
         if convergence < 1; fitmovie = fitmovie(:,:,1:(block_length*n_blocks*convergence)); end
     end
     disp(['Stimulus organization took ' num2str(toc) ' seconds.']); tic
-      
+    
+    
     % fit each cell
     n_cells = size(prepped_data.fitspikes,2);
     block_length = i_stim*[3600];
     n_blocks = size(prepped_data.fitspikes,1);
-stimlength = size(fitmovie,3);    
-for i_cell=11:n_cells
+    for i_cell=1:n_cells
         cell_savename = num2str(cell_spec(i_cell));
         fitspikes = [];
         for i_block = 1:n_blocks
@@ -206,7 +185,7 @@ for i_cell=11:n_cells
         fittedGLM.STA = STA;
         fittedGLM.center = center;
         
-        save([dsave '/' cell_savename save_name '.mat'],'fittedGLM', '-v7.3');
+        save([dsave '/' cell_savename save_name '.mat'], 'fittedGLM', '-v7.3');
         close all
         plotfilters(fittedGLM);
         set(gcf, 'Position', [100 100 800 250])
