@@ -1,0 +1,521 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2014 The MathWorks, Inc.
+                    R2014a (8.3.0.532) 64-bit (glnxa64)
+                             February 11, 2014
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 3217
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 216
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_3217_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 3217
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 265
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_3217_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 3217
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 159
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_3217_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 2509
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 167
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_2509_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 1969
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 140
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_1969_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 1908
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 124
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_1908_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258
+Currently Analysing: data001-data002
+
+elecRespInfo = 
+
+      experimentName: '2015-10-06-3'
+            dataPath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+        analysisPath: '/Volumes/Analysis/2015-10-06-3/data000/'
+    analysisBaseName: 'data000'
+            savePath: '/Volumes/Analysis/2015-10-06-3/data001-data002/'
+            movieInt: 0
+          mainNeuron: 2420
+       activeNeurons: {[]  []  []  []}
+               pElec: []
+            mainElec: 163
+          otherElecs: {[]  []  []  []  []}
+        artifactPath: []
+       artMovieFirst: []
+        artMovieLast: []
+         artMovieInt: []
+          sampleRate: 20000
+           autoMovie: 1
+          externalEi: 0
+          stimSystem: '512'
+           patternNo: 258
+           shortName: '2015-10-06-3_2420_p258'
+
+done analyzing movie 1, pattern 258
+done analyzing movie 9, pattern 258
+done analyzing movie 17, pattern 258
+done analyzing movie 25, pattern 258
+done analyzing movie 33, pattern 258
+done analyzing movie 41, pattern 258
+done analyzing movie 49, pattern 258
+done analyzing movie 57, pattern 258
+done analyzing movie 65, pattern 258
+done analyzing movie 73, pattern 258
+done analyzing movie 81, pattern 258
+done analyzing movie 89, pattern 258
+done analyzing movie 105, pattern 258
+done analyzing movie 113, pattern 258
+done analyzing movie 121, pattern 258
+done analyzing movie 129, pattern 258
+done analyzing movie 137, pattern 258
+done analyzing movie 145, pattern 258
+done analyzing movie 153, pattern 258
+done analyzing movie 161, pattern 258
+done analyzing movie 169, pattern 258
+done analyzing movie 177, pattern 258
+done analyzing movie 178, pattern 258
+done analyzing movie 186, pattern 258
+done analyzing movie 194, pattern 258
+done analyzing movie 202, pattern 258
+done analyzing movie 210, pattern 258
+done analyzing movie 218, pattern 258
+done analyzing movie 226, pattern 258
+done analyzing movie 234, pattern 258
+done analyzing movie 242, pattern 258
+done analyzing movie 250, pattern 258
+done analyzing movie 258, pattern 258
+done analyzing movie 266, pattern 258
+done analyzing movie 274, pattern 258
+done analyzing movie 282, pattern 258
+done analyzing movie 290, pattern 258
+done analyzing movie 298, pattern 258
+done analyzing movie 306, pattern 258
+done analyzing movie 314, pattern 258

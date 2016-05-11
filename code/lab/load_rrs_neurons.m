@@ -1,4 +1,4 @@
-function [spikes, extras] = load_rrs_neurons(full_path, neurons)
+function [spikes, extras, cbuffer] = load_rrs_neurons(full_path, neurons)
 % LOAD_RRS_NEURONS    loads up RRS .neurons file
 %
 % usage:   [spikes] = load_rrs_neurons(neurons_file);
@@ -143,6 +143,7 @@ buffer = fread(fid, [4 header_slots], long_type);
 % extract useful info
 cell_ids = buffer(1,:)';
 channels = buffer(2,:)';
+cbuffer = buffer;
 
 % total number of cells (subtract 1 for lisp version)
 if isempty(find(channels == unused_slot_tag))

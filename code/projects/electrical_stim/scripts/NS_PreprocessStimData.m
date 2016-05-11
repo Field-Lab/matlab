@@ -4,10 +4,11 @@
 % for each movie chunk / amplitude
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+javaaddpath('/Volumes/Lab/Development/vision7/Vision.jar');
 system = 'stim512';  %stim512 or stim64
 %system = 'stim64';
-datasets = {'2015-10-29-3'};
-datasetsdata = {9};
+datasets = {'2016-04-21-6'};
+datasetsdata = {[2:5 9 10 14 15]};
 datasetslen = 1;
 
 for j = 1:datasetslen; 

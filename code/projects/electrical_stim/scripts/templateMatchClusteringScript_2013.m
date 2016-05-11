@@ -1,6 +1,6 @@
 % clear all
 
-run('add_paths.m');
+javaaddpath('/Volumes/Lab/Development/vision7/Vision.jar')
 params.saveFigures = 0;
 params.shiftLimSpikeMin = [2 35];
 params.shiftStep = 0.25;
@@ -9,34 +9,28 @@ params.residLim  = [6 40]; %stim ends at 250us
 modelType = 'prevArtifact';
 stimSystem = '512'; %'512' or '61'
 %patternNos = [39 457 410 289]; %289 is control
-patternNos = [258];
-%neuronName = 4249;
-neuronNameVec = [3217 3217 3217];
-neuronMainElecVec = [191 277 208];
+%patternNos = [27 451 439];
+patternNos = [136 120 77 328 385];
+neuronNum = 2013;
 
 movieInt = 0;
-dp = '2015-10-06-3';
+dp = '2015-12-18-0';
 
 
-%for i=2:29; 
-%for i=[3 5 6 9 10 13 14]; 
-nncnt = 0;
-for neuronName=neuronNameVec; 
-nncnt = nncnt + 1;
-for i=7;  
-%	for k =  [297 152 301];
-	for k =  neuronMainElecVec(nncnt);
-%	patternNos = [k]; 
+for i=[1 2 3];  
+	for k = [136 120 77 328 385];
+	%for k = [27 451 439];
 	%LOOP over all experiment folders
 
 		%% filling elecRespInfo with details for creation of elecResp
 
-		%dataPathFolder = ['data' sprintf('%3.3d',i)];
-		dataPathFolder = 'data001-data002';
+		dataPathFolder = ['data' sprintf('%3.3d',i)];
 		disp(['Currently Analysing: ' dataPathFolder])
 		elecRespInfo.experimentName = dp;
 		elecRespInfo.dataPath       = ['/Volumes/Analysis/' dp '/' dataPathFolder '/'];  %Location of raw data chunks
 		elecRespInfo.analysisPath   = ['/Volumes/Analysis/' dp '/data000/'];  %Location of vision output files
+		%elecRespInfo.dataPath       = ['E:\' dp filesep dataPathFolder filesep];  %Location of raw data chunks
+		%elecRespInfo.analysisPath   = ['E:\' dp '\data000\'];  %Location of vision output files
 
 		% Check inputs
 		%{
@@ -79,7 +73,7 @@ for i=7;
 		elecRespInfo.movieInt         =   movieInt;
 
 		%elecRespInfo.mainNeuron =       input('Enter main neuron id: '); %108;
-		elecRespInfo.mainNeuron = neuronName; 
+		elecRespInfo.mainNeuron = neuronNum; 
 	%	elecRespInfo.mainNeuron = 6887; 
 		elecRespInfo.activeNeurons{1} = [];
 		elecRespInfo.activeNeurons{2} = [];
@@ -139,7 +133,5 @@ for i=7;
 		end
 	end
 end
-end
 
-%load handel
-%sound(y,Fs)
+
