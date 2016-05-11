@@ -182,7 +182,12 @@ if p.Results.stimulus_name
             prepped_data.fitmovie = cell(floor(n_blocks/2),1);
             for i = 1:floor(n_blocks/2)
                 seed_variable = mod( (a*seed_variable + c), m);
-                prepped_data.fitmovie{i} = get_WN_movie(['/Volumes/Lab/Users/akheitman/NSEM_Home/Stimuli/BW-8-1-0.48-11111_RNG_16807/xml_files/novel/' p.Results.stimulus_name '-0.48-' num2str(seed_variable) '.xml'], block_frames(1));
+                try
+                    prepped_data.fitmovie{i} = get_WN_movie(['/Volumes/Lab/Users/Nora/Stimulus/BW_XML/' p.Results.stimulus_name '-0.48-' num2str(seed_variable) '.xml'], block_frames(1));
+                catch
+                    eval(['! /Volumes/Lab/Users/Nora/Stimulus/movie-xml-maker ' p.Results.stimulus_name '-0.48-' num2str(seed_variable)]) % OS system command to make the XML file
+                    prepped_data.fitmovie{i} = get_WN_movie(['/Volumes/Lab/Users/Nora/Stimulus/BW_XML/' p.Results.stimulus_name '-0.48-' num2str(seed_variable) '.xml'], block_frames(1));
+                end
             end
         end
         
