@@ -3,9 +3,10 @@
 
 clear
 close all
+profile on
 % dbstop if error
-dataparam.date='2016-04-21-8/data022-cf/edited/';
-dataparam.concatname='data022-cf';
+dataparam.date='2016-04-21-8/data022-mVision/data022_regroup422_4818/';
+dataparam.concatname='data022';
 dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-40-1-0.48-11111-20x15-60.35.xml';
 dataparam.stixel_size = 40;
 dataparam.interval = 1;
@@ -14,13 +15,14 @@ dataparam.refresh_rate = 60.35;
 fitparam.num_frames = 30;
 dataparam.x_dim = 800;
 dataparam.y_dim = 600;
-dataparam.num_of_interval = 100; % number of * in progress bar
+num_colors =3;
+dataparam.num_of_interval = 50; % number of * in progress bar
 frame_width = dataparam.x_dim/dataparam.stixel_size;
 frame_height = dataparam.y_dim/dataparam.stixel_size;
 stixels_per_frame = frame_width*frame_height;
 
 
-num_colors =3;
+
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
 dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
 dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.date, '/', dataparam.concatname, '/'];
@@ -28,7 +30,7 @@ dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.dat
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;
 if select_cells == 1
-  dataparam.cell_specification = [3077 4337 4761 1711 3381 4248 154 901 1953 3259 3813 4487 4565 7501 406 407 3140 3721 4771 5912] %ON parasol
+  dataparam.cell_specification = [35] %ON parasol
 
 end
 dataparam.cell_type = {'all'};
@@ -53,7 +55,7 @@ dataset = datarun.names.rrs_neurons_path(slashes(3)+1:slashes(5)-1);
 to_replace = strfind(dataset, '/');
 dataparam.dataset(to_replace) = '-';
 
-opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_sta_params', 1, 'load_all',true);
+opt=struct('verbose',1,'load_params',1,'load_neurons',1,'load_obvius_sta_fits',true, 'load_sta', 1, 'load_all',true);
 opt.load_sta_params.save_rf = 1;
 % opt.load_sta_params.frames = 1:fitparam.num_frames;% have to input as a vector list of frames, not the number of frames total, counting backwards
 datarun=load_data(datarun,opt);
@@ -111,17 +113,17 @@ end
 if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterX.mat']) ~=0 && exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterY.mat']) ~=0
     
     jitterX = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterX.mat']);
-    jitterX = int8(jitterX.jitterX);
+    jitterX = int16(jitterX.jitterX);
     jitterY = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterY.mat']);
-    jitterY = int8(jitterY.jitterY);
+    jitterY = int16(jitterY.jitterY);
 else
     
     
     
     
     state = Init_RNG_JavaStyle(seed);
-    jitterX = int8(zeros(duration,1));
-    jitterY = int8(zeros(duration,1));
+    jitterX = int16(zeros(duration,1));
+    jitterY = int16(zeros(duration,1));
     
     
     for i = 1:duration
@@ -152,7 +154,7 @@ for i = 1:size(spikes,2)
 end
 
 toc
-
+profile off
+profile viewer
 [~,git_hash_string] = system('git rev-parse HEAD');
-fprintf('Git Hash: %s \n', git_hash_string);
-
+fprintf('

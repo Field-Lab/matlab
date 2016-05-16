@@ -67,8 +67,8 @@ end
 %         spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (92900/60-92851/60);
 %         spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
 %     end
-%     
-%     
+%
+%
 % end
 
 %
@@ -106,7 +106,7 @@ end
 image_width = dataparam.x_dim/stixel_size;
 image_height = dataparam.y_dim/stixel_size;
 
-real_frame = int8(zeros(image_width, image_height, num_colors, size(inputs,2)));
+real_frame = zeros(image_width, image_height, num_colors, size(inputs,2), 'int16');
 if num_colors == 3
     real_frame(:,:,1,1) = reshape(inputs(1:3:image_width*image_height*3)',image_width, image_height);
     real_frame(:,:,2,1) = reshape(inputs(2:3:image_width*image_height*3)',image_width, image_height);
@@ -153,7 +153,7 @@ for i= 1:length(triggers)-1
     frame_spacing(1, (i-1)*100+1:(i-1)*100+100)= spacing(1:end-1); %% assume triggers every 100 frames
 end
 
-binned_spikes = uint8(zeros(size(spikes,2), size(frames_needed,2)-1));
+binned_spikes = zeros(size(spikes,2), size(frames_needed,2)-1, 'int16');
 for j = 1:size(spikes,2)
     for i = 1:size(frames_needed,2)-1
         binned_spikes(j,i) = sum(spikes{j} >= frame_spacing(1,i) & spikes{j} < frame_spacing(1,i+1));
@@ -163,25 +163,28 @@ end
 
 %% Compute movie
 
-fprintf('Progress: %s %s\n', dataparam.date, dataparam.concatname)
-fprintf([repmat('-', 1,dataparam.num_of_interval), '/n'])
-sta = zeros(image_width*stixel_size, image_height*stixel_size,num_colors, num_frames, size(spikes,2));
+fprintf('Progress: %s%s\n', dataparam.date, dataparam.concatname)
+fprintf([repmat('-', 1,dataparam.num_of_interval+1), '\n'])
+fprintf('*')
+sta = zeros(image_width*stixel_size, image_height*stixel_size,num_colors, num_frames, size(spikes,2), 'int16');
+sum_binned_spikes = sum(binned_spikes,1 );
 try
     height =image_height;
     width = image_width;
     
     for i = 1:size(frames_needed,2)
-            if mod(i,floor(size(frames_needed,2)/num_of_interval)) == 0
-                fprintf('*');
-            end
-
-
+        if mod(i,floor(size(frames_needed,2)/dataparam.num_of_interval)) == 0
+            fprintf('*');
+        end
+        
+        
         
         % don't compute the frame if you don't need it
-        if sum(sum(binned_spikes(:,i + 1:i+num_frames))) ~= 0
-            
-            movie = int8(zeros(image_width*stixel_size, image_height*stixel_size, num_colors));
-            true_frame = int8(zeros(width*stixel_size, height*stixel_size));
+        
+        if sum(sum_binned_spikes(:,i + 1:i+num_frames)) ~= 0
+          
+            movie = zeros(image_width*stixel_size, image_height*stixel_size, num_colors, 'int16');
+            true_frame = zeros(width*stixel_size, height*stixel_size, 'int16');
             F = real_frame(:,:,:,frames_needed(1,i));
             shaped_frame = F(:,:,1);
             %                 sized_frame = imresize(shaped_frame, stixel_size, 'nearest');
@@ -200,40 +203,44 @@ try
             
             
             sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-            position = int64([jitter_x(frames_needed(1,i))+1+stixel_size/2, jitter_y(frames_needed(1,i))+1+stixel_size/2]);
-            true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
+            position = [jitter_x(frames_needed(1,i))+1+stixel_size/2, jitter_y(frames_needed(1,i))+1+stixel_size/2];
+            true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
             movie(:,:,1) = true_frame;
             if num_colors == 3
                 shaped_frame = F(:,:,2);
                 sized_frame = shaped_frame(rowIndex,colIndex);
                 sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
+                true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
                 movie(:,:,2) =true_frame;
                 
                 shaped_frame = F(:,:,3);
                 sized_frame = shaped_frame(rowIndex,colIndex);
                 sized_frame = sized_frame((stixel_size/2+1):(end - stixel_size/2), (stixel_size/2+1):(end - stixel_size/2));
-                true_frame(position(1):(int64(size(sized_frame,1))+position(1)-1), position(2):(int64(size(sized_frame,2))+position(2)-1)) = sized_frame;
+                true_frame(position(1):(size(sized_frame,1)+position(1)-1), position(2):(size(sized_frame,2)+position(2)-1)) = sized_frame;
                 movie(:,:,3) = true_frame;
             end
             
+            
+            
+            
+            
+            
+            
+            for t = 1:num_frames
 
-            
-            
-            for cel = 1:size(spikes,2)
-                
-                
-                for t = 1:num_frames
-                    if binned_spikes(cel,i + t) ~= 0
-                        
-                        subtract = num_frames - t +1;
-                        if subtract > 0
+                [x_ind] = find(binned_spikes(:,i+t)>0);
+                if ~isempty(x_ind)                        
+                    subtract = num_frames -t+1;
+
+                    if subtract > 0
+                        for cel = 1:length(x_ind)
                             % maximum values in sta are -32768 and
                             % 32768, which could be problem for cells
                             % that spike A LOT
-                            sta(:,:,:,subtract, cel) = sta(:,:,:,subtract, cel)  + double(movie) * double(binned_spikes(cel,i +t));
+                            sta(:,:,:,subtract, x_ind(cel)) = sta(:,:,:,subtract, x_ind(cel))  + movie * binned_spikes(x_ind(cel),i+t);
                         end
                     end
+                    
                 end
             end
         end
@@ -242,8 +249,9 @@ try
 catch
     disp('out of frames')
 end
-fprintf('/n');
+fprintf('\n');
 
+sta = double(sta);
 for i = 1:size(binned_spikes,1)
     sta(:,:,:,:,i) = sta(:,:,:,:,i)./sum(double(binned_spikes(i,:)));
 end
