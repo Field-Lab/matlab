@@ -43,6 +43,7 @@ function neuronPairsRefVsNew = crossIdentifyNeuronIDs(dataFolderRef, dataFolderN
 nSim = 1; 
 threshold = 15000;
 
+set_EI_path = 0;
 if dataFolderRef(end:end)~=filesep
     dataFolderRef = [dataFolderRef filesep];
 end
@@ -112,7 +113,11 @@ for kk=1:length(contentsDataFolder)
         end
     end
     if isEIFile
-        eiNew_path = [dataFolderNew contentsDataFolder(kk).name];
+        if set_EI_path ==0
+            eiNew_path = [dataFolderNew contentsDataFolder(kk).name];
+            set_EI_path = 1;
+        end
+        
     end
     if autoClassify
         if isParamFile
