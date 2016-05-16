@@ -123,20 +123,24 @@ if nargout  >= 3
 	ntb_combined = ntb_static +ntb_novel;
      
     %%% SETUP DATARUN FOR LOADING THE MASTER DATA
+    %{
 	datarun{1}.names.rrs_params_path  = sprintf('%s/%s/%s.params', DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
 	datarun{1}.names.rrs_sta_path     = sprintf('%s/%s/%s.sta',    DirPars.analysisdir,DirPars.dn_mas,DirPars.dn_mas);
-	datarun{1}.default_sta_fits       = 'vision';
+%}		
+    opt = struct('verbose',1,'load_params',1,'load_neurons',1);
+    datarun{1} = load_data([DirPars.analysisdir '/' DirPars.dn_mas '/' DirPars.dn_mas], opt);
+    datarun{1}.default_sta_fits       = 'vision';
 
 	%%% SETUP DATARUN FOR ENSLAVED (BW OR NSEM .. CAN'T CLASSIFY ON OWN DUE TO MOVIE ISSUES)
-	datarun{2}.names.rrs_neurons_path = sprintf('%s/%s/%s.neurons', DirPars.analysisdir,DirPars.dn_slv,DirPars.dn_slv);
-	if strcmp(map_type, 'mapEI')
+	%datarun{2}.names.rrs_neurons_path = sprintf('%s/%s/%s.neurons', DirPars.analysisdir,DirPars.dn_slv,DirPars.dn_slv);
+	datarun{2} = load_data([DirPars.analysisdir '/' DirPars.dn_slv '/' DirPars.dn_slv], opt);
+    if strcmp(map_type, 'mapEI')
         datarun{2}.names.map_path         = sprintf('%s/%s/cellmatch_mapEI_from_%s.txt',analysisdir,DirPars.dn_slv,DirPars.dn_mas);
     end
 	datarun{2}.default_sta_fits = 'vision';
 
 	%%% ACTUALLY LOAD UP DATA   JAVA CALLS
-	opt = struct('verbose',1,'load_params',1,'load_neurons',1);
-	datarun = load_data(datarun,opt);
+    %datarun = load_data(datarun,opt);
 	if isfield(datarun{2}.names,'map_path')
         datarun=load_map(datarun);
     else
