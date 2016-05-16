@@ -34,6 +34,13 @@ addParameter(p,'PSTH_window_size', 100, @isnumeric); % set the amount smoothing 
 addParameter(p, 'rasters', 1, @islogical); % set to 0 to only plot the PSTH
 parse(p,xval, fittedGLM,varargin{:});
 
+
+[~,B] = system('hostname');
+if strcmp(B(1:6), 'bertha')
+    scale = 100;
+else
+    scale = 1;
+end
 if ~isfield(xval.rasters,'recorded')
     predict_only=true;
     rec1=zeros(10^6,1);
@@ -61,7 +68,7 @@ if p.Results.separate
     
     if ~predict_only
         hFig1=figure;
-        set(hFig1, 'Position', [1 1 8 3])
+        set(hFig1, 'Position', [1 1 8 3]*scale)
         hold on
         for i_trial = 1:trials
             rec1 = time(find(rec_rast(i_trial,:)));
@@ -77,7 +84,7 @@ if p.Results.separate
     end
     
     hFig2=figure;
-    set(hFig2, 'Position', [1 1 8 3])
+    set(hFig2, 'Position', [1 1 8 3]*scale)
     hold on
     runawaytrial=ones(trials,1);
     for i_trial = 1:trials
@@ -101,10 +108,10 @@ else
     hFig=figure;
     
     if p.Results.PSTH
-        set(hFig, 'Position', [1 1 10 3])
+        set(hFig, 'Position', [1 1 10 3]*scale)
         subplot(2,1,1)
     else
-        set(hFig, 'Position', [1 1 10 3])
+        set(hFig, 'Position', [1 1 10 3]*scale)
     end
     
     hold on
@@ -153,7 +160,7 @@ if p.Results.PSTH
     
     if p.Results.separate || ~p.Results.rasters
         hFig3=figure;
-        set(hFig3, 'Position', [1 1 8 3])
+        set(hFig3, 'Position', [1 1 8 3]*scale)
     else
         subplot(2,1,2)
     end

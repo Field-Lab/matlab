@@ -114,6 +114,7 @@ end
 % find the start times
 start_time = triggers(start_trigger);
 prepped_data.start_time = start_time;
+prepped_data.start_trigger = start_trigger; 
 
 %% Find and organize the spikes
 disp(['Trigger finding took ' num2str(toc) ' seconds.'])

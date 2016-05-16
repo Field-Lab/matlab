@@ -1,10 +1,37 @@
+% NB 2014-10-9
+% get data into a reasonable shape to share
+
+% Data Type
+clear; close all;  clc
+GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
+GLMType.map_type = 'mapPRJ';
+i_exp = 1; i_cell = 1;
+cellselectiontype = 'all';
+GLMType.fit_type = 'WN';
+
 piece = '2012-08-09-3';
 piece_file = '201208093';
 stim_type = 'NSEM';
 tstim = .00832750;
 
+%% load basic info
+expnumber = i_exp;
+[exp_nm,cells,expname]  = cell_list( expnumber, cellselectiontype);
+[StimulusPars DirPars datarun_slv datarun_mas] = Directories_Params_v23(exp_nm, GLMType.fit_type, GLMType.map_type);
+clear boolean_debug map_type fit_type shead_cellID expname
+inputs.exp_nm    = exp_nm;
+inputs.map_type  = GLMType.map_type;
+inputs.stim_type = GLMType.fit_type;
+
+inputs.exp_nm       = exp_nm;
+inputs.map_type     = GLMType.map_type;
+DirPars.WN_STAdir   = NSEM_secondaryDirectories('WN_STA', inputs);
+inputs.stim_type    = GLMType.fit_type;
+
+DirPars.organizedspikesdir = NSEM_secondaryDirectories('organizedspikes_dir', inputs);
+clear inputs
+
 %% loading and organizing stimulus
-load(['/Volumes/Lab/Users/Nora/ShareData/Data/CarlosData/' stim_type '-' piece '-CellData.mat'])
 load(['/Volumes/Lab/Users/Nora/ShareData/Data/CarlosData/' stim_type '-' piece '-StimData.mat'])
 eval(['blockedmoviecell = ' stim_type 'StimData.FitMovie;'])
 eval(['testmovie = ' stim_type 'StimData.TestMovie;'])
@@ -24,12 +51,24 @@ end
 fitmovie = concat_fullfitMovie;
 clear concat_fullfitMovie blockedmoviecell framenums height i_blk totalframes width
 
-%% cell specific
-eval(['names = fieldnames(' stim_type 'CellData);'])
-n_cells = length(names);
-for cell = 6:49
-    eval(['spikes = ' stim_type 'CellData.' names{cell} '.Spikes;'])
-    eval(['STA = ' stim_type 'CellData.' names{cell} '.STA;'])
+
+%%
+for i_cell = 1:length(cells)
+    cid = cells{i_cell};
+    [~ , cell_savename, ~]  = findcelltype(cid, datarun_mas.cell_types);
+    
+    master_idx         = find(datarun_mas.cell_ids == cid);
+    stafit_centercoord = ( datarun_mas.vision.sta_fits{master_idx}.mean );
+    stafit_sd          = ( datarun_mas.vision.sta_fits{master_idx}.sd   );
+    slvdim.height      = StimulusPars.slv.height; slvdim.width = StimulusPars.slv.width;
+    [center_coord,sd]  = visionSTA_to_xymviCoord(stafit_centercoord, stafit_sd, StimulusPars.master, slvdim);
+    clear master_idx stafit_centercoord slvdim sd
+    
+    eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', DirPars.organizedspikesdir, cell_savename));
+    eval(sprintf('load %s/STAandROI_%s.mat STAandROI', DirPars.WN_STAdir, cell_savename));
+    spikes = organizedspikes.block.t_sp_withinblock;
+    STA = STAandROI.STA;
+    
     % concatenate spikes
     testspikes = spikes(1:2:end);
     blockedspikes = spikes(2:2:end);
@@ -60,24 +99,5 @@ for cell = 6:49
     exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' names{cell} '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     save(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' names{cell} '.mat'], 'fittedGLM');
-    
+
 end
-
-%%
-files = dir(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/NSEM/*.mat']);
-n_files = length(files);
-for i=1:n_files
-    load(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/NSEM/' files(i).name]);
-    corr_NSEM(i) = fittedGLM.xval.corr;
-end
-
-files = dir(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/WN/*.mat']);
-n_files = length(files);
-for i=1:n_files
-    load(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/WN/' files(i).name]);
-    corr_WN(i) = fittedGLM.xval.corr;
-end
-
-plot(corr_WN, corr_NSEM, '.')
-hold on; plot([0 1], [0 1])
-

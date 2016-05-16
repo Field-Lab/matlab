@@ -33,7 +33,7 @@ WNStimData.TestMovie=testmovie{1}.matrix;
 clear blockedmoviecell blockstartframe fitblocks fitframesperblock framenums
 %}
 
-% Load STA and spikes
+%% Load STA and spikes
 inputs.exp_nm       = exp_nm;
 inputs.map_type     = GLMType.map_type;
 DirPars.WN_STAdir   = NSEM_secondaryDirectories('WN_STA', inputs);

@@ -53,6 +53,7 @@ if iscell(testspikes)
     for i_blk = 1 : params.trials
         spt = testspikes{i_blk};
         binnumber = ceil(spt / params.bindur );
+        binnumber = binnumber(binnumber<=params.bins);
         logicalspike( i_blk, binnumber )  =  logicalspike( i_blk,binnumber ) + 1;
     end
     clear i_blk spt sptimes

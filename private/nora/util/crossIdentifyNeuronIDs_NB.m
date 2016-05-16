@@ -40,7 +40,7 @@ function neuronPairsRefVsNew = crossIdentifyNeuronIDs_NB(dataFolderRef, dataFold
 
 % If you want to output more than one match candidate for each neuron,
 % you can increase nSim
-nSim = 3; 
+nSim = 1; 
 threshold = 3*15000;
 
 if dataFolderRef(end:end)~=filesep
