@@ -17,76 +17,71 @@ clear
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-date = '2016-02-17-6';
+date = '2016-02-17-1';
+datarun = '007'; % just last three numbers
 
 % Data that contains all the neurons
-referenceRawDataFilePath = ['/Volumes/Data/' date, '/data026/'];
+referenceRawDataFilePath = ['/Volumes/Data/' date, '/data', datarun,'/'];
 
 % File that contains all the neurons or params (saved from Cell Finder or computed by
 % Grind)
 % referenceNeuronFilePath = ['/Volumes/Analysis/', date, '/data011/data011_allneurons/data011_allneurons_manual/data011_allneurons_manual.neurons'];
 % referenceParamsFilePath = ['/Volumes/Analysis/', date, '/data011/data011_allneurons/data011_allneurons_manual/data011_allneurons_manual.params'];
 
-referenceNeuronFilePath = ['/Volumes/Analysis/', date, '/data026_cf/data026_cf.neurons'];
-referenceParamsFilePath = ['/Volumes/Analysis/', date, '/data026_cf/data026_cf.params'];
+referenceNeuronFilePath = ['/Volumes/Analysis/', date, '/data', datarun,'-cf/data', datarun,'-cf.neurons'];
+referenceParamsFilePath = ['/Volumes/Analysis/', date, '/data', datarun,'-cf/data', datarun,'-cf.params'];
 
 
 % Location where a new neurons file containing a subset of the neurons will
 % be located
-newNeuronFilePath = ['/Volumes/Analysis/', date, '/data026_cf/edited/data026_cf/data026_cf.neurons'];
+newNeuronFilePath = ['/Volumes/Analysis/', date, '/data', datarun,'-cf/edited/data', datarun,'-cf/data', datarun,'-cf.neurons'];
 
 % Set specify_cell to 1 if you want to list cell ids. If you want to get a
 % whole class of cells (say all ON Parasols) then set specify_cells to 0
 specify_cells = 1;
 
 % Specify which cell class you want (can be anything if specify_cells = 1)
-cell_type = {'OFF parasol'};
-
+% cell_type = {'OFF parasol'};
+% 
 % if specify_cell = 0, list cell ids here (these are Vision IDs)
-%% TODO SORT IT BY NUMBER
 toKeep = [
-437
-481
-545
-811
-1531
-1786
-2103
-2161
-2431
-3288
-3436
-3816
-3886
-4280
-4937
-5071
-6211
-6331
-6511
-184
-241
-1386
-1936
-2011
-2041
-2331
-3048
-3901
-4113
-4981
-5012
-5523
-5915
-3110
-6526
-7051
-7456
-3166
-4550
-4892
-5062
-
+   320
+   768
+   1891
+   2056
+   3243
+   3392
+   3391
+   3393
+   4336
+   7306
+   7353
+   7550
+   91
+   213
+   1489
+   2523
+   2627
+   3181
+   3603
+   3886
+   3932
+   4127
+   4846
+   5072
+   6781
+   6856
+   7487
+   391
+   856
+   1216
+   3797
+   3931
+   4921
+   5898
+   6736
+   7066
+   7067
     ];
 toKeep = sort(toKeep);
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
