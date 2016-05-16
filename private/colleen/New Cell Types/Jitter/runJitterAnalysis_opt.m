@@ -157,4 +157,5 @@ toc
 profile off
 profile viewer
 [~,git_hash_string] = system('git rev-parse HEAD');
-fprintf('
+fprintf('Git Hash: %s \n', git_hash_string);
+
