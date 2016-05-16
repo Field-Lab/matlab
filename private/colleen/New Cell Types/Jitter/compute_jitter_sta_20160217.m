@@ -267,13 +267,13 @@ else
         
         % save('/Volumes/Lab/Users/crhoades/Colleen/matlab/private/colleen/New Cell Types/Jitter/temp_sta', 'sta');
         
-%         for m = 1:10000/200
-%             current_movie = movie(:,:,:,200*(m-1)+1:200*(m-1)+200);
-%             if ~exist(save_path)
-%                 mkdir(save_path)
-%             end
-%             save([save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
-%         end
+        for m = 1:10000/200
+            current_movie = movie(:,:,:,200*(m-1)+1:200*(m-1)+200);
+            if ~exist(dataparam.save_path)
+                mkdir(dataparam.save_path)
+            end
+            save([dataparam.save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie', '-v7.3');
+        end
         
         if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
             mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);

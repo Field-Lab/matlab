@@ -291,7 +291,7 @@ try
                 if ~exist(dataparam.save_path)
                     mkdir(dataparam.save_path)
                 end
-                save([dataparam.save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie');
+                save([dataparam.save_path, 'movie_block_', num2str(50*(j-1)+m)], 'current_movie', '-v7.3');
             end
             
             if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])

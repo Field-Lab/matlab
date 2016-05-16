@@ -39,6 +39,7 @@ function [sta] = compute_jitter_sta_201604211_opt(datarun, mdf_file, num_frames,
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %     mglBltTexture(frametex, [stimulus.x_start+jitterX, stimulus.y_start+jitterY, stimulus.span_width, stimulus.span_height], -1, -1);
 dbstop if error
+profile on
 % jitter_x = zeros(size(jitter_x));
 % jitter_y = zeros(size(jitter_y));
 %% ---------------------------------- Process movie ------------------------------
@@ -62,8 +63,8 @@ end
 %% 2016-02-17-6 data026
 % 1857 is x coordinate of sharp peak in diff(triggers) graph
 triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
-jitter_x_new = [jitter_x(1:92851); jitter_x(92900:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
-jitter_y_new = [jitter_y(1:92851); jitter_y(92900:end)];
+jitter_x= [jitter_x(1:92851); jitter_x(92900:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
+jitter_y = [jitter_y(1:92851); jitter_y(92900:end)];
 inputs = [inputs(:,1:92851), inputs(:,92900:end)];
 for i = 1:size(spikes,2)
     ind = find(spikes{i} > 92851/60 & spikes{i} <= 92900/60);
@@ -75,22 +76,22 @@ for i = 1:size(spikes,2)
     
 end
 
-
-%% 2016-04-21-1 data005
-% 1787 is x coordinate of sharp peak in diff(triggers) graph
-triggers = [triggers(1:1787); triggers(1788:end) - mean(diff(triggers(1:1787)))];
-jitter_x = [jitter_x(1:89351); jitter_x(89400:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
-jitter_y= [jitter_y(1:89351); jitter_y(89400:end)];
-inputs = [inputs(:,1:89351), inputs(:,89400:end)];
-for i = 1:size(spikes,2)
-    ind = find(spikes{i} > 89351/60 & spikes{i} <= 89400/60);
-    if ~isempty(ind)
-        spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (89400/60-89351/60);
-        spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
-    end
-    
-    
-end
+% 
+% %% 2016-04-21-1 data005
+% % 1787 is x coordinate of sharp peak in diff(triggers) graph
+% triggers = [triggers(1:1787); triggers(1788:end) - mean(diff(triggers(1:1787)))];
+% jitter_x = [jitter_x(1:89351); jitter_x(89400:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
+% jitter_y= [jitter_y(1:89351); jitter_y(89400:end)];
+% inputs = [inputs(:,1:89351), inputs(:,89400:end)];
+% for i = 1:size(spikes,2)
+%     ind = find(spikes{i} > 89351/60 & spikes{i} <= 89400/60);
+%     if ~isempty(ind)
+%         spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (89400/60-89351/60);
+%         spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
+%     end
+%     
+%     
+% end
 %% data024
 % triggers = [triggers(1:392); triggers(393:end) - mean(diff(triggers(1:392)))];
 % jitter_x_new = [jitter_x(1:19601); jitter_x(19650:end)]; %392*100/2 (refresh is 2)+1 : 392*100/2 (refresh is 2)+50
@@ -124,8 +125,10 @@ end
 pointer = image_width*image_height*num_colors+1;
 %     pointer = 2+25+2;
 i =2;
-while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1)
-    temp = inputs(pointer:pointer+image_height*image_width*num_colors-1);
+
+%%%% REMOVE THE +6 WHEN NOT 2016-02-17-6
+while pointer+6+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1)
+    temp = inputs(pointer+6:pointer+6+image_height*image_width*num_colors-1);
     if num_colors == 3
         real_frame(:,:,1,i) = reshape(temp(1:3:end), image_width, image_height);
         real_frame(:,:,2,i) = reshape(temp(2:3:end), image_width, image_height);
@@ -134,7 +137,7 @@ while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1
         real_frame(:,:,1,i) = reshape(temp, image_width, image_height);
     end
     
-    pointer = pointer+image_height*image_width*num_colors;
+    pointer = pointer+6+image_height*image_width*num_colors;
     i = i+1;
 end
 
@@ -147,7 +150,7 @@ upsampled_num_frames = ceil(length_of_time*dataparam.refresh_rate);
 
 upsample_factor = dataparam.interval; % should be interval
 
-frames_needed = uint8(kron(1:ceil(upsampled_num_frames/upsample_factor), ones(1,upsample_factor)));
+frames_needed = kron(1:ceil(upsampled_num_frames/upsample_factor), ones(1,upsample_factor));
 
 frame_spacing = zeros(1, size(frames_needed,2));
 for i= 1:length(triggers)-1
@@ -165,10 +168,9 @@ end
 
 %% Compute movie
 
-sta = cell(size(spikes,2),1);
-for i = 1:size(spikes,2)
-    sta{i} =double(zeros(image_width*stixel_size, image_height*stixel_size,num_colors, num_frames));
-end
+
+sta = zeros(image_width*stixel_size, image_height*stixel_size,num_colors, num_frames, size(spikes,2));
+
 
 
 start_points = [1:10000:size(frames_needed,2) size(frames_needed,2)];
@@ -221,20 +223,23 @@ try
                     movie(:,:,3) = true_frame;
                 end
                 
-                
+                  if mod(i,1000) == 0
+                        fprintf('Phase: %d out of %d, %d out of %d \n', j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
+                    end
                 
                 
                 for cel = 1:size(spikes,2)
-                    if mod(i,1000) == 0
-                        fprintf('Cell: %d out of %d, Phase: %d out of %d, %d out of %d \n', cel, size(spikes,2), j, length(start_points)-1, i, start_points(j+1)-1 - start_points(j));
-                    end
+                  
                     
                     for t = 1:num_frames
                         if binned_spikes(cel,start_points(j)-1 + i + t) ~= 0
                             
                             subtract = num_frames - t +1;
-                            if subtract < 0
-                                sta{cel}(:,:,:,subtract) = sta{cel}(:,:,:,subtract)  + double(movie) * double(binned_spikes(cel,start_points(j)-1 + i +t));
+                            if subtract > 0
+                                % maximum values in sta are -32768 and
+                                % 32768, which could be problem for cells
+                                % that spike A LOT
+                                sta(:,:,:,subtract, cel) = sta(:,:,:,subtract, cel)  + double(movie) * double(binned_spikes(cel,start_points(j)-1 + i +t));
                             end
                         end
                     end
@@ -245,21 +250,23 @@ try
                 
             end
             
-            if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
-                mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
-            end
-            if mod(j,floor((length(start_points)-1)/3)) == 0 % save three times
-                
-                save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
-            end
+%             if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname])
+%                 mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname]);
+%             end
+%             if mod(j,floor((length(start_points)-1)/2)) == 0 % save two times
+%                 
+%                 save(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date, '/', dataparam.concatname, '/temp'], 'sta', '-v7.3');
+%             end
         end
         
     end
 catch
     disp('out of frames')
 end
+profile off 
+profile viewer
 for i = 1:size(binned_spikes,1)
-    sta{i}./sum(binned_spikes(i,:));
+    sta(:,:,:,:,i) = sta(:,:,:,:,i)./sum(double(binned_spikes(i,:)));
 end
 
 

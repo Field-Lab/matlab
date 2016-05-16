@@ -175,6 +175,7 @@ try
     for i = 1:size(frames_needed,2)
         if mod(i,floor(size(frames_needed,2)/dataparam.num_of_interval)) == 0
             fprintf('*');
+            disp(max(sta(:)));
         end
         
         
