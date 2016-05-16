@@ -4,13 +4,13 @@
 clear
 close all
 % dbstop if error
-dataparam.date='2016-02-17-6';
-dataparam.concatname='data023';
-dataparam.jitter_concatname='data026';
-dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-33333-119.5.xml';
+dataparam.date='2016-04-21-1';
+dataparam.concatname='data005';
+dataparam.jitter_concatname='data006-cf/edited/data006-cf';
+dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-22222-119.5.xml';
 dataparam.stixel_size = 8;
-dataparam.seed = 33333;
-fitparam.num_frames = 20;
+dataparam.seed = 22222;
+fitparam.num_frames = 30;
 frame_width = 640/dataparam.stixel_size;
 frame_height = 320/dataparam.stixel_size;
 stixels_per_frame = frame_width*frame_height;
