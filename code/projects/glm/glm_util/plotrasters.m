@@ -39,7 +39,7 @@ parse(p,xval, fittedGLM,varargin{:});
 if strcmp(B(1:6), 'bertha')
     scale = 100;
 else
-    scale = 1;
+    scale = 100;
 end
 if ~isfield(xval.rasters,'recorded')
     predict_only=true;
@@ -119,7 +119,9 @@ else
     for i_trial = 1:trials
         if ~predict_only
             rec1 = time(find(rec_rast(i_trial,:)));
-            plot(rec1, i_trial, 'k.')
+            if ~isempty(rec1)
+                plot(rec1, i_trial, 'k.')
+            end
             sim1 = time(find(sim_rast(i_trial,:)));
 if length(sim1) < 4*length(rec1) && ~isempty(sim1)
                 plot(sim1, i_trial + trials, 'r.')

@@ -5,13 +5,13 @@
 clear; close all;  clc
 GLMType.cone_model = '8pix_Identity_8pix'; GLMType.cone_sname='p8IDp8';%
 GLMType.map_type = 'mapPRJ';
-i_exp = 1; i_cell = 1;
+i_exp = 3;
 cellselectiontype = 'all';
 GLMType.fit_type = 'WN';
 
-piece = '2012-08-09-3';
-piece_file = '201208093';
-stim_type = 'NSEM';
+piece = '2013-08-19-6';
+piece_file = '201308196';
+stim_type = GLMType.fit_type;
 tstim = .00832750;
 
 %% load basic info
@@ -35,7 +35,6 @@ clear inputs
 load(['/Volumes/Lab/Users/Nora/ShareData/Data/CarlosData/' stim_type '-' piece '-StimData.mat'])
 eval(['blockedmoviecell = ' stim_type 'StimData.FitMovie;'])
 eval(['testmovie = ' stim_type 'StimData.TestMovie;'])
-eval(['cells = fieldnames(' stim_type 'CellData);'])
 clear WNStimData
 % concatenate the fit movie (different blocks
 n_blocks = length(blockedmoviecell);
@@ -51,11 +50,13 @@ end
 fitmovie = concat_fullfitMovie;
 clear concat_fullfitMovie blockedmoviecell framenums height i_blk totalframes width
 
+files = dir([DirPars.organizedspikesdir '/*Mid*']);
 
 %%
-for i_cell = 1:length(cells)
-    cid = cells{i_cell};
-    [~ , cell_savename, ~]  = findcelltype(cid, datarun_mas.cell_types);
+for i_cell = 1:length(files)
+    
+    cell_savename = files(i_cell).name(17:(end-4));
+    cid = str2num(cell_savename(8:end));
     
     master_idx         = find(datarun_mas.cell_ids == cid);
     stafit_centercoord = ( datarun_mas.vision.sta_fits{master_idx}.mean );
@@ -71,7 +72,7 @@ for i_cell = 1:length(cells)
     
     % concatenate spikes
     testspikes = spikes(1:2:end);
-    blockedspikes = spikes(2:2:end);
+    blockedspikes = spikes(2:2:end);    
     t_start   = 0;
     T_SP = []; blk_count = 0;
     dur = tstim * fitframes;
@@ -86,18 +87,20 @@ for i_cell = 1:length(cells)
     fitspikes = T_SP;
     clear T_SP blk_count blockedspikes k spikes t_sp t_sp_full t_spcontext t_start
     
-    [~,center] = STA_Test(fitspikes, fitmovie, 1, tstim);
-    fittedGLM = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', 1/tstim);
+    %[~,center] = STA_Test(fitspikes, fitmovie, 1, tstim);
+    
+    %%{
+    fittedGLM = glm_fit(fitspikes, fitmovie, [center_coord.x_coord center_coord.y_coord], 'WN_STA', STA, 'monitor_refresh', 1/tstim);
     fittedGLM.xval = glm_predict(fittedGLM,testmovie, 'testspikes', testspikes);
     temp = corrcoef(conv(sum(fittedGLM.xval.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xval.rasters.recorded), gausswin(100)));
     fittedGLM.xval.corr = temp(2,1);
     close all
     plotfilters(fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' names{cell} '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' cell_savename '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     plotrasters(fittedGLM.xval, fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' names{cell} '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' cell_savename '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
-    save(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' names{cell} '.mat'], 'fittedGLM');
-
+    save(['/Volumes/Lab/Users/Nora/GLMFits/' piece_file '/' stim_type '/' cell_savename '.mat'], 'fittedGLM');
+%}
 end
