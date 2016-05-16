@@ -1,14 +1,15 @@
 function [inputs, refresh, duration] = get_wn_movie_ath(datarun, mdf_file, bw)
-
 % triggers = [datarun.triggers; [datarun.triggers(end) + mean(diff(datarun.triggers)):mean(diff(datarun.triggers)):datarun.triggers(end) + 600*mean(diff(datarun.triggers))]'];
 [~,height,width,duration,refresh] = get_movie_ath(mdf_file,datarun.triggers, 1,2);
 mvi=load_movie(mdf_file, datarun.triggers);
 
 if bw== 1
-    inputs=zeros(height*width,duration-1);
+    inputs=zeros(height*width,duration-1, 'int8');
     cnt=1;
     for j=0:duration-1
         F = round(mvi.getFrame(j).getBuffer);
+        F = int8((1-(-1))*(F-min(F(:)))/(max(F(:))-min(F(:))))-1;
+
         myFrames = reshape(F(1:3:end),width,height); %take out transpose
         
         to_add(:,1) = myFrames(:);
@@ -18,10 +19,11 @@ if bw== 1
     end
 else
     
-    inputs=zeros(height*width*3,duration-1);
+    inputs=zeros(height*width*3,duration-1, 'int8');
     cnt=1;
     for j=0:duration-1
         F = mvi.getFrame(j).getBuffer;
+        F = int8((1-(-1))*(F-min(F(:)))/(max(F(:))-min(F(:))))-1;
         myFrames = reshape(F(1:3:end),width,height); %return movie with opposite orientation 
         to_add(:,1) = myFrames(:);
         
@@ -38,4 +40,5 @@ else
     end
 end
 
-inputs=inputs-0.5;
+
+% inputs=inputs-0.5;
