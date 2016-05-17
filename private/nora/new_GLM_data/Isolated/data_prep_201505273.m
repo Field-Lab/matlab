@@ -1,5 +1,5 @@
 clear
-
+%% isolated
 %% Classification run
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));

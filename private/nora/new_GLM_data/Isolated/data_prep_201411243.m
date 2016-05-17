@@ -1,3 +1,5 @@
+%% isolated 
+
 clear
 Analysis_Path = '/Volumes/Analysis/2014-11-24-3/data009-data0012';
 datarun_class = load_data([Analysis_Path '/data012/data012'], struct('load_neurons', 0, 'load_params', 1));

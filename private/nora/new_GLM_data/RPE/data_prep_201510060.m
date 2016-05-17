@@ -1,3 +1,4 @@
+% RPE
 clear
 Analysis_Path = '/Volumes/Analysis/2015-10-06-0/data000-data015-norefit/';
 class = 'data000';

@@ -1,3 +1,5 @@
+%% NSEM fitting and testing only for RPE piece 2015-05-27-11
+
 %% Load data
 datapath = '2015-05-27-11/data001-data005-norefit/data002-from-data001_data002_data003_data004_data005/data002-from-data001_data002_data003_data004_data005';
 datarun= load_data(datapath);
@@ -9,11 +11,38 @@ datarun_class = load_neurons(datarun_class);
 datarun_class = load_params(datarun_class);
 
 %%
-disp('loading fit movie')
-load('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/fitmovie_2015_05_27_11_data002.mat')
-disp('loading test movie')
-load('/Volumes/Lab/Users/Nora/NSEM_Home/Stimuli/testmovie_2015_05_27_11_data002.mat')
+% load the fitting movie
+disp('making fit movie')
+total_frames = 30*7200;
+fitmovie = zeros(80, 40, total_frames, 'uint8');
+total_images = total_frames/120;
+for i = 1:total_images
+    k = i+3020; % using movie B
+    load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/movie_chunk_' num2str(k) '.mat'])
+    bin_movie = imresize(movie, 0.25);
+    idx = (1:120) + 120*(i-1);
+    fitmovie(:,:,idx) = uint8(bin_movie);
+    if ~mod(i, 50)
+        disp(i)
+    end
+end
 
+% load the test movie
+disp('making test movie')
+total_frames = 20*120;
+testmovie = zeros(80, 40, total_frames, 'uint8');
+total_images = total_frames/120;
+for i = 1:total_images
+    k = i; % using movie A for testing
+    load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSbrownian_6000/matfiles/movie_chunk_' num2str(k) '.mat'])
+    bin_movie = imresize(movie, 0.25);
+    idx = (1:120) + 120*(i-1);
+    testmovie(:,:,idx) = uint8(bin_movie);
+    if ~mod(i, 50)
+        disp(i)
+    end
+end
+disp('saving movie')
 %% Find block starts
 % Finding block starts
 triggers = datarun.triggers;
@@ -102,5 +131,3 @@ for i_cell = 1%:length(cells)
     glm_predict(fittedGLM{i_cell}, testmovie, 'testspikes', tspikes, 'neighborspikes', ntspikes)
     
 end
-
-% save('/Volumes/Lab/Users/Nora/amacrine_coupled.mat','fittedGLM')
