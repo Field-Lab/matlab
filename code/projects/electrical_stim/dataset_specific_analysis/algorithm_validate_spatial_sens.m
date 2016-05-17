@@ -41,8 +41,8 @@ for n = 1:length(cellIds)
     else
         plotCoords = false;
     end; 
-    eiContour_wLinFit(eiAmps,'linFitThresh',5,'figureNum',100,'plotCoords',plotCoords);
-    eiContour_wLinFit(eiAmps,'linFitThresh',5,'figureNum',300,'plotCoords',plotCoords);
+    eiContour_wPolyFit(eiAmps,'ei_thresh',ei_thresh,'figureNum',100,'plotCoords',plotCoords);
+    eiContour_wPolyFit(eiAmps,'ei_thresh',ei_thresh,'figureNum',300,'plotCoords',plotCoords);
     % Find ei amps greater than a particular threshold
     elecs = find(eiAmps > ei_thresh); 
     figure(200); 
@@ -95,8 +95,8 @@ title('50% activation thresholds, human sorting');
 % the cells & patterns
 % 3. Generate comparison plots. 
 %% Show same plot where the bundle threshold is lower
-load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/data_files/axonBundleThresholds_byPattern_2012_09_24_3_data001.mat'); 
-
+load(['/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/'...
+    'hand_sorted_bundle_thresholds/axonBundleThresholds_byPattern_2012_09_24_3_data001.mat']); 
 idx = find(allthresholds);
 idx_good = find(allthresholds < bundle_thresholds_2012_09_24');
 idx_good = intersect(idx_good,idx);
