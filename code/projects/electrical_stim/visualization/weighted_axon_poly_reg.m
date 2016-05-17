@@ -16,25 +16,28 @@ function [curve_x, curve_y, p, soma_x, soma_y, valid, res] = weighted_axon_poly_
 %                           considered for the axon curve.
 %           axonBundleFit - default false, set to true to ignore the
 %                           'soma' and fit a across the entire array
+%             newXYCoords - alternate set of coordinates to use for
+%                           plotting fits over an electrode array.
 %   outputs:      curve_x - X coordinates of axon estimation.
 %                 curve_y - Y coordinates of axon estimation.
 %                       p - polynomial fit coefficients
 %                   valid - boolean of whether or not the fit is valid
 %                     res - residual, measures goodness of fit
 % Alena Rott, summer 2015
-% LG added axon bundle fitting.
+% LG added axon bundle fitting, ability to plot with arbitrary coordinates.
 
 % Yields the minimum squared-error, on average
 N = 7;
 ei = [];
 
-
 % Thresholds that yield the best fit vary between cells and datasets
 point_threshold = max(eiAmps) / 15;
 
+% Set up default parameters.
 plot_reg = false;
 valid = true;
 axonBundleFit = false; 
+newXYCoords = []; 
 
 nbin = length(varargin);
 for j=1:(nbin/2)
@@ -53,6 +56,8 @@ for j=1:(nbin/2)
             point_threshold = varargin{j*2};
         case 'axonBundleFit'
             axonBundleFit = varargin{j*2};
+        case 'newXYCoords'
+            newXYCoords = varargin{j*2};
         otherwise
             err = MException('MATLAB:InvArgIn',...
                 'Unknown parameter specified');
@@ -83,7 +88,9 @@ switch length(eiAmps)
         throw(err);
 end
 
-
+if ~isempty(newXYCoords)
+    coords = newXYCoords;
+end
 % standardizes eiAmps to a column vector
 if size(eiAmps, 1) == 1
     eiAmps = eiAmps';
