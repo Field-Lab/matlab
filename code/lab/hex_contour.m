@@ -17,7 +17,7 @@ function contours = hex_contour(xCoords, yCoords, zVals, nContours, varargin)
 %              values - vector of amplitude values that contours will be calculated from (should be
 %                       same length as xCoordinates and yCoordinates)
 %           nContours - integer specifying desired number of contour levels
-%
+%                cmap - matlab string for a colormap to use, default gray
 %
 %
 % outputs:
@@ -47,7 +47,7 @@ p = inputParser;
 p.addParamValue('contourSpacing', 'linear', @(x)any(strcmpi(x,{'linear', 'log'})));
 p.addParamValue('fig_or_axes', []);
 p.addParamValue('plotCoords', true, @islogical) %if true, plots black dots at electrode locations
-
+p.addParamValue('cmap','gray',@ischar); 
 % resolve user input and default values
 p.parse(varargin{:});
 
@@ -55,6 +55,7 @@ p.parse(varargin{:});
 contSpacing = p.Results.contourSpacing;
 fig_or_axes = p.Results.fig_or_axes;
 plotElecs = p.Results.plotCoords;
+cmap = p.Results.cmap;
 
 %convert xCoords and yCoords to column vectors if not already
 if size(xCoords, 2) > 1
@@ -275,7 +276,7 @@ for i = 1:nContours
     end
 end
 
-contColors = flipud(gray(nContours));
+eval(sprintf('contColors = flipud(%s(nContours));',cmap)); 
 
 plot_axes = set_up_fig_or_axes(fig_or_axes);
 if ~isempty(plot_axes)
