@@ -1,14 +1,13 @@
+% Isolated
 clear
-%% isolated
-%% Classification run
+% Classification run
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));
 model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neurons', 1, 'load_params', 0));
-dsave = '/Volumes/Lab/Users/Nora/GLMFits/2015-05-27-3';
+dsave = '/Volumes/Lab/Users/Nora/GLMFits/Isolated/201505273/WN';
 
-%% ONLY CHANGE THINGS HERE
-cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
-%cell_spec = [202];
+% ONLY CHANGE THINGS HERE
+cell_spec = get_cell_ids(datarun_class,'Off Parasol'); % cell ids to fit
 convergence = 1; % fraction of data to use
 
 %% Don't change these
@@ -18,12 +17,12 @@ mkdir(dsave)
 block_starts = [1 503 1485 1987 2969 3471 4453 4955 5937 6439];
 blocks{1} = block_starts(1:2:end);
 blocks{2} = block_starts(2:2:end);
-monitor_refresh = 120;
+monitor_refresh = 100/median(diff(model_fit_data.triggers));
 visual_check = 1;
 
 
 %%
-for i_stim = 2 % WN is 1, NSEM is 2
+for i_stim = 1 % WN is 1, NSEM is 2
     trial_idx = 1:10;
     tic;
     for i_block_trigger = blocks{i_stim}
@@ -99,13 +98,14 @@ for i_stim = 2 % WN is 1, NSEM is 2
         figure;
         hold on
         for i = 1:size(prepped_data.testspikes, 1)
-            plot(prepped_data.testspikes{i, 1}, i*ones(length(prepped_data.testspikes{i, 1})), 'k.')
+            plot(prepped_data.testspikes{i, 2}, i*ones(length(prepped_data.testspikes{i, 2})), 'k.')
         end
         title('Checking Cell Repeats')
     end
     
     disp(['Trigger and spike finding took ' num2str(toc) ' seconds.'])
     
+    %{
     % Load up and organize the stimulus
     tic;
     if i_stim == 1
@@ -119,11 +119,11 @@ for i_stim = 2 % WN is 1, NSEM is 2
         if convergence < 1
             fitmovie = fitmovie(:,:,1:stimlength);
         end
-            
+        
         test = load('/Volumes/Lab/Users/Nora/downsampledNSbrownian_testA.mat');
         prepped_data.testmovie = test.fitmovie;
         save_name = 'NSEM';
-    end   
+    end
     
     % Concat WN movie
     if i_stim == 1;
@@ -141,7 +141,7 @@ for i_stim = 2 % WN is 1, NSEM is 2
         fitmovie = zeros(block_size,'uint8');
         
         % concatenate the movie
-        idx = 1:block_length; 
+        idx = 1:block_length;
         for i_block = 1:n_blocks
             if ~grey_buffer
                 fitmovie(:,:,idx) = WN_stim.fitmovie{i_block};
@@ -157,7 +157,7 @@ for i_stim = 2 % WN is 1, NSEM is 2
     
     % fit each cell
     n_cells = size(prepped_data.fitspikes,2);
-    block_length = i_stim*[3600];
+    block_length = i_stim*3600;
     n_blocks = size(prepped_data.fitspikes,1);
     for i_cell=1:n_cells
         cell_savename = num2str(cell_spec(i_cell));
@@ -170,19 +170,22 @@ for i_stim = 2 % WN is 1, NSEM is 2
         
         if i_stim == 1
             close all
-            [STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
+            %[STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
             center = round([40 - datarun_class.vision.sta_fits{cids(i_cell)}.mean(2) datarun_class.vision.sta_fits{cids(i_cell)}.mean(1)]);
-            hold on; plot(center(1), center(2), 'r*')
+            %hold on; plot(center(1), center(2), 'r*')
         else
-             eval(sprintf('load %s/%s.mat fittedGLM', dsave, cell_savename));
-             STA = fittedGLM.STA;
-             center = fittedGLM.center;
-             clear fittedGLM
+            eval(sprintf('load %s/%s.mat fittedGLM', dsave, cell_savename));
+            STA = fittedGLM.STA;
+            center = fittedGLM.center;
+            clear fittedGLM
         end
-    
-        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'WN_STA', STA, 'monitor_refresh', monitor_refresh);
+        
+        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh);
         fittedGLM.xvalperformance = glm_predict(fittedGLM, prepped_data.testmovie, 'testspikes', prepped_data.testspikes(:,i_cell));
-        fittedGLM.STA = STA;
+        temp = corrcoef(conv(sum(fittedGLM.xvalperformance.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(100)));
+        fittedGLM.xvalperformance.corr = temp(2,1);
+        clear temp
+        %fittedGLM.STA = STA;
         fittedGLM.center = center;
         
         save([dsave '/' cell_savename save_name '.mat'], 'fittedGLM', '-v7.3');
@@ -194,4 +197,5 @@ for i_stim = 2 % WN is 1, NSEM is 2
         plotrasters(fittedGLM.xvalperformance, fittedGLM);
         exportfig(gcf, [dsave '/' cell_savename '_' save_name 'rasters'], 'Bounds', 'loose', 'Color', 'rgb');
     end
+    %}
 end

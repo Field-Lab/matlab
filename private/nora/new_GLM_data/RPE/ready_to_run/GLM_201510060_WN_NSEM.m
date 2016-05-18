@@ -1,4 +1,4 @@
-% RPE
+% RPE, WN and NSEM
 clear
 Analysis_Path = '/Volumes/Analysis/2015-10-06-0/data000-data015-norefit/';
 class = 'data000';
@@ -9,15 +9,15 @@ WN_seeds = [11111 22222 33333];
 WN_fit_frames = [3600 6000 3600];
 extra_string = '-from-data000_data001_data002_data003_data004_data005_data006_data007_data008_data009_data010_data011_data012_data013_data014_data015';
 datarun_class = load_data([Analysis_Path class extra_string '/' class extra_string], struct('load_neurons', 0, 'load_params', 1));
-mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/');
-mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/WN/');
-mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/');
+mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/');
+mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/');
+%mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/');
 
 %% WN
-%{
+%%{
 reps = 60; 
 idx = 1:reps;
-cell_type = {'Off Midget'};
+cell_type = {'Off Parasol'};
 cells = get_cell_ids(datarun_class, cell_type{1}); % cell ids to fit
 datarun_class = load_sta(datarun_class, 'load_sta', cells);
 n_cells = length(cells);
@@ -53,21 +53,22 @@ cell_idx = get_cell_indices(datarun_class, cells(cell));
 vision_center = datarun_class.vision.sta_fits{cell_idx}.mean;
 center = round([40-vision_center(2), vision_center(1)]);
     fittedGLM = glm_fit(fitspikes{cell}, fitmovie, center, 'monitor_refresh', monitor_refresh);
-    fittedGLM.xval = glm_predict(fittedGLM,testmovie, 'testspikes', testspikes_cell(:,cell));
-    temp = corrcoef(conv(sum(fittedGLM.xval.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xval.rasters.recorded), gausswin(100)));
-    fittedGLM.xval.corr = temp(2,1);
+    fittedGLM.xvalperformance = glm_predict(fittedGLM,testmovie, 'testspikes', testspikes_cell(:,cell));
+    temp = corrcoef(conv(sum(fittedGLM.xvalperformance.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(100)));
+    fittedGLM.xvalperformance.corr = temp(2,1);
     close all
     plotfilters(fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/201510060/WN/OffMid_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     plotrasters(fittedGLM.xval, fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/201510060/WN/OffMid_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
-    save(['/Volumes/Lab/Users/Nora/GLMFits/201510060/WN/OffMid_' num2str(cells(cell)) '.mat'], 'fittedGLM');
+    save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '.mat'], 'fittedGLM');
 end
 %}
 
 %% NSEM
+%{
 clear fitspikes_cell
 clear testspikes_cell
 reps = 50; 
@@ -125,7 +126,9 @@ close all
 save(['/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/OffMid_' num2str(cells(cell)) '.mat'], 'fittedGLM');
 
 end
+%}
 
+%%
 %{
 files = dir('/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/OffMid_*.mat');
 n_files = length(files);
