@@ -43,8 +43,8 @@ GLMP.timenotes_3    = 'true tstim only matters for binning the spike times when 
 GLMP.stimfilter.fixedSP_type = 'WNSTA';
 
 
-GLMP.stimfilter.ROI_length = 9;  % This is the SIZE of the spatial filter in pixels
-GLMP.stimfilter.frames = 40;  % This is the number of frames in the temporal filter
+GLMP.stimfilter.ROI_length = 13;  % This is the SIZE of the spatial filter in pixels
+GLMP.stimfilter.frames = 30;  % This is the number of frames in the temporal filter
 GLMP.stimfilter.note1 = 'ROI_length: refers to dimension of stimulus used for GLM fitting';
 GLMP.stimfilter.note2 = 'ROI_length: will also be size of spatial filter if we are fitting a spatial filter';
 GLMP.stimfilter.note3 = 'Frames: Time duration of the fitted stim filter in frames';
