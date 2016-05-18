@@ -60,7 +60,7 @@ center = round([40-vision_center(2), vision_center(1)]);
     plotfilters(fittedGLM)
     exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
-    plotrasters(fittedGLM.xval, fittedGLM)
+    plotrasters(fittedGLM.xvalperformance, fittedGLM)
     exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '.mat'], 'fittedGLM');

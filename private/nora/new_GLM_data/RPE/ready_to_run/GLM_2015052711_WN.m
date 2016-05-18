@@ -1,4 +1,4 @@
-%% NSEM fitting and testing only for RPE piece 2015-05-27-11
+%% WN fitting and testing only for RPE piece 2015-05-27-11
 
 %% Load data
 datapath = '2015-05-27-11/data001-data005-norefit/data002-from-data001_data002_data003_data004_data005/data002-from-data001_data002_data003_data004_data005';
@@ -38,25 +38,15 @@ for i = 1:length(block_starts)-1
 end
 
 clear WN4 NSEM repeats_within_block repeat_starts block_starts
-
-% On par
-cells = get_cell_indices(datarun_class, 'On Parasol');
+cells = get_cell_indices(datarun_class, 'Off Parasol');
 
 %% Load up movies
 
 disp('Loading stimulus...')
 tic
-
-% If it's an XML movie
 seed_fixed = 11111;
-block_frames = [1200 3600];
-
-% Testmovie is easy
-prepped_data.testmovie = get_WN_movie(['/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-' num2str(seed_fixed) '.xml'], block_frames(2));
-
-% RNG parameters for updating seed for novel blocks. Shouldn't
-% really have to change these from defaults very often if at
-% all
+block_frames = [3600 1200];
+testmovie = get_WN_movie(['/Volumes/Analysis/stimuli/white-noise-xml/BW-8-1-0.48-' num2str(seed_fixed) '.xml'], block_frames(2));
 a = 16807;
 m =  2^31 - 1;
 c = 0;
@@ -79,12 +69,13 @@ for i = 1:length(to_use)
         end
     end
 end
-
+fitmovie = concat_movie(prepped_data.fitmovie);
+toc
+clear prepped_data
 
 %% Load up cell info
 
-for i_cell = 1%:length(cells)
-    
+for i_cell = 1:length(cells)
     disp(i_cell)
     cell = cells(i_cell);
     spikes = datarun.spikes{cell};
@@ -107,8 +98,8 @@ for i_cell = 1%:length(cells)
         tspikes{i} = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
     end
     
-    center = datarun_class.vision.sta_fits{cell}.mean;
-    center(2) = 40 - center(2);
+    center(1) = 40 - datarun_class.vision.sta_fits{cell}.mean(2);
+    center(2) = datarun_class.vision.sta_fits{cell}.mean(1);
     
     %{
     cell_pairs = cells{i_cell}(2:end);
@@ -128,9 +119,18 @@ for i_cell = 1%:length(cells)
     end
     %}
 
-    %[STA, center_STA] = STA_Test(concat_spikes, double(fitmovie), true); 
-    fittedGLM{i_cell} = glm_fit(concat_spikes, fitmovie, round(center), 'neighborspikes', 0);
-    
-    glm_predict(fittedGLM{i_cell}, testmovie, 'testspikes', tspikes, 'neighborspikes', ntspikes)
-    
+    %[STA, center_STA] = STA_Test(concat_spikes, fitmovie, 1, 1/monitor_refresh); 
+    fittedGLM = glm_fit(concat_spikes, fitmovie, round(center), 'neighborspikes', 0, 'monitor_refresh', monitor_refresh);
+    fittedGLM.xvalperformance = glm_predict(fittedGLM, testmovie, 'testspikes', tspikes, 'neighborspikes', 0);
+    temp = corrcoef(conv(sum(fittedGLM.xvalperformance.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(100)));
+    fittedGLM.xvalperformance.corr = temp(2,1);
+    close all
+    plotfilters(fittedGLM)
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OffPar_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    close all
+    plotrasters(fittedGLM.xvalperformance, fittedGLM)
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OffPar_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    close all
+    save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OffPar_' num2str(cells(cell)) '.mat'], 'fittedGLM');
+
 end
