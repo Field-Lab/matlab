@@ -105,7 +105,7 @@ for i_stim = 1 % WN is 1, NSEM is 2
     
     disp(['Trigger and spike finding took ' num2str(toc) ' seconds.'])
     
-    %{
+    %%{
     % Load up and organize the stimulus
     tic;
     if i_stim == 1

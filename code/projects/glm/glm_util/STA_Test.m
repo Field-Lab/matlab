@@ -30,9 +30,9 @@ function [STA_full, center] = STA_Test(fitspikes, fitmovie, center_verification,
 % For 120 HZ, tstim=1/120
 
 
-movie_size = size(fitmovie)
+movie_size = size(fitmovie);
 STA = zeros(movie_size(1),movie_size(2),30);
-fitframes = movie_size(3)
+fitframes = movie_size(3);
 
 for i = 1:length(fitspikes)
     sp_frame = floor(fitspikes(i)/tstim);
