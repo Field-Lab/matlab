@@ -17,7 +17,7 @@ mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/');
 %%{
 reps = 60; 
 idx = 1:reps;
-cell_type = {'Off Parasol'};
+cell_type = {'On Parasol'};
 cells = get_cell_ids(datarun_class, cell_type{1}); % cell ids to fit
 datarun_class = load_sta(datarun_class, 'load_sta', cells);
 n_cells = length(cells);
@@ -48,7 +48,7 @@ end
 fitmovie = concat_movie(fitmovie_cell);
 
 %%
-for cell = 1:n_cells
+for cell = 8:n_cells
 cell_idx = get_cell_indices(datarun_class, cells(cell));
 vision_center = datarun_class.vision.sta_fits{cell_idx}.mean;
 center = round([40-vision_center(2), vision_center(1)]);
@@ -58,12 +58,12 @@ center = round([40-vision_center(2), vision_center(1)]);
     fittedGLM.xvalperformance.corr = temp(2,1);
     close all
     plotfilters(fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OnPar_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     plotrasters(fittedGLM.xvalperformance, fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OnPar_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
-    save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OffPar_' num2str(cells(cell)) '.mat'], 'fittedGLM');
+    save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OnPar_' num2str(cells(cell)) '.mat'], 'fittedGLM');
 end
 %}
 

@@ -4,10 +4,10 @@ clear
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));
 model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neurons', 1, 'load_params', 0));
-dsave = '/Volumes/Lab/Users/Nora/GLMFits/Isolated/201505273/WN';
+dsave = '/Volumes/Lab/Users/Nora/GLMFits/Isolated/201505273/WN/OnPar';
 
 % ONLY CHANGE THINGS HERE
-cell_spec = get_cell_ids(datarun_class,'Off Parasol'); % cell ids to fit
+cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
 convergence = 1; % fraction of data to use
 
 %% Don't change these
@@ -166,7 +166,7 @@ for i_stim = 1 % WN is 1, NSEM is 2
             t_block_start = block_length*(i_block - 1)/monitor_refresh;
             fitspikes = [fitspikes; prepped_data.fitspikes{i_block,i_cell}+t_block_start];
         end
-        fitspikes = fitspikes(fitspikes < stimlength/monitor_refresh);
+       % fitspikes = fitspikes(fitspikes < stimlength/monitor_refresh);
         
         if i_stim == 1
             close all
