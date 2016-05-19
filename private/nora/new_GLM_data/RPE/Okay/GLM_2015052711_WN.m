@@ -38,7 +38,7 @@ for i = 1:length(block_starts)-1
 end
 
 clear WN4 NSEM repeats_within_block repeat_starts block_starts
-cells = get_cell_indices(datarun_class, 'Off Parasol');
+cells = get_cell_indices(datarun_class, 'On Parasol');
 
 %% Load up movies
 
@@ -126,11 +126,11 @@ for i_cell = 8:length(cells)
     fittedGLM.xvalperformance.corr = temp(2,1);
     close all
     plotfilters(fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OffPar_' num2str(cells(i_cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OnPar_' num2str(cells(i_cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     plotrasters(fittedGLM.xvalperformance, fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OffPar_' num2str(cells(i_cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OnPar_' num2str(cells(i_cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
-    save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OffPar_' num2str(cells(i_cell)) '.mat'], 'fittedGLM');
+    save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OnPar_' num2str(cells(i_cell)) '.mat'], 'fittedGLM');
 
 end

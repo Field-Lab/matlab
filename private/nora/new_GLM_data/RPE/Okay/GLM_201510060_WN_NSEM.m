@@ -31,7 +31,7 @@ datarun = load_data([Analysis_Path WN_runs{run} extra_string '/' WN_runs{run} ex
 prepped_data = interleaved_data_prep(datarun, [WN_fit_frames(run) 1200], reps,'cell_spec', cells,'visual_check', 0);
 %}
 %%{
-for run = 1
+for run = 1:3
     datarun = load_data([Analysis_Path WN_runs{run} extra_string '/' WN_runs{run} extra_string], struct('load_neurons', 1, 'load_params', 1));
     prepped_data = interleaved_data_prep(datarun, [WN_fit_frames(run) 1200], reps,'cell_spec', cells,'visual_check', 0, 'stimulus_name', 'BW-8-1','seed', 11111, ...
         'variable_seed_start', 11111*run, 'STA_check', 0);
@@ -50,7 +50,7 @@ fitspikes{i} = [];
 idx = (1:60);
 block_lengths = [3600 6000 3600]/monitor_refresh;
 offsets = [0 3600*60 3600*60+6000*60]/monitor_refresh;
-for run = 1
+for run = 1:3
     temp = concat_spikes(fitspikes_cell(idx,i), block_lengths(run));
     temp = temp+offsets(run);
     fitspikes{i} = [fitspikes{i}; temp];
@@ -70,10 +70,10 @@ center = round([40-vision_center(2), vision_center(1)]);
     fittedGLM.xvalperformance.corr = temp(2,1);
     close all
     plotfilters(fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OnMid_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/WN/OnMid_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     plotrasters(fittedGLM.xvalperformance, fittedGLM)
-    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OnMid_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+    exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/WN/OnMid_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
     close all
     save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/OnMid_' num2str(cells(cell)) '.mat'], 'fittedGLM');
 end
