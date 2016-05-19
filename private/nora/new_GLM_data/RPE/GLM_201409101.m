@@ -19,6 +19,7 @@ monitor_refresh = 100/median(diff(datarun.triggers));
 fitmovie = concat_movie(prepped_data.fitmovie);
 
 %%
+%{
 for i=1:length(cells)
     if sum(cell2mat(prepped_data.testspikes(:,i)))>0.8*10^4   
         fitspikes = concat_spikes(prepped_data.fitspikes(:,i), 3600/monitor_refresh);
@@ -27,10 +28,12 @@ for i=1:length(cells)
         save_glm(fittedGLM, prepped_data.testspikes(:,i), prepped_data.testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201409101/WN/' cell_type_short num2str(cells(i))]);
     end
 end
-    %{
-i = 1;
+
+      %{
+i = 3;
 fitspikes = concat_spikes(prepped_data.fitspikes(:,i), 3600/monitor_refresh);
 [STA, center] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
+
 for rep = 1:5
     fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
     save_glm(fittedGLM, prepped_data.testspikes(:,i), prepped_data.testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201409101/WN/' cell_type_short num2str(cells(i)) '_' num2str(rep)]);

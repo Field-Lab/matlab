@@ -12,24 +12,24 @@ function [PSTH_sim, PSTH_rec] = plotrasters(xval, fittedGLM, varargin)
 %
 % Optional Parameters
 %
-% raster_length, default 5 seconds. if you plot more than 10 seconds, it
+% raster_length, default 6 seconds. if you plot more than 10 seconds, it
 %   gets slow hard to see
 % labels, default no labels, if true, you see labels and axis ticks on
 %   raster
 % separate, default no, separates the rasters and PSTH into separate
 %   windows
 % PSTH, default no, plots the PSTH
-% start_time, default 0, can set to start later in the raster
+% start_time, default 2, can set to start later in the raster
 % PSTH_window_size, default 100, in bins, sets the smoothing of the PSTH
 %
 p=inputParser;
 addRequired(p,'xval',@isstruct);
 addRequired(p,'fittedGLM', @isstruct);
-addParameter(p,'raster_length',5, @isnumeric); % length of raster in seconds, default 5
+addParameter(p,'raster_length',6, @isnumeric); % length of raster in seconds, default 5
 addParameter(p,'labels',false, @islogical); % display axis ticks and labels if true
 addParameter(p,'separate',false, @islogical); % separate windows (true) or in subplots (false)
 addParameter(p,'PSTH',false, @islogical); % display PSTH if true
-addParameter(p,'start_time',0,@isnumeric); % set the raster start time to something other than 0
+addParameter(p,'start_time',2,@isnumeric); % set the raster start time to something other than 0
 addParameter(p,'PSTH_window_size', 100, @isnumeric); % set the amount smoothing in the PSTH
 addParameter(p, 'rasters', 1, @islogical); % set to 0 to only plot the PSTH
 parse(p,xval, fittedGLM,varargin{:});
