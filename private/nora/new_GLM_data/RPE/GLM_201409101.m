@@ -4,8 +4,8 @@ Analysis_Path = '/Volumes/Analysis/2014-09-10-1/data004-data013/';
 class = 'data012';
 datarun_class = load_data([Analysis_Path class '/' class], struct('load_neurons', 0, 'load_params', 1));
 mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201409101/WN/');
-cell_type = {'On Parasol'};
-cell_type_short = 'OnPar_';
+cell_type = {'Off Parasol'};
+cell_type_short = 'OffPar_';
 
 WN_run = 'data013';
 cells = get_cell_ids(datarun_class, cell_type{1}); % cell ids to fit
@@ -24,10 +24,10 @@ for i=1:length(cells)
         fitspikes = concat_spikes(prepped_data.fitspikes(:,i), 3600/monitor_refresh);
         [STA, center] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
         fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
-        saveGLM(fittedGLM, prepped_data.testspikes(:,i), prepped_data.testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201409101/WN/' cell_type_short num2str(cells(i))]);
+        save_glm(fittedGLM, prepped_data.testspikes(:,i), prepped_data.testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201409101/WN/' cell_type_short num2str(cells(i))]);
     end
 end
-
+    %{
 i = 1;
 fitspikes = concat_spikes(prepped_data.fitspikes(:,i), 3600/monitor_refresh);
 [STA, center] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
@@ -35,3 +35,4 @@ for rep = 1:5
     fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
     save_glm(fittedGLM, prepped_data.testspikes(:,i), prepped_data.testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201409101/WN/' cell_type_short num2str(cells(i)) '_' num2str(rep)]);
 end
+  %}
