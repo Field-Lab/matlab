@@ -74,9 +74,9 @@ for i_exp = 1:3
                 clear master_idx stafit_centercoord slvdim sd stafit_sd stafit_centercoord master_idx
                 
                 eval(sprintf('load %s/organizedspikes_%s.mat organizedspikes', DirPars.organizedspikesdir, cell_savename));
-                %eval(sprintf('load %s/STAandROI_%s.mat STAandROI', DirPars.WN_STAdir, cell_savename));
+                eval(sprintf('load %s/STAandROI_%s.mat STAandROI', DirPars.WN_STAdir, cell_savename));
                 spikes = organizedspikes.block.t_sp_withinblock;
-                %STA = STAandROI.STA;
+                STA = STAandROI.STA;
                 %clear STAandROI
                 
                 % concatenate spikes
@@ -97,7 +97,7 @@ for i_exp = 1:3
                 clear T_SP blk_count blockedspikes k spikes t_sp t_sp_full t_spcontext t_start
                 
                 %%{
-                fittedGLM = glm_fit(fitspikes, fitmovie, [center_coord.x_coord center_coord.y_coord], 'monitor_refresh', 1/tstim);
+                fittedGLM = glm_fit(fitspikes, fitmovie, [center_coord.x_coord center_coord.y_coord], 'monitor_refresh', 1/tstim, 'WN_STA', STA);
                 fittedGLM.xval = glm_predict(fittedGLM,testmovie, 'testspikes', testspikes);
                 temp = corrcoef(conv(sum(fittedGLM.xval.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xval.rasters.recorded), gausswin(100)));
                 fittedGLM.xval.corr = temp(2,1);
