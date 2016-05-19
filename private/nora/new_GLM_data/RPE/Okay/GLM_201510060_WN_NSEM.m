@@ -17,7 +17,7 @@ mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/WN/');
 %%{
 reps = 60; 
 idx = 1:reps;
-cell_type = {'On Parasol'};
+cell_type = {'On Midget'};
 cells = get_cell_ids(datarun_class, cell_type{1}); % cell ids to fit
 datarun_class = load_sta(datarun_class, 'load_sta', cells);
 n_cells = length(cells);
@@ -32,6 +32,8 @@ for run = 1
     monitor_refresh(run) = 100/median(diff(datarun.triggers));
     idx = idx+reps;
 end
+
+%%
 monitor_refresh = mean(monitor_refresh);
 for i=1:n_cells
 fitspikes{i} = [];
