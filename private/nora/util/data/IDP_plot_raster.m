@@ -27,6 +27,6 @@ else
         end
 end
 
-xlim([2 8])
+%xlim([2 8])
     
 end
