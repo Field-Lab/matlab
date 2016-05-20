@@ -38,7 +38,7 @@ for i = 1:length(block_starts)-1
 end
 
 clear WN4 NSEM repeats_within_block repeat_starts block_starts
-cells = get_cell_indices(datarun_class, 'On Parasol');
+cells = get_cell_indices(datarun_class, 'On Midget');
 
 %% Load up movies
 
@@ -133,4 +133,15 @@ for i_cell = 8:length(cells)
     close all
     save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/2015052711/WN/OnPar_' num2str(cells(i_cell)) '.mat'], 'fittedGLM');
 
+end
+
+%%
+for i_cell = 5:15
+cell = cells(i_cell);
+spikes = datarun.spikes{cell};
+for i = 1:length(testblocks)
+tspikes{i} = spikes(spikes > testblocks(i) & spikes < testblocks(i)+testmovie_seconds_per_block) - testblocks(i);
+end
+hold on; for i=1:30; plot(tspikes{i}, i, 'k.'); end
+pause(); clf
 end
