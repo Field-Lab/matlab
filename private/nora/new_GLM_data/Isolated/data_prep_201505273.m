@@ -170,7 +170,7 @@ for i_stim = 1 % WN is 1, NSEM is 2
         
         if i_stim == 1
             close all
-            %[STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
+            [STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
             center = round([40 - datarun_class.vision.sta_fits{cids(i_cell)}.mean(2) datarun_class.vision.sta_fits{cids(i_cell)}.mean(1)]);
             %hold on; plot(center(1), center(2), 'r*')
         else
@@ -180,7 +180,7 @@ for i_stim = 1 % WN is 1, NSEM is 2
             clear fittedGLM
         end
         
-        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh);
+        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
         fittedGLM.xvalperformance = glm_predict(fittedGLM, prepped_data.testmovie, 'testspikes', prepped_data.testspikes(:,i_cell));
         temp = corrcoef(conv(sum(fittedGLM.xvalperformance.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(100)));
         fittedGLM.xvalperformance.corr = temp(2,1);
