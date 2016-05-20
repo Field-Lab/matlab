@@ -2,15 +2,15 @@ function [GLMT, GLMP] = glm_parameters
 %% GLM Type
 
 % Spatial Filter Type. Choose FixedSP, Rk1 or Rk2
-%GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true; % The spatial part is taken from the STA
-GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; % Both the spatial and temporal parts are fit, rank 1
+GLMT.stimfilter_mode = 'fixedSP_rk1_linear'; GLMT.CONVEX = true; % The spatial part is taken from the STA
+%GLMT.stimfilter_mode = 'rk1'; GLMT.CONVEX = false; % Both the spatial and temporal parts are fit, rank 1
 % GLMT.stimfilter_mode = 'rk2'; GLMT.CONVEX = false; % Two spatial and temporal parts are fit, rank 2
 
 % Coupling on or off?
 GLMT.CouplingFilters = false; % If this is on, you need to include neighborspikes as a parameter to glm_fit and glm_predict
 
 % Use this to do a quick check that things are right
-GLMT.debug      = false; % this just increases the tolerance so the fitting stops more quickly. 
+GLMT.debug      = true; % this just increases the tolerance so the fitting stops more quickly. 
 
 % You probably don't want to change these.
 GLMT.cone_model = '8pix_Identity_8pix'; GLMT.cone_sname='p8IDp8';
