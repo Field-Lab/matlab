@@ -1,24 +1,24 @@
- %% 2016-02-17-6 data026_cf_split/edited/data026_cf_split
-    number = [1021 1022 1023 1027 1028 1741 1742 1743 1744 2751 2752 2753 3066 3067 3068 3466 3468 3469 3470 4296 4297 4298 4299 4300 4327 4328 4329 4330 4332 5026 5027 5028 5176 5177 5178 5179 5180 5536 5537 5538 5539] %ON parasol
-   %ON parasol
-    number = [2751 2752 2753, [nan], [nan];...
-                3066 3067 3068, [nan], [nan];...
-                3466 3468 3469 3470, [nan];...
-                4296 4297 4298 4299 4300;...
-                4327 4328 4329 4330 4332] 
-%OFF parasol
- number = [1021 1022 1023 1027 1028;
-           1741 1742 1743 1744 nan;
-           5026 5027 5028 nan nan;
-           5176 5177 5178 5179 5180;
-           5536 5537 5538 5539 nan] 
-       
-%% 2016-04-21-8 data022-mVision/data022_422_4818/data022
-  cell_type = 'OFF smooth';  
-    number = [422 427 428 429;...
-        4818 4820 4826 4827;...
-        ] 
-       
+%  %% 2016-02-17-6 data026_cf_split/edited/data026_cf_split
+%     number = [1021 1022 1023 1027 1028 1741 1742 1743 1744 2751 2752 2753 3066 3067 3068 3466 3468 3469 3470 4296 4297 4298 4299 4300 4327 4328 4329 4330 4332 5026 5027 5028 5176 5177 5178 5179 5180 5536 5537 5538 5539] %ON parasol
+%    %ON parasol
+%     number = [2751 2752 2753, [nan], [nan];...
+%                 3066 3067 3068, [nan], [nan];...
+%                 3466 3468 3469 3470, [nan];...
+%                 4296 4297 4298 4299 4300;...
+%                 4327 4328 4329 4330 4332] 
+% %OFF parasol
+%  number = [1021 1022 1023 1027 1028;
+%            1741 1742 1743 1744 nan;
+%            5026 5027 5028 nan nan;
+%            5176 5177 5178 5179 5180;
+%            5536 5537 5538 5539 nan] 
+%        
+% %% 2016-04-21-8 data022-mVision/data022_422_4818/data022
+%   cell_type = 'OFF smooth';  
+%     number = [422 427 428 429;...
+%         4818 4820 4826 4827;...
+%         ] 
+%        
        %% 2016-04-21-8 data022
        
 
@@ -107,10 +107,10 @@
 %         5912 1711 3077 4337 4761 3077;...
 %         3381 4248 7501 nan] %all
   
-  cell_type = 'OFF smooth';  
-    number = [422 427 428 429;...
-        4818 4820 4826 4827;...
-        ] 
+%   cell_type = 'OFF smooth';  
+%     number = [422 427 428 429;...
+%         4818 4820 4826 4827;...
+%         ] 
 %     cell_type = 'OFF Type 2';  
 %     number = [154 901 1953;...
 %         3259 3813 4487;...
@@ -183,9 +183,25 @@
 %         5492 5493 5494 nan nan;...
 % 
 %         ]
-          %%      
-date = '2016-04-21-8';
-datarun = 'data022-mVision/data022_recluster/data022';
+
+%% 2016-02-17-1 data007-cf
+% cell_type = 'ON large 2';
+% number = 91;
+
+% %% 2016-02-17-6 data024-cf
+% cell_type = 'OFF Smooth';
+% number = [3031 3442 3901;...
+%     4893 4982 6526;...
+%     7056 7473 nan];
+
+%% 2016-02-17-6 data024-cf
+cell_type = 'OFF Smooth';
+number = [811;...
+    ];
+
+%%      
+date = '2016-02-17-6/data026_cf/edited';
+datarun = 'data026_cf';
 % number = [154 408 903 1953 3137 3259 3319 3721 3813 3861 4490 4565 4773 4778 5912];
 
 % number = [532 1022 1568 2376 3186 4041 4703 5239 6788 7101];
@@ -273,12 +289,12 @@ fprintf('Git Hash: %s \n', git_hash_string);
 
 
 %% Mosiac from Vision
-dataparam.date='2015-09-23-7';
-dataparam.concatname='data031';
+dataparam.date='2016-02-17-6/data026_cf/edited';
+dataparam.concatname='data026_cf';
 dataparam.file_name = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
 select_cells = 1;
 if select_cells == 1
-dataparam.cell_specification = [532 1022 1568 2376 3186 4041 4703 5239 6788 7101];
+dataparam.cell_specification = [437];
     
 end
 dataparam.cell_type = {'all'};
