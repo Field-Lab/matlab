@@ -16,14 +16,14 @@ close all
 % num_bins = 20; % Number of bins to use for the generator vs spikes graph
 
 
-date='2015-03-09-2/d05-27-norefit/';
-concatname='data011-from-d05-d27';
+date='2016-02-17-1';
+concatname='data004';
 file_name = [date, '/', concatname, '/',  concatname];
-movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-8-0.48-11111-20x20.xml';
+movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-1-0.48-11111-119.5.xml';
 
-cell_type = {'OFF-parasol'};
+cell_type = {'ON parasol'};
 num_frames = 30;
-cell_specification = 1368; % visionID
+cell_specification = 183; % visionID
 num_bins = 10; % Number of bins to use for the generator vs spikes graph
 
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,7 +52,7 @@ datarun = get_sta_summaries(datarun, cell_specification, ...
 datarun = load_java_movie(datarun, movie_spec);
 
 % Get the SNLs based on the significant stixels and the last 19 frames
-datarun = get_snls(datarun,cell_specification,'frames',-15:0,'stimuli',[],'new',true);
+datarun = get_snls(datarun,cell_specification,'frames',-29:0,'stimuli',[],'new',true);
 
 [cellID] = get_cell_indices( datarun, cell_specification);
 
