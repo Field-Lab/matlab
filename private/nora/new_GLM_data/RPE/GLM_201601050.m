@@ -34,14 +34,14 @@ testmovie = get_WN_movie('/Volumes/Lab/Users/Nora/Stimulus/BW_XML/BW-16-1-0.48-2
 %%
 %
 for i=1:length(cells)
-    %if sum(cell2mat(prepped_data.testspikes(:,i)))>0.8*10^4
-    fit_idx = get_cell_indices(datarun_fit, cells_fit(i));
-    fitspikes = align_spikes_triggers(datarun_fit.spikes{fit_idx}, datarun_fit.triggers, 100, monitor_refresh);
-    [STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
-    class_idx = get_cell_indices(datarun_class, cells(i));
-    center(1) = 20 - datarun_class.vision.sta_fits{class_idx}.mean(2);
-    center(2) = datarun_class.vision.sta_fits{class_idx}.mean(1);
-    fittedGLM = glm_fit(fitspikes, fitmovie, round(center), 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
-    fittedGLM = save_glm(fittedGLM, prepped_data.testspikes(:,i), testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201601050/WN/' cell_type_short num2str(cells(i))]);
-    %end
+    if sum(cell2mat(prepped_data.testspikes(:,i)))>0.5*10^4
+        fit_idx = get_cell_indices(datarun_fit, cells_fit(i));
+        fitspikes = align_spikes_triggers(datarun_fit.spikes{fit_idx}, datarun_fit.triggers, 100, monitor_refresh);
+        [STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
+        class_idx = get_cell_indices(datarun_class, cells(i));
+        center(1) = 20 - datarun_class.vision.sta_fits{class_idx}.mean(2);
+        center(2) = datarun_class.vision.sta_fits{class_idx}.mean(1);
+        fittedGLM = glm_fit(fitspikes, fitmovie, round(center), 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
+        fittedGLM = save_glm(fittedGLM, prepped_data.testspikes(:,i), testmovie, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201601050/WN/' cell_type_short num2str(cells(i))]);
+    end
 end
