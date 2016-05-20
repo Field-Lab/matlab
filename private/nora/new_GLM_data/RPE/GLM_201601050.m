@@ -3,8 +3,8 @@ Analysis_Path = '/Volumes/Analysis/2016-01-05-0/';
 class = 'data015-mVision/data015/data015';
 datarun_class = load_data([Analysis_Path class], struct('load_neurons', 0, 'load_params', 1));
 mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201601050/WN/');
-cell_type = {'On Parasol'};
-cell_type_short = 'OnPar_';
+cell_type = {'Off Parasol'};
+cell_type_short = 'OffPar_';
 
 WN_fit = 'mVision/data013/data013';
 WN_test = 'mVision/data014/data014';

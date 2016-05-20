@@ -22,10 +22,10 @@ for i_run = 1:n_runs
         type = 'RPE';
     end
     
-    %{
-    files = dir(['/Volumes/Lab/Users/Nora/GLMFits/' type '/' folder '/WN/OnPar/*.mat']);
+    %%{
+    files = dir(['/Volumes/Lab/Users/Nora/GLMFits/' type '/' folder '/WN/OffPar/*.mat']);
     for i_cell = 1:length(files)
-        load(['/Volumes/Lab/Users/Nora/GLMFits/' type '/' folder '/WN/OnPar/' files(i_cell).name])
+        load(['/Volumes/Lab/Users/Nora/GLMFits/' type '/' folder '/WN/OffPar/' files(i_cell).name])
         try
             Scores{i_run} = [Scores{i_run} fittedGLM.xvalperformance.corr];
         catch
@@ -61,8 +61,8 @@ for i = 1:n_runs; exp_std(i) = std(cell2mat(Scores(i)')); end
 for i = 1:n_runs; exp_means(i) = mean(cell2mat(Scores(i)')); end
 b = bar(1:2, exp_means(1:2), 'w', 'EdgeColor', 'r', 'LineWidth', 5);
 hold on;
-b = bar(3:5, exp_means(3:6), 'w');
-b = bar(6:8, exp_means(Isolated), 'y');
+b = bar(3:6, exp_means(3:6), 'w');
+b = bar(find(Isolated), exp_means(find(Isolated)), 'y');
 errorbar(exp_means, exp_std, '.k', 'LineWidth', 5)
 ylabel('Correlation Coefficient')
 xlabel('Experiment')
