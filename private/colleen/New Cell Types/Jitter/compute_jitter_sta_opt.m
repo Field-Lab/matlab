@@ -55,51 +55,24 @@ end
 
 %% account for dropped frames
 
-%% 2016-02-17-6 data026
-% % 1857 is x coordinate of sharp peak in diff(triggers) graph
-% triggers = [triggers(1:1857); triggers(1858:end) - mean(diff(triggers(1:1857)))];
-% jitter_x= [jitter_x(1:92851); jitter_x(92900:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
-% jitter_y = [jitter_y(1:92851); jitter_y(92900:end)];
-% inputs = [inputs(:,1:92851), inputs(:,92900:end)];
-% for i = 1:size(spikes,2)
-%     ind = find(spikes{i} > 92851/60 & spikes{i} <= 92900/60);
-%     if ~isempty(ind)
-%         spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (92900/60-92851/60);
-%         spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
-%     end
-%
-%
-% end
-
-%
-% %% 2016-04-21-1 data005
-% % 1787 is x coordinate of sharp peak in diff(triggers) graph
-% triggers = [triggers(1:1787); triggers(1788:end) - mean(diff(triggers(1:1787)))];
-% jitter_x = [jitter_x(1:89351); jitter_x(89400:end)]; %1857*100/2 (refresh is 2)+1 : 1857*100/2 (refresh is 2)+50
-% jitter_y= [jitter_y(1:89351); jitter_y(89400:end)];
-% inputs = [inputs(:,1:89351), inputs(:,89400:end)];
-% for i = 1:size(spikes,2)
-%     ind = find(spikes{i} > 89351/60 & spikes{i} <= 89400/60);
-%     if ~isempty(ind)
-%         spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (89400/60-89351/60);
-%         spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
-%     end
-%
-%
-% end
-%% data024
-% triggers = [triggers(1:392); triggers(393:end) - mean(diff(triggers(1:392)))];
-% jitter_x_new = [jitter_x(1:19601); jitter_x(19650:end)]; %392*100/2 (refresh is 2)+1 : 392*100/2 (refresh is 2)+50
-% jitter_y_new = [jitter_y(1:19601); jitter_y(19650:end)];
-% inputs = [inputs(:,1:19601), inputs(:,19650:end)];
-% for i = 1:size(spikes,2)
-%     ind = find(spikes{i} > 19601/60 & spikes{i} <= 19650/60);
-%     if ~isempty(ind)
-%       spikes{i}(ind(end)+1:end) = spikes{i}(ind(end)+1:end) - (19650/60-19601/60);
-%       spikes{i} = [spikes{i}(1:ind(1)-1); spikes{i}(ind(end)+1:end)];
-%     end
-% end
-
+difference = diff(triggers);
+mean_val = mean(difference);
+high_point_trigger = find(difference>(mean_val*1.2)==1); 
+high_point_trigger = sort(high_point_trigger,'descend');
+for i = 1:length(high_point_trigger)
+    triggers = [datarun.triggers(1:high_point_trigger(i)); datarun.triggers((high_point_trigger(i)+1):end) - mean(diff(datarun.triggers(1:high_point_trigger(i))))];
+    %1496*100/refresh (refresh is 2)+1 : 392*100/2 (refresh is 2)+50
+    
+    % inputs = [inputs(:,1:149601), inputs(:,(149601 + (100/dataparam.interval)-1):end)];
+    for j = 1:size(spikes,2)
+        ind = find(spikes{j} > datarun.triggers(high_point_trigger(i)) & spikes{j} <= (datarun.triggers(high_point_trigger(i)+1)+num_frames*mean(diff(datarun.triggers(1:high_point_trigger(i))))/(100/dataparam.interval))); % rate = 120 if refresh =1 or 60 if refresh = 2
+        if ~isempty(ind)
+            spikes{j}(ind(end)+1:end) = spikes{j}(ind(end)+1:end) - mean(diff(datarun.triggers(1:high_point_trigger(i))));
+            spikes{j} = [spikes{j}(1:ind(1)-1); spikes{j}(ind(end)+1:end)];
+        end
+    end
+    
+end
 
 
 
@@ -137,19 +110,19 @@ while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1
 end
 
 
-bt_triggers = triggers(2:end) - [triggers(1:end-1)];
-avg_bt_triggers = mean(bt_triggers);
 
-length_of_time = ceil(triggers(end))+avg_bt_triggers;
-upsampled_num_frames = ceil(length_of_time*dataparam.refresh_rate);
+bt_triggers = triggers(2:end) - [triggers(1:end-1)];
+
+length_of_time = triggers(end);
+upsampled_num_frames = length(triggers)*100/dataparam.interval;
 
 upsample_factor = dataparam.interval; % should be interval
 
-frames_needed = kron(1:ceil(upsampled_num_frames/upsample_factor), ones(1,upsample_factor));
+frames_needed = kron(1:ceil(upsampled_num_frames), ones(1,upsample_factor));
 
 frame_spacing = zeros(1, size(frames_needed,2));
 for i= 1:length(triggers)-1
-    spacing = linspace(triggers(i), triggers(i+1),101);
+    spacing = linspace(triggers(i), triggers(i+1),100 +1);
     frame_spacing(1, (i-1)*100+1:(i-1)*100+100)= spacing(1:end-1); %% assume triggers every 100 frames
 end
 
@@ -159,7 +132,6 @@ for j = 1:size(spikes,2)
         binned_spikes(j,i) = sum(spikes{j} >= frame_spacing(1,i) & spikes{j} < frame_spacing(1,i+1));
     end
 end
-
 
 %% Compute movie
 
