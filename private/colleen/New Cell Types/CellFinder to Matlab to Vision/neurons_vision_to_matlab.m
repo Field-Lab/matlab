@@ -17,8 +17,8 @@ clear
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-date = '2016-02-17-1';
-datarun = '007'; % just last three numbers
+date = '2016-02-17-6';
+datarun = '025'; % just last three numbers
 
 % Data that contains all the neurons
 referenceRawDataFilePath = ['/Volumes/Data/' date, '/data', datarun,'/'];
@@ -45,43 +45,7 @@ specify_cells = 1;
 % 
 % if specify_cell = 0, list cell ids here (these are Vision IDs)
 toKeep = [
-   320
-   768
-   1891
-   2056
-   3243
-   3392
-   3391
-   3393
-   4336
-   7306
-   7353
-   7550
-   91
-   213
-   1489
-   2523
-   2627
-   3181
-   3603
-   3886
-   3932
-   4127
-   4846
-   5072
-   6781
-   6856
-   7487
-   391
-   856
-   1216
-   3797
-   3931
-   4921
-   5898
-   6736
-   7066
-   7067
+ 1216 1936 2011 3901 4111 4981 5013 5523 5646 6111 6528 6953 7051 7457 7471
     ];
 toKeep = sort(toKeep);
 %%%%%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
