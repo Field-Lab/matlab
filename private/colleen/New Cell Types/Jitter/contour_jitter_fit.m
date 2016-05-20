@@ -3,10 +3,8 @@ close all
 %number{1} = [481 811 1531 2103 2161 3288 3816 3886 4280 4937 6331 6511];
 % number{2} = [185 306 413 996 1058 1759 1821 2061 3396 3593 3830 4656 5342 5733 6064 6213 7148];
 
-number{1} = [81 800 966 1174 2912;...
-            3063 3187 3376 3683 3768;...
-            4088 4861 5031 5272 5418;...
-            6199 6323 7127 7563 nan;...
+number{1} = [526 1022 1568;...
+            2371 3186 4041;...
                    
     ];
 %         number{1} = number{1}';
@@ -121,7 +119,9 @@ for types = 1:size(number,2)
             set(gca, 'ydir', 'reverse')
             
             [x,y] = poly2cw(contour_polygons{types}{i}{1}(right_ind).x,contour_polygons{types}{i}{1}(right_ind).y);
-            area{types}(i) = polyarea(x,y)*(5/1000)^2;%0.005um/pix;
+            %area{types}(i) = polyarea(x,y)*(5/1000)^2;%0.005um/pix;
+            final_area{types}(i) = polyarea(contour_polygons{types}{i}{1}(right_ind).x, contour_polygons{types}{i}{1}(right_ind).y);
+
         else
             axes(ha(i));
             axis off
