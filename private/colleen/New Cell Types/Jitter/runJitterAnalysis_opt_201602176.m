@@ -1,6 +1,8 @@
 % ruvnJitterAnalysis
 % git hash 75ce3d76b7b20220cd94d83eb96e8e3ec90dd20e
 
+%% MUST RUN IN MATLAB 2014
+
 clear
 close all
 % dbstop if error
@@ -28,7 +30,7 @@ dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.dat
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;
 if select_cells == 1
-  dataparam.cell_specification = [481] %ON parasol
+  dataparam.cell_specification = [481 811 1531 2103 2161 3288 3816 3886 4280 4937 6331 6511 437 545 1786 2431 3436 5071 6211 4550 5062 1936 2011 3166 3901 4113 4981 5012 6526 7051 7456] %ON parasol
 
 end
 dataparam.cell_type = {'all'};
@@ -111,14 +113,14 @@ end
 if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterX.mat']) ~=0 && exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterY.mat']) ~=0
     
     jitterX = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterX.mat']);
-    jitterX = int8(jitterX.jitterX);
+    jitterX = int16(jitterX.jitterX);
     jitterY = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterY.mat']);
-    jitterY = int8(jitterY.jitterY);
+    jitterY = int16(jitterY.jitterY);
 else
     
         state = Init_RNG_JavaStyle(seed);
-    jitterX = int8(zeros(duration,1));
-    jitterY = int8(zeros(duration,1));
+    jitterX = int16(zeros(duration,1));
+    jitterY = int16(zeros(duration,1));
 
     for i = 1:duration
         if mod(i,1000) == 1

@@ -5,8 +5,8 @@ clear
 close all
 profile on
 % dbstop if error
-dataparam.date='2016-04-21-8/data022-mVision/data022_regroup422_4818/';
-dataparam.concatname='data022';
+dataparam.date='2016-04-21-1';
+dataparam.concatname='data005';
 dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-40-1-0.48-11111-20x15-60.35.xml';
 dataparam.stixel_size = 40;
 dataparam.interval = 1;

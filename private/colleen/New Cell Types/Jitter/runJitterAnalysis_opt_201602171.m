@@ -1,18 +1,26 @@
-% runJitterAnalysis
+% ruvnJitterAnalysis
 % git hash 75ce3d76b7b20220cd94d83eb96e8e3ec90dd20e
+
+%% MUST RUN IN MATLAB 2014
 
 clear
 close all
 % dbstop if error
-dataparam.date='2016-02-17-6/data026_cf_split/edited';
-dataparam.concatname='data026_cf_split';
+dataparam.date='2016-02-17-1/data007-cf/edited/';
+dataparam.concatname='data007-cf';
 dataparam.mdf_file='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-22222-119.5.xml';
 dataparam.stixel_size = 16;
+dataparam.interval = 2;
 dataparam.seed = 22222;
+dataparam.refresh_rate= 120;
 fitparam.num_frames = 30;
-frame_width = 640/dataparam.stixel_size;
-frame_height = 320/dataparam.stixel_size;
+dataparam.x_dim = 640;
+dataparam.y_dim = 320;
+dataparam.num_of_interval = 50; % number of * in progress bar
+frame_width = dataparam.x_dim/dataparam.stixel_size;
+frame_height = dataparam.y_dim/dataparam.stixel_size;
 stixels_per_frame = frame_width*frame_height;
+
 
 num_colors =3;
 % dataparam.file_name_right = [dataparam.date, '/', dataparam.concatname,'/', dataparam.concatname];
@@ -22,15 +30,8 @@ dataparam.save_path = ['/Volumes/Lab/Users/crhoades/JitterMovie/', dataparam.dat
 % list specific cell (1), or run for a whole cell type (0)
 select_cells = 1;
 if select_cells == 1
-%        dataparam.cell_specification = [184] %ON parasol
-%   dataparam.cell_specification = [241 440 481 485 545 813 816 1386 1441 1534 1759 1786 1788 1936 1937 1940 2014 2103 2137 2162 2163 2165 2166 2167 2331 2405 2431 3048 3288 3436 3816 3888 3903 3907 3908 4113 4280 4937 4981 5013 5071 5522 5915 6110 6211 6336 6337 6512 6513 6529 7054 7460 7461 7462 ] %ON parasol
-  dataparam.cell_specification = [1021 1022 1023 1027 1028 1741 1742 1743 1744 2751 2752 2753 3066 3067 3068 3466 3468 3469 3470 4296 4297 4298 4299 4300 4327 4328 4329 4330 4332 5026 5027 5028 5176 5177 5178 5179 5180 5536 5537 5538 5539] %ON parasol
- %  dataparam.cell_specification = [185 1217 1221 1938 1942 3037 3904 3908 4893 4982 5523 5526 6094 6533 7056 7475 481 5061 3618 3811 5916 814 1477 1986 2167 2168 2991 3289 4326 4941 6513 6517 1441 1786 2431 3436 5026 6212 545 394 1218 1744 1970 2420 3302 4053 4097 4473 5987 6063 6617] %ON parasol
- %  dataparam.cell_specification = [185 1217 1221 1938 1942 3037 3904 3908 4893 4982 5523 5526 6094 6533 7056 7475 481 5061 3618 3811 5916 814 1477 1986 2167 2168 2991 3289 4326 4941 6513 6517 1441 1786 2431 3436 5026 6212 545 394 1218 1744 1970 2420 3302 4053 4097 4473 5987 6063 6617] %ON parasol
-%dataparam.cell_specification = [481 812 1535 2102 2162 2987 3289 3812 4322 4939 6332 6512 1938 2012 3169 3903 4052 4981 5012 6541 7054 7458 6212 436 544 2432 3319 5074 1786 4549];
-   %dataparam.cell_specification = [184 ];
-    %dataparam.cell_specification = [481 814 1477 1986 2167 2168 2991 3289 4326 4941 6513 6517 1441 1786 2431 3436 5026 6212 545 6484 185 1217 1221 1938 1942 2012 3037 3904 3908 4112 4893 4982 5523 5526 6094 6533 7056 7475 5061 3618 3811] %ON parasol
- dataparam.cell_specification = [1021 ];   
+  dataparam.cell_specification = [856] %ON parasol
+
 end
 dataparam.cell_type = {'all'};
 %% END OF INPUT
@@ -97,20 +98,30 @@ stixel_width = dataparam.stixel_size;
 stixel_height = dataparam.stixel_size;
 seed = dataparam.seed;
 
-    jitterX = load('jitterX_16.mat');
-    jitterX = jitterX.jitterX;
-        jitterY = load('jitterY_16.mat');
-    jitterY = jitterY.jitterY;
 for j = 1:length(cell_indices)
     
     
     spikes{j}=  datarun.spikes{cell_indices(j)};
-
+    
 end
 
- state = Init_RNG_JavaStyle(seed);
-    jitterX = nan(duration,1);
-    jitterY = nan(duration,1);
+% jitterX = load('jitterX_16.mat');
+% jitterX = jitterX.jitterX;
+% jitterY = load('jitterY_16.mat');
+% jitterY = jitterY.jitterY;
+
+if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterX.mat']) ~=0 && exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/jitterY.mat']) ~=0
+    
+    jitterX = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterX.mat']);
+    jitterX = int16(jitterX.jitterX);
+    jitterY = load(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterY.mat']);
+    jitterY = int16(jitterY.jitterY);
+else
+    
+        state = Init_RNG_JavaStyle(seed);
+    jitterX = int16(zeros(duration,1));
+    jitterY = int16(zeros(duration,1));
+
     for i = 1:duration
         if mod(i,1000) == 1
             disp(num2str(i));
@@ -122,21 +133,32 @@ end
         %         if mod(i, stixels_per_frame) == 0
         jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
         jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
-        
-        
-        
-        
     end
     
-%     save ('jitterX_8', 'jitterX');
-%     save ('jitterY_8', 'jitterY');
+
     
+%     
+%     for i = 1:duration
+%         jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
+%         jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
+%     end
+    
+    
+    if ~exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/'])
+        mkdir(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/'])
+    end
+    
+    save (['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterX'], 'jitterX');
+    save (['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/', 'jitterY'], 'jitterY');
+end
 
 
 
-[sta] = compute_jitter_sta_20160217(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
+
+
+[sta] = compute_jitter_sta_opt_201602171(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
 for i = 1:size(spikes,2)
-    temp = sta{i};
+    temp = squeeze(sta(:,:,:,:,i));
     if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date,'/', dataparam.concatname])
         mkdir(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date,'/',dataparam.concatname]);
     end

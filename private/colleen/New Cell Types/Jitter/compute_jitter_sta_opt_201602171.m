@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta] = compute_jitter_sta_opt_201602176(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
+function [sta] = compute_jitter_sta_opt_201602171(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %     mglBltTexture(frametex, [stimulus.x_start+jitterX, stimulus.y_start+jitterY, stimulus.span_width, stimulus.span_height], -1, -1);
 dbstop if error
@@ -58,14 +58,7 @@ end
 %% 2016-02-17-1 data007
 % 1857 is x coordinate of sharp peak in diff(triggers) graph
 
-%high_point_trigger = [4167 3450 2015];
-
-%% 2016-02-17-6 data024
-% high_point_trigger = [392];
-
-%% 2016-02-17-6 data026
-high_point_trigger = 1857
-;% 
+high_point_trigger = [4167 3450 2015];
 high_point_trigger = sort(high_point_trigger,'descend');
 for i = 1:length(high_point_trigger)
     triggers = [datarun.triggers(1:high_point_trigger(i)); datarun.triggers((high_point_trigger(i)+1):end) - mean(diff(datarun.triggers(1:high_point_trigger(i))))];
