@@ -1,12 +1,12 @@
 clear
 Analysis_Path = '/Volumes/Analysis/2016-02-17-1/data022-data028';
 datarun_class = load_data([Analysis_Path '/data024/data024'], struct('load_neurons', 0, 'load_params', 1));
-dsave = '/Volumes/Lab/Users/Nora/GLMFits/RPE/201602171/WN/OnPar/';
+dsave = '/Volumes/Lab/Users/Nora/GLMFits/RPE/201602171/WN/OffPar/';
 monitor_refresh = 119.5;
 subunits = 0;
 
 % only change things here
-cells = get_cell_ids(datarun_class, 'On Parasol'); % cell ids to fit
+cells = get_cell_ids(datarun_class, 'Off Parasol'); % cell ids to fit
 convergence = 1; % fraction of data to use
 
 if convergence < 1; dsave = [dsave '_Conv_' num2str(convergence)]; end

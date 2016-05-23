@@ -1,4 +1,4 @@
-function save_glm(fittedGLM, testspikes, testmovie, savename)
+function fittedGLM = save_glm(fittedGLM, testspikes, testmovie, savename)
     fittedGLM.xvalperformance = glm_predict(fittedGLM,testmovie, 'testspikes', testspikes);
     temp = corrcoef(conv(sum(fittedGLM.xvalperformance.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(100)));
     fittedGLM.xvalperformance.corr = temp(2,1);

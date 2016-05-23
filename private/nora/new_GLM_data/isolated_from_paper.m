@@ -1,7 +1,7 @@
 % NB 2014-10-9
 % get data into a reasonable shape to share
 
-for i_exp = 1:3
+for i_exp = 2
     for stim_type = {'WN'}
         % Data Type
         GLMType.fit_type = stim_type{1};

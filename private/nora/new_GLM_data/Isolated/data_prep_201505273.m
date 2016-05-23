@@ -4,10 +4,10 @@ clear
 Analysis_Path = '/Volumes/Analysis/2015-05-27-3/data001-data005';
 datarun_class = load_data([Analysis_Path '/data001/data001'], struct('load_neurons', 0, 'load_params', 1));
 model_fit_data = load_data([Analysis_Path '/data002/data002'], struct('load_neurons', 1, 'load_params', 0));
-dsave = '/Volumes/Lab/Users/Nora/GLMFits/Isolated/201505273/WN/OnPar';
+dsave = '/Volumes/Lab/Users/Nora/GLMFits/Isolated/201505273/WN/OffPar';
 
 % ONLY CHANGE THINGS HERE
-cell_spec = get_cell_ids(datarun_class,'On Parasol'); % cell ids to fit
+cell_spec = get_cell_ids(datarun_class,'Off Parasol'); % cell ids to fit
 convergence = 1; % fraction of data to use
 
 %% Don't change these
@@ -170,7 +170,7 @@ for i_stim = 1 % WN is 1, NSEM is 2
         
         if i_stim == 1
             close all
-            %[STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
+            [STA, ~] = STA_Test(fitspikes, fitmovie, 0, 1/monitor_refresh);
             center = round([40 - datarun_class.vision.sta_fits{cids(i_cell)}.mean(2) datarun_class.vision.sta_fits{cids(i_cell)}.mean(1)]);
             %hold on; plot(center(1), center(2), 'r*')
         else
@@ -180,7 +180,7 @@ for i_stim = 1 % WN is 1, NSEM is 2
             clear fittedGLM
         end
         
-        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh);
+        fittedGLM = glm_fit(fitspikes, fitmovie, center, 'monitor_refresh', monitor_refresh, 'WN_STA', STA);
         fittedGLM.xvalperformance = glm_predict(fittedGLM, prepped_data.testmovie, 'testspikes', prepped_data.testspikes(:,i_cell));
         temp = corrcoef(conv(sum(fittedGLM.xvalperformance.rasters.glm_sim), gausswin(100)),conv(sum(fittedGLM.xvalperformance.rasters.recorded), gausswin(100)));
         fittedGLM.xvalperformance.corr = temp(2,1);
