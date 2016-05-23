@@ -20,7 +20,7 @@ for i=1:length(Channels)
         %    set(h,'MarkerFaceColor','g');
         %else            
             h=plot(X,Y,'bo');
-            %set(h,'MarkerFaceColor','b');
+            set(h,'MarkerFaceColor','b');
         %end        
     end
     set(h,'MarkerSize',rad);       

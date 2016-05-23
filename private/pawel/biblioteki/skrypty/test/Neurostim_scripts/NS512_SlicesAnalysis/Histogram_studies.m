@@ -18,7 +18,6 @@ text(450,9,['A=' num2str(CFs{1}.A,'%8.2f')]);
 text(450,8,['\tau=' num2str(CFs{1}.tau,'%8.2f')]);
 text(450,7,['\sigma=' num2str(CFs{1}.sigma,'%8.2f')]);
 
-
 subplot(1,2,2);
 p=hist(LatenciesForGivenElectrode,[5:10:600]);
 hist(LatenciesForGivenElectrode,[5:10:600]);

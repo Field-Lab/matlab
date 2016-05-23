@@ -12,9 +12,8 @@ Patterns=NS512_OptimalElectrodeSequence();
 
 Times=[TimeShift:InterPulseLatency:TimeShift+63*InterPulseLatency];
 
-% cd /Volumes/Stream-phoenix/Analysis/stim512/2012-09-18-1/stim_files_test; 
-cd /Users/grosberg/Desktop/  
-
+cd /Volumes/Stream-phoenix/Analysis/stim512/2012-09-18-1/stim_files_test; 
+           
 Indexes=NS512_RowAndColumnForElectrode(500,[1:512]);
 Columns=Indexes(:,1);
 

@@ -25,7 +25,7 @@ idList = neuronFile.getIDList()
 GaussParameters=double([]);
 NoOfEl=0;
 
-for Neuron=1:length(idList)
+for Neuron=1%:length(idList)
     NeuronID=idList(Neuron)
     %FullName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009paramSninya\2010-09-14-0\dane\ID=' num2str(NeuronID)]; % laptop
     FullName=['C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_10_02\data005\dane\ID=' num2str(NeuronID)]; % pokoj 109

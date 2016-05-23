@@ -6,10 +6,8 @@ NumberOfSamples=30000;
 [electrodes Array] = generateClusterStimPatterns2ElScan(CenterElectrodes);
 
 [PatternOrder,MovieChunksFile]=NS_MovieChunksForExperiment2el(length(CenterElectrodes),TimeShiftInMs,DelayInMs,NumberOfSamples);
-% break
-disp('?')
-% cd C:\pawel\pliki\nauka\matlab\; 
-cd ~/Desktop/StimFiles
+break
+cd C:\pawel\pliki\nauka\matlab\; 
 fid = fopen('2el_electrodes','wb')
 fwrite(fid,electrodes,'integer*4');
 fclose(fid);

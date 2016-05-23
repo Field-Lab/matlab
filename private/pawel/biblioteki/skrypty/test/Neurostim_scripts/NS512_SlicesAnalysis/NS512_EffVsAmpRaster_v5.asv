@@ -3,13 +3,15 @@ if komp==2 %laptop
     load C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\EI1;
     load C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\dane;
     MovieFilePath='C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\movie002';
-    FullName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\histograms5\GaussParameters.bin'];
-    ImagePath=
+    FullName='C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\histograms5\GaussParameters.bin';
+    ImagePath='C:\pawel\nauka\analiza\slices\2010-09-14-0\analysis_2013_10_17\figures\';
 else
     load C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_10_02\files\EI1;
     load C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_10_02\files\dane;
     MovieFilePath='D:\Home\Data\slices\2010-09-14-0\movie002';
     FullName='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\histograms5\GaussParameters.bin';
+    ImagePath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_10_02\figures\';
+    NeuronFilePath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons';% - pokoj 023
 end
 
 ; % pokoj 109
@@ -22,7 +24,8 @@ Electrodes=GaussParameters(:,2);
 i12=find(Neurons==6993)
 
 Patterns=Electrodes(i12);
-%Patterns=[30    32    45    47    64   339   339   356   371   395   409   463   491   491];
+%Patterns=[30    32    45    47    64   339   339   356   371   395   409
+%463   491   491];
 %Patterns=[30    32    45    47    64   339   356   371   395   409   463   491];
 Patterns=[339 371 409 395 463 30 491 32 47 64 45 356]
 Patterns=[339 371 409 395 463 491 32 64 47 30 45 356];
@@ -36,7 +39,7 @@ LeftCoordinates=[LC(1) LC(2) LC(3) LC(1) LC(2) LC(3) LC(1) LC(2) LC(3) LC(1) LC(
 BottomCoordinates=[BC(4) BC(4) BC(4) BC(3) BC(3) BC(3) BC(2) BC(2) BC(2) BC(1) BC(1) BC(1)];
 SubplotWidth=0.28;
 SubplotHeight=0.14;
-break
+
 for p=1:length(Patterns)
     WholeAreaCoordinates(1)=LeftCoordinates(p);
     WholeAreaCoordinates(2)=BottomCoordinates(p);
@@ -98,7 +101,7 @@ for p=1:length(Patterns)
         set(h,'FontSize',24);
         h=gcf;
         %FullImageName=['C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_10_02\figures\figure1_eff.tif'];
-        FullImageName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\analysis_2013_10_17\figures\figure1_eff.tif'];
+        FullImageName=[ImagePath 'figure1_eff.tif'];
         set(h,'PaperUnits','inches');
         set(h,'PaperSize',[8 5]*2);
         set(h,'PaperPosition',[0 0 8 5]*2); 
@@ -118,7 +121,7 @@ for p=1:length(Patterns)
         text(20,35,['\tau = ' num2str(CFs{1}.tau*10/20,'%8.1f') ' ms']);
         text(20,30,['\sigma = ' num2str(CFs{1}.sigma*10/20,'%8.1f') ' ms']);
         h=gcf
-        FullImageName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\analysis_2013_10_17\figures\figure1_hist.tif'];
+        FullImageName=[ImagePath 'figure1_hist.tif'];
         set(h,'PaperUnits','inches');
         set(h,'PaperSize',[8 5]*2);
         set(h,'PaperPosition',[0 0 8 5]*2); 
@@ -131,13 +134,13 @@ end
 % Show spontaneous EI of the neuron
 %RawDataPath='D:\Home\Data\slices\2010-09-14-0\data002';
 %NeuronFilePath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons'; - pokoj 023
-NeuronFilePath='C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\Vision_output\2010-09-14-0\data002\data002.neurons';
+%NeuronFilePath='C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\Vision_output\2010-09-14-0\data002\data002.neurons';
 %EI=NS512_SpontaneousEI(RawDataPath,NeuronFilePath,6993);
 subplot('position',[0.15 0.39 0.7 0.22])
 %EI1=reshape(EI,512,80);
 h=NS512_ShowEIAsCircles4(EI1/1.5,500,[1:512],[],Patterns,[-1000 1000],[-500 500]);
 
-FullImageName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\analysis_2013_10_17\figures\figure2.tif'];
+FullImageName=[ImagePath 'figure2.tif'];
 h=gcf;
 set(h,'PaperUnits','inches');
 set(h,'PaperSize',[10 12]);

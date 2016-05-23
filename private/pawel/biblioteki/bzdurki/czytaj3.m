@@ -3,27 +3,28 @@ NS_GlobalConstants=NS_GenerateGlobalConstants(512);
 
 %1) Reading raw data
 %javaaddpath 'C:\home\pawel\praca\Vision6-std-executable\Vision.jar'; %define path to Vision jar file
-full_path='D:\Home\Data\slices\2010-09-14-0\data002'; %define path to raw data file
+full_path='K:\analysis\2010-09-14-0\data000'; %define path to raw data file
 rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
 %RawData=rawFile.getData(1000000,40000)'; %the output is 65x40000 array (for 64-channel file). First index is channel number, and there is 40000 samples for each channel. The first sample is sample number 100000, as specified in the first argument.
 %figure(5);
 %plot(RawData(440,:),'b-');
 
 %2) Reading some neuron information
-paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.params');
-neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons');
+paramsFile=edu.ucsc.neurobiology.vision.io.ParametersFile('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_07_18\VisionOutput\data000\data000.params');
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2013_07_18\VisionOutput\data000\data000.neurons');
 idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
-NeuronID=391;
+NeuronID=6998;
 spikeTimes = neuronFile.getSpikeTimes(NeuronID)'; % for given neuron, import the spikes times
 
 %3. Plotting the primary channel
 CenterChannel=336;
-N=200;
-L=100;
+N=length(spikeTimes);
+L=600;
 spikes=zeros(N,L);
-for i=1:0
+for i=1:N
+    i
     t=spikeTimes(i);
-    d0=rawFile.getData(t-20,L)';
+    d0=rawFile.getData(t-200,L)';
     d1=d0(CenterChannel+1,:); % add 1, since the first channel in the raw data is the TTL channel and not electrode 1
     spikes(i,:)=d1;
 end
@@ -34,10 +35,13 @@ plot(spikes')
 grid on;
 %break
 %4. More electrodes
-break
+
 electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500); %define the electrode map - must be different than 1 for silicon probes
 Radius=1;
 ChannelsPlot=[1:512]%electrodeMap.getAdjacentsTo(CenterChannel,Radius)';
+
+Patterns=[339 371 409 395 463 491 32 64 47 30 45 356];
+ChannelsPlot=Patterns;
 
 spikes2=zeros(N,numel(ChannelsPlot),L); %spike,channel,sample
 for i=1:N

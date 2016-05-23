@@ -1,6 +1,7 @@
 function varargout = WaveformClassifier1(varargin)
 % WAVEFORMCLASSIFIER1 M-file for WaveformClassifier1.fig
-%      WAVEFORMCLASSIFIER1, by itself, creates a new WAVEFORMCLASSIFIER1 or raises the existing
+%      WAVEFORMCLASSIFIER1, by itself, creates a new WAVEFORMCLASSIFIER1 or
+%      raises the existing
 %      singleton*.
 %
 %      H = WAVEFORMCLASSIFIER1 returns the handle to a new WAVEFORMCLASSIFIER1 or the handle to
@@ -22,7 +23,7 @@ function varargout = WaveformClassifier1(varargin)
 
 % Edit the above text to modify the response to help WaveformClassifier1
 
-% Last Modified by GUIDE v2.5 10-Mar-2014 15:18:26
+% Last Modified by GUIDE v2.5 28-Mar-2014 11:34:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -256,5 +257,20 @@ set(handles.edit3,'String',NeuronID);
 set(handles.edit4,'String',ElectrodeID);
 r=ShowFigure(NeuronID,ElectrodeID,handles);
 % hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+EventID=str2num(get(handles.edit2,'String'))-1
+set(handles.edit2,'String',EventID);
+Data=ReadData(handles);
+NeuronID=Data(1,EventID);
+ElectrodeID=Data(2,EventID);
+set(handles.edit3,'String',NeuronID);
+set(handles.edit4,'String',ElectrodeID);
+r=ShowFigure(NeuronID,ElectrodeID,handles);
+% hObject    handle to pushbutton7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)

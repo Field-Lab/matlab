@@ -3,7 +3,7 @@ DataPath='F:\analiza\retina\2012-09-27-4\files\scan_new';
 Movies=[1:2:63];
 FigurePath='C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4';
 
-ThresholdMovies=zeros(1,PatternsToShow);
+%ThresholdMovies=zeros(1,PatternsToShow);
 Threshold=80;
 
 figure(3)
@@ -18,7 +18,7 @@ for i=1:length(Movies)
         AmplitudesLabels{i}='';
     end
 end
-
+break
 AmplitudeMin=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],Patterns(1),Movies(1),NS_GlobalConstants)
 AmplitudeMax=NS_AmplitudesForPattern_512_1el(DataPath,[1:512],Patterns(1),max(Movies),NS_GlobalConstants)
 SamplesToAnalyze=[7:136];

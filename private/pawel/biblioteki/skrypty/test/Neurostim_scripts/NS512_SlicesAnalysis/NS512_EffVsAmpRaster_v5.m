@@ -129,7 +129,7 @@ for p=1:length(Patterns)
         figure(11)
     end        
 end
-
+break
 % Show spontaneous EI of the neuron
 %RawDataPath='D:\Home\Data\slices\2010-09-14-0\data002';
 %NeuronFilePath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons'; - pokoj 023
@@ -138,7 +138,7 @@ end
 subplot('position',[0.15 0.39 0.7 0.22])
 %EI1=reshape(EI,512,80);
 h=NS512_ShowEIAsCircles4(EI1/1.5,500,[1:512],[],Patterns,[-1000 1000],[-500 500]);
-
+break
 FullImageName=[ImagePath 'figure2.tif'];
 h=gcf;
 set(h,'PaperUnits','inches');

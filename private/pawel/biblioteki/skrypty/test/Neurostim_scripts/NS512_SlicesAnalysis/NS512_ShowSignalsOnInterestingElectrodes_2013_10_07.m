@@ -19,7 +19,7 @@ GaussParameters=reshape(a,length(a)/5,5); %NeuronID, interesting electrode, Ampl
 
 Neurons=GaussParameters(:,1);
 Electrodes=GaussParameters(:,2);
-
+break
 for i=334%:347%168:length(Neurons)
     Neuron=Neurons(i);
     spikeTimes = double(neuronFile.getSpikeTimes(Neuron)');

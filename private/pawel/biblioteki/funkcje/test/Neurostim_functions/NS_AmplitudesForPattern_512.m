@@ -10,8 +10,8 @@ load(FullName_pattern);
 ST=size(traces)
 for i=1:length(Channels)
     Trace=reshape(traces(1,i,:),1,ST(3));
-    figure(100);
-    plot(Trace);
+    %figure(100);
+    %plot(Trace);
     index=find(abs(Trace)==max(abs(Trace)));
     Amplitudes(i)=Trace(1,index(1));
 end

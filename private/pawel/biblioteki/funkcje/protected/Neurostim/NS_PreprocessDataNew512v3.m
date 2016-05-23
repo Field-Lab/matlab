@@ -5,7 +5,7 @@ function [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,ClusterFileName]=NS_P
 % electrode.
 % PatternsToRead - if movie includes 64 patterns, but we want to process
 % only some of them, the indexes should be specifiec here. The aray of
-% indexes is not array of patterns really, but indexes for the array of
+% indexes is not array of patterns really, but indexes for the array ofPatternsUsed
 % patterns that will be loaded by this function from the stimulus files.
 
 %ArrayID=1;
@@ -20,7 +20,7 @@ full_path=[pwd filesep 'data' FileName]
 rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path);
 electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(ArrayID);
 
-TraceLength=60;
+TraceLength=140;
 
 filename_movie=['movie' FileName]
 l=length(filename_movie);
@@ -66,6 +66,7 @@ for i=MoviesToRead %1:8:NumberOfMovies-1 %unless specific movie numbers defined!
     
     PatternsIndexesToRead=[];
     for i1=PatternsToRead
+        i1
         PatternIndexes=find(PatternsUsed==i1); %number of events corresponding to given pattern
         PatternsIndexesToRead=[PatternsIndexesToRead' PatternIndexes']';
     end
