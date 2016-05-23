@@ -1,0 +1,13 @@
+NeuronFilePath = 'D:\Home\Pawel\analysis\slices\2013\2010-09-14-0\data002\data002.neurons';
+DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2010-09-14-0\data002_duplicates.txt';
+PrimaryNeurons=NS512_IdentifyPrimaryNeurons_v2(NeuronFilePath,DuplicatesFilePath);
+
+
+SpikeTimesPath='C:\home\Pawel\nauka\512stim_paper\NeuronAnalysis\2010-09-14-0\data002\SpikeTimesCombined';
+GaussesFilesPath='C:\home\Pawel\nauka\512stim_paper\NeuronAnalysis\2010-09-14-0\data002\GaussesFiles';
+
+[CorrData]=NS512_SpikeCorrelationsMultielectrodeStimulation(PrimaryNeurons,SpikeTimesPath,GaussesFilesPath,20,0.1);
+
+s1=sign(CorrData(:,5)-1.2*AllGaussesStat(:,2))
+s2=sign(AllGaussesStat(:,1)-1.2*AllGaussesStat(:,3))
+s3=s1+s2

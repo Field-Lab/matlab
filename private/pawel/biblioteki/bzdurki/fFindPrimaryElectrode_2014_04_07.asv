@@ -1,0 +1,25 @@
+full_path='I:\analysis\slices\2013-12-12-3-PH\data001'; %define path to raw data file
+neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons');
+
+NeuronFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons';
+DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\duplicates2.txt';
+PrimaryNeurons=NS512_IdentifyPrimaryNeurons_v2(NeuronFilePath,DuplicatesFilePath);
+
+PrimaryElectrodes=zeros(1,length(PrimaryNeurons));
+
+for neuron=1:len
+    neuron
+    NeuronID=PrimaryNeurons(neuron);
+    % 1) Find the primary recroding electrode and define the axis ranges for
+    % the plot
+    SeedEl = neuronFile.getNeuronIDElectrode(NeuronID);
+    Electrodes=electrodeMap.getAdjacentsTo(SeedEl,1)';
+    
+    spikeTimes = neuronFile.getSpikeTimes(NeuronID)'; % for given neuron, import the spikes times
+    NeuronEI=NS512_LoadEIFromRawData(full_path,spikeTimes(10:min(509,length(spikeTimes))),60,20);
+    
+    EIforElectrodes=NeuronEI(Electrodes,:);
+    PP=max(EIforElectrodes')-min(EIforElectrodes');
+    RecordingElectrodeIndex=find(PP==max(PP));
+    PrimaryElectrodes(neuron)=Electrodes(RecordingElectrodeIndex);
+end

@@ -1,0 +1,26 @@
+load D:\Home\Pawel\analysis\slices\SlicesTTX\2010-09-14-0\analysis_2013_10_02\files\dane; %MovieNumber,RepetitionNumber,PatternNumber,Latency,PatternID
+p1=dane(3,:);
+PatternsUsed=unique(p1)
+for p=59%2:length(PatternsUsed)
+    Pattern=PatternsUsed(p);
+    Spikes=find(dane(3,:)==Pattern);
+    s(p)=length(Spikes)s
+    dane(4,Spikes);
+    HistogramsAll=hist(dane(4,Spikes),[1:600]);
+    %hist(dane(4,Spikes),[1:600]);
+    hold on
+    [CFs,leg,moje]=NS512_FitWithMultiGauss_2015_05_26([1:600],HistogramsAll);
+    
+    %for i=1:length(CFs)
+    %    h1=plot(CFs{i}([1:600]),'rd-');
+    %end
+end
+
+figure(5)
+clf
+plot(s,'bd-')
+plot(PatternsUsed,s,'bd-')
+grid on
+hold on
+Patterns=[339 371 409 395 463 491 32 64 47 30 45 356];
+plot(sort(Patterns),ones(1,length(Patterns)),'rd')

@@ -1,0 +1,45 @@
+fid=fopen('C:\home\Pawel\nauka\Stanford\StreamExamples\stim1el.bin','r','l');
+a=fread(fid,'uint32');
+fclose(fid);
+
+Channel=129;
+FrameNumber=154; % pulse starts at FrameNumber=150, Frame 154 is the one with second pulse phase
+
+s=FrameNumber*1000; % beacause each frame has 1000 values
+f1=a(s+1:s+1000);
+g1=dec2bin(f1,32);
+
+Line0=20; % see Labview_Stimchip_Control_doc_2014_10_20.pdf, table 2: line 20 is line0 for chip 3
+Value0=43; % data for channel 129 starts with value number 43 (in LabView the value is 42, because in Labview arrays are indexed from 0)
+
+figure(1)
+subplot(4,1,1);
+c=g1(Value0:Value0+5,32-Line0);
+plot(bin2dec(c),'bd-')
+Data0=c(1:2:5)';
+
+subplot(4,1,2);
+c=g1(Value0:Value0+5,32-Line0-1);
+plot(bin2dec(c),'bd-')
+Data1=c(1:2:5)';
+
+subplot(4,1,3);
+c=g1(Value0:Value0+5,32-Line0-2);
+plot(bin2dec(c),'bd-')
+Data2=c(1:2:5)';
+
+subplot(4,1,4);
+c=g1(Value0:Value0+5,32-Line0-3);
+plot(bin2dec(c),'bd-');
+Data3=c(1:2:5)';
+
+SW1=Data2(1)
+SW2=Data0(1)
+SW3=Data1(1)
+
+Connect=Data3(1)
+Polarity=Data3(2)
+
+DAC=[Data2(2) Data1(2) Data0(2) Data3(3) Data2(3) Data1(3) Data0(3)]
+DACvalue=bin2dec(DAC)
+DACcurrent=DACvalue/127*1

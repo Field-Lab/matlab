@@ -1,0 +1,52 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+[NumberOfMovies,NumberOfPatternsPerMovie,AllPatterns,Patterns]=NS512_MoviePatterns(MovieFile,NS_GlobalConstants);
+
+StimulatedElectrodes=StimulatedElectrodesMouse;
+s1=size(StimulatedElectrodes);
+
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500); %define the electrode map - must be different than 1 for silicon probes
+
+for i=1:512
+    X(i)=electrodeMap.getXPosition(i);
+    Y(i)=electrodeMap.getYPosition(i);        
+end
+
+MapaKolorow=jet;
+clear qw;
+PatternsToAnalyze=unique(AllPatterns)';
+KtoryPattern=17;
+
+for i=KtoryPattern
+    %clf
+    StimulatedChannel=PatternsToAnalyze(i);
+    ChannelData=StimulatedElectrodes(:,StimulatedChannel,:);
+    qw(StimulatedChannel)=max(max(max(ChannelData)));
+    
+    ChannelDataNew=reshape(ChannelData,s1(1),s1(3));
+    ChannelsToExclude=electrodeMap.getAdjacentsTo(StimulatedChannel,1)';
+    ChannelDataNew(:,ChannelsToExclude)=0; %ignore spikes on the stimulated electrode
+    
+    qw2(StimulatedChannel)=max(max(max(ChannelData)));
+    
+    for Amplitude=2:25
+        Amplitude;
+        SubplotRow=ceil((Amplitude-1)/6)
+        SubplotColumn=Amplitude-1-(SubplotRow*6)+6-1;
+        subplot('position',[SubplotColumn*0.12+0.01 (4-SubplotRow)*0.1+0.56 0.1125 0.09]);        
+        
+        ChannelDataForAmplitude=ChannelDataNew(Amplitude,:);
+        ConvertedData=ChannelDataToColors(ChannelDataForAmplitude,X,Y);
+        image(ConvertedData');
+        colormap(jet(50))
+        hold on
+        h10=plot(X(StimulatedChannel)/30+33,17-round((Y(StimulatedChannel)+490)/60),'go');
+        set(h10,'MarkerSize',8)
+        %axis([-1000 1000 -500 500])
+        h=gca;        
+        %set(h,'Color',[0 0 0]);
+        set(h,'XTickLabel','');
+        set(h,'YTickLabel',''); 
+        %et(h,'Box','on');
+    end    
+end
+

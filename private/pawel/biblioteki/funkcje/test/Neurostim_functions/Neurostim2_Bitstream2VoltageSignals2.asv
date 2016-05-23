@@ -1,0 +1,51 @@
+function[clk,data]=Neurostim2_Bitstream2VoltageSignals2(FullDataStream,FullClkStream,FullTriggerConnectStream,FullTriggerRecordStream,SamplingPeriod,FilesPath,TriggerRecordDelay,TriggerConnectDelay);
+
+clkzeros=zeros(2*length(FullDataStream),2);
+clk=clkzeros;
+clk(:,1)=[1:length(clk)]*SamplingPeriod/2;
+clk(2:2:length(clk),2)=3.3;
+
+clk_config=clk;
+clk_config(2*find(FullClkStream~=1),2)=0;
+
+clk_realtime=clk;
+clk_realtime(2*find(FullClkStream~=2),2)=0;
+
+data=zeros(length(FullDataStream),2);
+data(:,1)=[1:length(FullDataStream)]*SamplingPeriod;
+data(find(FullDataStream==1),2)=3.3;
+
+trigger_connect=zeros(length(FullTriggerConnectStream),2);
+trigger_connect(:,1)=[1:length(FullTriggerConnectStream)]*SamplingPeriod;
+trigger_connect(find(FullTriggerConnectStream==1),2)=3.3;
+
+trigger_record=zeros(length(FullTriggerRecordStream),2);
+trigger_record(:,1)=[1:length(FullTriggerRecordStream)]*SamplingPeriod;
+trigger_record(find(FullTriggerRecordStream==1),2)=3.3;
+
+figure(5)
+subplot(5,1,1);
+plot(clk_config(:,1),clk_config(:,2));
+subplot(5,1,2);
+plot(data(:,1),data(:,2));
+subplot(5,1,3);
+plot(clk_realtime(:,1),clk_realtime(:,2));
+subplot(5,1,4);
+plot(trigger_connect(:,1),trigger_connect(:,2));
+subplot(5,1,5);
+plot(trigger_record(:,1),trigger_record(:,2));
+
+figure(6)
+plot(trigger_record(:,1),trigger_record(:,2),'bd-',trigger_connect(:,1),trigger_connect(:,2)+5,'bd-',clk_realtime(:,1),clk_realtime(:,2)+10,'bd-',
+
+fid=fopen([FilesPath '\clk_config.txt'],'w');
+fprintf(fid,'%e  %e\n',clk_config');
+fclose(fid);
+
+fid=fopen([FilesPath '\clk_realtime.txt'],'w');
+fprintf(fid,'%e  %e\n',clk_realtime');
+fclose(fid);
+
+fid=fopen([FilesPath '\data.txt'],'w');
+fprintf(fid,'%e  %e\n',data');
+fclose(fid);

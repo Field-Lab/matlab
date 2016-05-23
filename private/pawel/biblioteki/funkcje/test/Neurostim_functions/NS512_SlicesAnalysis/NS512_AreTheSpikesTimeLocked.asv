@@ -1,0 +1,20 @@
+function TimeLocking=NS512_AreTheSpikesTimeLocked(SpikeTimesHistogram,TimeWindow);
+% Ta funkcja sprawdza, czy spiki na danej elektrodzie sa czasowo
+% skorelowane ze stymulacja. WEjscia:
+% SpikeTimesHistogram - o wymiarach
+for i=1:length(SpikeTimesHistogram)-TimeWindow+1
+    NumberOfSpikesInWindow(i)=sum(SpikeTimesHistogram(i:i+TimeWindow-1));
+end
+
+sum(SpikeTimesHistogram)
+MeanSpikeRate=sum(SpikeTimesHistogram)/length(SpikeTimesHistogram); %average number of spikes per unit time
+MeanSpikeNumberPerWindow=MeanSpikeRate*TimeWindow
+
+if max(NumberOfSpikesInWindow)>3*MeanSpikeNumberPerWindow & max(NumberOfSpikesInWindow)>10
+    TimeLocking=1;
+else
+    TimeLocking=0;
+end
+
+%figure(100)
+%plot(SpikeTimesHistogram)

@@ -1,0 +1,16 @@
+fid = fopen('C:\pawel\nauka\Neurostim-3\datastream.txt','w');
+HW = 40;
+HD = 0;
+nrch = 64;
+
+Masks=zeros(1,nrch);
+ActiveChannels=[
+
+bitstr = [SoftReset, '__',HoldTiming(HW,HD),'__',TriggerDelay(10,5,6),'__'];
+bitstr = [bitstr,ChannelMaskBlock(nrch,56,1),'__',ChannelConfig(nrch,56),'__'];
+bitstr = [bitstr,ChannelMaskBlock(nrch,56,1),'__',realtime_burst1(HW,HD),'__'];
+bitstr = [bitstr,ChannelMaskBlock(nrch,14,1),'__',realtime_burst2(HW,HD),'__'];
+bitstr = [bitstr,ChannelMaskBlock(nrch,14,2),'__',realtime_burst2(HW,HD),'__'];
+    %AnalogSettings(DACs.Gain,50)]
+fprintf(fid,'%s',bitstr);
+fclose(fid);

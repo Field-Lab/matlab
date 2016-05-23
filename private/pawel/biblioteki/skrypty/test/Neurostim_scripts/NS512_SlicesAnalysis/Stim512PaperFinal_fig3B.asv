@@ -1,0 +1,11 @@
+load C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\NumberOfStimulatedElectrodesMouse
+NumberOfStimulatedElectrodesMouse=NumberOfStimulatedElectrodes;
+
+DataPath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001preproc';
+movies=[16:18:448]
+NS_AmplitudesForPattern_512_1el(DataPath,[1:512],13,16,NS_GlobalConstants);
+subplot(1,4,1)
+plot(sum(NumberOfStimulatedElectrodesMouse,2)/128,'bd-');
+subplot(1,4,2);
+[c,v]=find(diff(sign(NumberOfStimulatedElectrodesMouse))==1);
+hist(c,max(c)-min(c)+1);

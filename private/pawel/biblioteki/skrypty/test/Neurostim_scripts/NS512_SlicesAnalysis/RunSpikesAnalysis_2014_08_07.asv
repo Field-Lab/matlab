@@ -1,0 +1,12 @@
+MovieFile='G:\data\2013-12-12-3-PH\movie001';
+DataPath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001preproc';
+ArtifactDataPath=DataPath;
+FigurePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeAnalysis\2012-12-12-3-PH-2014-08-07';
+SzybkiTestDetekcjiSpikow_v7.m;
+NumberOfStimulatedElectrodesMouse=NumberOfStimulatedElectrodes;
+break;
+MovieFile='I:\analysis\slices\2013-12-12-0-PH\movie004';
+DataPath='G:\analysis\2010-09-14-0\data002_preproc';
+ArtifactDataPath=DataPath;
+FigurePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-0-PH\SpikesAnalysis\data004';
+SzybkiTestDetekcjiSpikow_v5.m;

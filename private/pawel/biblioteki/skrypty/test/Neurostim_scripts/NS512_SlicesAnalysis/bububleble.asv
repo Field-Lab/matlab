@@ -1,0 +1,14 @@
+[NumberOfMovies,NumberOfPatternsPerMovie,AllPatternsUsed,Patterns]=NS512_MoviePatterns('I:\analysis\slices\2010-09-14-0\TTX_sub\movie002',NS_GlobalConstants);
+
+for Pattern=AllPatternsUsed
+    MoviesForPattern=find(Patterns(:,Pattern)>1);
+    Movies=MoviesForPattern(2:length(MoviesForPattern))
+    for Movie=MoviesForPattern(2:length(MoviesForPattern))
+        NS512_SpikesBasedVisualization;
+    end
+end
+break
+for i=1:17
+    Movie=i*8;
+    NS512_SpikesBasedVisualization;
+end

@@ -1,0 +1,17 @@
+FiguresPath='C:\pawel\nauka\analiza\slices\2010-09-14-0\analysis_2014_08_19\SpikesPropagation\';
+for Frame=1%:300
+    FigureName=['13f' num2str(Frame) '.tif'];
+    a=imread([FiguresPath FigureName],'tif');
+    if Frame == 1
+        imwrite(imind,map,FigurePath,'gif', 'Loopcount',1);
+    else
+        imwrite(imind,map,FigurePath,'gif','WriteMode','append','DelayTime',0);
+    end
+end
+break
+[imind,map] = rgb2ind(im,256);
+if Frame == 1
+    imwrite(imind,map,FigurePath,'gif', 'Loopcount',1);
+else
+    imwrite(imind,map,FigurePath,'gif','WriteMode','append','DelayTime',0);
+end
