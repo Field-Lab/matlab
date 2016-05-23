@@ -33,7 +33,7 @@ tubulin(:,:,2) = im2(:,:,1) + maskOfElectrodes;
 tubulin(:,:,1 ) = maskOfElectrodes; 
 tubulin(:,:,3) = maskOfElectrodes; 
 figure; imshow(tubulin); 
-hsize = 1000% 120; % 241=60 um separation of electrodes.
+hsize = 60% 120; % 241=60 um separation of electrodes.
 sigma = 0.46;
 h = fspecial('log',hsize,sigma);
 filtered = imfilter(im2(:,:,1),h);
@@ -271,4 +271,55 @@ xlabel('fluorescence level');
 ylabel('axon bundle activation threshold'); 
 fimage = imread('/Users/grosberg/Desktop/filteredtubulin2.jpg'); 
 
- 
+%% Analyze 2015-11-09-3
+im1 = imread('/Volumes/Analysis/2015-11-09-3/image analysis/registered_tubulin_crop.tiff');
+load('/Volumes/Analysis/2015-11-09-3/image analysis/registered_electrode_coordinates_crop.mat'); 
+load('/Volumes/Lab/Projects/electrical_stim/bundle-safe-zones/AlgorithmOutputs/axonBundleThresholdsAlgorithm_2015_11_09_3.mat')
+Safe1193 = axonBundleThresholdsAlgorithm_2015_11_09_3;
+    
+hsize = 120; % 241=60 um separation of electrodes.
+sigma = 0.42;
+h = fspecial('log',hsize,sigma);
+filtered = imfilter(im1,h);
+figure; imshow(filtered); title(sprintf('laplacian of a gaussian hsize %0.0f sigma %0.2f',hsize,sigma)) ;
+
+
+idx = find(Safe1193~=4); 
+elecs = 1:512; 
+%%
+radii = [5 10 15 20 30 40 60 120 240];
+cor_coeffs = zeros(size(radii));
+pvals = zeros(size(radii));
+cor_coeffs2 = zeros(size(radii));
+pvals2 = zeros(size(radii));
+for r = 1:length(radii)
+    radius = radii(r); %pixels, 120 is equal to 30 microns.
+    [row_idx,col_idx]= meshgrid(1:size(filtered,2),1:size(filtered,1));
+    fluo_vals = zeros(512,1);
+    for e = 1:length(elecs)
+        % Find pixels within a given radius.
+        C = sqrt((row_idx-newXYCoords_crop(1,elecs(e))).^2 + ...
+            (col_idx-newXYCoords_crop(2,elecs(e))).^2)<=radius;
+        fluo_vals(e) = mean(filtered(C));
+        disp(['Finished with electrode ' num2str(elecs(e))]);
+    end
+    [cc,p]=corrcoef(fluo_vals(idx),Safe1193(idx));
+    figure; scatter(fluo_vals(idx),Safe1193(idx),10,'k','filled');
+    xlabel(sprintf('Mean intensity in a %0.0f um radius',radius/120*30));
+    ylabel('axon bundle activation threshold (\muV)');
+    title(sprintf('Correlation coefficient is %0.4f, p=%0.2f',cc(2),p(2)));
+    cor_coeffs(r) = cc(2);
+    pvals(r) = p(2);
+    [cc,p]=corrcoef(fluo_vals(analyzedElecs),safeDiff(analyzedElecs));
+    figure; scatter(fluo_vals(analyzedElecs),safeDiff(analyzedElecs),10,'k','filled');
+    xlabel(sprintf('Mean intensity in a %0.0f um radius',radius/120*30));
+    ylabel('somatic - axon bundle activation threshold (\muV)');
+    title(sprintf('Correlation coefficient is %0.4f, p=%0.2f',cc(2),p(2)));
+    cor_coeffs2(r) = cc(2);
+    pvals2(r) = p(2);
+end
+
+figure; plot(radii/120*30,cor_coeffs,'-x');
+ylabel('correlation coefficient');
+title('correlation between bundle threshold & fluorescence intensity'); 
+xlabel('radius around electrode (um) for fluorescence averaging');

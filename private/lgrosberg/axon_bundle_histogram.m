@@ -186,3 +186,50 @@ subplot(5,1,5);
 histogram(bundle_thresholds_2012_09_24); xlim([0 5]); 
 title(sprintf('2012-09-24-3 n = %0.0f',sum(isfinite(bundle_thresholds_2012_09_24))))
 xlabel('axon bundle threshold (\muA)'); 
+
+
+%% Resampling analysis
+
+% First, calculate the RMS difference in means between the five different
+% populations. 
+
+datasets={'2015-04-09-2','2015-09-23-2','2015-10-06-3','2015-10-06-6','2012-09-24-3'}; 
+dataset = datasets{d};
+
+x{1} = axonBundleThresholds';   
+x{2} = axonBundleThresholds_2015_09_23_2;  
+x{3} = bundle_thresholds_2012_09_24;
+x{4} = bundleThresholds_2015_10_06_6;   
+x{5} =axonBundleThresholds_2015_10_6_3;
+rms_means=0;
+for ii = 1:length(x)-1;
+    for jj = ii+1:length(x)
+        if ii~=jj
+            rms_means = rms_means+(mean(x{ii})-mean(x{jj}))^2; 
+        end
+    end
+end
+disp(['The observed RMS difference between the means of different groups was ' num2str(sqrt(rms_means))]); 
+
+%% Next, resample the data and compute the RMS difference between
+nResamples = 1000;
+rms_resampled = zeros(nResamples,1); 
+for n = 1:nResamples
+    resampledPools = cell(5,1);
+    for p = 1:length(x)
+        resampledPools{p} = datasample(allthresholds,size(x{p},1));
+    end
+    
+    rms_means=0;
+    for ii = 1:length(x)-1;
+        for jj = ii+1:length(x)
+            if ii~=jj
+                rms_means = rms_means+(mean(resampledPools{ii})-mean(resampledPools{jj}))^2;
+            end
+        end
+    end
+    rms_resampled(n) = sqrt(rms_means);
+end
+
+disp(['RMS difference between ' num2str(nResamples) ' resampled means was ' ...
+    num2str(mean(rms_resampled)) ' +/- ' num2str(std(rms_resampled))]); 
