@@ -1,5 +1,5 @@
 % RPE, WN and NSEM
-   %{
+   %%{
   clear
 Analysis_Path = '/Volumes/Analysis/2015-10-06-0/data000-data015-norefit/';
 class = 'data000';
@@ -12,10 +12,10 @@ extra_string = '-from-data000_data001_data002_data003_data004_data005_data006_da
 datarun_class = load_data([Analysis_Path class extra_string '/' class extra_string], struct('load_neurons', 0, 'load_params', 1));
 mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/');
 mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/WN/');
-%mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/');
+mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/Midget/NSEM/');
  %}
 %% WN
-%%{
+%{
 reps = 60;
 idx = 1:reps;
 cell_type = {'Off Midget Clean'};
@@ -25,7 +25,7 @@ cells = get_cell_ids(datarun_class, cell_type{1}); % cell ids to fit
 % datarun_class = load_sta(datarun_class, 'load_sta', cells);
 n_cells = length(cells);
 
-%%
+%
   %{
 run = 1;
 datarun = load_data([Analysis_Path WN_runs{run} extra_string '/' WN_runs{run} extra_string], struct('load_neurons', 1, 'load_params', 1));
@@ -80,12 +80,12 @@ end
 %}
 
 %% NSEM
-%{
+%%{
 clear fitspikes_cell
 clear testspikes_cell
 reps = 50; 
 idx = 1:reps;
-cell_type = {'Off Midget'};
+cell_type = {'Off Midget Clean'};
 cells = get_cell_ids(datarun_class, cell_type{1}); % cell ids to fit
 datarun_class = load_sta(datarun_class, 'load_sta', cells);
 n_cells = length(cells);
@@ -105,6 +105,7 @@ for run = 1
 end
 monitor_refresh = mean(monitor_refresh);
 
+
 %%
 for i=1:n_cells
 fitspikes{i} = [];
@@ -118,6 +119,8 @@ for run = 1
     idx = idx+60;
 end
 end
+
+%%
 close all
 for cell = 1:n_cells
 %[STA, center] = STA_Test(fitspikes{cell}, fitmovie, 1, 1/monitor_refresh);
@@ -130,12 +133,12 @@ temp = corrcoef(conv(sum(fittedGLM.xval.rasters.glm_sim), gausswin(100)),conv(su
 fittedGLM.xval.corr = temp(2,1);
 close all
 plotfilters(fittedGLM)
-exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/OffMid_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/NSEM/OffMid_' num2str(cells(cell)) '_filters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
 close all
 plotrasters(fittedGLM.xval, fittedGLM)
-exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/OffMid_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
+exportfig(gcf, ['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/NSEM/OffMid_' num2str(cells(cell)) '_rasters.eps'], 'Bounds', 'loose', 'Color', 'rgb');
 close all
-save(['/Volumes/Lab/Users/Nora/GLMFits/201510060/NSEM/OffMid_' num2str(cells(cell)) '.mat'], 'fittedGLM');
+save(['/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/NSEM/OffMid_' num2str(cells(cell)) '.mat'], 'fittedGLM');
 
 end
 %}
