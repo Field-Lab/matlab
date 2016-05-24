@@ -35,7 +35,7 @@
 % April 7, 2015
 
 
-function [sta] = compute_jitter_sta_opt(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
+function [sta] = compute_jitter_sta_opt_20160217(datarun, mdf_file, num_frames, spikes, jitter_x, jitter_y,  stixel_size, num_colors,dataparam)
 %% This function computes the STA without relying on STAs from vision. The binning is slightly different from Vision.
 %     mglBltTexture(frametex, [stimulus.x_start+jitterX, stimulus.y_start+jitterY, stimulus.span_width, stimulus.span_height], -1, -1);
 dbstop if error
@@ -75,7 +75,6 @@ for i = 1:length(high_point_trigger)
 end
 
 
-
 image_width = dataparam.x_dim/stixel_size;
 image_height = dataparam.y_dim/stixel_size;
 
@@ -90,12 +89,28 @@ else
 end
 
 
-pointer = image_width*image_height*num_colors+1;
 %     pointer = 2+25+2;
 i =2;
 
-%%%% REMOVE THE +6 WHEN NOT 2016-02-17-6
-while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1)
+    pointer = image_width*image_height*num_colors+1;
+
+if strcmp(dataparam.date(1:10), '2016-02-17')
+    %     pointer = 2+25+2;
+
+    %%%% REMOVE THE +6 WHEN NOT 2016-02-17
+
+    while pointer+2*3+image_height*image_width*3-1<size(inputs,2)*size(inputs,1)
+        temp = inputs(pointer+2*3:pointer+2*3+image_height*image_width*3-1);
+        real_frame(:,:,1,i) = reshape(temp(1:3:end), image_width, image_height);
+        real_frame(:,:,2,i) = reshape(temp(2:3:end), image_width, image_height);
+        real_frame(:,:,3,i) = reshape(temp(3:3:end), image_width, image_height);
+
+        pointer = pointer+2*3+image_height*image_width*3;
+        i = i+1;
+    end
+else
+    
+    while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1)
     temp = inputs(pointer:pointer+image_height*image_width*num_colors-1);
     if num_colors == 3
         real_frame(:,:,1,i) = reshape(temp(1:3:end), image_width, image_height);
@@ -107,13 +122,13 @@ while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1
     
     pointer = pointer+image_height*image_width*num_colors;
     i = i+1;
+    end
+
+
 end
 
 
 
-bt_triggers = triggers(2:end) - [triggers(1:end-1)];
-
-length_of_time = triggers(end);
 upsampled_num_frames = length(triggers)*100/dataparam.interval;
 
 upsample_factor = dataparam.interval; % should be interval
@@ -133,6 +148,7 @@ for j = 1:size(spikes,2)
     end
 end
 
+
 %% Compute movie
 
 fprintf('Progress: %s%s\n', dataparam.date, dataparam.concatname)
@@ -140,6 +156,7 @@ fprintf([repmat('-', 1,dataparam.num_of_interval+1), '\n'])
 fprintf('*')
 sta = zeros(image_width*stixel_size, image_height*stixel_size,num_colors, num_frames, size(spikes,2), 'int16');
 sum_binned_spikes = sum(binned_spikes,1 );
+
 try
     height =image_height;
     width = image_width;
@@ -147,15 +164,13 @@ try
     for i = 1:size(frames_needed,2)
         if mod(i,floor(size(frames_needed,2)/dataparam.num_of_interval)) == 0
             fprintf('*');
-            disp(max(sta(:)));
         end
         
         
         
         % don't compute the frame if you don't need it
-        
         if sum(sum_binned_spikes(:,i + 1:i+num_frames)) ~= 0
-          
+            
             movie = zeros(image_width*stixel_size, image_height*stixel_size, num_colors, 'int16');
             true_frame = zeros(width*stixel_size, height*stixel_size, 'int16');
             F = real_frame(:,:,:,frames_needed(1,i));
@@ -200,11 +215,11 @@ try
             
             
             for t = 1:num_frames
-
+                
                 [x_ind] = find(binned_spikes(:,i+t)>0);
-                if ~isempty(x_ind)                        
+                if ~isempty(x_ind)
                     subtract = num_frames -t+1;
-
+                    
                     if subtract > 0
                         for cel = 1:length(x_ind)
                             % maximum values in sta are -32768 and

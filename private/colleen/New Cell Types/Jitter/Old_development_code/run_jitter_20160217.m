@@ -1,4 +1,4 @@
-function [sta] = run_jitter(dataparam)
+function [sta] = run_jitter_20160217(dataparam)
 % dataparam needs to have date, concatname, mdf_file, and select_cells
 slashes = strfind(dataparam.mdf_file, '/');
 dashes = strfind(dataparam.mdf_file ,'-');
@@ -138,19 +138,25 @@ if exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dat
 else
     
     
-    
-    
+     
     state = Init_RNG_JavaStyle(seed);
     jitterX = int16(zeros(duration,1));
     jitterY = int16(zeros(duration,1));
-    
-    
+
     for i = 1:duration
+        if mod(i,1000) == 1
+            disp(num2str(i));
+        end
+        for trash = 1:stixels_per_frame
+            a = random_uint16(state);
+        end
+        
+        %         if mod(i, stixels_per_frame) == 0
         jitterX(i) = [mod(double(random_uint16(state)), stixel_width) - stixel_width/2];
         jitterY(i) = [mod(double(random_uint16(state)), stixel_height) - stixel_height/2];
     end
     
-    
+       
     if ~exist(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname, '/'])
         mkdir(['/Volumes/Lab/Users/crhoades/Jitter_Shifts/', dataparam.date, '/', dataparam.concatname,'/'])
     end
@@ -163,7 +169,7 @@ end
 
 
 
-[sta] = compute_jitter_sta_opt(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
+[sta] = compute_jitter_sta_opt_20160217(datarun, dataparam.mdf_file, fitparam.num_frames, spikes, jitterX, jitterY, stixel_size, num_colors, dataparam);
 for i = 1:size(spikes,2)
     temp = squeeze(sta(:,:,:,:,i));
     if ~exist(['/Volumes/Lab/Users/crhoades/Jitter/',dataparam.date,'/', dataparam.concatname])
