@@ -132,13 +132,14 @@ end
 
 
 sta = double(datarun.stas.stas{cell_ids});
+[sig_stixels] = significant_stixels(sta);
 sig_stixels = sig_stixels(:); % Vectorize
 
     % identify STA frames to use
     frames = 1:30;
     nframes = length(frames);
     num_frames = 30;
-    num_stims = size(real_frame,4);
+    num_stims = size(inputs,2);
     % Expand across color channels
     sig_stixels = repmat(sig_stixels, size(sta,3), 1);
     
@@ -155,12 +156,12 @@ sig_stixels = sig_stixels(:); % Vectorize
 strf = stavect2visbuf(strfs, 40, 20, 1);
 diag_gen_signals = zeros(num_stims, num_frames);
 for i = 1:num_stims
-diag_gen_siganls(i,:)  = double(inputs(:, i)'*strfs);
+    diag_gen_signals(i,:)  = double(inputs(:, i))'*strfs;
 end
 
 % gen_signals = zeros(num_stims-num_frames + 1, 1);
 diag_sum_kernel = eye(num_frames);
-gen_signals = conv2(diag_gen_signals, diag_sum_kernel, 'valid');
+gen_signals = conv2(diag_gen_siganls, diag_sum_kernel, 'valid');
 % 
 % 
 % [~, m] = max(sta(:));
@@ -189,18 +190,18 @@ gen_signals = conv2(diag_gen_signals, diag_sum_kernel, 'valid');
 %     movie = inputs(sig_stixels,:);
 %     
     
-sta_red = permute(sta_red, [2 1 3 4]);
-
-
-sta_red = flip(sta_red, 4);
-sta_red = flip(sta_red, 1);
-sta_red = flip(sta_red, 2);
-sta_red = flip(sta_red, 3);
-
-    GS_fit = squeeze(convn(real_frame_red, sta_red,'valid'));
-
-
-    GS_fit = squeeze(convn(movie, strfs,'valid'));
+% sta_red = permute(sta_red, [2 1 3 4]);
+% 
+% 
+% sta_red = flip(sta_red, 4);
+% sta_red = flip(sta_red, 1);
+% sta_red = flip(sta_red, 2);
+% sta_red = flip(sta_red, 3);
+% 
+%     GS_fit = squeeze(convn(real_frame_red, sta_red,'valid'));
+% 
+% 
+%     GS_fit = squeeze(convn(movie, strfs,'valid'));
     binned_spikes = binned_spikes(end-length(GS_fit)+1:end);
     [Y, edges] = quantileranks(GS_fit,num_bins);
     
