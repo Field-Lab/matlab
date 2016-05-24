@@ -1,26 +1,21 @@
 clear
 close all
 tic
-fixed_threshold = 0.255;
-starting_threshold = 0.265;
+fixed_threshold = 0.11;
+starting_threshold = 0.08;
 threshold_increment = 0.005;
-area_min = 400; % contours smaller than this area (in pixels squared) won't be considered
-size_of_null = 100; % number of examples to make up the null distribution
-mode = 'un_fixed_thresh'; % fixed_thres... or something else
-alpha = 1e-8; % for t test
+area_min = 100; % contours smaller than this area (in pixels squared) won't be considered
+size_of_null = 300; % number of examples to make up the null distribution
+mode = 'unfixed_thresh'; % fixed_thres... or something else
+alpha = 1e-60; % for t test
 
 % number must be an array; Fill in nan where cells aren't needed
-number{1} = [481 811 1531;...
-    2103 2161 3288;...
-    3816 3886 4280;...
-    4937 6331 6511
+number{1} = [527; 902; 1622;...
     ];
 
-number{2} = [1936 2011 3166;...
-    3901 4113 4981;...
-    5012 6526 7051;...
-    7456 nan nan
+number{2} = [4594; 5193 ;5493;...
     ];
+
 
 sta_index =2; % 1 for bw, 2 for rgb (green channel)
 
@@ -32,8 +27,8 @@ number{1} = number{1}';
 number{2} = number{2}';
 
 
-date = '2016-02-17-6/data026_cf/edited';
-concatname ='data026_cf';
+date = '2016-04-21-1/data006-cf/edited';
+concatname ='data006-cf';
 concatname_str = strrep(concatname, '_', '\_')
 
 suptitle([ date, ' ', concatname_str])
@@ -50,7 +45,7 @@ for types = 1:size(number,2)
             clear size_test
             
             % load the jitter STA
-            load(['/Volumes/Lab/Users/crhoades/Jitter/', date, '/', concatname,'/Cell ', num2str(number{types}(i)), '.mat'])
+            load(['/Volumes/Lab/Users/crhoades/Jitter_backup/', date, '/', concatname,'/Cell ', num2str(number{types}(i)), '.mat'])
             sta = temp;
             % Normalize by the max (in the future, divided by the number of
             % spikes if that wasn't done when the STA was computed
@@ -396,7 +391,7 @@ if ~strcmp(mode, 'fixed_thresh')
                 clear size_test
                 
                 % load the jitter STA
-                load(['/Volumes/Lab/Users/crhoades/Jitter/', date, '/', concatname,'/Cell ', num2str(number{types}(i)), '.mat'])
+                load(['/Volumes/Lab/Users/crhoades/Jitter_backup/', date, '/', concatname,'/Cell ', num2str(number{types}(i)), '.mat'])
                 sta = temp;
                 % Normalize by the max (in the future, divided by the number of
                 % spikes if that wasn't done when the STA was computed
@@ -564,10 +559,10 @@ plot(final_area{1}*5.5^2/1000^2, ones(size(final_area{1})), 'ok', 'MarkerSize', 
 hold on;
 plot(final_area{2}*5.5^2/1000^2, 2*ones(size(final_area{2})) , 'ok', 'MarkerSize', 5, 'MarkerFaceColor', 'k')
 set(gca, 'ytick', [1 2])
-set(gca, 'yticklabel', {['ON Smooth: n = ', num2str(length(final_area{1}))]; ['OFF Smooth: n = ', num2str(length(final_area{2}))]});
+set(gca, 'yticklabel', {['ON Parasol: n = ', num2str(length(final_area{1}))]; ['OFF Parasol: n = ', num2str(length(final_area{2}))]});
 set(gca, 'ylim', [0 3]);
 xlabel('area (mm^2)')
-title({[ date, ' ', concatname_str], 'ON and OFF Smooth Cell Area Comparison', ['Threshold: ', num2str(threshold)]})
+title({[ date, ' ', concatname_str], 'ON and OFF Parasol Cell Area Comparison', ['Threshold: ', num2str(threshold)]})
 
 % set(bh, 'facecolor', [0 0 0 0.25])
 %             hold on
