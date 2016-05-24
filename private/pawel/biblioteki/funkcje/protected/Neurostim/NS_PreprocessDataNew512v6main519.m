@@ -136,7 +136,7 @@ for i=MoviesToRead %1:8:NumberOfMovies-1 %unless specific movie numbers defined!
             TracesToSave=reshape(Traces(WhichEvents,:,1:length(Channels),:),RepetNumber*length(WhichEvents),length(Channels),TraceLength);              
             STTS=size(TracesToSave);  
             if ArrayID==1502
-                a=importdata('C:\home\Pawel\nauka\Stanford\519mess.txt');
+                a=importdata(fullfile(matlab_code_path,'code','projects','electrical_stim','519mess.txt');
                 TracesToSave519=zeros(STTS(1),519,STTS(3));
                 TracesToSave519(:,a,:)=TracesToSave;
                 clear TracesToSave;
