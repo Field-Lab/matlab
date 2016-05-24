@@ -16,14 +16,14 @@ close all
 % num_bins = 20; % Number of bins to use for the generator vs spikes graph
 
 
-date='2016-02-17-1';
-concatname='data004';
+date='2016-04-21-1';
+concatname='data002';
 file_name = [date, '/', concatname, '/',  concatname];
-movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-1-0.48-11111-119.5.xml';
+movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-11111-119.5.xml';
 
 cell_type = {'ON parasol'};
 num_frames = 30;
-cell_specification = 183; % visionID
+cell_specification = 288; % visionID
 num_bins = 10; % Number of bins to use for the generator vs spikes graph
 
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,7 +61,7 @@ spks=datarun.stas.snls{cellID}.spikes;
 
 % Look at the spike pattern and the generator signal
 % figure;
-% subplot(2,2,1);
+% subplot(2,
 % hist(spks);
 % subplot(2,2,2);
 % scatter(gen,spks);
@@ -164,8 +164,7 @@ ylabel('Spike Rate (spikes/bin)')
 title({[date, ' ', concatname]; cell_type{1}; ['Cell ' num2str(cell_specification)]})
 
 
-% Save the Result
-if ~exist(filepath)
+% Save the Resultf ~exist(filepath)
     mkdir(filepath)
 end
 export_fig([filepath, 'Cell_',num2str(cell_specification)], '-pdf')
