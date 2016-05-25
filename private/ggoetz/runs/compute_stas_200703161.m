@@ -149,7 +149,7 @@ datarun = load_neurons(datarun);
 samples_to_frames = [datarun.names.rrs_prefix '.stf'];
 stafilepath = [datarun.names.rrs_prefix '.sta'];
 
-% RRS works in samples, but it is more natural to work in samples for us.
+% RRS works in seconds, but it is more natural to work in samples for us.
 % Let's convert the datarun to samples.
 datarun = convert_datarun_times_to_samples(datarun);
 

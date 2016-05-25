@@ -50,6 +50,10 @@ end
 % would make us look at parts of the recording that took place before
 % it started
 st = st(st > t_pre);
+if isempty(st)
+    tai = [];
+    return
+end
 
 % Reshape st and t_steps matrices
 if size(st, 1) < size(st, 2)
