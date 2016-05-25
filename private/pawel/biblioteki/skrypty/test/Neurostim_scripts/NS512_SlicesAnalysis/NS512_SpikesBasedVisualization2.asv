@@ -1,0 +1,89 @@
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500);
+
+DataPath='G:\analysis\2010-09-14-0\SpikeFiles';
+
+%Pattern=13;
+%Movies=[16:8:136];
+
+FigurePath=['D:\Home\Pawel\analysis\slices\2010-09-14-0\SpikesAnalysis\SpikeFilesAnimations\p' num2str(Pattern)];
+
+for i=[1:512]%[1:64 321:512]
+    X(i)=electrodeMap.getXPosition(i);
+    Y(i)=electrodeMap.getYPosition(i);
+end
+
+Channels=[1:512]
+TimePoints=[1:2:599];
+SpikeTimesHistograms=zeros(length(Movies),512,length(TimePoints));
+
+for i=1:length(Movies)
+    Movie=Movies(i);
+    fid=fopen([DataPath '\sp_p' num2str(Pattern) 'm' num2str(Movie)],'r','ieee-le');
+    a=fread(fid,'int32');
+    SpikesData=reshape(a,length(a)/3,3);
+    fclose(fid);
+    for Channel=Channels
+        SpikesForChannel=find(SpikesData(:,1)==Channel);
+        SpikeTimes=SpikesData(SpikesForChannel,3);
+        SpikeTimesHistograms(i,Channel,:)=hist(SpikeTimes,TimePoints);
+    end
+end
+
+%colormap(jet(50))
+cmp=colormap(jet(50));
+figure(1)
+clf
+hold on
+
+for Frame=1:length(TimePoints)
+    clf
+    Frame
+    for i=1:length(Movies)
+        AllSpikesAtElectrodePerMovie=
+        %subplot(4,4,i);
+        RowIndex=ceil(i/4);
+        ColumnIndex=i-(RowIndex-1)*4;
+        subplot('Position',[0.01 + (ColumnIndex-1)*0.25, 0.74-(RowIndex-1)*0.27*8/9, 0.23, 0.23*8/9]);
+        hold on;
+        for Channel=Channels
+            SpikeNumber=SpikeTimesHistograms(i,Channel,Frame);
+            if SpikeNumber>0
+                if SpikeNumber>50
+                    SpikeNumber=50;
+                end
+                h=plot(X(Channel),Y(Channel),'bo');
+                set(h,'Markersize',10)
+                set(h,'Color',cmp(SpikeNumber,:));
+                set(h,'MarkerFaceColor',cmp(SpikeNumber,:));
+            else
+                h=plot(X(Channel),Y(Channel),'bo');
+                set(h,'Markersize',1);
+            end
+        end    
+        %h15=NS_AddFrameForArrayLayout2(500,2);
+        h=plot(X(Pattern),Y(Pattern),'gd');
+        set(h,'MarkerSize',8);
+        set(h,'MarkerFaceColor','g');
+        %text(-950,450,num2str(Frame*0.2))
+        axis([-1004 1004 -502 502]);   
+        h=gca;
+        %set(h,'Visible','off');
+        set(h,'XTick',[]);
+        set(h,'YTick',[]);
+        set(h,'Box','on');
+    end
+    subplot('Position',[0.45 0.95 0.04 0.04]);
+    axis([-1 1 -1 1])
+    h=text(0,0,['t = ' num2str(Frame*0.1) ' ms']);
+    set(h,'FontSize',16);
+    h=gca;
+    set(h,'Visible','off');
+    h=gcf;
+    set(h,'PaperUnits','inches');
+    set(h,'PaperSize',[16 9]);
+    set(h,'PaperPosition',[0 0 16 9]); 
+    FullFigurePath=[FigurePath 'f' num2str(Frame)];
+    print(h, '-dtiff', '-r120', FullFigurePath); 
+end
+    
+    

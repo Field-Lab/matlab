@@ -24,7 +24,7 @@ a3=importdata('C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_
 idList=a3;
 GaussParameters=double([]);
 NoOfEl=0;
-
+break
 for Neuron=1:length(idList)
     NeuronID=idList(Neuron)
     %FullName=['C:\pawel\nauka\analiza\slices\2010-09-14-0\data002minus009paramSninya\2010-09-14-0\dane\ID=' num2str(NeuronID)]; % laptop

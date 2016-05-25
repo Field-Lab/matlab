@@ -1,0 +1,36 @@
+function [c,smax]=ConvPeakMax(s,w);
+
+c=conv(s,w,'valid');
+%c=c0(length(w):length(s))/length(w);
+
+cmax=max(c);
+cmax_ind=mean(find(c==max(c)))
+
+i1=find(sign(c-cmax/2)>0)
+i2=find(diff(i1)>1)
+
+if i2
+    i2prim=[min(i1) i1(i2) max(i1)]
+    for i3=1:length(i2prim)-1
+        i3
+        i2prim(i3)
+        i2prim(i3+1)
+        if i2prim(i3)<cmax_ind & cmax_ind<i2prim(i3+1)
+            %i1(i2prim(i3))
+            %i1(i2prim(i3+1))
+            center=(i1(i2prim(i3))+i1(i2prim(i3+1)))/2
+        end
+    end
+else
+    center=mean(i1)
+end
+
+%for i3=1:length(i2)
+%    
+
+%if i1(i2)<cmax_ind
+%    zakres=i1(i2)
+
+cmax=find(c==max(c))
+%cmax+(length(w)+1)/2-1
+smax=mean(cmax+(length(w)+1)/2-1);

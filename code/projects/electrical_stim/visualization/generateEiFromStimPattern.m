@@ -65,7 +65,7 @@ rawData = zeros(size(dataTraces,1),size(dataTraces,2),size(dataTraces,3),length(
 idx = 0; % index for saving rawData output
 for movieIndex = mIndices
     idx = idx + 1; 
-    cla;
+    if ~suppressPlots; cla; end %or clear specific axis. 
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(movieIndex), 99999);
     try
@@ -80,7 +80,10 @@ for movieIndex = mIndices
     subtractionMatrix = repmat(firstArtifact,[size(dataTraces,1) 1]);
     modData = dataTraces - subtractionMatrix;
 %     modData = modData(:,:,8:end); %cut off the early time points
+%     spiketrials = [2 3 4 6 10 11 14 15 16 17 18 19 21 23]; %banana delete this line!!!!
+%     modData = modData(spiketrials,:,:); 
     trialAvg = squeeze(mean(modData)); 
+%     keyboard; 
     amplitudes = max(trialAvg,[],2) - min(trialAvg,[],2);
     scatterData = amplitudes;
     if ~suppressPlots
@@ -99,7 +102,7 @@ for movieIndex = mIndices
         axis image; axis off; colorbar; colormap hot;
         title(sprintf('%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA',pathToAnalysisData,patternNo,movieNos(movieIndex),amps(1)));
         
-        %{
+       % {
         f2 = figure; set(f2,'Position',[100 465 845 445]);
         set(f2,'Color','white');
         scatter(positions(:,1),positions(:,2),scatterData,'filled','green','ButtonDownFcn',{@plotWaveform,positions});
@@ -107,7 +110,7 @@ for movieIndex = mIndices
         title(sprintf('%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA',pathToAnalysisData,patternNo,movieNos(movieIndex),amps(1)));
         hold on; scatter(positions(stimChan,1),positions(stimChan,2),350,'black');
         text(positions(stimChan,1),positions(stimChan,2),'stimulating electrode');
-        %}
+       % }
         
         if showElecNums % Display electrode numbers
             for e = 1:512

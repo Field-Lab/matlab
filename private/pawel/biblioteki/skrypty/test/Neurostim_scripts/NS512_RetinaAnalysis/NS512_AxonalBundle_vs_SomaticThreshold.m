@@ -147,7 +147,7 @@ plot(SomaThresholdsForParasolOnPrimaries,BundleThresholdsForParasolOnPrimaries,'
 xlabel('Thresholds for somas [\muA]');
 ylabel('Thresholds for bundles [ \muA]');
 text(0.2,3.7,['SI: ' num2str(length(find(ThresholdsRatio<1))) '/' num2str(length(ElectrodesForHistogram_Somas)) ' = ' num2str(length(find(ThresholdsRatio<1))/length(ElectrodesForHistogram_Somas)*100, '%4.1f') '%'])
-
+break
 
 FullName=['C:\pawel\nauka\analiza\retina\2012-09-27-4\summary4\figures2\comparison_' num2str(day) '_' num2str(piece) '_t' num2str(MinimumElectrodeAboveThreshold)];            ;
 h=gcf;

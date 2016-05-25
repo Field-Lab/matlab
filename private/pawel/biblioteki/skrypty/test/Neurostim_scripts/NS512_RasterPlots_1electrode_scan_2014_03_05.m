@@ -1,18 +1,35 @@
 clear
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
 electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500); %define the electrode map - must be different than 1 for silicon probes
 
-full_path='I:\analysis\slices\2013-12-12-3-PH\data001'; %define path to raw data file
-rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
+if piece==12123
+    full_path='I:\analysis\slices\2013-12-12-3-PH\data001'; %define path to raw data file
+    rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
 
-MovieFilePath='I:\analysis\slices\2013-12-12-3-PH\movie001';
-NS_GlobalConstants=NS_GenerateGlobalConstants(500);
-neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons');
-idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+    MovieFilePath='I:\analysis\slices\2013-12-12-3-PH\movie001';
+    neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons');
+    idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
 
-NeuronFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons';
-DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\duplicates2.txt';
+    NeuronFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons';
+    DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\duplicates2.txt';
 
-SpikesSummaryFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeTimesCombined\';
+    SpikesSummaryFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeTimesCombined\';
+end
+
+if piece==12150
+    full_path='I:\analysis\slices\2013-12-15-0\data004'; %define path to raw data file
+    rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
+
+    MovieFilePath='I:\analysis\slices\2013-12-15-0\movie004';
+    neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\data004\data004.neurons');
+    idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+
+    NeuronFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\data004\data004.neurons';
+    DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\Duplicates_2013_12_15_0_data004.txt';
+
+    SpikesSummaryFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeTimesCombined\';
+end
+
 
 PrimaryNeurons=NS512_IdentifyPrimaryNeurons_v2(NeuronFilePath,DuplicatesFilePath);
 
@@ -25,7 +42,7 @@ MoviesOfInterest=setdiff([1:LastMovie],ExcludeMovies);
 
 OutputData=[];
 L=600;
-
+break
 for neuron=1:length(PrimaryNeurons)
     NeuronID=PrimaryNeurons(neuron);
     % 1) Find the primary recroding electrode and define the axis ranges for

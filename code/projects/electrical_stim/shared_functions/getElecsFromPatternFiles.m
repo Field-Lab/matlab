@@ -10,7 +10,7 @@ for i = 3:size(files,1)
     fileName = files(i).name;
     pattern = str2double(fileName(8:find(fileName == '_',1)-1));
     if pattern ~= prevPattern
-        temp = load([filePath fileName]);
+        temp = load(fullfile(filePath, fileName));
         if isfield(temp,'pattern')
             for ii = 1:size(temp.pattern,2)
                 allPatterns(pattern,ii) = temp.pattern(ii).channel;

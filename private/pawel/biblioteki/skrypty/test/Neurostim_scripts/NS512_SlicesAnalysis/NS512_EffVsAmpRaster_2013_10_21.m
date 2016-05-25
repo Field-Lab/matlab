@@ -140,7 +140,7 @@ for p=1:length(Patterns)
         set(h,'PaperUnits','inches');
         set(h,'PaperSize',[8 5]*2);
         set(h,'PaperPosition',[0 0 8 5]*2); 
-        print(h, '-dtiff', '-r120', FullImageName);
+        %print(h, '-dtiff', '-r120', FullImageName);
         
         figure(102);
         hist(LatenciesForGivenElectrode,[5:10:600]);
@@ -160,12 +160,13 @@ for p=1:length(Patterns)
         set(h,'PaperUnits','inches');
         set(h,'PaperSize',[8 5]*2);
         set(h,'PaperPosition',[0 0 8 5]*2); 
-        print(h, '-dtiff', '-r120', FullImageName);
+        %print(h, '-dtiff', '-r120', FullImageName);
         
-        figure(11)
+        %figure(11)
     end        
 end
 
+figure(11)
 % Show spontaneous EI of the neuron
 %RawDataPath='D:\Home\Data\slices\2010-09-14-0\data002';
 %NeuronFilePath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons'; - pokoj 023
@@ -181,4 +182,4 @@ h=gcf;
 set(h,'PaperUnits','inches');
 set(h,'PaperSize',[10 12]);
 set(h,'PaperPosition',[0 0 10 12]); 
-print(h, '-dtiff', '-r240', FullImageName);
+%print(h, '-dtiff', '-r240', FullImageName);

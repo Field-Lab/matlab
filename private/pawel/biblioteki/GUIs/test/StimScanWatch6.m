@@ -467,7 +467,7 @@ size(DataTraces)
 LowLimit=str2num(get(handles.edit8,'String'));
 HighLimit=str2num(get(handles.edit9,'String'));
 NumberOfSamples=str2num(get(handles.edit30,'String'));
-FigureProperties=struct('FigureNumber',12,'Subplot',[2 3 3],'TimeRange',[0 NumberOfSamples],'AmplitudeRange',[LowLimit HighLimit],'FontSize',16,'Colors',['k' 'r' 'b' 'm' 'g' 'c' 'y'],'LineWidth',1,'YLabel','signal [mV]');
+FigureProperties=struct('FigureNumber',22,'Subplot',[2 3 3],'TimeRange',[0 NumberOfSamples],'AmplitudeRange',[LowLimit HighLimit],'FontSize',16,'Colors',['k' 'r' 'b' 'm' 'g' 'c' 'y'],'LineWidth',1,'YLabel','signal [mV]');
 figure(FigureProperties.FigureNumber);
 clf;
 NS_GlobalConstants=NS_GenerateGlobalConstants(ArrayCount);

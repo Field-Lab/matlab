@@ -1,0 +1,41 @@
+% 1)
+clear
+clc
+
+full_path='I:\data\2010-09-14-0\data002';          
+full_pathTTX='I:\data\2010-09-14-0\data009';        
+output_path = 'G:\analysis\slices\2010-09-14-0\TTX_sub\data002';
+MovieFilePath='I:\data\2010-09-14-0\movie002';
+
+log_path = 'G:\analysis\slices\2010-09-14-0\TTX_sub\log002.txt';
+
+NumberOfMovies=NS512_GetNumberOfMovies(full_path);
+logFid = fopen(log_path, 'w');
+
+tic
+  for MovieID=1:137
+    OutputData=NS512_ProcessRawDataAndTTX_v2(full_path, full_pathTTX, output_path, MovieFilePath, MovieID, NumberOfMovies, logFid);
+  end
+toc
+fclose(logFid);
+
+% 2)
+clear
+clc
+
+full_path='I:\data\2010-09-14-0\data005raw';          
+full_pathTTX='I:\data\2010-09-14-0\data009';        
+output_path = 'J:\analysis\slices\2010-09-14-0\TTX_sub\data005';
+MovieFilePath='I:\data\2010-09-14-0\movie005';
+
+log_path = 'J:\analysis\slices\2010-09-14-0\TTX_sub\log005.txt';
+
+NumberOfMovies=NS512_GetNumberOfMovies(full_path);
+logFid = fopen(log_path, 'w');
+
+tic
+  for MovieID=1:137
+    OutputData=NS512_ProcessRawDataAndTTX_v2(full_path, full_pathTTX, output_path, MovieFilePath, MovieID, NumberOfMovies, logFid);
+  end
+toc
+fclose(logFid);

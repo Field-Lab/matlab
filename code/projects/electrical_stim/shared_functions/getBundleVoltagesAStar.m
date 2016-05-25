@@ -1,13 +1,44 @@
-function bundleMeans = getBundleVoltagesAStar(path, patternNos, display, exclude)
-%Calculate the average bundle voltage for each movie of each pattern in patternNos, using the A* pathfinding algorithm to locate the bundle.
+function bundleMeans = getBundleVoltagesAStar(pathToAnalysisData, patternNos, display, varargin)
+% Calculate the average bundle voltage for each movie of each pattern in 
+% patternNos, using the A* pathfinding algorithm to locate the bundle
+% Optional inputs
+
+nbin = length(varargin);
+if mod(nbin,2)==1
+    err = MException('MATLAB:InvArgIn','Unexpected number of arguments');
+    throw(err);
+end
+
 movieNo = 0;
 % Load matrix containing the electrode numbers for the 512-electrode MEA
-temp = load([matlab_code_path() 'private/freddy/512elecpositions.mat']); % Find a more general location for this or call a different text file.
+temp = load([matlab_code_path() ...
+    'code/projects/electrical_stim/resources/arrayPositions512.mat']); 
 positions = temp.positions;
 
-if nargin < 4
-    exclude = 0;
+% Set up default parameters. 
+exclude = 0;
+movieIndex = []; 
+% Read the optional input arguments
+for j=1:(nbin/2)
+    if ~ischar(varargin{j*2-1})
+        err = MException('MATLAB:InvArgIn',...
+            'Unexpected additional property');
+        throw(err);
+    end
+    
+    switch lower(varargin{j*2-1})
+        case 'exclude'
+            exclude = varargin{j*2};
+        case 'movieindex'
+            movieIndex = varargin{j*2};
+
+        otherwise
+            err = MException('MATLAB:InvArgIn',...
+                'Unknown parameter specified');
+            throw(err);
+    end
 end
+
 
 topBorder = [249:256 261:8:381 385:392];
 rightBorder = 392:8:512;
@@ -23,21 +54,16 @@ bundleMeans = zeros(70,3, size(patternNos, 1));
 % Find movie indices
 
 for patternIndex = 1:size(patternNos, 2)
-    movieNos = [];
+    
     patternNo = patternNos(patternIndex);
     disp(['Testing pattern ' num2str(patternNo)]);
-    pathToAnalysisData = path; %'/Volumes/Analysis/2012-09-24-3/data008/';
-    patternNoString = ['p' num2str(patternNos(patternIndex))];
-    files = dir([pathToAnalysisData patternNoString]);
  
-    for i = 1:length(files)
-        if strfind(files(i).name, patternNoString) == 1
-            mIndices = strfind(files(i).name, 'm');
-            movieNos = [movieNos str2double(files(i).name(mIndices(end)+1:end))]; %#ok<AGROW>
-        end
+    movieNos = findMovieNos(pathToAnalysisData,patternNo);
+    if isempty(movieIndex)
+        mIndices = 2:size(movieNos,2);
+    else
+        mIndices = movieIndex;
     end
-    movieNos = sort(movieNos);
-    mIndices = 2:size(movieNos,2);
     dataTraces=NS_ReadPreprocessedData(pathToAnalysisData, '', 0, patternNo,...
         movieNos(1), 99999);
     
@@ -76,39 +102,13 @@ for patternIndex = 1:size(patternNos, 2)
             end
         end
         
-%         for j = 5:size(bundle, 1)            
-%             atedge = true;
-%             backcount = 0;
-%             while (atedge && backcount < 4)
-%                 xpos = positions(bundle(j-backcount, 2), 1);
-%                 if mod(j-backcount,2) == 0
-%                     if xpos ~= 945
-%                         atedge = false;
-%                     end
-%                 else
-%                     if xpos ~= 915
-%                         atedge = false;
-%                     end
-%                 end
-%                 backcount = backcount + 1;
-%             end
-%             if atedge
-%                 disp(['At edge starting at row ' num2str(j)]);
-%                 bundleTrimmed = zeros(j, 2);
-%                 bundleTrimmed(1:j, :) = bundle(1:j, :);
-%                 bundle = bundleTrimmed;
-%                 break;
-%             end
-%      
-%         end
-            
-        
+         
         bundleMean = mean(bundle(~isnan(bundle(:, 1))), 1);
         
         bundleMeans(movieIndex-1, 1, patternIndex) = bundleMean;
         bundleMeans(movieIndex-1, 2, patternIndex) = amps(1);
         bundleMeans(movieIndex-1, 3, patternIndex) = movieNos(movieIndex);
-        
+       
         if display
             cla;
             scatter(positions(:,1),positions(:,2),350,meanData,'filled');
@@ -117,10 +117,20 @@ for patternIndex = 1:size(patternNos, 2)
             
             title(sprintf('%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA',pathToAnalysisData,patternNo,movieNos(movieIndex),amps(1)), 'Color', 'black');
             hold on; scatter(positions(bundle(:, 2),1),positions(bundle(:, 2),2),350,[0.5 0.5 0.5], 'filled');
-            %         text(positions(stimChan,1),positions(stimChan,2),'stimulating electrode')
+            %         text(positions(stimChan,1),positions(stimChan,2),'stimulating electrode') 
             pause(0.001);
         end
-        %end
+        if 0 % bypass for now.
+        if amps(1) < -3.5
+            figure; scatter(positions(:,1),positions(:,2),abs(meanData),'filled')
+            hold on; scatter(positions(axonPath,1),positions(axonPath,2),100,'k')
+            hold on; scatter(positions(ignore,1),positions(ignore,2),100,'r');
+            axis image; axis off; title('black circles were averaged, red ignored');
+            title(sprintf(['%s \npattern %0.0f; movie no. %0.0f; stimAmp %0.2f uA',...
+                '\nblack circles were averaged, red ignored'],pathToAnalysisData,...
+                patternNo,movieNos(movieIndex),amps(1)), 'Color', 'black');  
+        end
+        end
         
     end
 end

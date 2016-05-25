@@ -2,8 +2,10 @@ electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getEl
 figure(101)
 clf;
 
-MarkedElectrodes=[147 47 211 339 111 491 275 427] %[446 20 47]%[457 449 458 465 372 17 364 368];
-MarkedElectrodes=[13 14 15 16 29 31 45 46 47 48 61 63 77:90 ]
+%MarkedElectrodes=PatternsToUse
+MarkedElectrodes=[193:448];
+MarkedElectrodes=[];
+%MarkedElectrodes=unique(Data(3,:))
 %MovieNumbers=[14 15 17 9 12 23 12 15 15 16 11 18 10 6 18 13 9 17]
 
 for i=[1:512]%[1:64 321:512]
@@ -11,75 +13,21 @@ for i=[1:512]%[1:64 321:512]
     Y(i)=electrodeMap.getYPosition(i);
     h=text(X(i),Y(i),num2str(i));
     j=find(MarkedElectrodes==i);
-    set(h,'FontSize',12);
+    set(h,'FontSize',10);
     if j
         set(h,'Color','r');
-        set(h,'FontSize',20);
+        set(h,'FontSize',14);
     end
     %set(h,'FontSize',14);
 end
 axis([-950 950 -460 460])
+
+break
 h=gca
 set(h,'Visible','off');
 FullName=['D:\Home\Pawel\analysis\2010-09-11-0\ForAlan\ElectrodeMap512'];            
         h=gcf;
         set(h,'PaperUnits','inches');
-        set(h,'PaperSize',[12 10]);
+        set(h,'PaperSize',[20 10]);
         set(h,'PaperPosition',[0 0 12 10]); 
-        print(h, '-dtiff', '-r90', FullName);
-
-
-break;
-%plot(X,Y,'bd')
-
-figure(1)
-plot([0:0.1:100])
-axis([0 1000 0 1000])
-break;
-FontSize=26;
-h=text(100,900,'A)');
-set(h,'FontSize',FontSize);
-
-h=text(200,900,'B)');
-set(h,'FontSize',FontSize);
-
-h=text(300,900,'C)');
-set(h,'FontSize',FontSize);
-
-h=text(400,900,'D)');
-set(h,'FontSize',FontSize);
-
-
-FontSize=30;
-h=text(100,700,'A)');
-set(h,'FontSize',FontSize);
-
-h=text(300,700,'B)');
-set(h,'FontSize',FontSize);
-
-h=text(500,700,'C)');
-set(h,'FontSize',FontSize);
-
-h=text(700,700,'D)');
-set(h,'FontSize',FontSize);
-
-FontSize=36;
-h=text(100,500,'A)');
-set(h,'FontSize',FontSize);
-
-h=text(300,500,'B)');
-set(h,'FontSize',FontSize);
-
-h=text(500,500,'C)');
-set(h,'FontSize',FontSize);
-
-h=text(700,500,'D)');
-set(h,'FontSize',FontSize);
-break;
-
-name='C:\home\pawel\2010\Stimchip_paper\literki';
-hc=figure(1);
-set(hc,'PaperUnits','inches');
-set(hc,'PaperSize',[10 7]);
-set(hc,'PaperPosition',[0 0 10 7]);
-print(hc, '-dtiff', '-r120', name);
+        print(h, '-dtiff', '-r200', FullName);

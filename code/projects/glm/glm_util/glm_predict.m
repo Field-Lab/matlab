@@ -39,7 +39,11 @@ params.bindur     = fittedGLM.t_bin;
 params.bins       = fittedGLM.bins_per_frame *size(testmovie,3);
 params.frames     = size(testmovie,3);
 params.testdur_seconds = params.bindur * params.bins ;   
-center_coord = fittedGLM.center_coord;
+try
+    center_coord = fittedGLM.center_coord;
+catch
+    center_coord = fittedGLM.cellinfo.slave_centercoord;
+end
 frame_shifts = fittedGLM.linearfilters.Stimulus.frame_shifts;
 ROI_pixels   = length(fittedGLM.linearfilters.Stimulus.x_coord) *length(fittedGLM.linearfilters.Stimulus.y_coord); 
 
@@ -53,8 +57,12 @@ if iscell(testspikes)
     end
     clear i_blk spt sptimes
     
-    % NBCoupling 2015-04-20
-    if fittedGLM.GLMType.CouplingFilters
+end
+
+
+% NBCoupling 2015-04-20
+if fittedGLM.GLMType.CouplingFilters
+    %try
         for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
             pairspike{pair} = zeros(params.trials,params.bins) ;
             for i_blk = 1 : params.trials
@@ -68,7 +76,12 @@ if iscell(testspikes)
             end
             clear i_blk spt sptimes
         end
-    end
+%     catch
+%         warning('No neighbor spikes given, so coupling filters will be ignored.')
+%         for pair=1:fittedGLM.GLMPars.spikefilters.cp.n_couplings
+%             pairspike{pair} = zeros(params.trials,params.bins) ;
+%         end
+%     end
 end
 
 %%

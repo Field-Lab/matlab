@@ -34,20 +34,21 @@ Flicker=KF/(Cox*W*L)*Id^AF/gmp^2*2; %the "*2" term comes from two transistors!
 
 %c) szum rezystancji obci¹¿enia RL
 RL=4000e3; %ale czy ten rezystor moze byc taki wielki??? to chyba nie moze byc rezystor na tranzystorze ze wzglêdu na liniowoœc??
-URL=4*kT*1e-20*RL/(gmp*RL)^2
+URL=4*kT*1e-20*RL/((gmp*RL)^2)
 
 %d) parametry elektrody
-Rs=65e3;
+Rs=200e3;
 Re=6e12;
-Ce=1e-9;
+Ce=1.5e-9;
 
-Cp=10e-12;
-Rin=8e9;
+Cp=30e-12;
+Rin=200e9;
 omega_gr=1/(Cp*Rin);
 f_gr=omega_gr/6.28
  
-f_step=0.1;
-f=[20:f_step:5000];
+f_step=0.01;
+f=[0.01:f_step:10000];
+f=[0.1:f_step:300];
 omega=2*pi*f;
 Ugm=ones(1,length(f))*WhiteNoiseDensity*1e20;
 UFlicker=Flicker./f*1e20;

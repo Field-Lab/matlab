@@ -11,6 +11,7 @@ NS_GlobalConstants=NS_GenerateGlobalConstants(500);
 neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile(NeuronFilePath);
 
 PrimaryNeurons=NS512_IdentifyPrimaryNeurons_v2(NeuronFilePath,DuplicatesFilePath)
+length(PrimaryNeurons)
 
 fid=fopen(DuplicatesFilePath);
 C=textscan(fid,'%d%s%s%d%s%f32');
@@ -19,7 +20,7 @@ fclose(fid);
 
 MoviesBegins=NS512_MoviesBegins(MovieFilePath,NS_GlobalConstants);
 
-for neuron=1:length(PrimaryNeurons)
+for neuron=132%1:length(PrimaryNeurons)
     neuron
     PrimaryNeuronID=PrimaryNeurons(neuron)
     DuplicatesOfGivenPrimaryNeuron=find(C{4}==PrimaryNeuronID)
@@ -51,8 +52,7 @@ for neuron=1:length(PrimaryNeurons)
     L=length(spikeTimes);
                 
     dane=zeros(5,length(SpikeTimesCombined));
-    for i=1:length(SpikeTimesCombined)
-        %i
+    for i=1:length(SpikeTimesCombined)        
         [dane(1,i),dane(2,i),dane(3,i),dane(4,i),dane(5,i)]=NS512_SpikeTimesToStimulationPatterns_v3(MovieFilePath,SpikeTimesCombined(i),MoviesBegins,NS_GlobalConstants);
     end
     FullName=[OutputPath '\ID=' num2str(PrimaryNeuronID) 'c'];

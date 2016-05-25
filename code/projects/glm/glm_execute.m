@@ -103,12 +103,6 @@ if GLMType.TonicDrive
 end
 
 % PREPARE PARAMETERS
-<<<<<<< HEAD
-[paramind] =  prep_paramindGP(GLMType, GLMPars);
-%p_init     =  zeros(paramind.paramcount,1);
-p_init     = .01* ones(paramind.paramcount,1);
-
-=======
 [paramind] =  prep_paramindGP(GLMType, GLMPars); 
  p_init     = .01* ones(paramind.paramcount,1);
  % AKH 2015-07-15  Mechanism for improved initial estimate
@@ -121,10 +115,6 @@ if exist('optional_arg', 'var')
     end
 end
  
- 
- 
- 
->>>>>>> akheitman
 % ORGANIZE STIMULUS COVARIATES
 center_coord       = glm_cellinfo.slave_centercoord;
 WN_STA             = double(glm_cellinfo.WN_STA);

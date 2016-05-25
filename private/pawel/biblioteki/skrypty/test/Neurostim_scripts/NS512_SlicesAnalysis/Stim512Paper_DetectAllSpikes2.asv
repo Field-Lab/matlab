@@ -1,0 +1,32 @@
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+
+%DataPath='J:\analysis\2013-12-12-0\data001preproc';
+%MovieFilePath='J:\data\2013-12-12-0-PH\movie001';
+%SPfilesPath='C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\2013-12-12-0\data001';
+DataPath='J:\analysis\2013-12-12-0\data004preproc';
+MovieFilePath='J:\data\2013-12-12-0-PH\movie004';
+SPfilesPath='C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\2013-12-12-0\data004';
+Stim512Paper_DetectAllSpikes2.m
+ArtifactDataPath=DataPath;
+
+[NumberOfMovies,NumberOfPatternsPerMovie,AllPatternsUsed,Patterns]=NS512_MoviePatterns(MovieFilePath,NS_GlobalConstants);
+Movies=2:451;
+
+for Movie=Movies
+    PatternsForMovie=find(Patterns(Movie,:)>0);
+    for p=1:length(PatternsForMovie)
+        Pattern=PatternsForMovie(p)
+        [DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Pattern,Movie,0,0);
+        spikes=NS512_DetectAllSpikes(DataTraces(:,:,:),[1:512],-40.1,-20.1);
+        
+        fid=fopen([SPfilesPath '\sp_p' num2str(Pattern) 'm' num2str(Movie)],'wb','ieee-le'); 
+        fwrite(fid,spikes,'int32');
+        fclose(fid);        
+    end
+end      
+
+%odczyt:
+%fid=fopen(['C:\pawel\nauka\512paper\SpikesAnalysis\sp_p64m1'],'r','ieee-le');
+%a=fread(fid,'int32');
+%b=reshape(a,length(a)/3,3);
+%fclose(fid)

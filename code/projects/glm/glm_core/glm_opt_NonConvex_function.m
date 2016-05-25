@@ -50,10 +50,18 @@ for i_vec = 1:size(lcif_derivate,1)
 end
 H_eval = -dt * (hessbase * hessbase');
 
+% ADD PENALTY
+penalty_strength = 500;
+%L2
+% f_penalty = penalty_strength*(p'*p);
+% del_penalty = 2*penalty_strength*p;
+% saturating
+f_penalty = penalty_strength * sum(atan(p).^2);
+del_penalty = 2*penalty_strength*atan(p).*(p.^2 + 1).^(-1);
 
 % SWITCH SIGNS (TURN MAX TO MIN SO WE CAN USE FMINUNC OF MATLAB)
-f            = -f_eval;
-grad         = -g_eval;
+f            = -f_eval+f_penalty;
+grad         = -g_eval+del_penalty;
 Hess_Base    = -H_eval;
 log_cif      = lcif;
 end

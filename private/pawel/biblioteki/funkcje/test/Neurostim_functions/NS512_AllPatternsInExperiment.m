@@ -10,7 +10,7 @@ AllPatterns=[];
 for i=1:NumberOfMovies
     MovieDataAll=NS_MovieData_GlobalPath(full_path,i,NS_GlobalConstants);
     [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,MovieData]=NS_DecodeMovieDataChunk(MovieDataAll);
-    PatternsInMovie=MovieData(2:3:length(MovieData))
+    PatternsInMovie=MovieData(2:3:length(MovieData));
     AllPatterns=[AllPatterns' PatternsInMovie']';
     %MoviesBegins(1,i)=MovieBegin;
 end

@@ -1,0 +1,24 @@
+DataPath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001preproc';
+
+Electrodes=[236 244 245 412];
+Electrodes=[334 338 335 331 328 345 348]
+Amplitudes=[1:15];
+Pattern=61%151;
+MovieStart=7;
+
+figure(101)
+clf
+for i=1:length(Amplitudes)
+    Amplitude=Amplitudes(i);
+    Movie=MovieStart+(Amplitude-1)*18;
+    [DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Pattern,Movie,0,0);
+    
+    for j=1:length(Electrodes)
+        data=reshape(DataTraces(:,Electrodes(j),:),50,400);
+        subplot(length(Electrodes),length(Amplitudes),length(Amplitudes)*(j-1)+i);
+        plot(data')
+        axis([0 100 -200 100])
+        
+    end
+end
+    

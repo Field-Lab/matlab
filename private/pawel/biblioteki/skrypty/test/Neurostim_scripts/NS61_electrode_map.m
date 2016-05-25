@@ -2,8 +2,8 @@ electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getEl
 figure(301)
 clf;
 
-MarkedElectrodes=[17 19];
-MarkedElectrodes=PrimaryElectrodes
+MarkedElectrodes=[339 467];
+%MarkedElectrodes=PrimaryElectrodes
 MovieNumbers=[14 15 17 9 12 23 12 15 15 16 11 18 10 6 18 13 9 17];
 
 %MarkedElectrodes=ElectrodesCombinedOrder

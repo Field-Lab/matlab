@@ -1,0 +1,26 @@
+function InterestingElectrodes=NS512_SpikesAnalysis_FindElectrodesWithTimeLockedResponses(spfilepath,Pattern,Movies);
+
+
+SpikesPerElectrode=zeros(length(Movies),512);
+AllDelaysHistograms=zeros(512,600);
+
+for m=1:length(Movies)
+    Movie=Movies(m);
+    [spfilepath '\sp_p' num2str(Pattern) 'm' num2str(Movie)]
+    fid=fopen([spfilepath '\sp_p' num2str(Pattern) 'm' num2str(Movie)],'r','ieee-le')
+    a=fread(fid,'int32');
+    b=reshape(a,length(a)/3,3);
+    fclose(fid);
+    
+    for electrode=1:512
+        AllDelaysHistograms(electrode,:)=AllDelaysHistograms(electrode,:)+hist(b(find(b(:,1)==electrode),3),[1:600]);
+    end
+        
+    SpikesPerElectrode(m,:)=hist(b(:,1),[1:512]);
+end
+
+for i=1:512
+    TimeLocking(i)=NS512_AreTheSpikesTimeLocked(AllDelaysHistograms(i,:),10); % na tych elektrodach dzieje sie *cos" ciekawego
+end
+
+InterestingElectrodes=find(TimeLocking==1);

@@ -1,0 +1,71 @@
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500);
+
+DataPath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001preproc'
+ArtifactDataPath=DataPath;
+PatternsToAnalyze=[316];
+MovieStart=13;
+
+figure(11);
+clf;
+Pattern=211;
+PatternX=electrodeMap.getXPosition(Pattern);
+PatternY=electrodeMap.getYPosition(Pattern);
+for m=MovieStart:18:(MovieStart+18*24)
+    clf
+    [DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(DataPath,ArtifactDataPath,0,Pattern,m,1500,0);
+    Events=NS512_DetectSpikes(DataTraces,50,10);
+    [a,b]=find(Events>0);
+    n=hist(b,[1:512]);
+    ElectrodesWithSpikes=find(n>9)
+    clear X;
+    clear Y;
+    for i=1:length(ElectrodesWithSpikes)
+        X(i)=electrodeMap.getXPosition(ElectrodesWithSpikes(i));
+        Y(i)=electrodeMap.getYPosition(ElectrodesWithSpikes(i));        
+    end
+    subplot('position',[0.5 0.5 0.05 0.05]);    
+    if ElectrodesWithSpikes
+        plot(X,Y,'ro');
+    end
+    hold on
+    plot(PatternX,PatternY,'gd');    
+    axis([-1000 1000 -500 500])
+    %pause(0.1)
+    FullName=['D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeAnalysis\proba1.tif'];   
+    FullName=['D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeAnalysis\proba' num2str(m) '.tif']; 
+    h=gcf;
+    set(h,'PaperUnits','inches');
+    set(h,'PaperSize',[16 9]);
+    set(h,'PaperPosition',[0 0 16 9]); 
+    print(h, '-dtiff', '-r120', FullName);
+end
+FullName=['D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeAnalysis\proba' num2str(m) '.tif'];            
+h=gcf;
+set(h,'PaperUnits','inches');
+set(h,'PaperSize',[16 9]);
+set(h,'PaperPosition',[0 0 16 9]); 
+%set(h,'PaperPosition',[0 0 10.7 13.5]); 
+print(h, '-dtiff', '-r120', FullName);
+
+
+break
+NeuronID=153;
+fid = fopen('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\NeuronsPatternsPrimaryElectrodes.bin','r');
+Data0=fread(fid,'int32');
+fclose(fid);
+Data=reshape(Data0,3,length(Data0)/3);
+
+Events=NS512_DetectSpikes(DataTraces,50,10);
+[a,b]=find(Events>0);
+
+figure(6)
+n=hist(b,[1:512])
+
+length(find(b==11))
+
+figure(4)
+plot(reshape(DataTraces(:,11,:),50,400)')
+
+figure(10)
+subplot([0.5 0.5 0.05 0.05]);
+ElectrodesWithSpikes=find(n>9);

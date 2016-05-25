@@ -15,7 +15,7 @@ function [celltype_index, CIDs ] = celltype_id_AH(string_celltype, cell_datarunc
 ctypes = cell_dataruncelltypes; types = length(cell_dataruncelltypes);
 
 match = zeros(1,types);  % this will turn to 1 when we have a match 
-if strcmp(string_celltype , 'On-Parasol')
+if strcmp(string_celltype , 'On Parasol')
     
     for i_type = 1:types
         name = ctypes{i_type}.name;
@@ -28,7 +28,7 @@ if strcmp(string_celltype , 'On-Parasol')
     end
 end
 
-if strcmp(string_celltype , 'Off-Parasol')
+if strcmp(string_celltype , 'Off Parasol')
     
     for i_type = 1:types
         name = ctypes{i_type}.name;
@@ -41,7 +41,7 @@ if strcmp(string_celltype , 'Off-Parasol')
     end
 end
 
-if strcmp(string_celltype , 'On-Midget')
+if strcmp(string_celltype , 'On Midget')
     
     for i_type = 1:types
         name = ctypes{i_type}.name;
@@ -53,7 +53,7 @@ if strcmp(string_celltype , 'On-Midget')
     end
 end
 
-if strcmp(string_celltype , 'Off-Midget')
+if strcmp(string_celltype , 'Off Midget')
     
     for i_type = 1:types
         name = ctypes{i_type}.name;
@@ -78,8 +78,112 @@ if strcmp(string_celltype , 'SBC')
     end
 end
 
+if strcmp(string_celltype , 'On Large')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'ON Large') ||  strcmp(name, 'On Large') ...
+             
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+if strcmp(string_celltype , 'Off Large')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'OFF Large') ||  strcmp(name, 'Off Large') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+if strcmp(string_celltype , 'crap')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'crap') ||  strcmp(name, 'Crap')   
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+if strcmp(string_celltype , 'Unclassified')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'unclassified') ||  strcmp(name, 'Unclassified') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+
+if strcmp(string_celltype , 'Crap')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'Crap') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+
+if strcmp(string_celltype , 'nc5')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'nc5') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+
+if strcmp(string_celltype , 'nc6')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'nc6') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+
+if strcmp(string_celltype , 'nc4')
+    
+    for i_type = 1:types
+        name = ctypes{i_type}.name;
+        
+        if strcmp(name, 'nc4') 
+            match(i_type) = 1;
+            break
+        end
+    end
+end
+
+
+
+
+
+
 celltype_index = find(match);
-CIDs           = ctypes{celltype_index}.cell_ids;
+try
+    CIDs           = ctypes{celltype_index}.cell_ids;
+catch
+    CIDs = [];
+end
+
         
         
         

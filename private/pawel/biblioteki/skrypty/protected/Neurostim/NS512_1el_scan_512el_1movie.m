@@ -21,8 +21,7 @@ end
 
 Chunk=NS_MovieChunkGenerationForExperiment(Times,NumberOfSamples,Patterns);
 MovieChunksFile=[1 Chunk]; %only one movie
-keyboard; 
-%break
+break
 cd C:\home\Pawel\nauka\StimFiles;
 fid = fopen('1el_scan_electrodes','wb')
 fwrite(fid,electrodes,'int32');

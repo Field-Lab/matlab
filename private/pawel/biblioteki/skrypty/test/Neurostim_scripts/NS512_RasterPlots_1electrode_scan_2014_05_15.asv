@@ -1,0 +1,203 @@
+clear
+NS_GlobalConstants=NS_GenerateGlobalConstants(500);
+electrodeMap=edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500); %define the electrode map - must be different than 1 for silicon probes
+
+piece=12150;
+
+if piece==12123
+    full_path='I:\analysis\slices\2013-12-12-3-PH\data001'; %define path to raw data file
+    rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
+
+    MovieFilePath='I:\analysis\slices\2013-12-12-3-PH\movie001';
+    neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons');
+    idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+
+    NeuronFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001\data001.neurons';
+    DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\duplicates2.txt';
+
+    SpikesSummaryFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeTimesCombined\';
+    FigurePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\figures3';
+end
+
+if piece==12150
+    full_path='I:\analysis\slices\2013-12-15-0\data008'; %define path to raw data file
+    rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
+
+    MovieFilePath='I:\analysis\slices\2013-12-15-0\movie008';
+    neuronFile = edu.ucsc.neurobiology.vision.io.NeuronFile('D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\data004\data004.neurons');
+    idList = neuronFile.getIDList(); %this imports list of neurons IDs from the file that is defined above as 'neuronFile';
+
+    NeuronFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\data004\data004.neurons';
+    DuplicatesFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\Duplicates_2013_12_15_0_data004.txt';
+
+    SpikesSummaryFilePath='D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\data004_Matlab\SpikeTimesCombined\';
+    FigurePath='D:\Home\Pawel\analysis\slices\2013\2013-12-15-0\data004_Matlab\figures';
+end
+
+PrimaryNeurons=NS512_IdentifyPrimaryNeurons_v2(NeuronFilePath,DuplicatesFilePath);
+
+NumberOfAmplitudes=25;
+
+LastMovie=450;
+MoviesStep=18;
+ExcludeMovies=sort([17:MoviesStep:LastMovie 18:MoviesStep:LastMovie]);
+MoviesOfInterest=setdiff([1:LastMovie],ExcludeMovies);
+break
+OutputData=[];
+L=600;
+%break
+for neuron=70:length(PrimaryNeurons)
+    NeuronID=PrimaryNeurons(neuron);
+    % 1) Find the primary recroding electrode and define the axis ranges for
+    % the plot
+    SeedEl = neuronFile.getNeuronIDElectrode(NeuronID);
+    Electrodes=electrodeMap.getAdjacentsTo(SeedEl,1)';
+    
+    spikeTimes = neuronFile.getSpikeTimes(NeuronID)'; % for given neuron, import the spikes times
+    NeuronEI=NS512_LoadEIFromRawData(full_path,spikeTimes(10:min(509,length(spikeTimes))),60,20);
+    
+    EIforElectrodes=NeuronEI(Electrodes,:);
+    PP=max(EIforElectrodes')-min(EIforElectrodes')
+    RecordingElectrodeIndex=find(PP==max(PP))
+    RecordingElectrode=Electrodes(RecordingElectrodeIndex)
+    
+    MaxY=ceil(max(NeuronEI(RecordingElectrode,:))*2/10)*10
+    MinY=floor(min(NeuronEI(RecordingElectrode,:))*1.5/10)*10
+    
+    
+    % 2) Import the information about spikes
+    fid=fopen([SpikesSummaryFilePath '\ID=' num2str(NeuronID) 'c'],'r','ieee-le'); 
+    a=fread(fid,'int32');
+    l=length(a)
+    b=reshape(a,5,l/5);
+    fclose(fid);
+    
+    % 3) Define the minimal number of spikes associated with given
+    % pattern/amplitude that we consider as evidence for stimulation   
+    NumberOfSpikesOfInterest=0;
+    NumberOfSpikesForMovie=zeros(1,LastMovie);
+    for m=1:length(MoviesOfInterest)
+        Movie=MoviesOfInterest(m);
+        NumberOfSpikesForMovie(MoviesOfInterest(m))=length(find(b(1,:)==Movie));
+        NumberOfSpikesOfInterest=NumberOfSpikesOfInterest+NumberOfSpikesForMovie(MoviesOfInterest(m));
+    end
+    AverageNumberOfSpikesPerPatternAndAmplitude=NumberOfSpikesOfInterest/(length(MoviesOfInterest)*8);
+    MinimumInterestingNumerOfSpikesPerPatternAndAmplitude=max(ceil(AverageNumberOfSpikesPerPatternAndAmplitude*3),20)
+
+    SpikesPerEvent=zeros(LastMovie,512);    
+    
+    % 4) Find electrodes that stimulated given neuron and make plots
+    SuspectedPatterns=unique(b(3,find(b(3,:)>0)));
+    spp=zeros(1,length(SuspectedPatterns));
+    for p=1:length(SuspectedPatterns)% for each pattern tha was associated with a least one spike
+        pattern=SuspectedPatterns(p);
+        [X]=NS512_MovieNumberAndTimingForPattern(MovieFilePath,pattern); %all uses of given pattern, in all movies
+        MoviesForPattern=X(:,1);
+        Stimulation=0;
+        spp(p)=length(find(b(3,:)==pattern)); %ile spikoe zostalo skojarzonych z danym patternem
+        HighestEfficacy=0; %predefinition
+        MostEfficientMovie=1; %predefinition
+        
+        % 4a) Check whether there was enough spikes associated with given
+        % electrode, for at least one amplitude, and if yes, set flag
+        % "stimulation" to 1
+        for mv=1:LastMovie
+            SpikesForMovie=find(b(1,:)==mv);
+            SpikeForPattern=find(b(3,:)==pattern);
+            spe=length(intersect(SpikesForMovie,SpikeForPattern));
+            %spe=length(find(b(1,:)==m & b(3,:)==pattern)) %ile spikow skojarzonych z tym patternem i tym movie
+            if spe>MinimumInterestingNumerOfSpikesPerPatternAndAmplitude 
+               Stimulation=1; % jesli dla chociaz jednej amplitudy i dla danego patternu ilosc spikow jest wieksza od progowej, ustaw flage "stimulation" na 1
+            end
+            if spe>HighestEfficacy %zapamietaj amplitude o najwyzszej efektywnosci stymulacji
+                MostEfficientMovie=mv;
+                HighestEfficacy=spe;
+            end
+        end        
+        spe
+        % 4b) If the flag is 1, make the plots
+        
+        if Stimulation==1 %jesli flaga jest 1, czyli jesli ten pattern stymulowal ten neuron dla przynajmniej jednej amplitudy...
+            figure(1);
+            clf;
+            MostEfficientMovieID=find(X(:,1)==MostEfficientMovie) % numer amplitude odpowiadaj?cy moviesowi o najwiekszej skutecznosci stymulacji
+        
+            % Define which amplitudes to show (even or odd)
+            if ceil(MostEfficientMovieID/2)*2==MostEfficientMovieID
+                MoviesToShowIDs=[2:2:24]; %jesli najbardziej efektywna jest amplituda o parzystym ID (czyli druga lub czwartal ub...) to wyswietl na obrazku parzyste amplitudy
+            else
+                MoviesToShowIDs=[3:2:25];
+            end
+            
+            OutputData=[OutputData [NeuronID pattern length(find(b(3,:)==pattern))]'];
+            % Make the plots
+            for m=1:length(MoviesToShowIDs)
+                MovieNumber=MoviesForPattern(MoviesToShowIDs(m))
+                SpikesForMovie=find(b(1,:)==MovieNumber)
+                MovieDataFull=NS_MovieData_GlobalPath(MovieFilePath,MovieNumber,NS_GlobalConstants);
+                [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,MovieData]=NS_DecodeMovieDataChunk(MovieDataFull);
+            
+                AmplitudeID=MoviesToShowIDs(m);
+                NumberOfPatternUses=X(AmplitudeID,2)
+                spikes=zeros(50,L);
+                % Plot the full waveforms in blue
+                for PulseID=1:NumberOfPatternUses
+                    PulseTimeInRepetition=X(AmplitudeID,2+PulseID);
+                    for repetition=1:25
+                        PulseTime=MovieBegin+(repetition-1)*RepetPeriod+PulseTimeInRepetition;
+                        d0=rawFile.getData(PulseTime,L)';
+                        d1=d0(RecordingElectrode+1,:);
+                        spikes(repetition+(PulseID-1)*25,:)=d1;
+                    end
+                end
+                subplot(6,2,m);
+                h=plot(spikes');
+                set(h,'Color','b');        
+                hold on
+                grid on
+                h11=gca;
+                set(h11,'YLim',[MinY MaxY]);
+                % Plot the spikes in red
+                for PulseID=1:NumberOfPatternUses
+                    PulseTimeInRepetition=X(AmplitudeID,2+PulseID);                                                         
+                    for repetition=1:25
+                        SpikesForThisRepetition=find(b(2,:)==repetition);
+                        SpikesForThisMovieAndRepetition=intersect(SpikesForMovie,SpikesForThisRepetition)
+                        
+                        
+                        for SuspectedSpike=1:length(SpikesForThisMovieAndRepetition)
+            
+                            TimeOfSpike=b(5,SpikesForThisMovieAndRepetition(SuspectedSpike));
+                            LatencyOfSpike=TimeOfSpike-PulseTimeInRepetition;
+            
+                            if LatencyOfSpike>0 & LatencyOfSpike<L-200
+                                PulseTime=MovieBegin+(repetition-1)*RepetPeriod+PulseTimeInRepetition
+                                d0=rawFile.getData(PulseTime,L)';
+                                d1=d0(RecordingElectrode+1,:);
+                                h1=plot([LatencyOfSpike-10:LatencyOfSpike+20],d1([LatencyOfSpike-10:LatencyOfSpike+20]));
+                                %h1=plot(d1)
+                                if PulseID==1
+                                    set(h1,'Color','r');
+                                else
+                                    set(h1,'Color','g');
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            %FigurePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\figures3';
+            FullImageName=[FigurePath '\Neuron' num2str(NeuronID) '_Stim' num2str(pattern) 'add.tif'];
+            h=gcf;
+            set(h,'PaperUnits','inches');
+            set(h,'PaperSize',[16 10]);
+            set(h,'PaperPosition',[0 0 16 10]); 
+            print(h, '-dtiff', '-r90', FullImageName);
+        end
+        
+    end
+    
+end             
+fid = fopen([FigurePath '\NeuronsPatterns.bin'],'wb');
+fwrite(fid,OutputData,'int32');
+fclose(fid);

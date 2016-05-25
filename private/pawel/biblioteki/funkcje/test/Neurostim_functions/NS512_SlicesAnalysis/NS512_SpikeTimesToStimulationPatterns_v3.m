@@ -9,11 +9,11 @@ if length(a)==0
     TimeRelativeToRepetitionBegin=0;
     return;
 else
-    MovieID=a(length(a));
+    MovieID=a(length(a))
     MovieNumber=MovieID;
 end
 
-TimeRelativeToMovieBegin=SpikeTime-MoviesBegins(MovieID);
+TimeRelativeToMovieBegin=SpikeTime-MoviesBegins(MovieID)
 MovieDataFull=NS_MovieData_GlobalPath(full_path,MovieID,NS_GlobalConstants);
 [PDChunkNumber,MovieBegin,RepetNumber,RepetPeriod,MovieData]=NS_DecodeMovieDataChunk(MovieDataFull);
 

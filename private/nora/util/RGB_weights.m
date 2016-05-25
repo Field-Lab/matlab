@@ -17,6 +17,7 @@ RGB_matrix=[datarun.vision.timecourses(cell).r ...
 
 % Take the first component
 RGB=V(:,1);
+% timecourse=U(:,1);
 
 % Warning if the first component doesn't dominate
 if S(1,1)/S(2,2) < 10

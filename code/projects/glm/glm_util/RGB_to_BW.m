@@ -33,7 +33,7 @@ if S(1,1)/S(2,2) < 10
     warning(['Ratio of first principle component to second is only ' num2str(S(1,1)/S(2,2)) '. The psuedoBW movie might not be accurate.'])
 end
 
-if color_movie ~= 0
+if any(color_movie ~= 0)
     % Turn RGB movie into greyscale movie
     movie=squeeze(RGB_weights(1)*color_movie(:,:,1,:)+ ...
         RGB_weights(2)*color_movie(:,:,2,:)+ ...

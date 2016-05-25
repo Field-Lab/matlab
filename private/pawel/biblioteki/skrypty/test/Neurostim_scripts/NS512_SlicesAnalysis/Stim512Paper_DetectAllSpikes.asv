@@ -1,0 +1,32 @@
+DataPath='E:\analysis\2010-09-14-0\data002_preproc';
+ArtifactDataPath=DataPath;
+Pattern=339;
+Movie=106;
+channel=467;
+
+[DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(DataPath,DataPath,0,Pattern,Movie,0,0);
+spikes=NS512_DetectAllSpikes(DataTraces(:,:,:),[1:512],-40.1,-20.1)
+
+figure(1)
+clf
+hold on
+
+plot(reshape(DataTraces(:,channel,:),50,600)','b-');
+
+SpikesForChannel=find(spikes(:,1)==channel);
+for i=1:length(SpikesForChannel)
+    SpikeIndex=SpikesForChannel(i);
+    TraceIndex=spikes(SpikeIndex,2)
+    SampleIndex=spikes(SpikeIndex,3)
+    plot(reshape(DataTraces(i,channel,SampleIndex-5:SampleIndex+10),1,600)','r-');
+end
+
+break
+for i=1:50%length(spikes)
+    h=plot(reshape(DataTraces(i,channel,:),1,600)','b-');
+    
+    if find(spikes(:,2)==i)
+        set(h,'Color','r');
+    end
+    grid on
+end

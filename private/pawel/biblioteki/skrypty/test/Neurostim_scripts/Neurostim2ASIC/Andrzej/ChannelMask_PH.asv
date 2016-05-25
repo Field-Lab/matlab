@@ -1,0 +1,4 @@
+function bitstr=ChannelMask_PH(nrch,DL,CM);
+
+DLbin = dec2bin(DL,12);
+bitstr=['1010_'DLbin RejectSpaces(num2str(CM))];

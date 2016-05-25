@@ -62,9 +62,9 @@ fid=fopen(filename,'r','b');
 header=readPHchunk(fid)
 
 
-if number_of_PD_chunk>header.number_of_chunks
-    error('the addressed number of PD chunk is too large');
-end
+% if number_of_PD_chunk>header.number_of_chunks
+%     error('the addressed number of PD chunk is too large');
+% end
 
 patterns_out=[];
 

@@ -16,18 +16,18 @@ datarun=load_data('2012-08-09-3/data002');
 % Loading other information
 %   Other information you might want including STAs, params, ei, neurons
 %   (includes spike times) and polarities
-datarun=load_sta(datarun);
+% datarun=load_sta(datarun);
 datarun=load_params(datarun);
 datarun=load_neurons(datarun);
-datarun=set_polarities(datarun);
+%datarun=set_polarities(datarun);
 
 % Let's look at the data! This is a classification run.
 
 % Plot the mosaic for a cell type, in this case on parasols
-figure;plot_rf_summaries(datarun,{1},'plot_fits',1,'label',1)
-
-% Plot the STAs for one cell type, in this case on parasols
-plot_rf_portraits(datarun,{1},'plot_radius',5);
+figure;plot_rf_fit(datarun,'On Parasol')
+% 
+% % Plot the STAs for one cell type, in this case on parasols
+% plot_rf_portraits(datarun,{1},'plot_radius',5);
 
 % Look at the firing rate of one cell
 get_psth(datarun.spikes{8}, datarun.triggers,'plot_hist', true, 'bin_size',0.05);

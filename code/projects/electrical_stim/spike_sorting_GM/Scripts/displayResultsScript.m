@@ -3,9 +3,7 @@
 
 % Load workspace
 % Processed data for the same stimulating and recording electrode
-% load(['/Users/grosberg/matlab/dataset_specific/GonzaloJune92015/'...
-%     'sameRecandStimElec_29cases_10jun2015.mat']);
-
+% load('/Volumes/Lab/Projects/electrical_stim/GM-sorting-validation/GonzaloJune92015/sameRecandStimElec_29cases_10jun2015.mat')
 
 %%
 for p = 1:size(NeuronList,1)
@@ -21,7 +19,7 @@ for p = 1:size(NeuronList,1)
 end
  
 %%
-% load('/Users/grosberg/matlab/dataset_specific/workspace-axonal_activation_11jun2015.mat')
+% load('/Volumes/Lab/Projects/electrical_stim/GM-sorting-validation/2015-06-algorithm-results/workspace-axonal_activation_11jun2015.mat')
 %% Load the cases where a different 
 for p = 450; %541:555 % p can range from 450 to 555
     Gibbs = solAxonB(p).Gibbs;
@@ -43,11 +41,8 @@ for p = 1:20 % 555
     initial = solAxon(p).initial ;
     input = solAxon(p).input;
     Log = solAxon(p).Log;
-   
-    %      DisplayResults(input,GibbsNoDelete,Log,1)
     displayResults_compare(input, Gibbs, Log, 1)
 end
-
 
 %% For axonal activation solutions
 values = [0;0;0;0;0;0;0;0]; 
@@ -63,7 +58,6 @@ end
 
 percentFalsePositive = values(4)/values(6);
 percentTrueNegative = values(5)/values(6);
-
 percentTruePositive = values(1)/values(3);
 percentFalseNegatives = values(2)/values(3);
 percentAgreement = values(7)/values(8);

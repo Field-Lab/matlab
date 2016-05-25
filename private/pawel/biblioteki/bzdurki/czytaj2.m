@@ -2,10 +2,10 @@ NS_GlobalConstants=NS_GenerateGlobalConstants(61);
 
 %1) Reading raw data
 %javaaddpath 'C:\home\pawel\praca\Vision6-std-executable\Vision.jar'; %define path to Vision jar file
-full_path='D:\2009-11-24-0\data004\data004000.bin'; %define path to raw data file
+full_path='G:\analysis\slices\2013-12-15-0\data004'; %define path to raw data file
 rawFile=edu.ucsc.neurobiology.vision.io.RawDataFile(full_path); 
-RawData=rawFile.getData(1000000,40000)'; %the output is 65x40000 array (for 64-channel file). First index is channel number, and there is 40000 samples for each channel. The first sample is sample number 100000, as specified in the first argument.
-plot(RawData(250,:));
+RawData=rawFile.getData(1440000,40000)'; %the output is 65x40000 array (for 64-channel file). First index is channel number, and there is 40000 samples for each channel. The first sample is sample number 100000, as specified in the first argument.
+plot(RawData(212,:));
 break;
 
 %2) Reading some neuron information

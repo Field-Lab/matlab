@@ -1,0 +1,60 @@
+% Detekcja spikow na potrzeby tych rysunkow jest bardzo uproszczona: nie
+% wykrywamy spikow, tylko patrzymy, czy sygnal w danym przebiegu (30 ms)
+% przekroczyl prog ujemny 40 oraz prog dodatni 20. to mzoe byc nawet jakis
+% dziwny przebieg typu LFP, niewazne. Patrzymy tylko na ilu z 50 przebiegow
+% mamy tego typy przekroczenie progu. Prog 40 odpowiada 150 uV.
+% Od danych zosta? odj?ty zrtefakt z TTX, a 0.5 ms po impulsie zosta?o
+% wyzerowane. Dopiero wtedy by?a detekcja impulsów. KTORE ELEKTRODY
+% WYRZUCAMY?? aktualnei stymulujaca oraz najblizsi sasiedzi
+
+clear
+
+MovieFile='J:\data\2013-12-12-3-PH\movie001';
+DataPath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001preproc';
+ArtifactDataPath=DataPath;
+%FigurePath='D:\Home\Pawel\analysis\slices\2013\2013-12-12-3-PH\data001_Matlab\SpikeAnalysis\2013-12-12-3-PH-2015-01-15';
+FigurePath='C:\home\Pawel\nauka\512stim_paper\FiguresProby';
+
+NumberOfAmplitudes=25; %25 for 2013-12-12-3
+NumberOfMovieSequences=16; %16 for 2013-12-12-3
+NumberOfMovieSequences2=18; %18 for 2013-12-12-3
+
+%jesli chcemy zmienic prog detekcji spikow i powtorzyc detekcje, trzeba odkomentowac trzy kolejne linijki
+threshold=27
+%Stim512PaperFinal_fig3obliczenia
+%save C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\StimulatedElectrodesMouse2 StimulatedElectrodes;
+
+threshold=13.5
+%Stim512PaperFinal_fig3obliczenia
+%save C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\StimulatedElectrodesMouse3 StimulatedElectrodes;
+
+load C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\StimulatedElectrodesMouse StimulatedElectrodesMouse;
+
+figure(2)
+clf
+
+Stim512PaperFinal_fig3A;
+Stim512PaperFinal_fig3B;
+Stim512PaperFinal_fig3C_alt;
+
+FullName=[FigurePath '\Figure3.tif']; 
+h=gcf;
+set(h,'PaperUnits','inches');
+set(h,'PaperSize',[16 10]);
+set(h,'PaperPosition',[0 0 16 10]); 
+print(h, '-dtiff', '-r100', FullName);
+
+break
+
+%MovieFile='I:\analysis\slices\2010-09-14-0\TTX_sub\movie002';,
+%DataPath='G:\analysis\2010-09-14-0\data002_preproc';
+%ArtifactDataPath=DataPath;
+%FigurePath='D:\Home\Pawel\analysis\slices\2010-09-14-0\SpikesAnalysis\data002';
+
+%NumberOfAmplitudes=17; %25 for 2013-12-12-3
+%NumberOfMovieSequences=8; %16 for 2013-12-12-3
+%NumberOfMovieSequences2=8; %18 for 2013-12-12-3
+
+%SzybkiTestDetekcjiSpikow_v7.m;
+%NumberOfStimulatedElectrodesRat=NumberOfStimulatedElectrodes;
+%save C:\home\Pawel\nauka\512stim_paper\SpikesAnalysis\StimulatedElectrodesRat StimulatedElectrodesRat;

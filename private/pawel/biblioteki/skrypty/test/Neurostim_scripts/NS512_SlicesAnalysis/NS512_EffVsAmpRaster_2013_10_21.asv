@@ -1,4 +1,4 @@
-komp=2;
+komp=1;
 if komp==2 %laptop
     load C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\EI1;
     load C:\pawel\nauka\analiza\slices\2010-09-14-0\pliki_2013_10_11\dane;
@@ -30,7 +30,7 @@ Patterns=[339 371 409 395 463 491 32 64 47 30 45 356];
 figure(11)
 clf
 
-LC=[0 0.33 0.66]+0.03;
+LC=[0 0.33 0.66]+0.05;
 BC=[0 0.17 0.66 0.83]+0.03;
 LeftCoordinates=[LC(1) LC(2) LC(3) LC(1) LC(2) LC(3) LC(1) LC(2) LC(3) LC(1) LC(2) LC(3)];
 BottomCoordinates=[BC(4) BC(4) BC(4) BC(3) BC(3) BC(3) BC(2) BC(2) BC(2) BC(1) BC(1) BC(1)];
@@ -44,7 +44,7 @@ for p=1:length(Patterns)
     WholeAreaCoordinates(4)=SubplotHeight;
     
     %subplot('position',[0.05 0.05 0.56 0.92])
-    Subsubplot(WholeAreaCoordinates,[0.01 0.01 0.98 0.46]);
+    Subsubplot(WholeAreaCoordinates,[0.01 0.01 0.98 0.42]);
     hold on;
     movieIDList = NS512_GetMoviesWithPatternIDNew(MovieFilePath,Patterns(p));
     NumberOfSpikes=zeros(1,length(movieIDList));
@@ -58,7 +58,7 @@ for p=1:length(Patterns)
         AllSpikeTimes=[AllSpikeTimes SpikeTimes];
         NumberOfSpikes(m)=length(SpikeTimes);                        
         for sp=1:length(SpikeTimes)
-            h1=plot([SpikeTimes(sp)/20 SpikeTimes(sp)/20],[-m -m-0.5],'b-');
+            h1=plot([SpikeTimes(sp)/20 SpikeTimes(sp)/20],-[-m -m-0.5],'b-');
             SpikeNumberInBurst=SpikeIndexes(sp);
             if SpikeNumberInBurst==2
                 set(h1,'Color','r');
@@ -67,18 +67,35 @@ for p=1:length(Patterns)
         end
         h1=gca;
         set(h1,'XLim',[0 30]);
+        set(h1,'XTick',[0:5:30]);
+        set(h1,'YTick',[3:4:15]);
+        set(h1,'YTickLabel',{'0.4' '0.7' '1.2' '2.3'});
+        if p==10
+            xlabel('Time [ms]');
+            ylabel('Amp [\muA]');
+            %set(h1,'YTickLabel',{'0.4' '0.7' '1.2' '2.3'});
+        %else
+        %    set(h1,'XTickLabel','');
+        %    set(h1,'YTickLabel','');
+        end
     end    
     Subsubplot(WholeAreaCoordinates,[0.01,0.56,0.46,0.42]);
     plot(int32(NumberOfSpikes/102*100),'bd-')
-    axis([0 20 0 120]);
+    axis([1 17 0 125]);
     grid on
-    h3=text(2,70,num2str(p));
+    h3=text(2,100,num2str(p));
     set(h3,'Color','r');
     h4=gca;
-    set(h4,'XTick',[1 5 9 13 17]);
-    set(h4,'YTick',[0:40:120]);
+    set(h4,'XTick',[1:2:17]);
+    set(h4,'YTick',[0:25:125]);
+    %if p==10
+    set(h4,'XTickLabel',{ '' '0.4' '' '0.7' '' '1.2' '' '2.3' ''});
+    set(h4,'YTickLabel',{'0' '' '50' '' '100' ''});
+    
     if p==10
-        set(h4,'XTickLabel',{'0.4' 0.7 1.2 2.3 4.0
+        xlabel('Amp [\muA]');
+        ylabel('Eff [%]');
+    end       
     
     Subsubplot(WholeAreaCoordinates,[0.53,0.56,0.46,0.42])
     LatenciesForGivenElectrode=AllSpikeTimes;
@@ -100,11 +117,12 @@ for p=1:length(Patterns)
         set(h,'YTick',[0 0.5 1 1.5]*max(p1));
         set(h,'XTick',[0:5:30]);
         set(h,'YTickLabel','');
+        set(h,'XTickLabel',{'0' '' '10' '' '20' '' '30'});
         if p==10
-            set(h,'XTickLabel',{'0' '' '10' '' '20' '' '30'});
+            %set(h,'XTickLabel',{'0' '' '10' '' '20' '' '30'});
             xlabel('Time [ms]');
         else
-            set(h,'XTickLabel','');
+            %set(h,'XTickLabel','');
         end
         %ylabel('N');
         %text(450,40,['A=' num2str(CFs{1}.A,'%8.2f')]);
@@ -122,7 +140,7 @@ for p=1:length(Patterns)
         set(h,'PaperUnits','inches');
         set(h,'PaperSize',[8 5]*2);
         set(h,'PaperPosition',[0 0 8 5]*2); 
-        print(h, '-dtiff', '-r120', FullImageName);
+        %print(h, '-dtiff', '-r120', FullImageName);
         
         figure(102);
         hist(LatenciesForGivenElectrode,[5:10:600]);
@@ -142,12 +160,14 @@ for p=1:length(Patterns)
         set(h,'PaperUnits','inches');
         set(h,'PaperSize',[8 5]*2);
         set(h,'PaperPosition',[0 0 8 5]*2); 
-        print(h, '-dtiff', '-r120', FullImageName);
+        %print(h, '-dtiff', '-r120', FullImageName);
         
-        figure(11)
+        figure(103);
+        %figure(11)
     end        
 end
 
+figure(11)
 % Show spontaneous EI of the neuron
 %RawDataPath='D:\Home\Data\slices\2010-09-14-0\data002';
 %NeuronFilePath='C:\home\Pawel\nauka\analiza\SlicesTTX\2010-09-14-0\analysis_2012_04_10\Vision_output\2010-09-14-0\data002\data002.neurons'; - pokoj 023
@@ -156,10 +176,11 @@ end
 subplot('position',[0.15 0.39 0.7 0.22])
 %EI1=reshape(EI,512,80);
 h=NS512_ShowEIAsCircles4(EI1/1.5,500,[1:512],[],Patterns,[-1000 1000],[-500 500]);
+set(h,'Visible','off');
 
 FullImageName=[ImagePath 'figure2.tif'];
 h=gcf;
 set(h,'PaperUnits','inches');
 set(h,'PaperSize',[10 12]);
 set(h,'PaperPosition',[0 0 10 12]); 
-print(h, '-dtiff', '-r240', FullImageName);
+%print(h, '-dtiff', '-r240', FullImageName);

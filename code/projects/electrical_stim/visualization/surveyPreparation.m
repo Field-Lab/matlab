@@ -322,8 +322,18 @@ for n = 1:1:size(table_data,1)
     eiAmps = max(ei) - min(ei); 
     sum = sum + eiAmps';
 end
-figure; axis image; surf(ei2matrix(sum)); 
-figure; axis image; contourf(ei2matrix(sum),24); axis ij; 
+[xc,yc] = getElectrodeCoords512();
+xq = min(xc):30:max(xc); 
+yq = min(yc):30:max(yc); 
+vq = griddata(xc,yc,sum,xq,yq');
+
+figure; 
+subplot(3,1,1); imagesc(xq,yq,vq); axis xy; axis image;
+colorbar; title('interpolated sum of all EIs'); 
+subplot(3,1,2); imagesc(xq,yq,log(vq)); axis xy; axis image;
+colorbar; title('log(interpolated sum of all EIs)'); 
+subplot(3,1,3);  contourf(vq,24); axis xy; axis image; axis off; colorbar; 
+title('contour of the sum of EIs'); 
  
  
 % --- Executes on button press in deselectall.
@@ -349,14 +359,17 @@ function poly_axon_traces_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fh = figure; 
-[xc, yc] = getElectrodeCoords512();
+% [xc, yc] = getElectrodeCoords512();
+positions = handles.datarun.ei.position;
+xc = positions(:,1)'; 
+yc = positions(:,2)'; 
 table_data = get(handles.uitable1,'Data');
 colors = lines(size(table_data,1));
-nearby_axons = zeros(1, 512);
-nearby_somas = zeros(1, 512);
+nearby_axons = zeros(1, size(xc,2));
+nearby_somas = zeros(1, size(xc,2));
 nearby_range = 1; %measured in number of electrode distances, can be fractional
  
-load('validIDs.mat');
+% load('validIDs.mat');
  
 for n = 1:1:size(table_data,1)
     cellID = table_data{n,1};
@@ -385,7 +398,7 @@ for n = 1:1:size(table_data,1)
 %    text(double(COMx),double(COMy),num2str(cellID)); 
 %     hold on; scatter(yc(row),xc(row),eiAmps(row)*6,colors(n,:),'filled');   % Plot eis 
     
-    close = zeros(512, 1);
+    close = zeros(size(xc,2), 1);
     
     if valid || cellID == 2796 || cellID == 2842 || cellID == 2626 || cellID == 3173
     %Cuts down on axon steps to reduce runtime
@@ -407,7 +420,7 @@ for n = 1:1:size(table_data,1)
     end
     
     %Finding somas within one elctrode spacing
-    close = zeros(512, 1);
+    close = zeros(size(xc,2), 1);
     for ind = 1:size(xc, 2)
         if pdist([COMx COMy; xc(ind) yc(ind)]) < (60 * nearby_range)
             close(find(close == 0, 1, 'first')) = ind;
@@ -480,11 +493,14 @@ t.Position(3) = t.Extent(3);
 % --- Executes on button press in poly_axon_traces.
 function lin_axon_traces_Callback(hObject, eventdata, handles)
 fh = figure; 
-[xc, yc] = getElectrodeCoords512();
+% [xc, yc] = getElectrodeCoords512();
+positions = handles.datarun.ei.position;
+xc = positions(:,1)'; 
+yc = positions(:,2)'; 
 table_data = get(handles.uitable1,'Data');
 colors = lines(size(table_data,1));
-nearby_axons = zeros(1, 512);
-nearby_somas = zeros(1, 512);
+nearby_axons = zeros(size(xc));
+nearby_somas = zeros(size(xc));
 nearby_range = 1; %measured in number of electrode distances, can be fractional
 for n = 1:1:size(table_data,1)
     cellID = table_data{n,1};
@@ -637,8 +653,10 @@ for f=1:num_folders;
     folders{1,f} = dataPath;
 end
  
-[elec_x, elec_y] = getElectrodeCoords512();
- 
+% [elec_x, elec_y] = getElectrodeCoords512();
+positions = handles.datarun.ei.position;
+elec_x = positions(:,1)'; 
+elec_y = positions(:,2)'; 
 end_amps = zeros(512,1);
  
 for n = 1:num_folders

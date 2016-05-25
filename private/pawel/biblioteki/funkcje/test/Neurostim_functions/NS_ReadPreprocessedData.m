@@ -11,11 +11,11 @@ function [DataTraces,ArtifactDataTraces,Channels]=NS_ReadPreprocessedData(DataPa
 %this function. If EventNumber==0, all responses are given.
 
 if ArtifactSubtraction==1
-    FullName=[ArtifactDataPath filesep 'p' num2str(PatternNumber) '_m' num2str(MovieNumber)]
+    FullName=[ArtifactDataPath filesep 'p' num2str(PatternNumber) '_m' num2str(MovieNumber)];
     fid=fopen(FullName,'r','ieee-le');
     b=fread(fid,'int16');    
     fclose(fid);
-    b0=b(1:1000);
+    b0=b(1:1000)
     b1=b(1001:length(b));
     ArtifactDataTraces=reshape(b1,b0(1),b0(2),b0(3));
     Channels=b0(3+1:3+b0(2));
@@ -23,10 +23,10 @@ if ArtifactSubtraction==1
     b0art=b0;
 end
 
-FullName=[DataPath filesep 'p' num2str(PatternNumber) '_m' num2str(MovieNumber)]
+FullName=[DataPath filesep 'p' num2str(PatternNumber) '_m' num2str(MovieNumber)];
 fid=fopen(FullName,'r','ieee-le');
 b=fread(fid,'int16');
-%size(b)
+size(b)
 fclose(fid);
 b0=b(1:1000);
 b1=b(1001:length(b));

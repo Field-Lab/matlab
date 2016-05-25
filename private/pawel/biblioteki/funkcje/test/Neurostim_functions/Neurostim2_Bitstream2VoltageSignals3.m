@@ -1,0 +1,69 @@
+function[clk_realtime,data]=Neurostim2_Bitstream2VoltageSignals3(FullDataStream,FullClkStream,FullTriggerConnectStream,FullTriggerRecordStream,SamplingPeriod,FilesPath,TriggerRecordDelay,TriggerConnectDelay);
+
+clkzeros=zeros(4*length(FullDataStream),2);
+clk=clkzeros;
+length(clk)
+length(0:length(FullDataStream))
+
+clk(1:4:length(clk),1)=[1:2:2*length(FullDataStream)-1]*SamplingPeriod/2;
+clk(2:4:length(clk),1)=[1:2:2*length(FullDataStream)-1]*SamplingPeriod/2+1e-9;
+clk(3:4:length(clk),1)=[2:2:2*length(FullDataStream)]*SamplingPeriod/2;
+clk(4:4:length(clk),1)=[2:2:2*length(FullDataStream)]*SamplingPeriod/2+1e-9;
+clk(4:4:length(clk),2)=3.3;
+clk(5:4:length(clk),2)=3.3;
+
+clk_config=clk;
+bleble=find(FullClkStream~=1);
+clk_config(4*bleble,2)=0;
+clk_config([4*bleble(1:length(bleble)-1)]+1,2)=0;
+
+clk_realtime=clk;
+bleble=find(FullClkStream~=2);
+clk_realtime(4*bleble,2)=0;
+clk_realtime([4*bleble(1:length(bleble)-1)]+1,2)=0;
+
+data=zeros(2*length(FullDataStream),2); %zeros(2*length(FullDataStream),2) b !!!
+data(1:2:length(data),1)=[1:length(FullDataStream)]*SamplingPeriod;
+data(2:2:length(data),1)=[1:length(FullDataStream)]*SamplingPeriod+1e-9;
+data(find(FullDataStream==1)*2,2)=3.3;
+data(find(FullDataStream==1)*2+1,2)=3.3;
+
+trigger_connect=zeros(length(FullTriggerConnectStream)*2,2);
+trigger_connect(1:2:length(trigger_connect),1)=[1:length(FullTriggerConnectStream)]*SamplingPeriod;
+trigger_connect(2:2:length(trigger_connect),1)=[1:length(FullTriggerConnectStream)]*SamplingPeriod+1e-9;
+trigger_connect(find(FullTriggerConnectStream==1)*2,2)=3.3;
+trigger_connect(find(FullTriggerConnectStream==1)*2+1,2)=3.3;
+
+trigger_record=zeros(length(FullTriggerRecordStream)*2,2);
+trigger_record(1:2:length(trigger_record),1)=[1:length(FullTriggerRecordStream)]*SamplingPeriod;
+trigger_record(2:2:length(trigger_record),1)=[1:length(FullTriggerRecordStream)]*SamplingPeriod+1e-9;
+trigger_record(find(FullTriggerRecordStream==1)*2,2)=3.3;
+trigger_record(find(FullTriggerRecordStream==1)*2+1,2)=3.3;
+
+figure(6)
+plot(trigger_record(:,1),trigger_record(:,2),'b-',...
+trigger_connect(:,1),trigger_connect(:,2)+5,'b-',...
+clk_realtime(:,1),clk_realtime(:,2)+10,'b-',...
+data(:,1),data(:,2)+15,'b-',...
+clk_config(:,1),clk_config(:,2)+20,'b-');
+grid on;
+
+fid=fopen([FilesPath '\clk_config.txt'],'w');
+fprintf(fid,'%e  %e\n',clk_config');
+fclose(fid);
+
+fid=fopen([FilesPath '\clk_realtime.txt'],'w');
+fprintf(fid,'%e  %e\n',clk_realtime');
+fclose(fid);
+
+fid=fopen([FilesPath '\data.txt'],'w');
+fprintf(fid,'%e  %e\n',data');
+fclose(fid);
+
+fid=fopen([FilesPath '\trigger_connect.txt'],'w');
+fprintf(fid,'%e  %e\n',trigger_connect');
+fclose(fid);
+
+fid=fopen([FilesPath '\trigger_record.txt'],'w');
+fprintf(fid,'%e  %e\n',trigger_record');
+fclose(fid);

@@ -22,9 +22,9 @@ for i=1:length(X)-1
             color=Color1+(Color2-Color1)*j/(NumberOfSteps);
             x=x1+(j-1)*dx;
             y=y1+(j-1)*dy;
-            h=plot([x1+(j-1)*dx x1+j*dx],[y1+(j-1)*dy y1+j*dy]);
+            h=plot([x1+(j-1)*dx x1+j*dx],[y1+(j-1)*dy y1+j*dy]);            
             set(h,'Color',color);
-            set(h,'LineWidth',2);
+            set(h,'LineWidth',2);            
         end
     end
 end
