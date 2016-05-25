@@ -1,15 +1,21 @@
+%% Determine the threshold where all contours are statistically significant. Plot the contours of a population of cells at the largest threshold of any individual cell 
+
 clear
 close all
 tic
-fixed_threshold = 0.11;
-starting_threshold = 0.08;
-threshold_increment = 0.005;
-area_min = 100; % contours smaller than this area (in pixels squared) won't be considered
-size_of_null = 300; % number of examples to make up the null distribution
-mode = 'unfixed_thresh'; % fixed_thres... or something else
-alpha = 1e-60; % for t test
 
-% number must be an array; Fill in nan where cells aren't needed
+
+fixed_threshold = 0.11; % Only needed if you are setting the threshold and not letting the program determine the optimal
+starting_threshold = 0.08; % Where the threshold search starts
+threshold_increment = 0.005; % If the threshold is too low, raise it by this much on the next iteration 
+area_min = 100; % contours smaller than this area (in pixels squared) won't be considered
+size_of_null = 300; % number of samples to make up the null distribution
+mode = 'fixed_thresh'; % either 'fixed_thresh' or any other string if you want the program to determine the threshold
+alpha = 1e-60; % for t test; must be ridiculously low or you get surround coutours that are signficant
+
+% vision cell ids in an array which is how they show up in subplots 
+% Use nan's if you have a non rectangular number of cells ie [1 2; 3 nan]
+% if testing multiple cell types, use number{1} = , number{2} =  etc. 
 number{1} = [527; 902; 1622;...
     ];
 
@@ -17,7 +23,14 @@ number{2} = [4594; 5193 ;5493;...
     ];
 
 
+
+date = '2016-04-21-1/data006-cf/edited';
+concatname ='data006-cf';
+
 sta_index =2; % 1 for bw, 2 for rgb (green channel)
+
+
+%% end of inputs
 
 x_plots{1} = size(number{1},1); % number of plots down
 y_plots{1} = size(number{1},2);
@@ -27,8 +40,6 @@ number{1} = number{1}';
 number{2} = number{2}';
 
 
-date = '2016-04-21-1/data006-cf/edited';
-concatname ='data006-cf';
 concatname_str = strrep(concatname, '_', '\_')
 
 suptitle([ date, ' ', concatname_str])
@@ -45,11 +56,14 @@ for types = 1:size(number,2)
             clear size_test
             
             % load the jitter STA
+             % path to the sta
+            % loads as the variable 'temp'
             load(['/Volumes/Lab/Users/crhoades/Jitter_backup/', date, '/', concatname,'/Cell ', num2str(number{types}(i)), '.mat'])
             sta = temp;
+            
             % Normalize by the max (in the future, divided by the number of
             % spikes if that wasn't done when the STA was computed
-            sta = sta./max(abs(sta(:)));
+%             sta = sta./max(abs(sta(:)));
             
             h = 0; % hypothesis true or false
             p = 0; % p value vector
@@ -60,7 +74,7 @@ for types = 1:size(number,2)
                 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1)); % find the peak frame
                 temp = sta(:,:,start_index)';
                 
-            else
+            else % RGB
                 
                 sta = permute(sta, [2,1,3,4]); % switch x and y dimensions
                 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1)); % find the peak frame
@@ -70,7 +84,7 @@ for types = 1:size(number,2)
             
             norm_sta = norm_image(sta);
             
-            if strcmp(mode, 'fixed_thresh')
+            if strcmp(mode, 'fixed_thresh') % You set the threshold
                 
                 % put in new plot handles
                 
@@ -85,9 +99,7 @@ for types = 1:size(number,2)
                     axes(ha(i));
                     
                     hold off
-                    
-                    
-                    
+
                     imagesc(norm_sta(:,:,start_index))
                     colormap(gray)
                 else % RGB
@@ -130,13 +142,8 @@ for types = 1:size(number,2)
                         end
                         if inside == 0
                             % only plot the outermost contour
-                            
-                            
                             axes(ha(i))
-                            
-                            
-                            
-                            plot(contour_polygons{types+2}{i}{1}(j).x, contour_polygons{types+2}{i}{1}(j).y, 'linewidth',2)
+                             plot(contour_polygons{types+2}{i}{1}(j).x, contour_polygons{types+2}{i}{1}(j).y, 'linewidth',2)
                             title(['Cell ',num2str(number{types}(i))])
                             
                             figure(fig(types+2))
@@ -555,7 +562,7 @@ toc
 
 figure;
 
-plot(final_area{1}*5.5^2/1000^2, ones(size(final_area{1})), 'ok', 'MarkerSize', 5, 'MarkerFaceColor', 'w')
+plot(final_area{1}*5.5^2/1000^2, ones(size(final_area{1})), 'ok', 'MarkerSize', 5, 'MarkerFaceColor', 'w') % 5.5 um/pixel
 hold on;
 plot(final_area{2}*5.5^2/1000^2, 2*ones(size(final_area{2})) , 'ok', 'MarkerSize', 5, 'MarkerFaceColor', 'k')
 set(gca, 'ytick', [1 2])
@@ -563,6 +570,9 @@ set(gca, 'yticklabel', {['ON Parasol: n = ', num2str(length(final_area{1}))]; ['
 set(gca, 'ylim', [0 3]);
 xlabel('area (mm^2)')
 title({[ date, ' ', concatname_str], 'ON and OFF Parasol Cell Area Comparison', ['Threshold: ', num2str(threshold)]})
+
+%% If you want to plot RF area of two populations of cells 
+
 
 % set(bh, 'facecolor', [0 0 0 0.25])
 %             hold on
@@ -572,6 +582,4 @@ title({[ date, ' ', concatname_str], 'ON and OFF Parasol Cell Area Comparison', 
 %             [nb,xb] =hist(final_area{2}*5.5^2/1000^2);
 %             % [bh]= bar(xb,nb);
 %             createPatches(xb,nb,[0 0 0],0.005, 0.75);
-
-% datarun = get_rf_contours(datarun, cell_specification, contour_levels, varargin)
 

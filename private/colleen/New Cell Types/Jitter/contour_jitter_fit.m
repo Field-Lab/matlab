@@ -1,32 +1,44 @@
+%% Plot STA overlaid with largest contour found at a user defined threshold
+
 clear
 close all
-%number{1} = [481 811 1531 2103 2161 3288 3816 3886 4280 4937 6331 6511];
-% number{2} = [185 306 413 996 1058 1759 1821 2061 3396 3593 3830 4656 5342 5733 6064 6213 7148];
 
+
+
+% vision cell ids in an array which is how they show up in subplots 
+% Use nan's if you have a non rectangular number of cells ie [1 2; 3 nan]
+% if testing multiple cell types, use number{1} = , number{2} =  etc. 
 number{1} = [527 902 1568;...
-            2371 3186 4041;...
-                   
-    ];
-%         number{1} = number{1}';
+            2371 3186 4041]
+        
+        
+date = '2015-09-23-7/data031-cf/edited/';
+concatname ='data031-cf';
+
 sta_index =2; % 1 for bw, 2 for rgb
+
+% Set manually
 threshold = 0.2;
 
+%% End of inputs
 x_plots = size(number{1},1); % number of plots down
 y_plots = size(number{1},2);
 number{1} = number{1}';
-% y_plots = ceil(length(number)/x_plots);
+
 ha = tight_subplot(x_plots, y_plots, [.01 .01],[.01 .01],[.01 .01]);
-date = '2015-09-23-7/data031-cf/edited/';
-concatname ='data031-cf';
-concatname_str = strrep(concatname, '_', '\_')
+
+concatname_str = strrep(concatname, '_', '\_');
 
 suptitle([ date, ' ', concatname_str])
 for types = 1:size(number,2)
     fig(types) = figure;
     for i = 1:x_plots*y_plots
         if~isnan( number{types}(i))
-            i
+            disp(i)
             clear size_test
+            
+            % path to the sta
+            % loads as the variable 'temp'
             load(['/Volumes/Lab/Users/crhoades/Jitter/', date, '/', concatname,'/Cell ', num2str(number{types}(i)), '.mat'])
             sta = temp;
             
@@ -35,26 +47,14 @@ for types = 1:size(number,2)
                 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,3)),1));
                 temp = sta(:,:,start_index)';
                 
-            else
+            else %% RGB
                 
                 sta = permute(sta, [2,1,3,4]);
-                %     [sig_stixels] = significant_stixels(temp, 'select', 'thresh', 'thresh', 4.25);
                 [junk,start_index] = max(sum(reshape(sta.^2,[],size(sta,4)),1));
-                
-                % normalize STA color
-                %sta = norm_image(sta);
-                
-                
-                
-                % plot spatial sensitivity
-                %figure;image(sta(:,:,:,start_index));
-                % axis image
-                
-                %plot_sta_(sta)
                 temp = sta(:,:,sta_index,start_index)';
             end
             
-            %   sta = sta./max(temp(:));
+            % Find a box around the center
             [val,ind] = max(abs(temp(:)));
             [x,y] = ind2sub(size(temp), ind);
             left = x-50;
@@ -75,10 +75,11 @@ for types = 1:size(number,2)
             end
             
             center_block = temp(left: right, bottom:top);
-            noise_pixels = temp([1:left, right:end], [1:bottom, top:end]);
-            noise_level{types}(i) = median(noise_pixels(:));
+%             noise_pixels = temp([1:left, right:end], [1:bottom, top:end]);
+%             noise_level{types}(i) = median(noise_pixels(:));
             
             if size(size(sta),2) == 3 %% BW
+                % normalize threshold by the max amplitude in the center
                 [contour_polygons{types}{i},extras,params] = rf_contours(abs(sta(:,:,start_index)), (max(abs(center_block(:))))*threshold);
                 threshold_used{types}(i) = (max(abs(center_block(:))))*threshold;
                 axes(ha(i));
@@ -86,7 +87,9 @@ for types = 1:size(number,2)
                 
                 imagesc(sta(:,:,start_index))
                 colormap(gray)
-            else
+            else %% RGB
+                 % normalize threshold by the max amplitude in the center
+
                 [contour_polygons{types}{i},extras,params] = rf_contours(abs(sta(:,:,sta_index,start_index)), (max(abs(center_block(:))))*threshold);
                 threshold_used{types}(i) = (max(abs(center_block(:))))*threshold;
                 axes(ha(i));
@@ -95,20 +98,23 @@ for types = 1:size(number,2)
                 image(sta(:,:,:,start_index))
             end
             
+            % Find the largest contour
             for j= 1:size(contour_polygons{types}{i}{1},2)
                 size_test(j) = size(contour_polygons{types}{i}{1}(j).x,2);
             end
             [~, right_ind] = max(size_test);
             hold on
             
+            % plot the largest contour
             plot(contour_polygons{types}{i}{1}(right_ind).x, contour_polygons{types}{i}{1}(right_ind).y)
             
             
             set(gca, 'ydir', 'reverse')
             axis equal
             axis off
-            title(['Cell ',num2str(number{1}(i))])
+            title(['Cell ',num2str(number{types}(i))])
             
+            % Summary figure of all the contours in the population of cells
             figure(fig(types))
             hold on
             plot(contour_polygons{types}{i}{1}(right_ind).x, contour_polygons{types}{i}{1}(right_ind).y, 'Linewidth', 2)
@@ -119,10 +125,10 @@ for types = 1:size(number,2)
             set(gca, 'ydir', 'reverse')
             
             [x,y] = poly2cw(contour_polygons{types}{i}{1}(right_ind).x,contour_polygons{types}{i}{1}(right_ind).y);
-            %area{types}(i) = polyarea(x,y)*(5/1000)^2;%0.005um/pix;
+            % area of the contour
             final_area{types}(i) = polyarea(contour_polygons{types}{i}{1}(right_ind).x, contour_polygons{types}{i}{1}(right_ind).y);
 
-        else
+        else %nan in vision id array
             axes(ha(i));
             axis off
         end
@@ -131,16 +137,12 @@ for types = 1:size(number,2)
 end
 
 
-figure;
+%% If you want to plot RF area of two populations of cells 
+% figure;
+% hold on
+% [nb,xb] =hist(area{1});
+% createPatches(xb,nb,[1 1 1],0.005,0.05);
+% [nb,xb] =hist(area{2});
+% createPatches(xb,nb,[0 0 0],0.005, 0.75);
 
-% set(bh, 'facecolor', [0 0 0 0.25])
-hold on
-
-[nb,xb] =hist(area{1});
-createPatches(xb,nb,[1 1 1],0.005,0.05);
-[nb,xb] =hist(area{2});
-% [bh]= bar(xb,nb);
-createPatches(xb,nb,[0 0 0],0.005, 0.75);
-
-% datarun = get_rf_contours(datarun, cell_specification, contour_levels, varargin)
 
