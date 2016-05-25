@@ -166,9 +166,10 @@ Output.stimInfo.stimElec=stimElec;
 Output.stimInfo.listAmps=listAmps;
 Output.stimInfo.listCurrents=listCurrents;
 Output.stimInfo.var0=var0;
-%Output.stimInfo.Art=params.patternInfo.Art;
+Output.stimInfo.Art=params.patternInfo.Art;
 Output.stimInfo.nTrials=params.patternInfo.nTrials;
 Output.stimInfo.Kers=params.patternInfo.Kers;
+
 Output.stimInfo.rho=rho;
 Output.Log=Log;
 Output.path.pathToEi=pathToEi;

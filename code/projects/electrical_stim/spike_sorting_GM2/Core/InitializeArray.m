@@ -2,8 +2,8 @@ function params=InitializeArray(pathToPreparation,subSampleRate,varargin)
 %Gonzalo Mena, 03/2016
 load arrayPositions512
 
-params.global.Tmax=55;
-params.global.tarray=[0 [7:40]];
+params.global.Tmax=40;
+params.global.tarray=[0 [7:30]];
 params.global.options=optimoptions('fminunc','Algorithm','trust-region','GradObj','on');
 params.global.nTrial = 50;
 params.global.x0=[2.6766    2.6729    1.5639    2.5233    1.9566  -20.7433    0.3893 32.0274];

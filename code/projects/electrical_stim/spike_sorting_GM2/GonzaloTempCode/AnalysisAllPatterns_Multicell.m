@@ -147,7 +147,7 @@ for g=1:8
     IndFolderInitial=dire{g};  %look for the pattern in data003,data004,data005,data006. If empty, will look at all folderes
     pathToPreparationInitial=[path{g} '/'];
     
-    params=InitializeArray(pathToPreparationInitial,1,patternI(g));
+    params=InitializeArray(pathToPreparationInitial,1,IndFolderInitial,patternI(g));
     neuronIds=neuronswr{g};
     if(g==6)
         %a1=intersect(find(nstimElecwr==1),find(groupwr==6));

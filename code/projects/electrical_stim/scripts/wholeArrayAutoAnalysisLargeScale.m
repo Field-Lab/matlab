@@ -21,7 +21,7 @@ function wholeArrayAutoAnalysisLargeScale(eiFilePath, pathToPreparation,folders,
     params.global.useStimElec=1;
     params.global.useStimElectrodeBeforeBundle=1;
     params.global.useStimElectrodeAfterBundle=0;
-
+    params.global.thresEI=40;
        
 
 startPattern = 1; 
@@ -121,6 +121,6 @@ try
         end
     
 catch ME
-    disp(['Final electrode analyzed was ' num2str(e)'])
+    disp(['Final electrode analyzed was ' num2str(e)])
     rethrow(ME)
 end

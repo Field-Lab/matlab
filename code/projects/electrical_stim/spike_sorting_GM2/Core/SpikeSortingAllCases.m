@@ -26,7 +26,7 @@ difTrials=1;
 thresEI=params.global.thresEI;
 Tmax=params.global.Tmax;
 tarray=params.global.tarray;
-maxIter=params.global.maxIter*length(templates);
+maxIter=params.global.maxIter;
 cutBundle=params.bundle.cutBundle;
 contMessage=1;
 if(cutBundle==1)
@@ -240,7 +240,7 @@ Qtold=Qt;
 krondiag0old=krondiag0;
 x01=xold(end);
 
-useBundleAlg
+
 ionset=params.bundle.onsBundle;
 if(useBundleAlg==0)
     ionset=1000;
@@ -298,7 +298,7 @@ i
             
             g11=@(x)f11(Art,x);
             
-            x11 = fminunc(g11,x01,options)
+            x11 = fminunc(g11,x01,options);
             x01=[x11];
             x(end)=0;
             
