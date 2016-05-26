@@ -1,4 +1,4 @@
-function drawEllipse(mu,V,color)
+function drawSimpleEllipse(mu,V,color)
 % Draws a simple ellipse
 
 theta = 2*pi*[0:0.01:1];
