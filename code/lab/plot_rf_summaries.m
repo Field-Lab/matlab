@@ -305,10 +305,10 @@ if params.plot_fits
         [X,Y] = drawEllipse([ctr rad the_fit.angle]);
         
         % if any are NaN, skip
-%         if any(isnan([X Y]));continue;end
+        if any(isnan([X Y]));continue;end
         
         % transform to desired coordinates
-%         [X, Y] = tformfwd(coord_tform, X, Y);
+        [X, Y] = tformfwd(coord_tform, X, Y);
 
         % plot the points and fill
         
