@@ -9,21 +9,21 @@ close all
 % concatname='data006';
 % file_name = [date, '/', concatname, '/',  concatname];
 % movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-10-1-0.48-11111.xml';
-% 
+%
 % cell_type = {'OFF-parasol'};
 % num_frames = 30;
 % cell_specification = 182; % visionID
 % num_bins = 20; % Number of bins to use for the generator vs spikes graph
 
 
-date='2016-04-21-1';
-concatname='data002';
+date='2016-02-17-1';
+concatname='data000';
 file_name = [date, '/', concatname, '/',  concatname];
-movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-16-2-0.48-11111-119.5.xml';
+movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111-119.5.xml';
 
 cell_type = {'ON parasol'};
 num_frames = 30;
-cell_specification = 288; % visionID
+cell_specification = 1456; % visionID
 num_bins = 10; % Number of bins to use for the generator vs spikes graph
 
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -165,6 +165,6 @@ title({[date, ' ', concatname]; cell_type{1}; ['Cell ' num2str(cell_specificatio
 
 
 % Save the Resultf ~exist(filepath)
-    mkdir(filepath)
-end
+mkdir(filepath)
+
 export_fig([filepath, 'Cell_',num2str(cell_specification)], '-pdf')
