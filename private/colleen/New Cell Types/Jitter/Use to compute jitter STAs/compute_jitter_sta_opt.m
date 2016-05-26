@@ -57,7 +57,7 @@ end
 
 difference = diff(triggers);
 mean_val = mean(difference);
-high_point_trigger = find(difference>(mean_val*1.2)==1); 
+high_point_trigger = find(difference>(mean_val*1.2)==1);
 high_point_trigger = sort(high_point_trigger,'descend');
 for i = 1:length(high_point_trigger)
     triggers = [datarun.triggers(1:high_point_trigger(i)); datarun.triggers((high_point_trigger(i)+1):end) - mean(diff(datarun.triggers(1:high_point_trigger(i))))];
@@ -95,33 +95,33 @@ i =2;
 
 if strcmp(dataparam.date(1:10), '2016-02-17') % bug in jitter code on this date
     %%%% REMOVE THE +6 WHEN NOT 2016-02-17
-
+    
     while pointer+2*3+image_height*image_width*3-1<size(inputs,2)*size(inputs,1)
         temp = inputs(pointer+2*3:pointer+2*3+image_height*image_width*3-1);
         real_frame(:,:,1,i) = reshape(temp(1:3:end), image_width, image_height);
         real_frame(:,:,2,i) = reshape(temp(2:3:end), image_width, image_height);
         real_frame(:,:,3,i) = reshape(temp(3:3:end), image_width, image_height);
-
+        
         pointer = pointer+2*3+image_height*image_width*3;
         i = i+1;
     end
 else
     
     while pointer+image_height*image_width*num_colors-1<size(inputs,2)*size(inputs,1)
-    temp = inputs(pointer:pointer+image_height*image_width*num_colors-1);
-    if num_colors == 3
-        real_frame(:,:,1,i) = reshape(temp(1:3:end), image_width, image_height);
-        real_frame(:,:,2,i) = reshape(temp(2:3:end), image_width, image_height);
-        real_frame(:,:,3,i) = reshape(temp(3:3:end), image_width, image_height);
-    else
-        real_frame(:,:,1,i) = reshape(temp, image_width, image_height);
+        temp = inputs(pointer:pointer+image_height*image_width*num_colors-1);
+        if num_colors == 3
+            real_frame(:,:,1,i) = reshape(temp(1:3:end), image_width, image_height);
+            real_frame(:,:,2,i) = reshape(temp(2:3:end), image_width, image_height);
+            real_frame(:,:,3,i) = reshape(temp(3:3:end), image_width, image_height);
+        else
+            real_frame(:,:,1,i) = reshape(temp, image_width, image_height);
+        end
+        
+        pointer = pointer+image_height*image_width*num_colors;
+        i = i+1;
     end
     
-    pointer = pointer+image_height*image_width*num_colors;
-    i = i+1;
-    end
-
-
+    
 end
 
 
@@ -166,7 +166,7 @@ try
         % don't compute the frame if you don't need it
         
         if sum(sum_binned_spikes(:,i + 1:i+num_frames)) ~= 0
-          
+            
             movie = zeros(image_width*stixel_size, image_height*stixel_size, num_colors, 'int16');
             true_frame = zeros(width*stixel_size, height*stixel_size, 'int16');
             F = real_frame(:,:,:,frames_needed(1,i));
@@ -211,11 +211,11 @@ try
             
             
             for t = 1:num_frames
-
+                
                 [x_ind] = find(binned_spikes(:,i+t)>0);
-                if ~isempty(x_ind)                        
+                if ~isempty(x_ind)
                     subtract = num_frames -t+1;
-
+                    
                     if subtract > 0
                         for cel = 1:length(x_ind)
                             % maximum values in sta are -32768 and
