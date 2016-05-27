@@ -22,7 +22,7 @@ for exp = [2 3 5]
     %%
     % plot the PSTH for each condition for each cell
     
-    glm_files = dir(['/Volumes/Lab/Users/Nora/GLMFits_masking/' piece '/NSEM_full_opt/*NSEM_optmodel.mat']);
+    glm_files = dir(['/Volumes/Lab/Users/Nora/GLMFits/GLMFits_masking/' piece '/NSEM_full_opt/*NSEM_optmodel.mat']);
     if strcmp(piece, '2016-04-21-1')
         glm_fit_idx = [6 3 5 1 2 4];
     end
@@ -34,9 +34,9 @@ for exp = [2 3 5]
             disp(cells_orig(i_cell))
                master_idx = get_cell_indices(datarun_class, cells_orig(i_cell));
                if strcmp(piece, '2016-04-21-1')
-                    load(['/Volumes/Lab/Users/Nora/GLMFits_masking/2016-04-21-1/NSEM_full_opt/' glm_files(glm_fit_idx(i_cell)).name]);
+                    load(['/Volumes/Lab/Users/Nora/GLMFits/GLMFits_masking/2016-04-21-1/NSEM_full_opt/' glm_files(glm_fit_idx(i_cell)).name]);
                 else
-                    load(['/Volumes/Lab/Users/Nora/GLMFits_masking/' piece '/NSEM_full_opt/' num2str(cells_orig(i_cell)) 'NSEM_optmodel.mat']);
+                    load(['/Volumes/Lab/Users/Nora/GLMFits/GLMFits_masking/' piece '/NSEM_full_opt/' num2str(cells_orig(i_cell)) 'NSEM_optmodel.mat']);
                 end
                 sta_fit = opt_model.sta_fit.params;
                 plot(1000*(0:(1/119.5):(29/119.5)),opt_model.new_time,'k')

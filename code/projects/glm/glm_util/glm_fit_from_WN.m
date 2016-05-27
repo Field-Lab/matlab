@@ -92,7 +92,7 @@ if isstr(stim)
     dashes=find(stim=='-');
     WN_type=stim(1:dashes(1)-1);
     interval = str2double(stim(dashes(2)+1:dashes(3)-1));
-    fitframes=stim_length*monitor_refresh/interval;
+    fitframes=ceil(stim_length*monitor_refresh/interval);
     disp('Loading Stimulus Movies')
     [temp_fitmovie,height,width,~,~] = get_movie(xml_file, datarun.triggers, fitframes);
     fitmovie_color=zeros(height,width,3,fitframes*interval);

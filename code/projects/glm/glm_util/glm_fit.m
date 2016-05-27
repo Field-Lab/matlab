@@ -4,13 +4,16 @@ function [fittedGLM] = glm_fit(fitspikes, fitmovie, center, varargin)
 % This takes in the stimulus, the spikes, and the location of the cell to
 % fit a GLM. The GLM architecture and settings can be changed in
 % glm_parameters.m
+% CHECK THAT YOU CAN GET AN STA USING STA_Test and your fitspikes and
+% fitmovie. If you cannot, you need to properly align the spikes to the
+% triggers !! See glm_fit_from_WN for an example of how to do this.
 %
 % INPUTS
 %
 %   REQUIRED
 %
 %   fitspikes: the spike times of the neuron (in seconds)
-%       These must be preperly aligned with the triggers.
+%       THESE MUST ALREADY BE ALIGNED TO THE TRIGGERS.
 %       Use STA_Test to make sure you can get an STA. Then you will know
 %       that they are properly aligned.
 

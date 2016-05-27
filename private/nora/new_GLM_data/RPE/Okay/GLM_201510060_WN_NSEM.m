@@ -12,7 +12,7 @@ extra_string = '-from-data000_data001_data002_data003_data004_data005_data006_da
 datarun_class = load_data([Analysis_Path class extra_string '/' class extra_string], struct('load_neurons', 0, 'load_params', 1));
 mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/');
 mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/WN/');
-mkdir('/Volumes/Lab/Users/Nora/GLMFits/201510060/Midget/NSEM/');
+mkdir('/Volumes/Lab/Users/Nora/GLMFits/RPE/201510060/Midget/NSEM/');
  %}
 %% WN
 %{

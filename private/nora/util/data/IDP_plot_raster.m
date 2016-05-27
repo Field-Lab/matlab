@@ -2,11 +2,11 @@ function  IDP_plot_raster(prepped_data, cell_to_plot, firing_rate)
 
 % Visual check
 figure;
-set(gcf, 'Position', [1 1 10 3]*100)
+set(gcf, 'Position', [1 1 10 3])
 hold on
 if nargin == 2
     for i = 1:size(prepped_data.testspikes, 1)
-        plot(prepped_data.testspikes{i, cell_to_plot}, i*ones(length(prepped_data.testspikes{i, cell_to_plot})), 'k.')
+        plot(prepped_data.testspikes{i, cell_to_plot}, i, 'k.')
     end
 else
     

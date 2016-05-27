@@ -8,8 +8,8 @@ for cell_type = {'On','Off'}
 datarun_class = load_sta(datarun_class, 'load_sta', cells);
 
 %% NSEM
-test_data = 'data022';
-fit_data = 'data025';
+test_data = 'data027';
+fit_data = 'data026';
 test_datarun = load_data([Analysis_Path '/' test_data '/' test_data], struct('load_neurons', 1, 'load_params', 1));
 TestData = interleaved_data_prep(test_datarun, 1100, 30,'cell_spec', cells,'visual_check', 0);
 fit_datarun = load_data([Analysis_Path '/' fit_data '/' fit_data], struct('load_neurons', 1, 'load_params', 1));

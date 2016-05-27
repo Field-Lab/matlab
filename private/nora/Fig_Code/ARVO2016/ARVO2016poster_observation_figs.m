@@ -78,10 +78,6 @@ for exp = exps
 
 
 
-
-
-
-
             count = count +1;
             figure(1); hold on; plot(sigma, MSE, 'Color', [1 1 1]*0.75); hold on
             figure(2); hold on; plot(sigma, surr,  'Color', [1 1 1]*0.75); hold on
