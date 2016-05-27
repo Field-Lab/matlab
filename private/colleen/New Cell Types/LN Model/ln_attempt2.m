@@ -255,15 +255,15 @@ gen_signals =gen_signals -0.5* sum(strfs(:));
 gen_signals = [zeros(29,1);gen_signals];
 gen_signals = gen_signals;
 
-%  gen_signals_finer=repmat(gen_signals,1,4)';
-%   gen_signals_finer= gen_signals_finer(:);
+ gen_signals_finer=repmat(gen_signals,1,4)';
+  gen_signals_finer= gen_signals_finer(:);
 
 
 % gen_signals_finer = resizem(gen_signals, 16*length(gen_signals), 'nearest');
 % coeffval = coeffval.coeffval;
 % predict_prob = coeffval(1)/(1+exp(-coeffval(2)*gen_signals)); % compare to binned_spikes  % not a FR, is a probability of a spike
 
-predict_prob = coeffval(1)*exp(gen_signals*coeffval(2)); % compare to binned_spikes  % not a FR, is a probability of a spike
+predict_prob = coeffval(1)*exp(gen_signals_finer*coeffval(2)); % compare to binned_spikes  % not a FR, is a probability of a spike
 
 num_trials = 19;
 for i = 1:num_trials
@@ -272,7 +272,7 @@ end
 
 figure; imagesc(gen_spikes)
 new_spikes = [];
-spike_bins = 0:1/120:time-1/120; % fix later
+spike_bins = 0:1/120/4:time-1/120/4; % fix later
 for i =1 :length(spike_bins)
     new_spikes = [new_spikes, (spike_bins(i)+time*find(gen_spikes(:,i) == 1) - time)'];
 end
