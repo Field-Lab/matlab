@@ -16,14 +16,14 @@ close all
 % num_bins = 20; % Number of bins to use for the generator vs spikes graph
 
 
-date='2016-02-17-1';
+date='2015-04-14-2';
 concatname='data000';
 file_name = [date, '/', concatname, '/',  concatname];
-movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-2-0.48-11111-119.5.xml';
+movie_spec='/Volumes/Analysis/stimuli/white-noise-xml/RGB-8-1-0.48-11111-40x40.xml';
 
 cell_type = {'ON parasol'};
-num_frames = 30;
-cell_specification = 1456; % visionID
+num_frames = 30
+cell_specification = 3662; % visionID
 num_bins = 10; % Number of bins to use for the generator vs spikes graph
 
 %%%%%%%%%%%%%%%%%%%%%%% END INPUTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,7 +153,7 @@ binned_gen_signals=nan(num_bins,1);
 mean_spikes=nan(num_bins,1);
 
 for i = 1:length(bin_edges)-1
-    binned_gen_signals(i) =data_sorted(bin_edges(i)) % mean(data_sorted(bin_edges(i:i+1),1));
+    binned_gen_signals(i) =mean(data_sorted(bin_edges(i:i+1),1));
     %     binned_spikes(i) = sum(data_sorted(bin_edges(i):bin_edges(i+1),2))
     mean_spikes(i) = mean(data_sorted(bin_edges(i):bin_edges(i+1),2));
 end
