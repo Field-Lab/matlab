@@ -148,7 +148,7 @@ nmrun = datarun;
 % triggers NSEM
 nm_trigs(:,1)=[1; find(diff(nmrun.triggers)>0.9)+1];
 num_repeats = 1;
-movie_length = 30;
+movie_length = 30*1000;
 for i=1:length(cell_specification)
     
     % Vision ID of the cell
@@ -161,7 +161,7 @@ for i=1:length(cell_specification)
     cnt = 0; % 1st trial number for each NDF
     
     spikes = nmrun.spikes{ind};
-    nmrasters=[nmrasters spikes(spikes>datarun.triggers(1) && spikes<30+datarun.triggers(1))'*1000];
+    nmrasters=[nmrasters spikes(spikes>datarun.triggers(1) & spikes<30+datarun.triggers(1))'*1000];
  
     
 end
@@ -175,20 +175,20 @@ set(fig,'color','white','position',[82 242 1785 856]);
 h=subplot('position',[0.05 0.65, 0.9,0.3]);
 rasterplot(nmrasters/1000,(num_repeats) ,movie_length/1000,h) % convert from ms to seconds
 
-total_computed = 0;
-n_frames = rate*10;
-
-i_chunk = 1;
-NS_movie = zeros(320,160,n_frames);
-while total_computed < n_frames
-    load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSinterval/matfiles/movie_chunk_' num2str(i_chunk) '.mat']);
-    NS_movie(:,:,(total_computed+1):(total_computed+size(movie_chunk,3))) = movie_chunk;
-    interval(i_chunk) = size(movie_chunk,3);
-    total_computed = size(movie_chunk,3)+total_computed;
-    i_chunk = i_chunk + 1;
-end
-
-interval_frame = cumsum(interval)/rate;
+% total_computed = 0;
+% n_frames = rate*10;
+% 
+% i_chunk = 1;
+% NS_movie = zeros(320,160,n_frames);
+% while total_computed < n_frames
+%     load(['/Volumes/Data/Stimuli/movies/eye-movement/current_movies/NSinterval/matfiles/movie_chunk_' num2str(i_chunk) '.mat']);
+%     NS_movie(:,:,(total_computed+1):(total_computed+size(movie_chunk,3))) = movie_chunk;
+%     interval(i_chunk) = size(movie_chunk,3);
+%     total_computed = size(movie_chunk,3)+total_computed;
+%     i_chunk = i_chunk + 1;
+% end
+% 
+% interval_frame = cumsum(interval)/rate;
 
 % interval_frame = interval_frame(interval_frame < movie_length/1000);
 % interval_frame = [0, interval_frame];
@@ -556,12 +556,12 @@ end
 
 % gen_signals = zeros(num_stims-num_frames + 1, 1);
 diag_sum_kernel = eye(num_frames);
-gen_signals{i} = conv2(diag_gen_signals_NS, diag_sum_kernel, 'valid');
+gen_signals2{i} = conv2(diag_gen_signals_NS, diag_sum_kernel, 'valid');
 
-        gen_signals{i} =gen_signals{i} - 0.5* sum(strfs{i}(:));
+        gen_signals2{i} =gen_signals2{i} - 0.5* sum(strfs{i}(:));
 
         
-predict_prob = coeffval(1)*exp(gen_signals{i}*coeffval(2)); % compare to binned_spikes  % not a FR, is a probability of a spike
+predict_prob = coeffval(1)*exp(gen_signals2{i}*coeffval(2)); % compare to binned_spikes  % not a FR, is a probability of a spike
 
 
 
